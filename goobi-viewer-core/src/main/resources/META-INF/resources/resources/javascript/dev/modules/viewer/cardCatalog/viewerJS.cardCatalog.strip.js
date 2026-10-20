@@ -21,8 +21,100 @@ var viewerJS = (function (viewer, $) {
     'use strict';
 
     var stripLoadThreshold = 200;
+    var cardRatioKey = 'cardCatalogRatio:';
+    var cardRatioPattern = /^\d+ \/ \d+$/;
+    var cardRatioProbeTimeout = 3000;
 
     Object.assign(viewer.cardCatalog, {
+        /**
+         * Restores the card format remembered for this catalog and listens for the first loaded thumbnail to measure it otherwise.
+         */
+        initCardRatio: function () {
+            this.cardRatio = null;
+            var stored = null;
+            try {
+                stored = sessionStorage.getItem(cardRatioKey + this.config.pi);
+            } catch (e) {
+                stored = null;
+            }
+            if (stored && cardRatioPattern.test(stored)) {
+                this.setCardRatio(stored);
+            }
+            if (this.cardRatioTarget) {
+                this.cardRatioTarget.removeEventListener('load', this.cardRatioListener, true);
+            }
+            this.cardRatioListener =
+                this.cardRatioListener ||
+                ((event) => {
+                    if (event.target.matches && event.target.matches('.archives-cardcatalog__strip-thumb img')) {
+                        this.applyCardRatio(event.target);
+                    }
+                });
+            this.cardRatioTarget = this.$content[0] || null;
+            if (this.cardRatioTarget) {
+                this.cardRatioTarget.addEventListener('load', this.cardRatioListener, true);
+            }
+        },
+
+        /**
+         * Shapes the thumbnails after the format of the first loaded card image and remembers it for the session.
+         */
+        applyCardRatio: function (image) {
+            if (this.cardRatio || !image.naturalWidth || !image.naturalHeight) {
+                return;
+            }
+            this.setCardRatio(image.naturalWidth + ' / ' + image.naturalHeight);
+            try {
+                sessionStorage.setItem(cardRatioKey + this.config.pi, this.cardRatio);
+            } catch (e) {
+                console.warn('card catalog: could not remember the card format', e);
+            }
+            this.centerCurrentThumb();
+        },
+
+        /**
+         * Loads one card image to learn the card format before a view that depends on it; settles on load, on error and after a timeout.
+         */
+        learnCardRatio: function (url) {
+            return new Promise((resolve) => {
+                var image = new Image();
+                var timer = setTimeout(resolve, cardRatioProbeTimeout);
+                image.addEventListener('load', () => {
+                    clearTimeout(timer);
+                    this.applyCardRatio(image);
+                    resolve();
+                });
+                image.addEventListener('error', () => {
+                    clearTimeout(timer);
+                    resolve();
+                });
+                image.src = url;
+            });
+        },
+
+        /**
+         * Sets the card format as aspect ratio for the thumbnails of the catalog.
+         */
+        setCardRatio: function (ratio) {
+            this.cardRatio = ratio;
+            var wrapper = this.$content.closest('.archives-cardcatalog__wrapper')[0];
+            if (wrapper) {
+                wrapper.style.setProperty('--_archives-cardcatalog-card-ratio', ratio);
+            }
+        },
+
+        /**
+         * Scrolls the strip so that the thumbnail of the shown card sits in its middle.
+         */
+        centerCurrentThumb: function () {
+            var strip = this.$content.find('[data-cc-strip]')[0];
+            var currentThumb = strip ? strip.querySelector('.archives-cardcatalog__strip-thumb.-current') : null;
+            if (currentThumb) {
+                strip.scrollTop = currentThumb.offsetTop - (strip.clientHeight - currentThumb.clientHeight) / 2;
+                strip.scrollLeft = currentThumb.offsetLeft - (strip.clientWidth - currentThumb.clientWidth) / 2;
+            }
+        },
+
         /**
          * Thumbnail button of a card in the strip, marked as current when it is the shown card.
          */

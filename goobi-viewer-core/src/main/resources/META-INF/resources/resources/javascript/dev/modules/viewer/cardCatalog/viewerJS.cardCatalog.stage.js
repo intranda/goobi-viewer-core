@@ -61,12 +61,8 @@ var viewerJS = (function (viewer, $) {
                     var header = this.renderContentHeader(drawer, from, to, true);
                     var stage =
                         `<div class="archives-cardcatalog__stage">` +
-                        `<div class="archives-cardcatalog__stage-body"><div class="archives-cardcatalog__stage-viewer" id="ccStageViewer" role="img"></div></div></div>`;
-                    var iconAction = (attributes, label, icon) =>
-                        `<button type="button" class="archives-cardcatalog__stage-action archives-cardcatalog__stage-action--icon" ${attributes} aria-label="${label}" title="${label}">${this.iconSvg(icon)}</button>`;
-                    var tools =
-                        iconAction('data-cc-fullscreen="true" aria-pressed="false"', this.msg('fullscreenEnter'), 'maximize') +
-                        (document.getElementById('feedbackModal') ? iconAction('data-cc-feedback="true"', this.msg('feedback'), 'message-question') : '');
+                        `<div class="archives-cardcatalog__stage-body"><div class="archives-cardcatalog__stage-viewer" id="ccStageViewer" role="img"></div>` +
+                        `<button type="button" class="archives-cardcatalog__side" data-cc-side="true" hidden></button></div></div>`;
                     var navigation =
                         `<button type="button" class="archives-cardcatalog__stage-action" data-shift="-1">${this.iconSvg('chevron-left')}<span>${this.msg('previous')}</span></button>` +
                         `<button type="button" class="archives-cardcatalog__stage-action" data-shift="1"><span>${this.msg('next')}</span>${this.iconSvg('chevron-right')}</button>`;
@@ -74,7 +70,6 @@ var viewerJS = (function (viewer, $) {
                         `<div class="archives-cardcatalog__stage-footer">` +
                         `<div class="archives-cardcatalog__stage-caption"><div class="archives-cardcatalog__stage-caption-text" data-cc-caption="true"></div></div>` +
                         `<div class="archives-cardcatalog__stage-actions">` +
-                        `<div class="archives-cardcatalog__stage-group">${tools}</div>` +
                         `<div class="archives-cardcatalog__stage-group archives-cardcatalog__stage-group--navigation">${navigation}</div>` +
                         `</div></div>`;
                     var strip = `<div class="archives-cardcatalog__strip" data-cc-strip="true"></div>`;
@@ -133,12 +128,9 @@ var viewerJS = (function (viewer, $) {
                     .addClass('-current')
                     .attr('aria-current', 'true');
             }
-            this.$content.find('#ccStageViewer').attr('aria-label', `${this.msgText('card')} ${this.formatNumber(item.position)}: ${item.label || ''}`);
-            var currentThumb = $strip.find('[data-stage="' + item.position + '"]')[0];
-            if (currentThumb) {
-                $strip[0].scrollTop = currentThumb.offsetTop - ($strip[0].clientHeight - currentThumb.clientHeight) / 2;
-                $strip[0].scrollLeft = currentThumb.offsetLeft - ($strip[0].clientWidth - currentThumb.clientWidth) / 2;
-            }
+            this.stageSide = 'front';
+            this.renderStageSide();
+            this.centerCurrentThumb();
 
             [-1, 1].forEach((direction) => {
                 var atEdge = direction < 0 ? item.position <= 1 : item.position >= entryCount;
@@ -156,22 +148,63 @@ var viewerJS = (function (viewer, $) {
         },
 
         /**
-         * Enters or leaves fullscreen for the full view, natively or via the viewport fallback when the API is unavailable.
+         * Shows the other side of the card on the stage as a small preview that turns the card over; only for cards with a back.
          */
-        toggleFullscreen: function () {
-            var fullview = this.$content.find('.archives-cardcatalog__fullview')[0];
-            if (!fullview) {
+        renderStageSide: function () {
+            var item = this.stageItem;
+            var back = this.stageSide === 'back';
+            var label = `${this.msgText('card')} ${this.formatNumber(item.position)}: ${item.label || ''}`;
+            this.$content.find('#ccStageViewer').attr('aria-label', back ? `${label} – ${this.msgText('backSide')}` : label);
+            var $side = this.$content.find('[data-cc-side]');
+            if (!item.backImageUrl) {
+                $side.prop('hidden', true).empty();
                 return;
             }
+            var preview = back ? item.thumbnailUrl || item.imageUrl : item.backThumbnailUrl || item.backImageUrl;
+            $side
+                .prop('hidden', false)
+                .html(`<img src="${this.escape(preview)}" alt=""/><span class="archives-cardcatalog__side-label">${this.msg(back ? 'frontSide' : 'backSide')}</span>`);
+        },
+
+        /**
+         * Turns the card on the stage over between front and back.
+         */
+        toggleStageSide: function () {
+            var item = this.stageItem;
+            if (!item || !item.backImageUrl) {
+                return;
+            }
+            this.stageSide = this.stageSide === 'back' ? 'front' : 'back';
+            this.renderStageSide();
+            this.showStageImage(this.stageSide === 'back' ? { label: item.label, imageUrl: item.backImageUrl, thumbnailUrl: item.backThumbnailUrl } : item);
+        },
+
+        /**
+         * Fullscreen button of the content header in the current fullscreen state.
+         */
+        renderFullscreenButton: function () {
+            var expanded = this.isFullscreen();
+            var label = this.msg(expanded ? 'fullscreenExit' : 'fullscreenEnter');
+            return `<button type="button" class="archives-cardcatalog__fullscreen" data-cc-fullscreen="true" aria-pressed="${expanded}" aria-label="${label}" title="${label}">${this.iconSvg(expanded ? 'minimize' : 'maximize')}</button>`;
+        },
+
+        /**
+         * Enters or leaves fullscreen for the whole card catalog with both sidebars, natively or via the viewport fallback when the API is unavailable.
+         */
+        toggleFullscreen: function () {
             var $wrapper = this.$content.closest('.archives-cardcatalog__wrapper');
+            var wrapper = $wrapper[0];
+            if (!wrapper) {
+                return;
+            }
             var action;
-            if (document.fullscreenElement === fullview) {
+            if (document.fullscreenElement === wrapper) {
                 action = document.exitFullscreen();
             } else if ($wrapper.hasClass('archives-cardcatalog__wrapper--fullscreen')) {
                 $wrapper.removeClass('archives-cardcatalog__wrapper--fullscreen');
                 this.syncFullscreenButton();
-            } else if (fullview.requestFullscreen && document.fullscreenEnabled !== false) {
-                action = fullview.requestFullscreen();
+            } else if (wrapper.requestFullscreen && document.fullscreenEnabled !== false) {
+                action = wrapper.requestFullscreen();
             } else {
                 $wrapper.addClass('archives-cardcatalog__wrapper--fullscreen');
                 this.syncFullscreenButton();
@@ -199,33 +232,11 @@ var viewerJS = (function (viewer, $) {
         },
 
         /**
-         * True while the full view is shown fullscreen, natively or via the viewport fallback.
+         * True while the card catalog is shown fullscreen, natively or via the viewport fallback.
          */
         isFullscreen: function () {
-            var fullview = this.$content.find('.archives-cardcatalog__fullview')[0];
-            return (
-                (!!fullview && document.fullscreenElement === fullview) ||
-                this.$content.closest('.archives-cardcatalog__wrapper').hasClass('archives-cardcatalog__wrapper--fullscreen')
-            );
-        },
-
-        /**
-         * Opens the site's contact modal with the displayed card and its deep link as message draft.
-         * Fullscreen is left first because the modal lives outside the fullscreen element.
-         */
-        openFeedback: function () {
-            var item = this.stageItem;
-            var $modal = $('#feedbackModal');
-            if (!item || !$modal.length) {
-                return;
-            }
-            if (this.isFullscreen()) {
-                this.toggleFullscreen();
-            }
-            var values = [item.label || '', this.currentDrawer().label, this.formatNumber(item.position), window.location.origin + this.cardUrl()];
-            var message = this.msgTextFormat('feedbackMessage', values);
-            $modal.find('textarea[id$="feedbackMessage"]').val(message).trigger('change');
-            $modal.modal('show');
+            var $wrapper = this.$content.closest('.archives-cardcatalog__wrapper');
+            return (!!$wrapper.length && document.fullscreenElement === $wrapper[0]) || $wrapper.hasClass('archives-cardcatalog__wrapper--fullscreen');
         },
 
         /**

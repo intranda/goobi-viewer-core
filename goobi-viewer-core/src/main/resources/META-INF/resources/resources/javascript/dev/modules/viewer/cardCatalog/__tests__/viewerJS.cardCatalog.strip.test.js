@@ -173,3 +173,55 @@ describe('viewerJS.cardCatalog.fillStrip', function () {
         expect(cardCatalog.fetchJson).not.toHaveBeenCalled();
     });
 });
+
+describe('viewerJS.cardCatalog card format', function () {
+    const ratio = () => document.querySelector('.archives-cardcatalog__wrapper').style.getPropertyValue('--_archives-cardcatalog-card-ratio');
+    const thumb = (width, height) => {
+        const image = document.createElement('img');
+        Object.defineProperty(image, 'naturalWidth', { value: width });
+        Object.defineProperty(image, 'naturalHeight', { value: height });
+        const button = document.createElement('button');
+        button.className = 'archives-cardcatalog__strip-thumb';
+        button.appendChild(image);
+        document.querySelector('[data-cc-strip]').appendChild(button);
+        return image;
+    };
+
+    beforeEach(function () {
+        sessionStorage.clear();
+        document.body.innerHTML = '<div class="archives-cardcatalog__wrapper"><div data-cc="content"><div data-cc-strip="true"></div></div></div>';
+        cardCatalog.config = { pi: 'catalog', msg: {} };
+        cardCatalog.$content = jQuery('[data-cc="content"]');
+    });
+
+    afterEach(function () {
+        cardCatalog.config = null;
+        cardCatalog.cardRatio = null;
+        sessionStorage.clear();
+        document.body.innerHTML = '';
+    });
+
+    test('should shape the thumbnails after the first loaded card image and remember it for the session', function () {
+        cardCatalog.initCardRatio();
+        expect(ratio()).toBe('');
+
+        thumb(400, 234).dispatchEvent(new Event('load'));
+        expect(ratio()).toBe('400 / 234');
+        expect(sessionStorage.getItem('cardCatalogRatio:catalog')).toBe('400 / 234');
+
+        thumb(2224, 3306).dispatchEvent(new Event('load'));
+        expect(ratio()).toBe('400 / 234');
+    });
+
+    test('should restore a remembered card format and ignore an invalid one', function () {
+        sessionStorage.setItem('cardCatalogRatio:catalog', '2224 / 3306');
+        cardCatalog.initCardRatio();
+        expect(ratio()).toBe('2224 / 3306');
+
+        cardCatalog.cardRatio = null;
+        document.querySelector('.archives-cardcatalog__wrapper').style.removeProperty('--_archives-cardcatalog-card-ratio');
+        sessionStorage.setItem('cardCatalogRatio:catalog', 'url(evil)');
+        cardCatalog.initCardRatio();
+        expect(ratio()).toBe('');
+    });
+});

@@ -22,6 +22,7 @@ var viewerJS = (function (viewer, $) {
 
     var letterGroupThreshold = 26;
     var pathFoldThreshold = 5;
+    var letterLabel = /^\p{L}{1,3}(\/\p{L}{1,3})?$/u;
     var noteVariable = /\{(PAGE_URL|IMAGE_URL)\}|%7B(PAGE_URL|IMAGE_URL)%7D/gi;
 
     Object.assign(viewer.cardCatalog, {
@@ -115,12 +116,14 @@ var viewerJS = (function (viewer, $) {
         },
 
         /**
-         * Renders the headed drawer list, grouped behind a headed letter navigation when the catalog has more than 26 drawers.
+         * Renders the headed drawer list, grouped behind a headed letter navigation when the catalog has more than 26 drawers; drawers that are
+         * letters themselves form the letter navigation directly.
          */
         renderSidebar: function () {
             var drawers = this.info.drawers;
             var html = '';
             var grouped = drawers.length > letterGroupThreshold;
+            var letterDrawers = !grouped && drawers.every((drawer) => letterLabel.test((drawer.label || '').trim()));
             if (grouped) {
                 var groups = new Map();
                 drawers.forEach((drawer) => {
@@ -149,10 +152,14 @@ var viewerJS = (function (viewer, $) {
                 .map((drawer) => {
                     var active = this.state.drawer === drawer.id ? ' -active' : '';
                     var current = active ? ' aria-current="true"' : '';
-                    return `<button type="button" class="archives-cardcatalog__drawer${active}" data-drawer="${this.escape(drawer.id)}" title="${this.formatNumber(drawer.entryCount)} ${this.msg('cards')}"${current}>${this.escape(drawer.label)}</button>`;
+                    var element = letterDrawers ? 'letter' : 'drawer';
+                    return `<button type="button" class="archives-cardcatalog__${element}${active}" data-drawer="${this.escape(drawer.id)}" title="${this.formatNumber(drawer.entryCount)} ${this.msg('cards')}"${current}>${this.escape(drawer.label)}</button>`;
                 })
                 .join('');
-            html += `<${level} class="archives-cardcatalog__sidebar-heading">${this.msg('drawer')}</${level}><div class="archives-cardcatalog__drawer-group">${drawerButtons}</div>`;
+            html += letterDrawers
+                ? `<h2 class="archives-cardcatalog__sidebar-heading">${this.msg('letters')}</h2>` +
+                  `<div class="archives-cardcatalog__letters" role="group" aria-label="${this.msg('letters')}">${drawerButtons}</div>`
+                : `<${level} class="archives-cardcatalog__sidebar-heading">${this.msg('drawer')}</${level}><div class="archives-cardcatalog__drawer-group">${drawerButtons}</div>`;
             this.$drawers.html(html);
             this.$drawers.find('[data-letter]').on('click', (event) => {
                 var letter = $(event.currentTarget).attr('data-letter');

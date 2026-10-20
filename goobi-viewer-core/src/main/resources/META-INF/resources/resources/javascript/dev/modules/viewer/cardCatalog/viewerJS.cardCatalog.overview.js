@@ -24,13 +24,16 @@ var viewerJS = (function (viewer, $) {
         /**
          * Derives the KatZoom-style "Kurzanzeige" of a card from its IIIF image URL: the top part
          * of the scan (which carries the ordering word and the catalog entry) at full width, so
-         * the zoom list stays readable without the scroll cost of full cards. Pure, for tests.
+         * the zoom list stays readable without the scroll cost of full cards. Landscape index cards
+         * carry their name line lower than portrait pages and forms, so they get a taller part.
          */
         headCropUrl: function (imageUrl) {
             if (!imageUrl || !/\/full\/![0-9]+,[0-9]+\//.test(imageUrl)) {
                 return null;
             }
-            return imageUrl.replace(/\/full\/![0-9]+,[0-9]+\//, '/pct:0,0,100,15/!1200,480/');
+            var size = /^(\d+) \/ (\d+)$/.exec(this.cardRatio || '');
+            var height = size && Number(size[1]) > Number(size[2]) ? 35 : 15;
+            return imageUrl.replace(/\/full\/![0-9]+,[0-9]+\//, `/pct:0,0,100,${height}/!1200,480/`);
         },
 
         /**
@@ -48,29 +51,16 @@ var viewerJS = (function (viewer, $) {
                         this.showError();
                         return;
                     }
-                    var header = this.renderContentHeader(drawer, from, to, false);
-                    var items = section.items
-                        .map((item, index) => {
-                            var gap = '';
-                            if (index < section.items.length - 1) {
-                                var next = section.items[index + 1];
-                                gap =
-                                    `<button type="button" class="archives-cardcatalog__gap" data-from="${Number(item.position)}" data-to="${Number(next.position)}">` +
-                                    `<span class="archives-cardcatalog__gap-icon" aria-hidden="true">${this.iconSvg('zoom-in')}</span>` +
-                                    `<span class="archives-cardcatalog__gap-label">${this.msg('zoomIn')}</span>` +
-                                    `<span class="archives-cardcatalog__gap-count">${this.msg('cards')} ${this.formatNumber(item.position)} &ndash; ${this.formatNumber(next.position)}</span>` +
-                                    `</button>`;
-                            }
-                            return this.renderZoomCard(item) + gap;
-                        })
-                        .join('');
-                    var key = JSON.stringify([drawer.id, from, to]);
-                    var modifiers = this.showFullPreviews ? ' archives-cardcatalog__zoomlist--full' : '';
-                    this.$content.html(
-                        `<div class="archives-cardcatalog__overview">${header}<div class="archives-cardcatalog__zoomlist${modifiers}" data-overview="${this.escape(key)}">${items}</div></div>`
-                    );
-                    this.bindContentEvents();
-                    this.restoreOverviewPosition(key);
+                    var probe = this.cardRatio ? null : section.items.find((item) => item.thumbnailUrl || item.imageUrl);
+                    if (!probe) {
+                        this.renderZoomList(drawer, from, to, section);
+                        return;
+                    }
+                    return this.learnCardRatio(probe.thumbnailUrl || probe.imageUrl).then(() => {
+                        if (request.token === this.renderSeq) {
+                            this.renderZoomList(drawer, from, to, section);
+                        }
+                    });
                 })
                 .catch((error) => {
                     if (request.token === this.renderSeq && error.name !== 'AbortError') {
@@ -78,6 +68,35 @@ var viewerJS = (function (viewer, $) {
                         this.showError();
                     }
                 });
+        },
+
+        /**
+         * Renders the zoom list of a range: the boundary cards with a zoom-in gap between each pair.
+         */
+        renderZoomList: function (drawer, from, to, section) {
+            var header = this.renderContentHeader(drawer, from, to, false);
+            var items = section.items
+                .map((item, index) => {
+                    var gap = '';
+                    if (index < section.items.length - 1) {
+                        var next = section.items[index + 1];
+                        gap =
+                            `<button type="button" class="archives-cardcatalog__gap" data-from="${Number(item.position)}" data-to="${Number(next.position)}">` +
+                            `<span class="archives-cardcatalog__gap-icon" aria-hidden="true">${this.iconSvg('zoom-in')}</span>` +
+                            `<span class="archives-cardcatalog__gap-label">${this.msg('zoomIn')}</span>` +
+                            `<span class="archives-cardcatalog__gap-count">${this.msg('cards')} ${this.formatNumber(item.position)} &ndash; ${this.formatNumber(next.position)}</span>` +
+                            `</button>`;
+                    }
+                    return this.renderZoomCard(item) + gap;
+                })
+                .join('');
+            var key = JSON.stringify([drawer.id, from, to]);
+            var modifiers = this.showFullPreviews ? ' archives-cardcatalog__zoomlist--full' : '';
+            this.$content.html(
+                `<div class="archives-cardcatalog__overview">${header}<div class="archives-cardcatalog__zoomlist${modifiers}" data-overview="${this.escape(key)}">${items}</div></div>`
+            );
+            this.bindContentEvents();
+            this.restoreOverviewPosition(key);
         },
 
         /**
@@ -126,7 +145,9 @@ var viewerJS = (function (viewer, $) {
             }
             var key = overview.getAttribute('data-overview');
             this.overviewPositions.delete(key);
-            this.overviewPositions.set(key, { content: this.$content.parent().scrollTop(), page: window.scrollY });
+            var wrapper = this.$content.closest('.archives-cardcatalog__wrapper')[0];
+            var page = wrapper && this.isFullscreen() ? wrapper.scrollTop : window.scrollY;
+            this.overviewPositions.set(key, { content: this.$content.parent().scrollTop(), page: page });
             if (this.overviewPositions.size > 32) {
                 this.overviewPositions.delete(this.overviewPositions.keys().next().value);
             }

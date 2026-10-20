@@ -65,9 +65,9 @@ var viewerJS = (function (viewer, $) {
         previousDrawer: 'archives__card_catalog_previous_drawer',
         nextDrawer: 'archives__card_catalog_next_drawer',
         viewCard: 'archives__card_catalog_view_card',
-        feedback: 'archives__card_catalog_feedback',
-        feedbackMessage: 'archives__card_catalog_feedback_message',
         letters: 'archives__card_catalog_letters',
+        frontSide: 'archives__card_catalog_front_side',
+        backSide: 'archives__card_catalog_back_side',
         guide: 'archives__card_catalog_guide',
         guideDrawer: 'archives__card_catalog_guide_drawer',
         guideDrawerText: 'archives__card_catalog_guide_drawer_text',
@@ -93,8 +93,6 @@ var viewerJS = (function (viewer, $) {
         showFullCards: 'archives__volume_catalog_show_full_cards',
         completeCards: 'archives__volume_catalog_complete_cards',
         viewCard: 'archives__volume_catalog_view_card',
-        feedback: 'archives__volume_catalog_feedback',
-        feedbackMessage: 'archives__volume_catalog_feedback_message',
         guideZoomText: 'archives__volume_catalog_guide_zoom_text',
         guideZoomSteps: 'archives__volume_catalog_guide_zoom_steps',
         guideZoomStepsOne: 'archives__volume_catalog_guide_zoom_steps_one',
@@ -116,6 +114,7 @@ var viewerJS = (function (viewer, $) {
         stripErrorRange: null,
         stageViewer: null,
         stageItem: null,
+        stageSide: 'front',
         osdPromise: null,
         renderSeq: 0,
         renderController: null,
@@ -142,6 +141,7 @@ var viewerJS = (function (viewer, $) {
             this.$register = $('[data-cc="register"]');
             this.$content = $('[data-cc="content"]');
             this.initNotes();
+            this.initCardRatio();
             this.cancelRender();
             this.resetContent();
             if (this.initController) {
@@ -532,22 +532,22 @@ var viewerJS = (function (viewer, $) {
         },
 
         /**
-         * Header of the content area: drawer label, live position text, the way back one zoom level and, in the zoom list, the preview action.
+         * Header of the content area: drawer label, live position text, the way back one zoom level, in the zoom list the preview action, and the fullscreen action.
          */
         renderContentHeader: function (drawer, from, to, fullView) {
             var position = fullView
                 ? `${this.msg('card')} ${this.formatNumber(this.state.card)} ${this.msg('of')} ${this.formatNumber(drawer.entryCount)}`
                 : `${this.msg('cards')} ${this.formatNumber(from)} &ndash; ${this.formatNumber(to)} ${this.msg('of')} ${this.formatNumber(drawer.entryCount)}`;
-            var actions = fullView
+            var preview = fullView
                 ? ''
-                : `<div class="archives-cardcatalog__header-actions"><button type="button" class="archives-cardcatalog__preview-toggle" data-preview-toggle="true" aria-pressed="${this.showFullPreviews}" aria-label="${this.msg('showFullCards')}" title="${this.msg('showFullCards')}">${this.msg('completeCards')}</button></div>`;
+                : `<button type="button" class="archives-cardcatalog__preview-toggle" data-preview-toggle="true" aria-pressed="${this.showFullPreviews}" aria-label="${this.msg('showFullCards')}" title="${this.msg('showFullCards')}">${this.msg('completeCards')}</button>`;
             return (
                 `<div class="archives-cardcatalog__content-header" data-range="${from}-${to}">` +
                 `<div class="archives-cardcatalog__header-main">` +
                 `<div class="archives-cardcatalog__location" tabindex="-1"><strong title="${this.escape(drawer.label)}">${this.escape(drawer.label)}</strong>` +
                 `<span class="archives-cardcatalog__location-position" data-cc-location="true" role="status" aria-live="polite">${position}</span></div>` +
                 `</div><div class="archives-cardcatalog__navigation">${this.renderBack()}` +
-                `${actions}</div></div>`
+                `<div class="archives-cardcatalog__header-actions">${preview}${this.renderFullscreenButton()}</div></div></div>`
             );
         },
 
@@ -570,7 +570,7 @@ var viewerJS = (function (viewer, $) {
                 this.shiftCard(parseInt($(event.currentTarget).attr('data-shift'), 10));
             });
             this.$content.find('[data-cc-fullscreen]').on('click', () => this.toggleFullscreen());
-            this.$content.find('[data-cc-feedback]').on('click', () => this.openFeedback());
+            this.$content.find('[data-cc-side]').on('click', () => this.toggleStageSide());
             $(document)
                 .off('fullscreenchange.cardCatalog')
                 .on('fullscreenchange.cardCatalog', () => this.syncFullscreenButton());
@@ -629,9 +629,11 @@ var viewerJS = (function (viewer, $) {
             var target = this.$content.find('.archives-cardcatalog__location, .archives-cardcatalog__hint, .archives-cardcatalog__error')[0];
             if (target) {
                 target.focus({ preventScroll: true });
-                var wrapper = document.querySelector('.archives-cardcatalog__wrapper');
+                var wrapper = this.$content.closest('.archives-cardcatalog__wrapper')[0] || document.querySelector('.archives-cardcatalog__wrapper');
                 if (wrapper && getComputedStyle(wrapper).flexDirection === 'column') {
-                    if (position) {
+                    if (position && this.isFullscreen()) {
+                        wrapper.scrollTop = position.page;
+                    } else if (position) {
                         window.scrollTo({ top: position.page });
                     } else {
                         target.scrollIntoView({ block: 'start' });
@@ -684,7 +686,6 @@ var viewerJS = (function (viewer, $) {
          */
         resetContent: function () {
             this.stageSeq++;
-            this.$content.closest('.archives-cardcatalog__wrapper').removeClass('archives-cardcatalog__wrapper--fullscreen');
             this.destroyStageViewer();
             if (this.stripController) {
                 this.stripController.abort();

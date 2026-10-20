@@ -3,7 +3,6 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
     <!-- CARD CATALOG -->
     <div class="archives-cardcatalog__wrapper">
@@ -52,9 +51,6 @@
         </aside>
     </div>
 
-    <!-- CONTACT MODAL -->
-    <viewerComponent:modalFeedbackForm id="feedbackModal" />
-
     <script>
         viewerJS.cardCatalog.init(#{archiveBean.getCardCatalogBootstrapJson(request.contextPath,
             navigationHelper.getTranslations(
@@ -66,8 +62,9 @@
                     "archives__card_catalog_back", "archives__card_catalog_path_more", "archives__card_catalog_path_level",
                     "archives__card_catalog_location", "archives__card_catalog_drawer", "archives__card_catalog_show_full_cards",
                     "archives__card_catalog_complete_cards", "archives__card_catalog_previous_drawer",
-                    "archives__card_catalog_next_drawer", "archives__card_catalog_view_card", "archives__card_catalog_feedback",
-                    "archives__card_catalog_feedback_message", "archives__card_catalog_letters", "archives__card_catalog_guide",
+                    "archives__card_catalog_next_drawer", "archives__card_catalog_view_card",
+                    "archives__card_catalog_letters", "archives__card_catalog_front_side",
+                    "archives__card_catalog_back_side", "archives__card_catalog_guide",
                     "archives__card_catalog_guide_drawer", "archives__card_catalog_guide_drawer_text",
                     "archives__card_catalog_guide_letters", "archives__card_catalog_guide_zoom",
                     "archives__card_catalog_guide_zoom_text", "archives__card_catalog_guide_zoom_steps",
@@ -78,7 +75,6 @@
                     "archives__volume_catalog_error", "archives__volume_catalog_loading",
                     "archives__volume_catalog_load_more_error", "archives__volume_catalog_show_full_cards",
                     "archives__volume_catalog_complete_cards", "archives__volume_catalog_view_card",
-                    "archives__volume_catalog_feedback", "archives__volume_catalog_feedback_message",
                     "archives__volume_catalog_guide_zoom_text", "archives__volume_catalog_guide_zoom_steps",
                     "archives__volume_catalog_guide_zoom_steps_one", "archives__volume_catalog_guide_read",
                     "archives__volume_catalog_guide_record"]))});

@@ -81,8 +81,6 @@ describe('viewerJS.cardCatalog full view presentation', function () {
                 archives__card_catalog_zoom_help: 'Zoom-Hilfe',
                 archives__card_catalog_zoom_hint: 'Bereich zwischen zwei Zetteln auswählen.',
                 archives__card_catalog_path_hint: 'Frühere Zoomstufe auswählen, um zurückzuspringen.',
-                archives__card_catalog_feedback: 'Frage zu diesem Zettel',
-                archives__card_catalog_feedback_message: 'Zettel „{0}“ (Schublade {1}, Zettel {2})\n{3}\n\n',
                 previous: 'Zurück',
                 fullscreen_enter: 'Vollbild',
                 fullscreen_exit: 'Vollbild verlassen',
@@ -91,6 +89,7 @@ describe('viewerJS.cardCatalog full view presentation', function () {
         cardCatalog.state = { drawer: 'drawer-a', from: null, to: null, card: null, chain: [] };
         cardCatalog.showFullPreviews = false;
         cardCatalog.overviewPositions = new Map();
+        cardCatalog.cardRatio = '2224 / 3306';
         cardCatalog.$content = jQuery('<div><div></div></div>').children();
         cardCatalog.$drawers = jQuery('<div>');
         cardCatalog.$register = jQuery('<div>');
@@ -111,6 +110,7 @@ describe('viewerJS.cardCatalog full view presentation', function () {
         cardCatalog.state = null;
         cardCatalog.showFullPreviews = false;
         cardCatalog.overviewPositions = null;
+        cardCatalog.cardRatio = null;
         jest.restoreAllMocks();
     });
 
@@ -157,6 +157,64 @@ describe('viewerJS.cardCatalog full view presentation', function () {
         expect(cardCatalog.fetchJson).toHaveBeenCalledTimes(2);
     });
 
+    describe('back of a card', function () {
+        const front = { thumb: '/card1/thumb.jpg', image: 'https://iiif.example/records/c1/representative/full/!1200,1200/0/default.jpg' };
+        const back = { thumb: '/card1/back-thumb.jpg', image: 'https://iiif.example/records/c1/files/images/c2.png/full/!1200,1200/0/default.jpg' };
+
+        beforeEach(async function () {
+            cardCatalog.config.msg.archives__card_catalog_front_side = 'Vorderseite';
+            cardCatalog.config.msg.archives__card_catalog_back_side = 'Rückseite';
+            cardCatalog.state.card = 1;
+            cardCatalog.fetchJson.mockResolvedValue({
+                from: 1,
+                to: 16,
+                items: [
+                    { position: 1, label: 'Card 1', thumbnailUrl: front.thumb, imageUrl: front.image, backThumbnailUrl: back.thumb, backImageUrl: back.image },
+                    { position: 2, label: 'Card 2', thumbnailUrl: '/card2/thumb.jpg', imageUrl: 'https://iiif.example/records/c3/representative/full/!1200,1200/0/default.jpg' },
+                ],
+            });
+            cardCatalog.renderFullView(cardCatalog.currentDrawer(), 1, 16);
+            await Promise.resolve();
+        });
+
+        const $side = () => cardCatalog.$content.find('[data-cc-side]');
+
+        test('should offer the back as a small preview on the stage that turns the card over', function () {
+            expect($side().closest('.archives-cardcatalog__stage-body')).toHaveLength(1);
+            expect($side().prop('hidden')).toBe(false);
+            expect($side().is('button')).toBe(true);
+            expect($side().find('img').attr('src')).toBe(back.thumb);
+            expect($side().find('img').attr('alt')).toBe('');
+            expect($side().text()).toBe('Rückseite');
+
+            $side().trigger('click');
+
+            expect(cardCatalog.showStageImage).toHaveBeenLastCalledWith(expect.objectContaining({ imageUrl: back.image }));
+            expect($side().find('img').attr('src')).toBe(front.thumb);
+            expect($side().text()).toBe('Vorderseite');
+            expect(cardCatalog.$content.find('#ccStageViewer').attr('aria-label')).toBe('Zettel 1: Card 1 – Rückseite');
+
+            $side().trigger('click');
+
+            expect(cardCatalog.showStageImage).toHaveBeenLastCalledWith(expect.objectContaining({ imageUrl: front.image }));
+            expect($side().text()).toBe('Rückseite');
+            expect(cardCatalog.$content.find('#ccStageViewer').attr('aria-label')).toBe('Zettel 1: Card 1');
+        });
+
+        test('should hide the preview for a card without a back and start the next card on its front', function () {
+            $side().trigger('click');
+            cardCatalog.selectCard(2);
+
+            expect($side().prop('hidden')).toBe(true);
+
+            cardCatalog.selectCard(1);
+
+            expect($side().prop('hidden')).toBe(false);
+            expect($side().text()).toBe('Rückseite');
+            expect(cardCatalog.showStageImage).toHaveBeenLastCalledWith(expect.objectContaining({ imageUrl: front.image }));
+        });
+    });
+
     test('should show the selected drawer and card position without relying on the thumbnail strip', async function () {
         cardCatalog.state = { drawer: 'drawer-a', from: 85, to: 100, card: 100, chain: [{ from: 1, to: 100 }] };
         cardCatalog.fetchJson.mockResolvedValue({ from: 85, to: 100, items: [{ position: 100, label: 'Last card' }] });
@@ -181,7 +239,7 @@ describe('viewerJS.cardCatalog full view presentation', function () {
         expect($row.children().last().hasClass('archives-cardcatalog__stage')).toBe(true);
     });
 
-    test('should split the stage toolbar below the image into tools and card navigation', async function () {
+    test('should keep the card navigation below the image and put the fullscreen action into the content header', async function () {
         cardCatalog.state.card = 1;
         cardCatalog.fetchJson.mockResolvedValue({ from: 1, to: 16, items: [{ position: 1, label: 'First card' }] });
 
@@ -192,112 +250,57 @@ describe('viewerJS.cardCatalog full view presentation', function () {
         expect($fullview.children().last().hasClass('archives-cardcatalog__stage-footer')).toBe(true);
         expect($fullview.find('.archives-cardcatalog__stage-footer [data-cc-caption] .archives-cardcatalog__stage-position').text()).toBe('Zettel 1 von 100');
         const $groups = $fullview.find('.archives-cardcatalog__stage-footer .archives-cardcatalog__stage-actions').children('.archives-cardcatalog__stage-group');
-        expect($groups).toHaveLength(2);
+        expect($groups).toHaveLength(1);
+        expect($groups.hasClass('archives-cardcatalog__stage-group--navigation')).toBe(true);
         expect(
             $groups
-                .first()
-                .children()
-                .map((_, button) => button.getAttribute('data-cc-fullscreen'))
-                .get()
-        ).toEqual(['true']);
-        expect(
-            $groups
-                .last()
                 .children()
                 .map((_, button) => button.getAttribute('data-shift'))
                 .get()
         ).toEqual(['-1', '1']);
-        expect($groups.last().hasClass('archives-cardcatalog__stage-group--navigation')).toBe(true);
-        expect($groups.find('button').filter('.archives-cardcatalog__stage-action')).toHaveLength(3);
-        const $fullscreen = $groups.find('[data-cc-fullscreen]');
-        expect($fullscreen.hasClass('archives-cardcatalog__stage-action--icon')).toBe(true);
+        expect($fullview.find('.archives-cardcatalog__stage-footer [data-cc-fullscreen]')).toHaveLength(0);
+        const $fullscreen = $fullview.find('.archives-cardcatalog__content-header .archives-cardcatalog__header-actions [data-cc-fullscreen]');
+        expect($fullscreen).toHaveLength(1);
+        expect($fullscreen.attr('aria-pressed')).toBe('false');
         expect($fullscreen.attr('aria-label')).toBe('Vollbild');
         expect($fullscreen.attr('title')).toBe('Vollbild');
-        expect($fullview.find('.archives-cardcatalog__content-header [data-cc-fullscreen]')).toHaveLength(0);
     });
 
-    test('should offer a contact action between fullscreen and card navigation only when the contact modal exists', async function () {
-        cardCatalog.state.card = 1;
-        cardCatalog.fetchJson.mockResolvedValue({ from: 1, to: 16, items: [{ position: 1, label: 'First card' }] });
+    test('should keep the whole catalog fullscreen while leaving the full view and offer the way out in every view', async function () {
+        const enabledDescriptor = Object.getOwnPropertyDescriptor(document, 'fullscreenEnabled');
+        Object.defineProperty(document, 'fullscreenEnabled', { configurable: true, value: false });
 
-        cardCatalog.renderFullView(cardCatalog.currentDrawer(), 1, 16);
-        await Promise.resolve();
-        expect(cardCatalog.$content.find('[data-cc-feedback]')).toHaveLength(0);
+        try {
+            const $wrapper = jQuery('<div class="archives-cardcatalog__wrapper"><div data-cc="content"></div></div>');
+            cardCatalog.$content = $wrapper.find('[data-cc="content"]');
+            cardCatalog.state = { drawer: 'drawer-a', from: 1, to: 16, card: 13, chain: [{ from: 1, to: 100 }] };
+            cardCatalog.fetchJson.mockResolvedValueOnce({ from: 1, to: 16, items: [{ position: 13, label: 'Card 13' }] });
+            cardCatalog.renderFullView(cardCatalog.currentDrawer(), 1, 16);
+            await Promise.resolve();
+            cardCatalog.$content.find('[data-cc-fullscreen]').trigger('click');
+            expect($wrapper.hasClass('archives-cardcatalog__wrapper--fullscreen')).toBe(true);
 
-        const $modal = jQuery('<div id="feedbackModal"><textarea id="feedbackModal:feedback-modal__feedbackMessage"></textarea></div>').appendTo(document.body);
-        cardCatalog.renderFullView(cardCatalog.currentDrawer(), 1, 16);
-        await Promise.resolve();
+            await renderOverview();
 
-        const $tools = cardCatalog.$content.find('.archives-cardcatalog__stage-footer .archives-cardcatalog__stage-group').first();
-        const $button = $tools.children('button[data-cc-feedback]');
-        expect($button).toHaveLength(1);
-        expect($button.hasClass('archives-cardcatalog__stage-action')).toBe(true);
-        expect($button.hasClass('archives-cardcatalog__stage-action--icon')).toBe(true);
-        expect($button.prev().is('[data-cc-fullscreen]')).toBe(true);
-        expect($button.next()).toHaveLength(0);
-        expect($button.text()).toBe('');
-        expect($button.attr('aria-label')).toBe('Frage zu diesem Zettel');
-        expect($button.attr('title')).toBe('Frage zu diesem Zettel');
-        expect($button.find('svg use').attr('href')).toContain('/message-question.svg#icon');
-        $modal.remove();
-    });
+            expect($wrapper.hasClass('archives-cardcatalog__wrapper--fullscreen')).toBe(true);
+            const $button = cardCatalog.$content.find('.archives-cardcatalog__header-actions [data-cc-fullscreen]');
+            expect($button).toHaveLength(1);
+            expect($button.prev().is('[data-preview-toggle]')).toBe(true);
+            expect($button.attr('aria-pressed')).toBe('true');
+            expect($button.attr('aria-label')).toBe('Vollbild verlassen');
+            expect($button.find('use').attr('href')).toContain('/minimize.svg#icon');
 
-    test('should prefill the contact message with the displayed card and its deep link before opening the modal', async function () {
-        const $modal = jQuery('<div id="feedbackModal"><textarea id="feedbackModal:feedback-modal__feedbackMessage"></textarea></div>').appendTo(document.body);
-        const changed = jest.fn();
-        $modal.find('textarea').on('change', changed);
-        jQuery.fn.modal = jest.fn();
-        cardCatalog.state = { drawer: 'drawer-a', from: 1, to: 16, card: 1, chain: [{ from: 1, to: 100 }] };
-        cardCatalog.fetchJson.mockResolvedValue({
-            from: 1,
-            to: 16,
-            items: [
-                { position: 1, label: 'First card' },
-                { position: 2, label: 'Second <card> & more' },
-            ],
-        });
-
-        cardCatalog.renderFullView(cardCatalog.currentDrawer(), 1, 16);
-        await Promise.resolve();
-        cardCatalog.$content.find('[data-cc-feedback]').trigger('click');
-
-        expect($modal.find('textarea').val()).toBe('Zettel „First card“ (Schublade A, Zettel 1)\nhttp://localhost/?drawer=drawer-a&from=1&to=16&card=1\n\n');
-        expect(changed).toHaveBeenCalledTimes(1);
-        expect(jQuery.fn.modal).toHaveBeenCalledWith('show');
-        expect(jQuery.fn.modal.mock.contexts[0].is('#feedbackModal')).toBe(true);
-
-        cardCatalog.selectCard(2);
-        cardCatalog.$content.find('[data-cc-feedback]').trigger('click');
-
-        expect($modal.find('textarea').val()).toBe('Zettel „Second <card> & more“ (Schublade A, Zettel 2)\nhttp://localhost/?drawer=drawer-a&from=1&to=16&card=2\n\n');
-        delete jQuery.fn.modal;
-        $modal.remove();
-    });
-
-    test('should leave fullscreen before opening the contact modal', async function () {
-        const $modal = jQuery('<div id="feedbackModal"><textarea id="feedbackModal:feedback-modal__feedbackMessage"></textarea></div>').appendTo(document.body);
-        jQuery.fn.modal = jest.fn();
-        cardCatalog.$content = jQuery('<div class="archives-cardcatalog__wrapper"><div></div></div>').children();
-        cardCatalog.state.card = 1;
-        cardCatalog.fetchJson.mockResolvedValue({ from: 1, to: 16, items: [{ position: 1, label: 'First card' }] });
-        cardCatalog.renderFullView(cardCatalog.currentDrawer(), 1, 16);
-        await Promise.resolve();
-        const toggle = jest.spyOn(cardCatalog, 'toggleFullscreen');
-        const $wrapper = cardCatalog.$content.closest('.archives-cardcatalog__wrapper');
-
-        cardCatalog.$content.find('[data-cc-feedback]').trigger('click');
-        expect(toggle).not.toHaveBeenCalled();
-
-        cardCatalog.$content.find('[data-cc-fullscreen]').trigger('click');
-        expect(toggle).toHaveBeenCalledTimes(1);
-        expect($wrapper.hasClass('archives-cardcatalog__wrapper--fullscreen')).toBe(true);
-        cardCatalog.$content.find('[data-cc-feedback]').trigger('click');
-
-        expect(toggle).toHaveBeenCalledTimes(2);
-        expect($wrapper.hasClass('archives-cardcatalog__wrapper--fullscreen')).toBe(false);
-        expect(jQuery.fn.modal).toHaveBeenCalledTimes(2);
-        delete jQuery.fn.modal;
-        $modal.remove();
+            $button.trigger('click');
+            expect($wrapper.hasClass('archives-cardcatalog__wrapper--fullscreen')).toBe(false);
+            expect($button.attr('aria-pressed')).toBe('false');
+            expect($button.find('use').attr('href')).toContain('/maximize.svg#icon');
+        } finally {
+            if (enabledDescriptor) {
+                Object.defineProperty(document, 'fullscreenEnabled', enabledDescriptor);
+            } else {
+                delete document.fullscreenEnabled;
+            }
+        }
     });
 
     test('should return from fullscreen to the same card and zoom range', async function () {
@@ -327,6 +330,8 @@ describe('viewerJS.cardCatalog full view presentation', function () {
             Object.defineProperty(Element.prototype, 'requestFullscreen', { configurable: true, value: requestFullscreen });
             Object.defineProperty(document, 'fullscreenEnabled', { configurable: true, value: true });
             Object.defineProperty(document, 'exitFullscreen', { configurable: true, value: exitFullscreen });
+            const $wrapper = jQuery('<div class="archives-cardcatalog__wrapper"><div data-cc="content"></div></div>');
+            cardCatalog.$content = $wrapper.find('[data-cc="content"]');
             cardCatalog.state = { drawer: 'drawer-a', from: 1, to: 16, card: 13, chain: [{ from: 1, to: 100 }] };
             cardCatalog.fetchJson.mockResolvedValue({ from: 1, to: 16, items: [{ position: 13, label: 'Card 13' }] });
             cardCatalog.renderFullView(cardCatalog.currentDrawer(), 1, 16);
@@ -334,11 +339,10 @@ describe('viewerJS.cardCatalog full view presentation', function () {
 
             const state = JSON.parse(JSON.stringify(cardCatalog.state));
             const $button = cardCatalog.$content.find('[data-cc-fullscreen]');
-            const fullview = cardCatalog.$content.find('.archives-cardcatalog__fullview')[0];
             expect($button.attr('aria-label')).toBe('Vollbild');
 
             $button.trigger('click');
-            expect(requestFullscreen.mock.instances[0]).toBe(fullview);
+            expect(requestFullscreen.mock.instances[0]).toBe($wrapper[0]);
             expect($button.attr('aria-pressed')).toBe('true');
             expect($button.attr('aria-label')).toBe('Vollbild verlassen');
 

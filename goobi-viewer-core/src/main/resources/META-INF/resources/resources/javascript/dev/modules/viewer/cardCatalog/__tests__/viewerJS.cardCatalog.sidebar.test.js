@@ -123,8 +123,37 @@ describe('viewerJS.cardCatalog sidebar navigation', function () {
         expect(cardCatalog.$drawers.find('.archives-cardcatalog__drawer-group [data-drawer]')).toHaveLength(30);
     });
 
-    test('should head the ranges of an ungrouped catalog without a letters heading', function () {
+    test('should show a small catalog whose drawers are letters as the letter navigation without a range list', function () {
         cardCatalog.config.msg = { archives__card_catalog_letters: 'Buchstaben', archives__card_catalog_drawer: 'Bereich' };
+        cardCatalog.info.drawers = [
+            { id: 'drawer-a', label: 'A', entryCount: 1022 },
+            { id: 'drawer-ij', label: 'I/J', entryCount: 816 },
+        ];
+
+        cardCatalog.renderSidebar();
+
+        const parts = cardCatalog.$drawers
+            .children()
+            .map((_, element) => element.tagName.toLowerCase() + (element.matches('h2, h3') ? ':' + element.textContent : ''))
+            .get();
+        expect(parts).toEqual(['h2:Buchstaben', 'div']);
+        const $letters = cardCatalog.$drawers.find('.archives-cardcatalog__letters .archives-cardcatalog__letter');
+        expect($letters.map((_, letter) => letter.textContent).get()).toEqual(['A', 'I/J']);
+        expect($letters.first().hasClass('-active')).toBe(true);
+        expect($letters.first().attr('aria-current')).toBe('true');
+        expect(cardCatalog.$drawers.find('.archives-cardcatalog__drawer-group')).toHaveLength(0);
+
+        const selectDrawer = jest.spyOn(cardCatalog, 'selectDrawer').mockImplementation(() => {});
+        $letters.last().trigger('click');
+        expect(selectDrawer).toHaveBeenCalledWith('drawer-ij');
+    });
+
+    test('should head the ranges of a small catalog with named ranges without a letters heading', function () {
+        cardCatalog.config.msg = { archives__card_catalog_letters: 'Buchstaben', archives__card_catalog_drawer: 'Bereich' };
+        cardCatalog.info.drawers = [
+            { id: 'drawer-a', label: 'Maier - Mayer', entryCount: 1022 },
+            { id: 'drawer-ze', label: 'Ze', entryCount: 816 },
+        ];
 
         cardCatalog.renderSidebar();
 
@@ -308,13 +337,11 @@ describe('viewerJS.cardCatalog right column', function () {
         expect(steps()[1]).toContain('Zettel lesen');
     });
 
-    test('should end with the steps and leave the contact tip out even when the contact modal is on the page', function () {
-        document.body.innerHTML = '<div id="feedbackModal"></div>';
+    test('should end with the steps', function () {
         cardCatalog.renderGuide();
 
         expect(steps()).toHaveLength(3);
         expect(cardCatalog.$guide.children().last().is('ol')).toBe(true);
-        expect(cardCatalog.$guide.text()).not.toContain('Fragen zu einem Zettel?');
     });
 
     test('should mark the step that matches the current view and the steps before it as done', function () {

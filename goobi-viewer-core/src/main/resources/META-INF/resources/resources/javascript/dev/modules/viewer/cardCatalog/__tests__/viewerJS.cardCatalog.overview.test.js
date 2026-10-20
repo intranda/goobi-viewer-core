@@ -15,10 +15,26 @@ const info = {
 };
 
 describe('viewerJS.cardCatalog.headCropUrl', function () {
+    const fullImage = 'https://example.org/viewer/api/v1/records/94_584/representative/full/!1200,1200/0/default.jpg';
+
+    afterEach(function () {
+        cardCatalog.cardRatio = null;
+    });
+
     test('should derive the upper fifteen percent of a full image by default', function () {
         expect(cardCatalog.headCropUrl('https://example.org/viewer/api/v1/records/94_584/representative/full/!1200,1200/0/default.jpg')).toBe(
             'https://example.org/viewer/api/v1/records/94_584/representative/pct:0,0,100,15/!1200,480/0/default.jpg'
         );
+    });
+
+    test('should derive the upper fifteen percent of a portrait card or page', function () {
+        cardCatalog.cardRatio = '700 / 847';
+        expect(cardCatalog.headCropUrl(fullImage)).toBe('https://example.org/viewer/api/v1/records/94_584/representative/pct:0,0,100,15/!1200,480/0/default.jpg');
+    });
+
+    test('should derive the upper thirty-five percent of a landscape index card so that its name line stays visible', function () {
+        cardCatalog.cardRatio = '400 / 236';
+        expect(cardCatalog.headCropUrl(fullImage)).toBe('https://example.org/viewer/api/v1/records/94_584/representative/pct:0,0,100,35/!1200,480/0/default.jpg');
     });
 
     test('should return null for missing input', function () {
@@ -54,8 +70,6 @@ describe('viewerJS.cardCatalog overview presentation', function () {
                 archives__card_catalog_zoom_help: 'Zoom-Hilfe',
                 archives__card_catalog_zoom_hint: 'Bereich zwischen zwei Zetteln auswählen.',
                 archives__card_catalog_path_hint: 'Frühere Zoomstufe auswählen, um zurückzuspringen.',
-                archives__card_catalog_feedback: 'Frage zu diesem Zettel',
-                archives__card_catalog_feedback_message: 'Zettel „{0}“ (Schublade {1}, Zettel {2})\n{3}\n\n',
                 previous: 'Zurück',
                 fullscreen_enter: 'Vollbild',
                 fullscreen_exit: 'Vollbild verlassen',
@@ -64,6 +78,7 @@ describe('viewerJS.cardCatalog overview presentation', function () {
         cardCatalog.state = { drawer: 'drawer-a', from: null, to: null, card: null, chain: [] };
         cardCatalog.showFullPreviews = false;
         cardCatalog.overviewPositions = new Map();
+        cardCatalog.cardRatio = '2224 / 3306';
         cardCatalog.$content = jQuery('<div><div></div></div>').children();
         cardCatalog.$drawers = jQuery('<div>');
         cardCatalog.$register = jQuery('<div>');
@@ -84,6 +99,8 @@ describe('viewerJS.cardCatalog overview presentation', function () {
         cardCatalog.state = null;
         cardCatalog.showFullPreviews = false;
         cardCatalog.overviewPositions = null;
+        cardCatalog.cardRatio = null;
+        sessionStorage.clear();
         jest.restoreAllMocks();
     });
 
@@ -91,6 +108,36 @@ describe('viewerJS.cardCatalog overview presentation', function () {
         cardCatalog.renderZoomView(cardCatalog.currentDrawer(), 1, 100);
         await Promise.resolve();
     }
+
+    test('should learn the card format from the first card image before drawing the head crops', async function () {
+        cardCatalog.cardRatio = null;
+        const probe = document.createElement('img');
+        Object.defineProperty(probe, 'naturalWidth', { value: 400 });
+        Object.defineProperty(probe, 'naturalHeight', { value: 236 });
+        jest.spyOn(window, 'Image').mockImplementation(() => probe);
+
+        await renderOverview();
+        expect(probe.getAttribute('src')).toBe('/thumb.jpg');
+        expect(cardCatalog.$content.find('.archives-cardcatalog__zoomcard')).toHaveLength(0);
+
+        probe.dispatchEvent(new Event('load'));
+        await Promise.resolve();
+
+        expect(cardCatalog.cardRatio).toBe('400 / 236');
+        expect(sessionStorage.getItem('cardCatalogRatio:catalog')).toBe('400 / 236');
+        const $crops = cardCatalog.$content.find('.archives-cardcatalog__zoomcard img');
+        expect($crops).toHaveLength(4);
+        expect($crops.first().attr('src')).toBe('https://example.org/iiif/card/pct:0,0,100,35/!1200,480/0/default.jpg');
+    });
+
+    test('should draw the head crops without a format probe once the card format is known', async function () {
+        const image = jest.spyOn(window, 'Image');
+
+        await renderOverview();
+
+        expect(image).not.toHaveBeenCalled();
+        expect(cardCatalog.$content.find('.archives-cardcatalog__zoomcard img').first().attr('src')).toBe('https://example.org/iiif/card/pct:0,0,100,15/!1200,480/0/default.jpg');
+    });
 
     test('should keep the sticky header and complete zoom list in the same overview container', async function () {
         await renderOverview();
@@ -185,6 +232,49 @@ describe('viewerJS.cardCatalog overview presentation', function () {
         expect(cardCatalog.state).toEqual({ drawer: 'drawer-a', from: null, to: null, card: null, chain: [] });
     });
 
+    test('should restore the stacked list position inside the scrolling fullscreen catalog instead of the page', async function () {
+        const $wrapper = jQuery(
+            '<div class="archives-cardcatalog__wrapper archives-cardcatalog__wrapper--fullscreen" style="flex-direction: column"><div><div data-cc="content"></div></div></div>'
+        ).appendTo(document.body);
+        cardCatalog.$content = $wrapper.find('[data-cc="content"]');
+        const scrollTo = jest.spyOn(window, 'scrollTo').mockImplementation(() => {});
+        try {
+            await renderOverview();
+            const key = cardCatalog.$content.find('[data-overview]').attr('data-overview');
+            $wrapper[0].scrollTop = 300;
+            cardCatalog.rememberOverviewPosition();
+            $wrapper[0].scrollTop = 0;
+
+            cardCatalog.prepareNavigation();
+            cardCatalog.restoreOverviewPosition(key);
+
+            expect($wrapper[0].scrollTop).toBe(300);
+            expect(scrollTo).not.toHaveBeenCalled();
+        } finally {
+            $wrapper.remove();
+        }
+    });
+
+    test('should draw the head crops in the default format when the format probe does not answer', async function () {
+        jest.useFakeTimers();
+        try {
+            cardCatalog.cardRatio = null;
+            jest.spyOn(window, 'Image').mockImplementation(() => document.createElement('img'));
+
+            await renderOverview();
+            expect(cardCatalog.$content.find('.archives-cardcatalog__zoomcard')).toHaveLength(0);
+
+            jest.advanceTimersByTime(3000);
+            await Promise.resolve();
+
+            expect(cardCatalog.$content.find('.archives-cardcatalog__zoomcard img').first().attr('src')).toBe(
+                'https://example.org/iiif/card/pct:0,0,100,15/!1200,480/0/default.jpg'
+            );
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+
     test('should bound remembered overview positions while retaining the most recently visited range', function () {
         for (let position = 1; position <= 34; position++) {
             cardCatalog.$content.html('<div data-overview></div>');
@@ -224,8 +314,9 @@ describe('viewerJS.cardCatalog overview presentation', function () {
         expect($drawerTitle.text()).toBe(drawerLabel);
         expect($drawerTitle.children()).toHaveLength(0);
         expect($location.children('[data-cc-location]')).toHaveLength(1);
-        expect($actions).toHaveLength(fullView ? 0 : 1);
+        expect($actions).toHaveLength(1);
         expect($actions.find('[data-preview-toggle]')).toHaveLength(fullView ? 0 : 1);
+        expect($actions.children().last().is('[data-cc-fullscreen]')).toBe(true);
         expect($header.find('details')).toHaveLength(0);
         expect($navigation.children('.archives-cardcatalog__back')).toHaveLength(0);
         expect(
