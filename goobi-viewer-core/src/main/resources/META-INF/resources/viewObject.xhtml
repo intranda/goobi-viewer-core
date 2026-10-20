@@ -142,7 +142,12 @@
                     <!-- VIEW AUDIO -->
                     <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.audio}">
                         <ui:insert name="viewAudio">
-                            <ui:include src="/resources/includes/object/audio.xhtml" />
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.docStructType == 'PodcastEpisode'}">
+                                <ui:include src="/resources/includes/object/podcast.xhtml" />
+                            </ui:fragment>
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.docStructType != 'PodcastEpisode'}">
+                                <ui:include src="/resources/includes/object/audio.xhtml" />
+                            </ui:fragment>
                         </ui:insert>
                     </h:panelGroup>
 
