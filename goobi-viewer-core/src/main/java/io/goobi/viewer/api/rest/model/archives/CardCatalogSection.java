@@ -45,6 +45,8 @@ public class CardCatalogSection {
         private boolean hasImage;
         private String thumbnailUrl;
         private String imageUrl;
+        private String backThumbnailUrl;
+        private String backImageUrl;
 
         public int getPosition() {
             return position;
@@ -100,6 +102,22 @@ public class CardCatalogSection {
 
         public void setImageUrl(String imageUrl) {
             this.imageUrl = imageUrl;
+        }
+
+        public String getBackThumbnailUrl() {
+            return backThumbnailUrl;
+        }
+
+        public void setBackThumbnailUrl(String backThumbnailUrl) {
+            this.backThumbnailUrl = backThumbnailUrl;
+        }
+
+        public String getBackImageUrl() {
+            return backImageUrl;
+        }
+
+        public void setBackImageUrl(String backImageUrl) {
+            this.backImageUrl = backImageUrl;
         }
     }
 

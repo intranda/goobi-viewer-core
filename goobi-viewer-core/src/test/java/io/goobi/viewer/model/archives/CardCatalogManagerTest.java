@@ -35,6 +35,7 @@ import static org.mockito.ArgumentMatchers.isNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -587,6 +588,58 @@ class CardCatalogManagerTest {
         root.setField(SolrConstants.DATEINDEXED, 1L);
         Mockito.when(searchIndex.getFirstDoc(anyString(), anyList())).thenReturn(root);
         return searchIndex;
+    }
+
+    /**
+     * @verifies return the first further page in the format of the front and skip header strips and pages without dimensions
+     * @see CardCatalogManager#getBackSideFiles(Collection)
+     */
+    @Test
+    void getBackSideFiles_shouldReturnTheFirstFurtherPageInTheFormatOfTheFront() throws Exception {
+        SolrDocumentList pages = new SolrDocumentList();
+        pages.add(page("withBack", 3, "p0001.png", 700, 150));
+        pages.add(page("withBack", 1, "c0001.png", 700, 939));
+        pages.add(page("withBack", 2, "c0002.png", 700, 941));
+        pages.add(page("stripOnly", 1, "d0001.gif", 400, 236));
+        pages.add(page("stripOnly", 2, "q0001.gif", 400, 80));
+        pages.add(page("noDimensions", 1, "d0002.gif", null, null));
+        pages.add(page("noDimensions", 2, "q0002.gif", null, null));
+        pages.add(page("single", 1, "e0001.tif", 2224, 3306));
+        QueryResponse response = Mockito.mock(QueryResponse.class);
+        Mockito.when(response.getResults()).thenReturn(pages);
+        SolrSearchIndex searchIndex = Mockito.mock(SolrSearchIndex.class);
+        ArgumentCaptor<String> query = ArgumentCaptor.forClass(String.class);
+        Mockito.when(searchIndex.search(query.capture(), eq(0), anyInt(), isNull(), isNull(), anyList())).thenReturn(response);
+
+        Map<String, String> files = managerWith(searchIndex).getBackSideFiles(List.of("withBack", "stripOnly", "noDimensions", "single"));
+
+        assertEquals(Map.of("withBack", "c0002.png"), files);
+        assertTrue(query.getValue().contains(SolrConstants.DOCTYPE + ":PAGE"));
+        assertTrue(query.getValue().contains("\"withBack\""));
+    }
+
+    /**
+     * @verifies not query the index without records
+     * @see CardCatalogManager#getBackSideFiles(Collection)
+     */
+    @Test
+    void getBackSideFiles_shouldNotQueryTheIndexWithoutRecords() throws Exception {
+        SolrSearchIndex searchIndex = Mockito.mock(SolrSearchIndex.class);
+
+        assertTrue(managerWith(searchIndex).getBackSideFiles(List.of()).isEmpty());
+        Mockito.verifyNoInteractions(searchIndex);
+    }
+
+    private static SolrDocument page(String pi, int order, String fileName, Integer width, Integer height) {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.PI_TOPSTRUCT, pi);
+        doc.setField(SolrConstants.ORDER, order);
+        doc.setField(SolrConstants.FILENAME, fileName);
+        if (width != null) {
+            doc.setField(SolrConstants.WIDTH, width);
+            doc.setField(SolrConstants.HEIGHT, height);
+        }
+        return doc;
     }
 
     private static QueryResponse cardPage(List<String> ids, long numFound, int firstRank) {

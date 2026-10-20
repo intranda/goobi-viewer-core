@@ -87,6 +87,12 @@ public class CardCatalogManager {
     private static final List<String> SOLR_FIELDS_STRUCTURE = Arrays.asList(SolrConstants.IDDOC, SolrConstants.IDDOC_PARENT,
             SolrConstants.EAD_NODE_ID, SolrConstants.TITLE, SolrConstants.PI, FIELD_ARCHIVE_ORDER);
     private static final List<String> SOLR_FIELDS_ENTRIES = Arrays.asList(SolrConstants.EAD_NODE_ID, SolrConstants.TITLE, FIELD_ARCHIVE_ORDER);
+    private static final List<String> SOLR_FIELDS_PAGES = Arrays.asList(SolrConstants.PI_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.FILENAME,
+            SolrConstants.WIDTH, SolrConstants.HEIGHT);
+    /** Card records carry front, back and at most one more image, such as a header strip. */
+    private static final int MAX_CARD_PAGES = 3;
+    /** Largest relative deviation of an image's aspect ratio from the front for it to count as the back of the card. */
+    private static final double BACK_SIDE_RATIO_TOLERANCE = 0.2;
 
     private final CachingMap<String, CardCatalogIndex> catalogs = new CachingMap<>(MAX_CACHED_CATALOGS);
     private final Object[] catalogLocks = new Object[CATALOG_LOCK_COUNT];
@@ -750,6 +756,70 @@ public class CardCatalogManager {
             }
         }
         return null;
+    }
+
+    /**
+     * Finds the back of each given card record: the first further image in the format of the front. Header strips and other excerpts differ in
+     * format and are left out; images without indexed dimensions never count as a back.
+     *
+     * @param recordPis PIs of card records
+     * @return file name of the back image per record PI, only for records that have one
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @should return the first further page in the format of the front and skip header strips and pages without dimensions
+     * @should not query the index without records
+     */
+    public Map<String, String> getBackSideFiles(Collection<String> recordPis) throws PresentationException, IndexUnreachableException {
+        if (recordPis.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        String pis = recordPis.stream().map(CardCatalogManager::quoteSolr).collect(Collectors.joining(" "));
+        String query = "+" + SolrConstants.PI_TOPSTRUCT + ":(" + pis + ") +" + SolrConstants.DOCTYPE + ":" + DocType.PAGE.name() + " +"
+                + SolrConstants.ORDER + ":[1 TO " + MAX_CARD_PAGES + "]";
+        SolrDocumentList pages = getSearchIndex().search(query, 0, recordPis.size() * MAX_CARD_PAGES, null, null, SOLR_FIELDS_PAGES).getResults();
+        Map<String, List<SolrDocument>> pagesByRecord = new HashMap<>();
+        for (SolrDocument page : pages) {
+            pagesByRecord.computeIfAbsent(SolrTools.getSingleFieldStringValue(page, SolrConstants.PI_TOPSTRUCT), k -> new ArrayList<>()).add(page);
+        }
+        Map<String, String> ret = new HashMap<>();
+        pagesByRecord.forEach((recordPi, recordPages) -> findBackSideFile(recordPages).ifPresent(file -> ret.put(recordPi, file)));
+        return ret;
+    }
+
+    private static Optional<String> findBackSideFile(List<SolrDocument> pages) {
+        List<SolrDocument> sorted = new ArrayList<>(pages);
+        sorted.sort(Comparator.comparingInt(page -> getIntValue(page, SolrConstants.ORDER)));
+        double front = getAspectRatio(sorted.get(0));
+        if (front <= 0) {
+            return Optional.empty();
+        }
+        return sorted.stream()
+                .skip(1)
+                .filter(page -> Math.abs(getAspectRatio(page) / front - 1) <= BACK_SIDE_RATIO_TOLERANCE)
+                .map(page -> SolrTools.getSingleFieldStringValue(page, SolrConstants.FILENAME))
+                .filter(StringUtils::isNotBlank)
+                .findFirst();
+    }
+
+    private static double getAspectRatio(SolrDocument page) {
+        int width = getIntValue(page, SolrConstants.WIDTH);
+        int height = getIntValue(page, SolrConstants.HEIGHT);
+        return width > 0 && height > 0 ? (double) width / height : 0;
+    }
+
+    private static int getIntValue(SolrDocument doc, String field) {
+        Object value = doc.getFirstValue(field);
+        if (value instanceof Number number) {
+            return number.intValue();
+        }
+        if (value instanceof String string) {
+            try {
+                return Integer.parseInt(string);
+            } catch (NumberFormatException e) {
+                return 0;
+            }
+        }
+        return 0;
     }
 
     private static int clamp(int value, int min, int max) {

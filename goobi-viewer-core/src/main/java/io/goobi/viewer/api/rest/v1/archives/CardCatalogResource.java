@@ -28,6 +28,8 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.ARCHIVES_CARDCATALOG_ENTRIES;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.ARCHIVES_CARDCATALOG_LOOKUP;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,6 +44,7 @@ import io.goobi.viewer.api.rest.model.archives.CardCatalogRegister;
 import io.goobi.viewer.api.rest.model.archives.CardCatalogSection;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -211,6 +214,7 @@ public class CardCatalogResource {
             for (int i = 0; i < entries.size(); i++) {
                 ret.getItems().add(createItem(entries.get(i), fromPos + i));
             }
+            addBackSides(manager, ret.getItems());
         }
 
         setCacheHeaders();
@@ -317,6 +321,33 @@ public class CardCatalogResource {
             }
         }
         return item;
+    }
+
+    private static void addBackSides(CardCatalogManager manager, List<CardCatalogSection.CardItem> items)
+            throws PresentationException, IndexUnreachableException {
+        List<String> recordPis = items.stream()
+                .filter(item -> item.isHasImage() && item.getImageUrl() != null)
+                .map(CardCatalogSection.CardItem::getRecordPi)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+        Map<String, String> backSides = manager.getBackSideFiles(recordPis);
+        for (CardCatalogSection.CardItem item : items) {
+            String file = backSides.get(item.getRecordPi());
+            if (file != null) {
+                try {
+                    IIIFUrlHandler iiif = BeanUtils.getImageDeliveryBean().getIiif();
+                    if (iiif != null) {
+                        item.setBackThumbnailUrl(iiif.getIIIFImageUrl(file, item.getRecordPi(), "full", "!" + THUMBNAIL_SIZE + "," + THUMBNAIL_SIZE,
+                                "0", "default", "jpg"));
+                        item.setBackImageUrl(iiif.getIIIFImageUrl(file, item.getRecordPi(), "full", "!" + IMAGE_SIZE + "," + IMAGE_SIZE, "0",
+                                "default", "jpg"));
+                    }
+                } catch (ViewerConfigurationException e) {
+                    logger.warn("Could not build back image URL for record '{}': {}", item.getRecordPi(), e.getMessage());
+                }
+            }
+        }
     }
 
     private void setCacheHeaders() {
