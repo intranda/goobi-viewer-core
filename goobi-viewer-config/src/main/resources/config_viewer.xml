@@ -892,6 +892,16 @@
              Examples are:
              <metadataView index="1" label="label_metadata_codicological" url="_codicological" condition="MD_CODICOLOGICAL_UNIQUEIDENTIFIER">
              <metadataView index="2" label="label_metadata_special" url="_special" condition="MD_SPECIAL_FIELD:value">
+
+             Each <metadata> element (in metadataView and metadataList) may define an optional icon:
+             - icon: name of a Tabler icon (resources/icons/), either as file name (e.g. "info-circle") or as React
+               component name (e.g. "IconInfoCircle"). A React name ending in "Filled" (e.g. "IconInfoCircleFilled")
+               selects the filled variant.
+             - iconFilled: "true" selects the filled variant for file names (default: "false").
+             Example:
+             <metadata label="MD_PODCASTFOLGEN" icon="IconInfoCircleFilled">
+                 <param type="numvolumes" />
+             </metadata>
         -->
         <metadataView index="0" location="sidebar">
             <template name="_DEFAULT">
