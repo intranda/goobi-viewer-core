@@ -693,18 +693,31 @@
         background: none;
         border: 0;
         cursor: pointer;
+        transition:
+            color 0.15s ease,
+            background-color 0.15s ease;
 
         &:hover,
         &:active,
         &:focus-visible {
-            color: var(--_archives-cardcatalog-text-color);
-            background: var(--_archives-cardcatalog-hover-background-color);
+            color: var(--_archives-cardcatalog-accent-color);
+            background: color-mix(in srgb, var(--_archives-cardcatalog-accent-color) 20%, var(--_archives-cardcatalog-surface-background-color));
+        }
+
+        &:hover .archives-cardcatalog__gap-icon,
+        &:focus-visible .archives-cardcatalog__gap-icon {
+            transform: scale(1.2);
         }
     }
 
     &__gap-icon {
         color: var(--_archives-cardcatalog-accent-color);
         font-weight: bold;
+        transition: transform 0.15s ease;
+
+        @media (prefers-reduced-motion: reduce) {
+            transition: none;
+        }
     }
 
     &__gap-label {

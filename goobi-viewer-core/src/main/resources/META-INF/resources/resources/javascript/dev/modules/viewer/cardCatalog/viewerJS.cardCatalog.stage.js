@@ -265,8 +265,9 @@ var viewerJS = (function (viewer, $) {
                 return;
             }
             this.loadOpenSeadragon()
-                .then(() => {
-                    if (!isCurrent()) {
+                .then(() => (isCurrent() ? this.loadStageTileSource(infoUrl) : null))
+                .then((tileSource) => {
+                    if (!tileSource || !isCurrent()) {
                         return;
                     }
                     if (this.stageViewer && !this.stageViewer.element.isConnected) {
@@ -275,13 +276,13 @@ var viewerJS = (function (viewer, $) {
                     if (this.stageViewer) {
                         this.stageViewer.removeAllHandlers('open-failed');
                         this.stageViewer.addOnceHandler('open-failed', renderPlainImage);
-                        this.stageViewer.open([infoUrl]);
+                        this.stageViewer.open([tileSource]);
                         return;
                     }
                     container.innerHTML = '';
                     this.stageViewer = window.OpenSeadragon({
                         element: container,
-                        tileSources: [infoUrl],
+                        tileSources: [tileSource],
                         prefixUrl: '',
                         showNavigationControl: false,
                         gestureSettingsMouse: { clickToZoom: true, dblClickToZoom: true },
@@ -291,6 +292,26 @@ var viewerJS = (function (viewer, $) {
                     this.stageViewer.addOnceHandler('open-failed', renderPlainImage);
                 })
                 .catch(renderPlainImage);
+        },
+
+        /**
+         * Tile source for the stage: a tiled image goes to OpenSeadragon as its IIIF information, an untiled one (the viewer delivers PNG whole,
+         * with an empty tile list OpenSeadragon cannot derive zoom levels from) as one zoomable image.
+         */
+        loadStageTileSource: function (infoUrl) {
+            return fetch(infoUrl)
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('image information request failed: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then((info) => {
+                    if (Array.isArray(info.tiles) && info.tiles.length === 0) {
+                        return { type: 'image', url: `${info['@id'] || info.id}/full/max/0/default.jpg` };
+                    }
+                    return info;
+                });
         },
 
         /**

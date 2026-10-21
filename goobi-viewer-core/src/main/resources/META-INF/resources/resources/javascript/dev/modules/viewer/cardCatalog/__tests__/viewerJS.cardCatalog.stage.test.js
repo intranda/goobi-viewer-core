@@ -40,6 +40,56 @@ describe('viewerJS.cardCatalog stage ownership', function () {
     });
 });
 
+describe('viewerJS.cardCatalog stage image source', function () {
+    const imageUrl = 'https://viewer.example/api/v1/records/c1/representative/full/!1200,1200/0/default.jpg';
+    const imageId = 'https://viewer.example/api/v1/records/c1/files/images/c1.png';
+    let originalOpenSeadragon;
+    let originalFetch;
+
+    beforeEach(function () {
+        document.body.innerHTML = '<div id="ccStageViewer"></div>';
+        cardCatalog.config = { osdScriptUrl: '/osd.js', msg: {} };
+        cardCatalog.$content = jQuery('<div>');
+        cardCatalog.stageViewer = null;
+        originalOpenSeadragon = window.OpenSeadragon;
+        originalFetch = global.fetch;
+        window.OpenSeadragon = jest.fn(() => ({ addOnceHandler: jest.fn(), destroy: jest.fn() }));
+        jest.spyOn(cardCatalog, 'loadOpenSeadragon').mockResolvedValue();
+    });
+
+    afterEach(function () {
+        cardCatalog.stageViewer = null;
+        window.OpenSeadragon = originalOpenSeadragon;
+        global.fetch = originalFetch;
+        cardCatalog.config = null;
+        document.body.innerHTML = '';
+        jest.restoreAllMocks();
+    });
+
+    async function showWithInfo(info) {
+        global.fetch = jest.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(info) });
+        cardCatalog.showStageImage({ imageUrl, label: 'Card' });
+        for (let i = 0; i < 10; i++) {
+            await Promise.resolve();
+        }
+    }
+
+    test('should open an untiled image as one zoomable image instead of passing its empty tile list to OpenSeadragon', async function () {
+        await showWithInfo({ '@id': imageId, width: 700, height: 813, sizes: [{ width: 2147483647, height: 2147483647 }], tiles: [] });
+
+        expect(global.fetch).toHaveBeenCalledWith('https://viewer.example/api/v1/records/c1/representative/info.json');
+        expect(window.OpenSeadragon).toHaveBeenCalledWith(expect.objectContaining({ tileSources: [{ type: 'image', url: imageId + '/full/max/0/default.jpg' }] }));
+    });
+
+    test('should pass the information of a tiled image to OpenSeadragon without loading it a second time', async function () {
+        const info = { '@id': imageId, width: 2192, height: 3306, tiles: [{ width: 512, height: 512, scaleFactors: [1, 32] }] };
+
+        await showWithInfo(info);
+
+        expect(window.OpenSeadragon).toHaveBeenCalledWith(expect.objectContaining({ tileSources: [info] }));
+    });
+});
+
 describe('viewerJS.cardCatalog.imageInfoUrl', function () {
     test('should derive info.json from a scaled IIIF image URL', function () {
         expect(cardCatalog.imageInfoUrl('https://example.org/viewer/api/v1/records/94_584/representative/full/!400,400/0/default.jpg')).toBe(
