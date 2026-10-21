@@ -1,0 +1,107 @@
+/* ==============================================================
+   Card Catalog: Strip
+   style declarations for archiveCardCatalogView.xhtml (thumbnail strip, thumbnails, strip errors)
+   ==============================================================*/
+
+.archives-cardcatalog {
+    &__strip {
+        position: relative;
+        display: flex;
+        flex: 0 0 170px;
+        flex-direction: column;
+        gap: 8px;
+        padding: 8px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        overflow-anchor: none;
+        overscroll-behavior: contain;
+        border-inline-end: var(--_archives-cardcatalog-border);
+    }
+
+    &__strip-thumb {
+        flex: 0 0 auto;
+        padding: 0;
+        color: inherit;
+        text-align: center;
+        background: none;
+        border: 2px solid transparent;
+        cursor: pointer;
+
+        &:hover,
+        &:active,
+        &:focus-visible {
+            color: var(--_archives-cardcatalog-text-color);
+            border-color: var(--_archives-cardcatalog-accent-color);
+        }
+
+        &.-current {
+            border-color: var(--_archives-cardcatalog-accent-color);
+        }
+
+        img {
+            display: block;
+        }
+
+        img,
+        .archives-cardcatalog__no-image {
+            width: 100%;
+            height: auto;
+            max-height: 180px;
+            aspect-ratio: var(--_archives-cardcatalog-card-ratio);
+            object-fit: contain;
+            background: var(--archives-placeholder-bg, @neutralgray);
+        }
+    }
+
+    &__strip-position {
+        display: block;
+        color: var(--_archives-cardcatalog-muted-text-color);
+        font-size: var(--_archives-cardcatalog-caption-font-size);
+    }
+
+    &__strip-error {
+        flex: 0 0 100%;
+        padding: 8px;
+        color: var(--_archives-cardcatalog-text-color);
+        font-size: @fontSmall;
+        background: var(--_archives-cardcatalog-surface-background-color);
+        border: var(--_archives-cardcatalog-border);
+    }
+
+    &__strip-retry {
+        display: block;
+        margin-top: 6px;
+        padding: 4px 8px;
+        color: var(--_archives-cardcatalog-accent-color);
+        background: var(--_archives-cardcatalog-surface-background-color);
+        border: var(--_archives-cardcatalog-border);
+        cursor: pointer;
+
+        &:hover,
+        &:active,
+        &:focus-visible {
+            color: var(--_archives-cardcatalog-accent-color);
+            border-color: var(--_archives-cardcatalog-accent-color);
+        }
+    }
+}
+
+@media screen and (max-width: @mediumBreakpoint) {
+    .archives-cardcatalog {
+        &__strip {
+            flex-basis: auto;
+            flex-direction: row;
+            overflow-x: auto;
+            overflow-y: hidden;
+            border-bottom: var(--_archives-cardcatalog-border);
+            border-inline-end: 0;
+        }
+
+        &__strip-thumb img,
+        &__strip-thumb .archives-cardcatalog__no-image {
+            width: auto;
+            height: 100px;
+            max-height: none;
+        }
+    }
+}

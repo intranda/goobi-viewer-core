@@ -1,0 +1,159 @@
+/* ==============================================================
+   Card Catalog: Layout
+   style declarations for archiveCardCatalogView.xhtml (wrapper with its tokens, sidebars, content area, fullscreen, shared states)
+   ==============================================================*/
+
+.archives-cardcatalog {
+    &__wrapper {
+        --_archives-cardcatalog-accent-color: var(--lk-content-box, var(--ci-color1, @blue));
+        --_archives-cardcatalog-selection-background-color: var(--ci-color1, @blue);
+        --_archives-cardcatalog-accent-contrast-color: var(--archives-accent-contrast, @white);
+        --_archives-cardcatalog-hover-background-color: var(--bg-hover, @lightgray);
+        --_archives-cardcatalog-surface-background-color: var(--bg-content-box, @white);
+        --_archives-cardcatalog-canvas-background-color: var(--bg-general, @white);
+        --_archives-cardcatalog-border: var(--archives-card-border, var(--border, 1px solid @middlegray));
+        --_archives-cardcatalog-trail-color: var(--archives-trail-color, @middlegray);
+        --_archives-cardcatalog-text-color: var(--fg-general, @black);
+        --_archives-cardcatalog-muted-text-color: var(--fg-controls, @gray);
+        --_archives-cardcatalog-caption-font-size: 1.1rem;
+        --_archives-cardcatalog-card-ratio: 3 / 2;
+
+        display: flex;
+        gap: @archives-cardcatalog-gutter;
+        min-height: 400px;
+        padding: 20px @archives-cardcatalog-gutter;
+        overflow: hidden;
+        color: var(--_archives-cardcatalog-text-color);
+        background: var(--_archives-cardcatalog-canvas-background-color);
+    }
+
+    &__wrapper--fullscreen {
+        position: fixed;
+        inset: 0;
+        z-index: 100000;
+        width: 100vw;
+        height: 100vh !important;
+    }
+
+    &__wrapper:fullscreen #widgetArchivesInteractions {
+        display: none;
+    }
+
+    &__wrapper--fullscreen #widgetArchivesInteractions {
+        display: none;
+    }
+
+    &__sidebar {
+        display: flex;
+        flex: 0 0 clamp(280px, 22vw, 400px);
+        flex-direction: column;
+        height: 100%;
+        min-width: 0;
+        overflow: hidden;
+        background: var(--_archives-cardcatalog-surface-background-color);
+        border: var(--_archives-cardcatalog-border);
+    }
+
+    &__sidebar-body {
+        container: archives-cardcatalog-sidebar / inline-size;
+        flex: 1 1 auto;
+        min-width: 0;
+        min-height: 0;
+        padding: 16px;
+        overflow-y: auto;
+        overflow-anchor: none;
+        overscroll-behavior: contain;
+    }
+
+    &__content {
+        container: archives-cardcatalog-content / inline-size;
+        flex: 1 1 auto;
+        min-width: 0;
+        height: 100%;
+        overflow-y: auto;
+        overflow-anchor: none;
+        overscroll-behavior: contain;
+    }
+
+    &__content:has(.archives-cardcatalog__overview) {
+        padding-inline-end: 8px;
+        scrollbar-gutter: stable;
+    }
+
+    &__content-body {
+        height: 100%;
+    }
+
+    &__no-image {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 110px;
+        color: var(--_archives-cardcatalog-muted-text-color);
+        font-size: var(--_archives-cardcatalog-caption-font-size);
+        background: var(--archives-placeholder-bg, @neutralgray);
+    }
+
+    &__hint,
+    &__error {
+        padding: 32px;
+        color: var(--_archives-cardcatalog-muted-text-color);
+        text-align: center;
+        background: var(--_archives-cardcatalog-surface-background-color);
+        border: var(--_archives-cardcatalog-border);
+    }
+
+    &__loader {
+        min-height: 120px;
+        background: url('../../images/infinity_loader.svg') no-repeat center center;
+        background-size: 80px;
+    }
+
+    &__wrapper button:focus-visible {
+        outline: 2px solid var(--_archives-cardcatalog-accent-color);
+        outline-offset: 2px;
+    }
+}
+
+@media screen and (max-width: @mediumBreakpoint) {
+    .archives-cardcatalog {
+        &__wrapper {
+            flex-direction: column;
+            height: auto !important;
+            overflow: visible;
+        }
+
+        &__wrapper:fullscreen {
+            overflow-y: auto;
+        }
+
+        &__wrapper--fullscreen {
+            height: 100vh !important;
+            overflow-y: auto;
+        }
+
+        &__sidebar {
+            flex-basis: auto;
+            height: auto;
+            max-height: 220px;
+        }
+
+        &__sidebar--right {
+            max-height: none;
+        }
+
+        &__content {
+            height: auto;
+            overflow-y: visible;
+        }
+
+        &__content:has(.archives-cardcatalog__overview) {
+            padding-inline-end: 0;
+            scrollbar-gutter: auto;
+        }
+
+        &__content-body {
+            height: auto;
+        }
+    }
+}
