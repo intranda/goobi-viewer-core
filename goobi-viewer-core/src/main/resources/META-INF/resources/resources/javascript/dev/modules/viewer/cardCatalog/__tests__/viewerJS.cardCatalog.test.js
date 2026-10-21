@@ -376,6 +376,122 @@ describe('viewerJS.cardCatalog.openSelectedEntry', function () {
     });
 });
 
+describe('viewerJS.cardCatalog default drawer', function () {
+    const catalogInfo = {
+        drawers: [
+            { id: 'empty', label: 'Leer', entryCount: 0 },
+            { id: 'drawer-a', label: 'A', entryCount: 1022 },
+            { id: 'drawer-b', label: 'B', entryCount: 816 },
+        ],
+        config: { fullViewThreshold: 16, listPageSize: 16, zoomFactor: 8 },
+    };
+
+    beforeEach(function () {
+        document.body.innerHTML =
+            '<div data-cc="drawers"></div><div data-cc="orientation"></div><div data-cc="guide"></div><div data-cc="register"></div><div data-cc="content"></div>';
+        jest.spyOn(cardCatalog, 'renderSidebar').mockImplementation(() => {});
+        jest.spyOn(cardCatalog, 'render').mockImplementation(() => {});
+    });
+
+    afterEach(function () {
+        cardCatalog.initController = null;
+        cardCatalog.info = null;
+        cardCatalog.config = null;
+        cardCatalog.state = null;
+        document.body.innerHTML = '';
+        window.history.replaceState(null, '', '/viewer/archives/catalog/');
+        jest.restoreAllMocks();
+    });
+
+    async function flush() {
+        for (let i = 0; i < 8; i++) {
+            await Promise.resolve();
+        }
+    }
+
+    test('should open the first non-empty drawer when the URL names none', async function () {
+        window.history.replaceState(null, '', '/viewer/archives/catalog/');
+        jest.spyOn(cardCatalog, 'fetchJson').mockResolvedValue(catalogInfo);
+
+        cardCatalog.init({ apiUrl: '/api/v1', pi: 'catalog', msg: {} });
+        await flush();
+
+        expect(cardCatalog.state).toEqual({ drawer: 'drawer-a', from: null, to: null, card: null, chain: [] });
+        expect(window.location.search).toBe('?drawer=drawer-a');
+        expect(window.history.state.cc.drawer).toBe('drawer-a');
+        expect(cardCatalog.render).toHaveBeenCalledTimes(1);
+    });
+
+    test('should resolve a selected entry before choosing a drawer and fall back to the first drawer when it is unknown', async function () {
+        window.history.replaceState(null, '', '/viewer/archives/catalog/?selected=missing');
+        jest.spyOn(cardCatalog, 'fetchJson')
+            .mockResolvedValueOnce(catalogInfo)
+            .mockRejectedValueOnce(Object.assign(new Error('lookup request failed: 404'), { status: 404 }));
+
+        cardCatalog.init({ apiUrl: '/api/v1', pi: 'catalog', msg: {} });
+        await flush();
+
+        expect(cardCatalog.fetchJson.mock.calls[1][0]).toContain('lookup?entryId=missing');
+        expect(cardCatalog.state.drawer).toBe('drawer-a');
+        expect(window.location.search).toBe('?drawer=drawer-a');
+        expect(cardCatalog.render).toHaveBeenCalledTimes(2);
+    });
+
+    test('should leave the explicit drawer of the URL alone', async function () {
+        window.history.replaceState(null, '', '/viewer/archives/catalog/?drawer=drawer-b');
+        jest.spyOn(cardCatalog, 'fetchJson').mockResolvedValue(catalogInfo);
+
+        cardCatalog.init({ apiUrl: '/api/v1', pi: 'catalog', msg: {} });
+        await flush();
+
+        expect(cardCatalog.state.drawer).toBe('drawer-b');
+        expect(window.location.search).toBe('?drawer=drawer-b');
+    });
+
+    test('should fall back to the first drawer when the lookup of a selected entry fails', async function () {
+        window.history.replaceState(null, '', '/viewer/archives/catalog/?selected=card-1');
+        jest.spyOn(cardCatalog, 'fetchJson')
+            .mockResolvedValueOnce(catalogInfo)
+            .mockRejectedValueOnce(Object.assign(new Error('lookup request failed: 500'), { status: 500 }));
+        const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+        cardCatalog.init({ apiUrl: '/api/v1', pi: 'catalog', msg: {} });
+        await flush();
+
+        expect(error).toHaveBeenCalledTimes(1);
+        expect(cardCatalog.state.drawer).toBe('drawer-a');
+        expect(window.location.search).toBe('?drawer=drawer-a');
+        expect(cardCatalog.render).toHaveBeenCalledTimes(2);
+    });
+
+    test('should replace an unknown drawer of a history entry with the first drawer without adding history', async function () {
+        window.history.replaceState(null, '', '/viewer/archives/catalog/?drawer=drawer-b');
+        jest.spyOn(cardCatalog, 'fetchJson').mockResolvedValue(catalogInfo);
+        cardCatalog.init({ apiUrl: '/api/v1', pi: 'catalog', msg: {} });
+        await flush();
+        const historyLength = window.history.length;
+
+        window.history.replaceState(null, '', '/viewer/archives/catalog/?drawer=unknown');
+        window.dispatchEvent(new PopStateEvent('popstate', { state: null }));
+
+        expect(cardCatalog.state.drawer).toBe('drawer-a');
+        expect(window.location.search).toBe('?drawer=drawer-a');
+        expect(window.history.length).toBe(historyLength);
+    });
+
+    test('should stay without a drawer when no drawer has entries', async function () {
+        window.history.replaceState(null, '', '/viewer/archives/catalog/');
+        jest.spyOn(cardCatalog, 'fetchJson').mockResolvedValue({ ...catalogInfo, drawers: [{ id: 'empty', label: 'Leer', entryCount: 0 }] });
+
+        cardCatalog.init({ apiUrl: '/api/v1', pi: 'catalog', msg: {} });
+        await flush();
+
+        expect(cardCatalog.openDefaultDrawer()).toBe(false);
+        expect(cardCatalog.state.drawer).toBeNull();
+        expect(window.location.search).toBe('');
+    });
+});
+
 describe('viewerJS.cardCatalog drawer boundaries', function () {
     beforeEach(function () {
         cardCatalog.info = {

@@ -56,7 +56,6 @@ var viewerJS = (function (viewer, $) {
         loadMoreError: 'archives__card_catalog_load_more_error',
         retry: 'archives__card_catalog_retry',
         back: 'archives__card_catalog_back',
-        pathMore: 'archives__card_catalog_path_more',
         pathLevel: 'archives__card_catalog_path_level',
         location: 'archives__card_catalog_location',
         drawer: 'archives__card_catalog_drawer',
@@ -69,9 +68,6 @@ var viewerJS = (function (viewer, $) {
         frontSide: 'archives__card_catalog_front_side',
         backSide: 'archives__card_catalog_back_side',
         guide: 'archives__card_catalog_guide',
-        guideDrawer: 'archives__card_catalog_guide_drawer',
-        guideDrawerText: 'archives__card_catalog_guide_drawer_text',
-        guideLetters: 'archives__card_catalog_guide_letters',
         guideZoom: 'archives__card_catalog_guide_zoom',
         guideZoomText: 'archives__card_catalog_guide_zoom_text',
         guideZoomSteps: 'archives__card_catalog_guide_zoom_steps',
@@ -171,6 +167,9 @@ var viewerJS = (function (viewer, $) {
                         return;
                     }
                     this.state = this.keptState(event.state && event.state.cc) || this.stateFromParams(new URLSearchParams(window.location.search), this.info);
+                    if (!this.state.drawer) {
+                        this.openDefaultDrawer();
+                    }
                     this.prepareNavigation();
                     this.renderSidebar();
                     this.render();
@@ -185,10 +184,14 @@ var viewerJS = (function (viewer, $) {
                     this.info = info;
                     var params = new URLSearchParams(window.location.search);
                     this.state = this.keptState(window.history.state && window.history.state.cc) || this.stateFromParams(params, info);
+                    var selected = this.state.drawer ? null : params.get('selected');
+                    if (!this.state.drawer && !selected) {
+                        this.openDefaultDrawer();
+                    }
                     this.renderSidebar();
                     this.render();
-                    if (!this.state.drawer && params.get('selected')) {
-                        this.openSelectedEntry(params.get('selected'));
+                    if (selected) {
+                        this.openSelectedEntry(selected);
                     }
                 })
                 .catch((error) => {
@@ -227,6 +230,10 @@ var viewerJS = (function (viewer, $) {
                     }
                     var drawer = location ? this.drawerById(location.drawerId) : null;
                     if (!drawer) {
+                        if (this.openDefaultDrawer()) {
+                            this.renderSidebar();
+                            this.render();
+                        }
                         return;
                     }
                     var range = this.windowAround(location.position, drawer);
@@ -242,10 +249,28 @@ var viewerJS = (function (viewer, $) {
                     this.render();
                 })
                 .catch((error) => {
-                    if (error.name !== 'AbortError') {
-                        console.error('ERROR - could not resolve selected card catalog entry: ', error);
+                    if (error.name === 'AbortError' || sequence !== this.initSeq) {
+                        return;
+                    }
+                    console.error('ERROR - could not resolve selected card catalog entry: ', error);
+                    if (!this.state.drawer && this.openDefaultDrawer()) {
+                        this.renderSidebar();
+                        this.render();
                     }
                 });
+        },
+
+        /**
+         * Starts in the first non-empty drawer when the URL names none, so the catalog opens with its first zoom view instead of an empty content area.
+         */
+        openDefaultDrawer: function () {
+            var drawer = this.info ? this.info.drawers.find((d) => d.entryCount > 0) : null;
+            if (!drawer) {
+                return false;
+            }
+            this.state = { drawer: drawer.id, from: null, to: null, card: null, chain: [] };
+            this.syncUrl(false);
+            return true;
         },
 
         /**

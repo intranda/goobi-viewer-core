@@ -21,7 +21,6 @@ var viewerJS = (function (viewer, $) {
     'use strict';
 
     var letterGroupThreshold = 26;
-    var pathFoldThreshold = 5;
     var letterLabel = /^\p{L}{1,3}(\/\p{L}{1,3})?$/u;
     var noteVariable = /\{(PAGE_URL|IMAGE_URL)\}|%7B(PAGE_URL|IMAGE_URL)%7D/gi;
 
@@ -172,7 +171,7 @@ var viewerJS = (function (viewer, $) {
         },
 
         /**
-         * Location trail from the chosen drawer down to the current range, one numbered zoom level per row; deep trails fold their middle levels behind a button.
+         * Location trail from the chosen drawer down to the current range, one numbered zoom level per row.
          */
         renderPath: function (drawer) {
             var chain = this.state.chain;
@@ -182,23 +181,14 @@ var viewerJS = (function (viewer, $) {
                 steps.push({ label: this.msgFormat('pathLevel', [chain.length]), from: this.state.from || 1, to: this.state.to || drawer.entryCount });
             }
             steps[steps.length - 1].current = true;
-            var folded = steps.length > pathFoldThreshold ? steps.length - 4 : 0;
-            var items = steps.map((step, position) => {
+            var items = steps.map((step) => {
                 var text =
                     `<span class="archives-cardcatalog__path-text"><span class="archives-cardcatalog__path-label">${step.label}</span> ` +
                     `<span class="archives-cardcatalog__path-range"><span class="sr-only">${this.msg('cards')} </span>${this.formatNumber(step.from)} &ndash; ${this.formatNumber(step.to)}</span></span>`;
                 var content = step.current
                     ? `<span class="archives-cardcatalog__path-current" aria-current="location">${text}</span>`
                     : `<button type="button" class="archives-cardcatalog__path-link" data-chain="${step.index}">${text}</button>`;
-                var hidden = folded && position >= 2 && position < steps.length - 2 ? ' hidden' : '';
-                var item = `<li class="archives-cardcatalog__path-step${step.current ? ' -current' : ''}"${hidden}>${content}</li>`;
-                if (folded && position === 2) {
-                    item =
-                        `<li class="archives-cardcatalog__path-step archives-cardcatalog__path-step--more">` +
-                        `<button type="button" class="archives-cardcatalog__path-more" data-path-more="true"><span class="archives-cardcatalog__path-text">${this.msgFormat('pathMore', [folded])}</span></button></li>` +
-                        item;
-                }
-                return item;
+                return `<li class="archives-cardcatalog__path-step${step.current ? ' -current' : ''}">${content}</li>`;
             });
             return (
                 `<nav class="archives-cardcatalog__path" aria-labelledby="archivesCardCatalogPathHeading">` +
@@ -214,12 +204,6 @@ var viewerJS = (function (viewer, $) {
             this.$orientation.html(this.state.drawer ? this.renderPath(this.currentDrawer()) : '');
             this.$orientation.find('[data-chain]').on('click', (event) => {
                 this.chainJump(parseInt($(event.currentTarget).attr('data-chain'), 10));
-            });
-            this.$orientation.find('[data-path-more]').on('click', (event) => {
-                var $more = $(event.currentTarget).closest('li');
-                var $revealed = $more.nextAll('[hidden]').prop('hidden', false);
-                $more.remove();
-                $revealed.first().find('button').trigger('focus');
             });
         },
 
@@ -307,16 +291,10 @@ var viewerJS = (function (viewer, $) {
         },
 
         /**
-         * Renders the usage guide from the catalog data and configuration, marks the step that matches the current view and adds the question tip.
+         * Renders the usage guide from the catalog configuration and marks the step that matches the current view.
          */
         renderGuide: function () {
-            var drawers = this.info.drawers;
             var steps = [];
-            var drawerText = drawers.length ? this.msgFormat('guideDrawerText', [drawers[0].label, drawers[drawers.length - 1].label]) : '';
-            if (drawers.length > letterGroupThreshold) {
-                drawerText += ' ' + this.msg('guideLetters');
-            }
-            steps.push({ id: 'drawer', title: this.msg('guideDrawer'), text: drawerText });
             var levels = this.zoomLevels();
             if (levels > 0) {
                 var zoomText = [this.msg('guideZoomText'), levels === 1 ? this.msg('guideZoomStepsOne') : this.msgFormat('guideZoomSteps', [levels])];
@@ -327,7 +305,7 @@ var viewerJS = (function (viewer, $) {
             }
             var record = `<span class="archives-cardcatalog__guide-record" data-cc-guide-record="true" hidden>${this.msg('guideRecord')}</span>`;
             steps.push({ id: 'read', title: this.msg('guideRead'), text: this.msg('guideReadText') + record });
-            var current = !this.state.drawer ? 'drawer' : this.showsFullView() ? 'read' : 'zoom';
+            var current = this.state.drawer && this.showsFullView() ? 'read' : 'zoom';
             var currentIndex = steps.findIndex((step) => step.id === current);
             var items = steps
                 .map((step, index) => {

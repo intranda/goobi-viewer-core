@@ -108,15 +108,10 @@
             inset-inline-start: 4px;
             border-inline-start: 1px solid var(--_archives-cardcatalog-trail-color);
         }
-
-        &--more:not(:last-child)::after {
-            border-inline-start-style: dashed;
-        }
     }
 
     &__path-link,
-    &__path-current,
-    &__path-more {
+    &__path-current {
         position: relative;
         z-index: 1;
         display: grid;
@@ -154,8 +149,7 @@
         padding: 6px 8px;
     }
 
-    &__path-link,
-    &__path-more {
+    &__path-link {
         cursor: pointer;
 
         &:hover,
@@ -172,14 +166,6 @@
         &:hover .archives-cardcatalog__path-text,
         &:focus-visible .archives-cardcatalog__path-text {
             background: var(--_archives-cardcatalog-hover-background-color);
-        }
-    }
-
-    &__path-more {
-        color: var(--_archives-cardcatalog-muted-text-color);
-
-        &::before {
-            visibility: hidden;
         }
     }
 
@@ -435,8 +421,7 @@
 @media screen and (max-width: @mediumBreakpoint) {
     .archives-cardcatalog {
         &__drawer,
-        &__path-link,
-        &__path-more {
+        &__path-link {
             min-height: 44px;
         }
     }

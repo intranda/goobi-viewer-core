@@ -261,16 +261,12 @@ describe('viewerJS.cardCatalog right column', function () {
         archives__card_catalog_cards: 'Zettel',
         archives__card_catalog_drawer: 'Schublade',
         archives__card_catalog_location: 'Sie sind hier',
-        archives__card_catalog_path_more: '{0} weitere Stufen anzeigen',
-        archives__card_catalog_path_level: 'Stufe {0}',
+        archives__card_catalog_path_level: 'Zoomstufe {0}',
         archives__card_catalog_guide: 'So funktioniert es',
-        archives__card_catalog_guide_drawer: 'Schublade wählen',
-        archives__card_catalog_guide_drawer_text: 'Von „{0}“ bis „{1}“.',
-        archives__card_catalog_guide_letters: 'Links zuerst den Anfangsbuchstaben wählen.',
         archives__card_catalog_guide_zoom: 'Bereich eingrenzen',
         archives__card_catalog_guide_zoom_text: 'Zwischen zwei Zetteln hineinzoomen, über den Zoompfad zurück.',
-        archives__card_catalog_guide_zoom_steps: 'In höchstens {0} Stufen bei einzelnen Zetteln.',
-        archives__card_catalog_guide_zoom_steps_one: 'Nach einer Stufe bei einzelnen Zetteln.',
+        archives__card_catalog_guide_zoom_steps: 'In höchstens {0} Zoomstufen bei einzelnen Zetteln.',
+        archives__card_catalog_guide_zoom_steps_one: 'Nach einer Zoomstufe bei einzelnen Zetteln.',
         archives__card_catalog_guide_register: 'Oder oben im Register einen Bereich wählen.',
         archives__card_catalog_guide_read: 'Zettel lesen',
         archives__card_catalog_guide_read_text: 'Mit Zurück und Weiter blättern.',
@@ -310,16 +306,15 @@ describe('viewerJS.cardCatalog right column', function () {
             .map((_, step) => step.textContent)
             .get();
 
-    test('should derive drawer span, letter hint and the number of zoom levels from the catalog and its configuration', function () {
+    test('should start with the zoom step and derive the number of zoom levels from the catalog and its configuration', function () {
         cardCatalog.renderGuide();
 
         const text = steps();
-        expect(text).toHaveLength(3);
-        expect(text[0]).toContain('Von „A - Abels“ bis „Zverina - Zywoty“.');
-        expect(text[0]).toContain('Links zuerst den Anfangsbuchstaben wählen.');
-        expect(text[1]).toContain('Zwischen zwei Zetteln hineinzoomen, über den Zoompfad zurück.');
-        expect(text[1]).toContain('In höchstens 2 Stufen bei einzelnen Zetteln.');
-        expect(text[1]).not.toContain('Register');
+        expect(text).toHaveLength(2);
+        expect(text[0]).toContain('Zwischen zwei Zetteln hineinzoomen, über den Zoompfad zurück.');
+        expect(text[0]).toContain('In höchstens 2 Zoomstufen bei einzelnen Zetteln.');
+        expect(text[0]).not.toContain('Register');
+        expect(text.join(' ')).not.toContain('wählen');
         expect(cardCatalog.$guide.find('ol').attr('role')).toBe('list');
     });
 
@@ -327,20 +322,19 @@ describe('viewerJS.cardCatalog right column', function () {
         cardCatalog.info.mode = 'REGISTER';
         cardCatalog.info.drawers = drawers(5, 100);
         cardCatalog.renderGuide();
-        expect(steps()[0]).not.toContain('Anfangsbuchstaben');
-        expect(steps()[1]).toContain('Nach einer Stufe bei einzelnen Zetteln.');
-        expect(steps()[1]).toContain('Oder oben im Register einen Bereich wählen.');
+        expect(steps()[0]).toContain('Nach einer Zoomstufe bei einzelnen Zetteln.');
+        expect(steps()[0]).toContain('Oder oben im Register einen Bereich wählen.');
 
         cardCatalog.info.drawers = drawers(5, 16);
         cardCatalog.renderGuide();
-        expect(steps()).toHaveLength(2);
-        expect(steps()[1]).toContain('Zettel lesen');
+        expect(steps()).toHaveLength(1);
+        expect(steps()[0]).toContain('Zettel lesen');
     });
 
     test('should end with the steps', function () {
         cardCatalog.renderGuide();
 
-        expect(steps()).toHaveLength(3);
+        expect(steps()).toHaveLength(2);
         expect(cardCatalog.$guide.children().last().is('ol')).toBe(true);
     });
 
@@ -352,15 +346,15 @@ describe('viewerJS.cardCatalog right column', function () {
                 .get();
 
         cardCatalog.renderGuide();
-        expect(marks()).toEqual(['current', '-', '-']);
+        expect(marks()).toEqual(['current', '-']);
 
         cardCatalog.state = { drawer: 'd3', from: null, to: null, card: null, chain: [] };
         cardCatalog.renderGuide();
-        expect(marks()).toEqual(['done', 'current', '-']);
+        expect(marks()).toEqual(['current', '-']);
 
         cardCatalog.state = { drawer: 'd3', from: 1, to: 16, card: 1, chain: [{ from: 1, to: 195 }] };
         cardCatalog.renderGuide();
-        expect(marks()).toEqual(['done', 'done', 'current']);
+        expect(marks()).toEqual(['done', 'current']);
     });
 
     test('should stay empty without a drawer and then show the chosen drawer as the current location', function () {
@@ -403,7 +397,7 @@ describe('viewerJS.cardCatalog right column', function () {
         cardCatalog.renderOrientation();
 
         const $path = cardCatalog.$orientation.find('.archives-cardcatalog__path');
-        expect(pathSteps()).toEqual(['M3 Zettel 1 – 195', 'Stufe 1 Zettel 1 – 100', 'Stufe 2 Zettel 10 – 20']);
+        expect(pathSteps()).toEqual(['M3 Zettel 1 – 195', 'Zoomstufe 1 Zettel 1 – 100', 'Zoomstufe 2 Zettel 10 – 20']);
         $path.find('[data-chain], [aria-current="location"]').each((_, row) => {
             expect(
                 jQuery(row)
@@ -425,7 +419,7 @@ describe('viewerJS.cardCatalog right column', function () {
                 .map((_, link) => link.getAttribute('data-chain'))
                 .get()
         ).toEqual(['-1', '1']);
-        expect($path.find('[aria-current="location"] .archives-cardcatalog__path-label').text()).toBe('Stufe 2');
+        expect($path.find('[aria-current="location"] .archives-cardcatalog__path-label').text()).toBe('Zoomstufe 2');
         expect(
             $path
                 .find('.archives-cardcatalog__path-range .sr-only')
@@ -439,7 +433,7 @@ describe('viewerJS.cardCatalog right column', function () {
         jest.restoreAllMocks();
     });
 
-    test('should fold the middle levels of a deep zoom path and unfold them on request', function () {
+    test('should list every level of a deep zoom path without folding any of them', function () {
         const chain = [
             { from: 1, to: 195 },
             { from: 1, to: 100 },
@@ -454,28 +448,14 @@ describe('viewerJS.cardCatalog right column', function () {
 
         expect(pathSteps()).toEqual([
             'M3 Zettel 1 – 195',
-            'Stufe 1 Zettel 1 – 100',
-            '3 weitere Stufen anzeigen',
-            'hidden:Stufe 2 Zettel 1 – 50',
-            'hidden:Stufe 3 Zettel 1 – 25',
-            'hidden:Stufe 4 Zettel 1 – 12',
-            'Stufe 5 Zettel 1 – 6',
-            'Stufe 6 Zettel 1 – 3',
+            'Zoomstufe 1 Zettel 1 – 100',
+            'Zoomstufe 2 Zettel 1 – 50',
+            'Zoomstufe 3 Zettel 1 – 25',
+            'Zoomstufe 4 Zettel 1 – 12',
+            'Zoomstufe 5 Zettel 1 – 6',
+            'Zoomstufe 6 Zettel 1 – 3',
         ]);
-
-        document.body.appendChild(cardCatalog.$orientation[0]);
-        cardCatalog.$orientation.find('[data-path-more]').trigger('click');
-
-        expect(pathSteps()).toEqual([
-            'M3 Zettel 1 – 195',
-            'Stufe 1 Zettel 1 – 100',
-            'Stufe 2 Zettel 1 – 50',
-            'Stufe 3 Zettel 1 – 25',
-            'Stufe 4 Zettel 1 – 12',
-            'Stufe 5 Zettel 1 – 6',
-            'Stufe 6 Zettel 1 – 3',
-        ]);
-        expect(document.activeElement).toBe(cardCatalog.$orientation.find('[data-chain="2"]')[0]);
+        expect(cardCatalog.$orientation.find('[hidden]')).toHaveLength(0);
     });
 });
 
