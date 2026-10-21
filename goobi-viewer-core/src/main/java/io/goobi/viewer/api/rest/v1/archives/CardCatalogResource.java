@@ -332,20 +332,26 @@ public class CardCatalogResource {
                 .distinct()
                 .toList();
         Map<String, String> backSides = manager.getBackSideFiles(recordPis);
+        if (backSides.isEmpty()) {
+            return;
+        }
+        IIIFUrlHandler iiif;
+        try {
+            iiif = BeanUtils.getImageDeliveryBean().getIiif();
+        } catch (ViewerConfigurationException e) {
+            logger.warn("Could not build back image URLs: {}", e.getMessage());
+            return;
+        }
+        if (iiif == null) {
+            return;
+        }
         for (CardCatalogSection.CardItem item : items) {
             String file = backSides.get(item.getRecordPi());
             if (file != null) {
-                try {
-                    IIIFUrlHandler iiif = BeanUtils.getImageDeliveryBean().getIiif();
-                    if (iiif != null) {
-                        item.setBackThumbnailUrl(iiif.getIIIFImageUrl(file, item.getRecordPi(), "full", "!" + THUMBNAIL_SIZE + "," + THUMBNAIL_SIZE,
-                                "0", "default", "jpg"));
-                        item.setBackImageUrl(iiif.getIIIFImageUrl(file, item.getRecordPi(), "full", "!" + IMAGE_SIZE + "," + IMAGE_SIZE, "0",
-                                "default", "jpg"));
-                    }
-                } catch (ViewerConfigurationException e) {
-                    logger.warn("Could not build back image URL for record '{}': {}", item.getRecordPi(), e.getMessage());
-                }
+                item.setBackThumbnailUrl(
+                        iiif.getIIIFImageUrl(file, item.getRecordPi(), "full", "!" + THUMBNAIL_SIZE + "," + THUMBNAIL_SIZE, "0", "default", "jpg"));
+                item.setBackImageUrl(
+                        iiif.getIIIFImageUrl(file, item.getRecordPi(), "full", "!" + IMAGE_SIZE + "," + IMAGE_SIZE, "0", "default", "jpg"));
             }
         }
     }

@@ -574,3 +574,22 @@ describe('viewerJS.cardCatalog drawer boundaries', function () {
         expect(cardCatalog.$orientation.text()).not.toContain('85');
     });
 });
+
+describe('viewerJS.cardCatalog translation bootstrap', function () {
+    test('should request from the catalog view exactly the bundle keys the modules use', function () {
+        const fs = require('fs');
+        const path = require('path');
+        const source = fs.readFileSync(path.join(__dirname, '../viewerJS.cardCatalog.js'), 'utf8');
+        const view = fs.readFileSync(path.join(__dirname, '../../../../../../includes/archives/archiveCardCatalogView.xhtml'), 'utf8');
+        const keyMaps = source.slice(source.indexOf('var _msgKeys'), source.indexOf('viewer.cardCatalog = {'));
+        const moduleKeys = keyMaps.match(/'[a-z_]+'/g).map((key) => key.slice(1, -1));
+        const requested = view
+            .match(/getTranslations\(\s*\[([^\]]*)\]/)[1]
+            .match(/"[^"]+"/g)
+            .map((key) => key.slice(1, -1));
+
+        expect(new Set(moduleKeys).size).toBe(moduleKeys.length);
+        expect(new Set(requested).size).toBe(requested.length);
+        expect([...requested].sort()).toEqual([...moduleKeys].sort());
+    });
+});
