@@ -399,6 +399,32 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getAltoLayoutTagGroupStyles()
+     * @verifies return configured group styles
+     */
+    @Test
+    void getAltoLayoutTagGroupStyles_shouldReturnConfiguredGroupStyles() {
+        Map<String, AnnotationStyle> styles = DataManager.getInstance().getConfiguration().getAltoLayoutTagGroupStyles();
+        assertEquals(1, styles.size());
+        assertEquals("test-marks", styles.get("test_marks").styleClass());
+        // without @name the key doubles as message key
+        assertEquals("test_marks", styles.get("test_marks").name());
+    }
+
+    /**
+     * @see Configuration#getAltoLayoutTagGroups()
+     * @verifies return configured groups
+     */
+    @Test
+    void getAltoLayoutTagGroups_shouldReturnConfiguredGroups() {
+        Map<String, String> groups = DataManager.getInstance().getConfiguration().getAltoLayoutTagGroups();
+        assertEquals("test_marks", groups.get("gr_unterstrichen"));
+        assertEquals("test_marks", groups.get("gr_durchgestrichen"));
+        assertNull(groups.get("test_angestrichen"));
+        assertNull(groups.get("gr_jacob_grimm"));
+    }
+
+    /**
      * @see Configuration#getHotfolder()
      * @verifies return correct value
      */

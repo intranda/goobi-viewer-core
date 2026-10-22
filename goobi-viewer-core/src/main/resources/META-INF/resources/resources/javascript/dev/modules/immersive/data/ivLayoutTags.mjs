@@ -37,10 +37,11 @@ export function formatMessage(template, ...values) {
 /**
  * Normalizes the layout-tag index endpoint response: tags without a label are
  * dropped, pages become ascending, duplicate-free finite integers, missing
- * names fall back to the label. Pure + tested.
+ * names fall back to the label, a missing group name to the group key.
+ * Pure + tested.
  *
  * @param {object} json  the /layout/tags/index response
- * @returns {{pi:string, pageCount:number, tags:{label:string, name:string, styleClass:string, pages:number[]}[]}}
+ * @returns {{pi:string, pageCount:number, tags:{label:string, name:string, styleClass:string, type:string, group:string, groupName:string, groupStyleClass:string, pages:number[]}[]}}
  */
 export function parseLayoutTagIndex(json) {
     const src = json && typeof json === 'object' ? json : {};
@@ -48,11 +49,15 @@ export function parseLayoutTagIndex(json) {
         .filter((t) => t && typeof t.label === 'string' && t.label.length > 0)
         .map((t) => {
             const pages = Array.from(new Set((Array.isArray(t.pages) ? t.pages : []).map(Number).filter((p) => Number.isInteger(p) && p >= 1))).sort((a, b) => a - b);
+            const group = typeof t.group === 'string' ? t.group : '';
             return {
                 label: t.label,
                 name: typeof t.name === 'string' && t.name ? t.name : t.label,
                 styleClass: typeof t.styleClass === 'string' ? t.styleClass : '',
                 type: typeof t.type === 'string' ? t.type : '',
+                group,
+                groupName: group && typeof t.groupName === 'string' && t.groupName ? t.groupName : group,
+                groupStyleClass: group && typeof t.groupStyleClass === 'string' ? t.groupStyleClass : '',
                 pages,
             };
         });
@@ -142,7 +147,8 @@ export function hitPages(tags, from, to) {
 }
 
 /**
- * One entry per page and tag, ordered by page, then by the given tag order.
+ * One entry per page and tag, ordered by page, then by the given tag order —
+ * a grouped tag keeps its own entries, the group only eases the selection.
  * `occurrencesOf(page, label)` returns the loaded occurrences or undefined
  * while the page detail is still pending. Pure + tested.
  *
@@ -213,22 +219,54 @@ export function clampRange(from, to, pageCount) {
 }
 
 /**
- * Tags shown in the pick menu: those with pages in the range or already
- * selected, narrowed by the free-text filter (name or label, case-insensitive);
- * selected tags always stay visible. Pure + tested.
+ * Pick-menu items in index order: tags sharing a configured group fold into one
+ * item at the position of their first member, every other tag is an item of its
+ * own. An item's pages are the union of its tags' pages; its style class is the
+ * group's own configured class (never a member's), or the tag's. Pure + tested.
  *
- * @param {{label:string, name:string, pages:number[]}[]} tags
+ * @param {{label:string, name:string, styleClass?:string, group?:string, groupName?:string, groupStyleClass?:string, pages:number[]}[]} tags
+ * @returns {{key:string, name:string, styleClass:string, labels:string[], tags:Array, pages:number[]}[]}
+ */
+export function groupItems(tags) {
+    const items = [];
+    const byGroup = new Map();
+    (tags || []).forEach((tag) => {
+        if (!tag.group) {
+            items.push({ key: tag.label, name: tag.name, styleClass: tag.styleClass || '', labels: [tag.label], tags: [tag], pages: tag.pages });
+            return;
+        }
+        let item = byGroup.get(tag.group);
+        if (!item) {
+            item = { key: tag.group, name: tag.groupName || tag.group, styleClass: '', labels: [], tags: [], pages: [] };
+            byGroup.set(tag.group, item);
+            items.push(item);
+        }
+        if (!item.styleClass && tag.groupStyleClass) item.styleClass = tag.groupStyleClass;
+        item.labels.push(tag.label);
+        item.tags.push(tag);
+        item.pages = hitPages(item.tags, 1, Number.MAX_SAFE_INTEGER);
+    });
+    return items;
+}
+
+/**
+ * Items shown in the pick menu: those with pages in the range or a selected
+ * tag, narrowed by the free-text filter (item name, tag names or labels,
+ * case-insensitive); items with a selected tag always stay visible.
+ * Pure + tested.
+ *
+ * @param {ReturnType<typeof groupItems>} items
  * @param {{selected:Set<string>, filter:string, from:number, to:number}} opts
  * @returns {Array}
  */
-export function filterTags(tags, { selected, filter, from, to }) {
+export function filterItems(items, { selected, filter, from, to }) {
     const f = String(filter || '')
         .trim()
         .toLowerCase();
-    return tags.filter((t) => {
-        if (selected.has(t.label)) return true;
-        if (!tagPages(t, from, to).length) return false;
-        return !f || t.name.toLowerCase().includes(f) || t.label.toLowerCase().includes(f);
+    return items.filter((item) => {
+        if (item.labels.some((label) => selected.has(label))) return true;
+        if (!tagPages(item, from, to).length) return false;
+        return !f || item.name.toLowerCase().includes(f) || item.tags.some((t) => t.name.toLowerCase().includes(f) || t.label.toLowerCase().includes(f));
     });
 }
 

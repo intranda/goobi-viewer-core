@@ -68,14 +68,19 @@ export function createHitList({ state, labels, mount, panel, sticky, progress, o
             const item = el('li');
             const btn = el('button', 'immersive__layout-tags-hit');
             btn.type = 'button';
-            btn.classList.add(...state.styleTokens(entry.label));
+            const tokens = state.styleTokens(entry.label);
+            btn.classList.add(...tokens);
             btn.dataset.spotIndex = String(i);
             btn.dataset.spotKey = entryKey(entry);
             btn.dataset.pageNo = String(entry.page);
             btn.dataset.tagLabel = entry.label;
-            const dot = el('span', 'immersive__layout-tags-dot');
-            dot.setAttribute('aria-hidden', 'true');
-            btn.append(dot, el('span', 'immersive__layout-tags-hit-name', state.displayName(entry.label)), el('span', 'immersive__layout-tags-hit-count'));
+            // a colour dot only for tags with a configured style class
+            if (tokens.length) {
+                const dot = el('span', 'immersive__layout-tags-dot');
+                dot.setAttribute('aria-hidden', 'true');
+                btn.append(dot);
+            }
+            btn.append(el('span', 'immersive__layout-tags-hit-name', state.displayName(entry.label)), el('span', 'immersive__layout-tags-hit-count'));
             btn.addEventListener('click', () => onActivate(i));
             item.append(btn);
             typeList.append(item);

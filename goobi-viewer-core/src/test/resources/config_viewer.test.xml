@@ -51,10 +51,11 @@
 
 	<!-- altoLayoutTags: maps ALTO <LayoutTag> labels to fulltext markup (test values differ from code defaults) -->
 	<altoLayoutTags printedLabel="gr_printed_test">
-		<wordTag label="gr_unterstrichen" styleClass="test-underline" type="underline" />
+		<group key="test_marks" styleClass="test-marks" />
+		<wordTag label="gr_unterstrichen" styleClass="test-underline" type="underline" group="test_marks" />
 		<annotationTag label="gr_jacob_grimm" styleClass="test-jacob" name="Jacob (test)" />
 		<annotationTag label="gr_wilhelm_grimm_test" styleClass="test-wilhelm" />
-		<wordTag label="gr_durchgestrichen" styleClass="test-strike" type="strikethrough" />
+		<wordTag label="gr_durchgestrichen" styleClass="test-strike" type="strikethrough" group="test_marks" />
 		<wordTag label="test_angestrichen" type="mark" />
 	</altoLayoutTags>
 	<!-- teiFolder: contains TEI metadata/fulltext files -->

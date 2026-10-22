@@ -1,7 +1,7 @@
-/** Layout-tag pick menu: multi-select rows with optional filter; the trigger shows the selection as text and colour dots. */
+/** Layout-tag pick menu: multi-select rows (one per tag or configured group) with optional filter; the trigger shows the selection as text and colour dots. */
 
 import { formatMessage } from '../../data/ivLayoutTags.mjs';
-import { styleClassTokens, el } from '../../shared/ivDom.mjs';
+import { el } from '../../shared/ivDom.mjs';
 import { createDisposer } from '../../shared/ivLifecycle.mjs';
 import { KEY_PRIORITY } from '../../shared/ivKeys.mjs';
 
@@ -19,7 +19,7 @@ const TRIGGER_DOTS = 4;
  * @param {HTMLElement|null} opts.filterWrap
  * @param {HTMLInputElement|null} opts.filterInput
  * @param {{register: Function}} opts.keys
- * @param {(label: string) => void} opts.onToggle
+ * @param {(key: string) => void} opts.onToggle  called with the pick item's key (a tag label or a group key)
  * @returns {{build: Function, sync: Function, close: Function, setFilterVisible: Function, destroy: Function}}
  */
 export function setupPickMenu({ state, labels, trigger, menu, list, dots, text, filterWrap, filterInput, keys, onToggle }) {
@@ -48,57 +48,63 @@ export function setupPickMenu({ state, labels, trigger, menu, list, dots, text, 
 
     const syncRows = () => {
         list.querySelectorAll('.immersive__layout-tags-pick-row').forEach((row) => {
-            const tag = state.tagByLabel(row.dataset.tagLabel);
-            if (!tag) return;
-            const inRange = state.inRangeCount(tag);
-            const selected = state.selected.has(tag.label);
+            const item = state.itemByKey(row.dataset.itemKey);
+            if (!item) return;
+            const inRange = state.inRangeCount(item);
+            const selection = state.itemSelection(item.key);
             const cb = row.querySelector('input');
             const count = row.querySelector('.immersive__layout-tags-pick-count');
             row.classList.toggle('-empty', !inRange);
-            cb.checked = selected;
-            cb.disabled = !inRange && !selected;
+            cb.checked = selection === 'all';
+            cb.indeterminate = selection === 'some';
+            cb.disabled = !inRange && selection === 'none';
             if (count) count.textContent = String(inRange);
         });
     };
 
     const build = () => {
         list.replaceChildren();
-        const tags = state.visibleTags();
-        if (!tags.length) {
+        const items = state.visibleItems();
+        if (!items.length) {
             list.append(el('p', 'immersive__layout-tags-pick-none', labels.labelFilterNone || ''));
             return;
         }
-        tags.forEach((tag, i) => {
+        items.forEach((item, i) => {
             const row = el('div', 'immersive__layout-tags-pick-row');
-            row.classList.add(...state.styleTokens(tag.label));
-            row.dataset.tagLabel = tag.label;
+            const tokens = state.styleTokens(item.key);
+            row.classList.add(...tokens);
+            row.dataset.itemKey = item.key;
             const id = `immersiveLayoutTagsPick-${i}`;
             const cb = el('input', 'immersive__layout-tags-pick-checkbox');
             cb.type = 'checkbox';
             cb.id = id;
-            cb.addEventListener('change', () => onToggle(tag.label));
+            cb.addEventListener('change', () => onToggle(item.key));
             const label = el('label', 'immersive__layout-tags-pick-label');
             label.htmlFor = id;
-            label.title = tag.label;
-            const dot = el('span', 'immersive__layout-tags-dot');
-            dot.setAttribute('aria-hidden', 'true');
-            label.append(dot, el('span', 'immersive__layout-tags-pick-name', tag.name));
-            row.append(cb, label, el('span', 'immersive__layout-tags-pick-count', String(state.inRangeCount(tag))));
+            label.title = item.labels.join(', ');
+            // a colour dot only for entries with a configured style class
+            if (tokens.length) {
+                const dot = el('span', 'immersive__layout-tags-dot');
+                dot.setAttribute('aria-hidden', 'true');
+                label.append(dot);
+            }
+            label.append(el('span', 'immersive__layout-tags-pick-name', item.name));
+            row.append(cb, label, el('span', 'immersive__layout-tags-pick-count', String(state.inRangeCount(item))));
             list.append(row);
         });
         syncRows();
     };
 
     const sync = () => {
-        const chosen = state.selectedTags();
+        const chosen = state.selectedItems();
         if (dots) {
             dots.replaceChildren();
             chosen
-                .filter((tag) => styleClassTokens(tag.styleClass).length)
+                .filter((item) => state.styleTokens(item.key).length)
                 .slice(0, TRIGGER_DOTS)
-                .forEach((tag) => {
+                .forEach((item) => {
                     const dot = el('span', 'immersive__layout-tags-dot');
-                    dot.classList.add(...styleClassTokens(tag.styleClass));
+                    dot.classList.add(...state.styleTokens(item.key));
                     dots.append(dot);
                 });
         }

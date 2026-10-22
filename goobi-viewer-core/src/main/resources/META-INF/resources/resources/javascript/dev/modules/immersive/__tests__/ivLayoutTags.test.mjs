@@ -15,7 +15,8 @@ import {
     entryKey,
     cursorIndex,
     clampRange,
-    filterTags,
+    groupItems,
+    filterItems,
     visiblePages,
     batchRanges,
     loadLayoutTagIndex,
@@ -47,18 +48,24 @@ describe('typeClassOf', () => {
 });
 
 describe('parseLayoutTagIndex', () => {
-    test('normalizes tags: label required, name falls back to label, pages ascending and unique', () => {
+    test('normalizes tags: label required, name falls back to label, group name to the group key, pages ascending and unique', () => {
         const parsed = parseLayoutTagIndex({
             pi: 'PI',
             pageCount: 10,
-            tags: [{ label: 'a', pages: [5, 3, 3, '4', 0] }, { name: 'no label' }, { label: 'b', name: 'B', styleClass: 'x', type: 'underline', pages: [] }],
+            tags: [
+                { label: 'a', pages: [5, 3, 3, '4', 0] },
+                { name: 'no label' },
+                { label: 'b', name: 'B', styleClass: 'x', type: 'underline', group: 'g', groupName: 'Group', groupStyleClass: 'gs', pages: [] },
+                { label: 'c', name: 'C', group: 'g', groupName: '', pages: [1] },
+            ],
         });
         expect(parsed).toEqual({
             pi: 'PI',
             pageCount: 10,
             tags: [
-                { label: 'a', name: 'a', styleClass: '', type: '', pages: [3, 4, 5] },
-                { label: 'b', name: 'B', styleClass: 'x', type: 'underline', pages: [] },
+                { label: 'a', name: 'a', styleClass: '', type: '', group: '', groupName: '', groupStyleClass: '', pages: [3, 4, 5] },
+                { label: 'b', name: 'B', styleClass: 'x', type: 'underline', group: 'g', groupName: 'Group', groupStyleClass: 'gs', pages: [] },
+                { label: 'c', name: 'C', styleClass: '', type: '', group: 'g', groupName: 'g', groupStyleClass: '', pages: [1] },
             ],
         });
     });
@@ -146,6 +153,21 @@ describe('range and hit derivation', () => {
         ]);
     });
 
+    test("groupItems folds grouped tags into one item at the first member with the union of their pages and the group's own style class", () => {
+        const items = groupItems([
+            { ...TAGS[0], group: 'marks', groupName: 'Marks', groupStyleClass: 'alto-tag-color-7' },
+            TAGS[1],
+            { ...TAGS[2], group: 'marks', groupName: 'Marks', groupStyleClass: 'alto-tag-color-7' },
+        ]);
+        expect(items.map((i) => [i.key, i.name, i.styleClass, i.labels, i.pages])).toEqual([
+            ['marks', 'Marks', 'alto-tag-color-7', ['gr_unterstrichen', 'gr_andere_linie'], [7, 8, 25, 49, 300]],
+            ['gr_jacob_grimm', 'Jacob Grimm', 'alto-annotation--jacob-grimm', ['gr_jacob_grimm'], [8, 49, 200]],
+        ]);
+        // a group without its own class stays uncoloured even when a member has one
+        const plain = groupItems([{ ...TAGS[1], group: 'marks' }])[0];
+        expect([plain.name, plain.styleClass]).toEqual(['marks', '']);
+    });
+
     test('cursorIndex resolves the exact key, then the page, then the first entry', () => {
         const entries = flatEntries(TAGS, 1, 626, () => undefined);
         expect(entryKey(entries[2])).toBe('8#gr_jacob_grimm');
@@ -163,11 +185,13 @@ describe('range and hit derivation', () => {
         expect(clampRange('abc', 12.4, 626)).toEqual({ from: 1, to: 12 });
     });
 
-    test('filterTags keeps selected tags visible, drops out-of-range tags and applies the text filter', () => {
+    test('filterItems keeps items with a selected tag visible, drops out-of-range items and matches the text filter against item and tag names', () => {
+        const items = groupItems([TAGS[0], TAGS[1], { ...TAGS[2], group: 'marks', groupName: 'Marks' }]);
         const selected = new Set(['gr_andere_linie']);
-        expect(filterTags(TAGS, { selected, filter: '', from: 1, to: 100 }).map((t) => t.label)).toEqual(['gr_unterstrichen', 'gr_jacob_grimm', 'gr_andere_linie']);
-        expect(filterTags(TAGS, { selected, filter: 'jacob', from: 1, to: 626 }).map((t) => t.label)).toEqual(['gr_jacob_grimm', 'gr_andere_linie']);
-        expect(filterTags(TAGS, { selected: new Set(), filter: 'GR_UNTER', from: 1, to: 626 }).map((t) => t.label)).toEqual(['gr_unterstrichen']);
+        expect(filterItems(items, { selected, filter: '', from: 1, to: 100 }).map((i) => i.key)).toEqual(['gr_unterstrichen', 'gr_jacob_grimm', 'marks']);
+        expect(filterItems(items, { selected, filter: 'jacob', from: 1, to: 626 }).map((i) => i.key)).toEqual(['gr_jacob_grimm', 'marks']);
+        expect(filterItems(items, { selected: new Set(), filter: 'GR_UNTER', from: 1, to: 626 }).map((i) => i.key)).toEqual(['gr_unterstrichen']);
+        expect(filterItems(items, { selected: new Set(), filter: 'linie', from: 1, to: 626 }).map((i) => i.key)).toEqual(['marks']);
     });
 });
 

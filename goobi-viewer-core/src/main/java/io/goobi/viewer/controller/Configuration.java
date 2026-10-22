@@ -2119,6 +2119,54 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * Display groups of ALTO layout tags declared as {@code <group key="…" styleClass="…" name="…"/>} inside {@code <altoLayoutTags>}: the
+     * style class colours the group's entry in the immersive view's layout-tag panel (without one the entry shows no colour dot), the
+     * optional name names a message key or literal for the display name (default: the key itself).
+     *
+     * @return an ordered map of group key to {@link AnnotationStyle}; empty if no group is declared
+     * @should return configured group styles
+     */
+    public Map<String, AnnotationStyle> getAltoLayoutTagGroupStyles() {
+        Map<String, AnnotationStyle> ret = new LinkedHashMap<>();
+        List<HierarchicalConfiguration<ImmutableNode>> groups = getLocalConfigurationsAt("altoLayoutTags.group");
+        if (groups != null) {
+            for (HierarchicalConfiguration<ImmutableNode> group : groups) {
+                String key = group.getString("[@key]");
+                if (StringUtils.isNotEmpty(key)) {
+                    ret.put(key, new AnnotationStyle(group.getString("[@styleClass]"), group.getString("[@name]", key)));
+                }
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * Mapping of ALTO layout-tag LABEL (word and annotation tags alike) to the key of the display group it belongs to. The immersive view's
+     * layout-tag panel offers the tags of a group as one entry whose checkbox selects them all; the hit list keeps one row per tag. The key
+     * doubles as message key of the group's display name unless a {@code <group>} declares another (see {@link #getAltoLayoutTagGroupStyles()}).
+     *
+     * @return an ordered map of label to group key; empty if no tag declares a group
+     * @should return configured groups
+     */
+    public Map<String, String> getAltoLayoutTagGroups() {
+        Map<String, String> ret = new LinkedHashMap<>();
+        for (String path : List.of("altoLayoutTags.wordTag", "altoLayoutTags.annotationTag")) {
+            List<HierarchicalConfiguration<ImmutableNode>> tags = getLocalConfigurationsAt(path);
+            if (tags == null) {
+                continue;
+            }
+            for (HierarchicalConfiguration<ImmutableNode> tag : tags) {
+                String label = tag.getString("[@label]");
+                String group = tag.getString("[@group]");
+                if (StringUtils.isNotEmpty(label) && StringUtils.isNotEmpty(group)) {
+                    ret.put(label, group);
+                }
+            }
+        }
+        return ret;
+    }
+
+    /**
      * Mapping of ALTO handwriting-author layout-tag LABEL to its {@link AnnotationStyle} (CSS class + display name), used to style and label
      * handwritten annotation blocks in the fulltext view. Without a configured name the label itself serves as display name, so it doubles as message
      * key.

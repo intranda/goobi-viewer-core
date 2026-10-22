@@ -61,7 +61,7 @@ import jakarta.servlet.http.HttpServletRequest;
  * configured printed-text label is dropped (it anchors margin detection and marks nothing), display names are resolved
  * server-side in the order configured annotation-tag name → translated word-tag type → translated raw label. The tag
  * order follows the configuration, so it stays the same across records; labels the ALTO carries but the configuration
- * does not declare come last.
+ * does not declare come last. Tags sharing a configured display group carry the group's key and translated name.
  */
 public class LayoutTagIndexBuilder {
 
@@ -72,6 +72,10 @@ public class LayoutTagIndexBuilder {
     private final Map<String, AnnotationStyle> annotationTags;
     private final Map<String, String> wordTagTypes;
     private final Map<String, String> wordTagStyleClasses;
+    /** LABEL → key of the configured display group. */
+    private final Map<String, String> tagGroups;
+    /** Group key → its configured style class and translated name. */
+    private final Map<String, AnnotationStyle> groupStyles;
     /** LABEL → position in the configuration, in the order the tags are declared. */
     private final Map<String, Integer> configuredOrder;
     private final Locale locale;
@@ -85,6 +89,8 @@ public class LayoutTagIndexBuilder {
         this.annotationTags = ALTOTools.translateAnnotationTagNames(config.getAltoLayoutAnnotationTags(), locale);
         this.wordTagTypes = config.getAltoLayoutWordTagTypes();
         this.wordTagStyleClasses = config.getAltoLayoutWordTags();
+        this.tagGroups = config.getAltoLayoutTagGroups();
+        this.groupStyles = ALTOTools.translateAnnotationTagNames(config.getAltoLayoutTagGroupStyles(), locale);
         this.configuredOrder = new HashMap<>();
         for (String label : config.getAltoLayoutTagOrder()) {
             configuredOrder.putIfAbsent(label, configuredOrder.size());
@@ -141,6 +147,7 @@ public class LayoutTagIndexBuilder {
      * @should resolve display names in configured order
      * @should deliver style classes for all configured tags
      * @should deliver word tag types
+     * @should deliver group keys names and style classes
      * @should skip documents without order
      */
     public LayoutTagIndex build(String pi, int pageCount, SolrDocumentList pageDocs) {
@@ -165,8 +172,16 @@ public class LayoutTagIndexBuilder {
         List<LayoutTagIndex.Tag> tags = new ArrayList<>(pagesByLabel.size());
         for (Map.Entry<String, SortedSet<Integer>> entry : pagesByLabel.entrySet()) {
             String label = entry.getKey();
-            tags.add(new LayoutTagIndex.Tag(label, displayName(label), styleClass(label), wordTagTypes.get(label),
-                    new ArrayList<>(entry.getValue())));
+            String group = tagGroups.get(label);
+            AnnotationStyle groupStyle = group != null ? groupStyles.get(group) : null;
+            String groupName = null;
+            if (group != null) {
+                groupName = groupStyle != null && StringUtils.isNotBlank(groupStyle.name()) ? groupStyle.name()
+                        : ViewerResourceBundle.getTranslation(group, locale);
+            }
+            String groupStyleClass = groupStyle != null && StringUtils.isNotBlank(groupStyle.styleClass()) ? groupStyle.styleClass() : null;
+            tags.add(new LayoutTagIndex.Tag(label, displayName(label), styleClass(label), wordTagTypes.get(label), group, groupName,
+                    groupStyleClass, new ArrayList<>(entry.getValue())));
         }
         tags.sort(Comparator.comparingInt((LayoutTagIndex.Tag t) -> configuredOrder.getOrDefault(t.getLabel(), Integer.MAX_VALUE))
                 .thenComparing(Comparator.comparingInt((LayoutTagIndex.Tag t) -> t.getPages().size()).reversed())

@@ -25,10 +25,10 @@ const DETAILS = {
     49: { gr_jacob_grimm: ['0,0,0,0'] },
 };
 
-function detailsResponse(start, end) {
+function detailsResponse(start, end, details = DETAILS) {
     const pages = [];
     for (let p = start; p <= end; p++) {
-        const tags = Object.entries(DETAILS[p] || {}).map(([value, boxes]) => ({
+        const tags = Object.entries(details[p] || {}).map(([value, boxes]) => ({
             value,
             references: boxes.map((coordinates, i) => ({
                 id: `${p}-${i}`,
@@ -44,15 +44,15 @@ function detailsResponse(start, end) {
     return { pi: 'PI', pages };
 }
 
-function installFetch({ failIndex = false } = {}) {
+function installFetch({ failIndex = false, index = INDEX, details = DETAILS } = {}) {
     const calls = [];
     global.fetch = jest.fn((url) => {
         calls.push(url);
         if (url.includes('/layout/tags/index')) {
-            return failIndex ? Promise.resolve({ ok: false, status: 500 }) : Promise.resolve({ ok: true, json: () => Promise.resolve(INDEX) });
+            return failIndex ? Promise.resolve({ ok: false, status: 500 }) : Promise.resolve({ ok: true, json: () => Promise.resolve(index) });
         }
         const m = url.match(/start=(\d+)&end=(\d+)/);
-        return Promise.resolve({ ok: true, json: () => Promise.resolve(detailsResponse(Number(m[1]), Number(m[2]))) });
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(detailsResponse(Number(m[1]), Number(m[2]), details)) });
     });
     return calls;
 }
@@ -135,7 +135,7 @@ async function openPanel(panel) {
 }
 
 const hits = () => Array.from(document.querySelectorAll('.immersive__layout-tags-hit'));
-const checkbox = (label) => document.querySelector(`.immersive__layout-tags-pick-row[data-tag-label="${label}"] input`);
+const checkbox = (key) => document.querySelector(`.immersive__layout-tags-pick-row[data-item-key="${key}"] input`);
 
 describe('setupLayoutTagsPanel', () => {
     let rectSpy;
@@ -194,6 +194,60 @@ describe('setupLayoutTagsPanel', () => {
         expect(document.querySelector('[data-immersive-layout-tags="pick-text"]').textContent).toBe('Unterstreichungen');
     });
 
+    test('a configured group is one checkbox that selects all its tags, while the list keeps one row per tag and page', async () => {
+        const index = {
+            ...INDEX,
+            tags: [
+                { ...INDEX.tags[0], group: 'gr_marks', groupName: 'Arbeitsspuren', groupStyleClass: 'alto-tag-color-7' },
+                INDEX.tags[1],
+                { label: 'gr_andere_linie', name: 'Andere Linien', type: 'mark', group: 'gr_marks', groupName: 'Arbeitsspuren', groupStyleClass: 'alto-tag-color-7', pages: [8] },
+            ],
+        };
+        const details = { ...DETAILS, 8: { ...DETAILS[8], gr_andere_linie: ['10,50,50,60'] } };
+        installFetch({ index, details });
+        const panel = mountMarkup();
+        const viewer = fakeViewer([7]);
+        setupLayoutTagsPanel(viewer, 'PI', '/api', fakePanels(), createKeyDispatcher());
+        await openPanel(panel);
+
+        expect(document.querySelectorAll('.immersive__layout-tags-pick-row')).toHaveLength(2);
+        const row = document.querySelector('.immersive__layout-tags-pick-row[data-item-key="gr_marks"]');
+        expect(row.querySelector('.immersive__layout-tags-pick-name').textContent).toBe('Arbeitsspuren');
+        expect(row.querySelector('.immersive__layout-tags-pick-count').textContent).toBe('5');
+        // the group's entry carries its own configured colour, its tags' rows none
+        expect(row.classList.contains('alto-tag-color-7')).toBe(true);
+        expect(row.querySelector('.immersive__layout-tags-dot')).not.toBeNull();
+        checkbox('gr_marks').click();
+        await flush();
+
+        expect(checkbox('gr_marks').checked).toBe(true);
+        expect(hits().map((b) => [b.dataset.pageNo, b.dataset.tagLabel])).toEqual([
+            ['7', 'gr_unterstrichen'],
+            ['8', 'gr_unterstrichen'],
+            ['8', 'gr_andere_linie'],
+            ['25', 'gr_unterstrichen'],
+            ['49', 'gr_unterstrichen'],
+            ['300', 'gr_unterstrichen'],
+        ]);
+        const [underlines, lines] = hits().filter((b) => b.dataset.pageNo === '8');
+        expect(underlines.querySelector('.immersive__layout-tags-dot')).toBeNull();
+        expect(lines.querySelector('.immersive__layout-tags-dot')).toBeNull();
+        expect(underlines.querySelector('.immersive__layout-tags-hit-count').textContent).toBe('(2)');
+        // the trigger shows the group's own dot
+        expect(Array.from(document.querySelectorAll('[data-immersive-layout-tags="pick-dots"] .immersive__layout-tags-dot')).map((d) => d.className)).toEqual([
+            'immersive__layout-tags-dot alto-tag-color-7',
+        ]);
+        expect(underlines.getAttribute('aria-label')).toBe('Unterstreichungen, Seite 8, 2 Stellen');
+        expect(lines.querySelector('.immersive__layout-tags-hit-name').textContent).toBe('Andere Linien');
+        expect(document.querySelector('[data-immersive-layout-tags="pick-text"]').textContent).toBe('Arbeitsspuren');
+        // the cursor sits on the first row of the open page 8: only that tag's occurrences are highlighted
+        const highlighted = viewer.setHighlights.mock.calls.at(-1)[0];
+        expect(highlighted.map((r) => r.className)).toEqual(['-type-underline -stroke', '-type-underline -stroke']);
+        // unticking the group clears all of its tags
+        checkbox('gr_marks').click();
+        expect(hits()).toHaveLength(0);
+    });
+
     test('the cursor prefers the open page; a hit on another page navigates, on the open page it highlights all occurrences', async () => {
         installFetch();
         const panel = mountMarkup();
@@ -223,10 +277,17 @@ describe('setupLayoutTagsPanel', () => {
                 .find((b) => b.dataset.spotKey === '8#gr_jacob_grimm')
                 .classList.contains('alto-annotation--jacob-grimm')
         ).toBe(true);
-        // only a tag with a configured colour gets a dot; a word tag is identified by its name alone
+        // only a tag with a configured colour gets a dot, in the trigger as in its rows; a word tag is identified by its name alone
         const dots = Array.from(document.querySelectorAll('[data-immersive-layout-tags="pick-dots"] .immersive__layout-tags-dot'));
         expect(dots.map((d) => d.className)).toEqual(['immersive__layout-tags-dot alto-annotation--jacob-grimm']);
-        expect(hits().find((b) => b.dataset.spotKey === '8#gr_unterstrichen').className).toBe('immersive__layout-tags-hit');
+        const underlineRow = hits().find((b) => b.dataset.spotKey === '8#gr_unterstrichen');
+        expect(underlineRow.className).toBe('immersive__layout-tags-hit');
+        expect(underlineRow.querySelector('.immersive__layout-tags-dot')).toBeNull();
+        expect(
+            hits()
+                .find((b) => b.dataset.spotKey === '8#gr_jacob_grimm')
+                .querySelector('.immersive__layout-tags-dot')
+        ).not.toBeNull();
 
         hits()
             .find((b) => b.dataset.spotKey === '49#gr_unterstrichen')

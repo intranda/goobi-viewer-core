@@ -36,8 +36,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ "pi", "pageCount", "tags" })
 public class LayoutTagIndex {
 
-    /** One layout tag with its resolved display name and the ascending list of page orders it occurs on. */
-    @JsonPropertyOrder({ "label", "name", "styleClass", "pages" })
+    /**
+     * One layout tag with its resolved display name and the ascending list of page orders it occurs on. Tags sharing a configured display
+     * group carry the group's key and resolved name, so the panel can fold them into one entry.
+     */
+    @JsonPropertyOrder({ "label", "name", "styleClass", "type", "group", "groupName", "groupStyleClass", "pages" })
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class Tag {
 
@@ -45,6 +48,9 @@ public class LayoutTagIndex {
         private final String name;
         private final String styleClass;
         private final String type;
+        private final String group;
+        private final String groupName;
+        private final String groupStyleClass;
         private final List<Integer> pages;
 
         /**
@@ -52,13 +58,20 @@ public class LayoutTagIndex {
          * @param name resolved display name
          * @param styleClass configured CSS class of the tag, or null for tags without one
          * @param type semantic type of a word tag (underline/strikethrough/mark), or null for other tags
+         * @param group key of the configured display group, or null for tags outside any group
+         * @param groupName resolved display name of the group, or null without a group
+         * @param groupStyleClass configured CSS class of the group, or null without one
          * @param pages ascending, duplicate-free page orders carrying the tag
          */
-        public Tag(String label, String name, String styleClass, String type, List<Integer> pages) {
+        public Tag(String label, String name, String styleClass, String type, String group, String groupName, String groupStyleClass,
+                List<Integer> pages) {
             this.label = label;
             this.name = name;
             this.styleClass = styleClass;
             this.type = type;
+            this.group = group;
+            this.groupName = groupName;
+            this.groupStyleClass = groupStyleClass;
             this.pages = pages != null ? pages : new ArrayList<>();
         }
 
@@ -76,6 +89,18 @@ public class LayoutTagIndex {
 
         public String getType() {
             return type;
+        }
+
+        public String getGroup() {
+            return group;
+        }
+
+        public String getGroupName() {
+            return groupName;
+        }
+
+        public String getGroupStyleClass() {
+            return groupStyleClass;
         }
 
         public List<Integer> getPages() {

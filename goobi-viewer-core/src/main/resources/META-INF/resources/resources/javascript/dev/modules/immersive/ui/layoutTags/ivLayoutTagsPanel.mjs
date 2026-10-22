@@ -22,11 +22,13 @@ const STROKE_CLASS = '-stroke';
 
 /**
  * Wires the layout-tag panel: the record-wide index is fetched once (on the
- * first open) and drives a multi-select pick menu, a page-range row and a hit
- * list grouped by page. Page details (occurrence counts and rects) are loaded
- * only for the rows in view, in small page-range batches. Activating a hit
- * opens the page and highlights every occurrence of that tag on it; the
- * highlights are redrawn on page change and cleared when the panel closes.
+ * first open) and drives a multi-select pick menu (one entry per tag, or per
+ * configured group of tags that are selected together), a page-range row and
+ * a hit list grouped by page with one row per tag. Page details (occurrence
+ * counts and rects) are loaded only for the rows in view, in small page-range
+ * batches. Activating a hit opens the page and highlights every occurrence of
+ * that tag on it; the highlights are redrawn on page change and cleared when
+ * the panel closes.
  *
  * @param {IvViewer} viewer
  * @param {string} pi
@@ -69,7 +71,7 @@ export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
         filterWrap,
         filterInput: filterWrap && filterWrap.querySelector('input'),
         keys,
-        onToggle: (label) => toggleTag(label),
+        onToggle: (key) => toggleItem(key),
     });
     bag.add(() => pick.destroy());
     const hits = createHitList({ state, labels, mount: hitsMount, panel, sticky, progress: q('[data-immersive-layout-tags="progress"]'), onActivate: (i) => goToEntry(i) });
@@ -172,8 +174,8 @@ export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
         pumpVisible();
         renderHighlights();
     };
-    const toggleTag = (label) => {
-        state.toggleTag(label, currentPages());
+    const toggleItem = (key) => {
+        state.toggleItem(key, currentPages());
         refresh(true);
     };
     const goToEntry = (i) => {

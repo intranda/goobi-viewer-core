@@ -63,11 +63,7 @@
                 borderColor: styles['borderTopColor'],
                 fillColor: styles['background-color'],
             });
-            let activeStyles = viewerJS.helper.getCss('page-area focus', [
-                'borderTopColor',
-                'borderTopWidth',
-                'background-color',
-            ]);
+            let activeStyles = viewerJS.helper.getCss('page-area focus', ['borderTopColor', 'borderTopWidth', 'background-color']);
             ({
                 borderWidth: parseInt(activeStyles['borderTopWidth']),
                 borderColor: activeStyles['borderTopColor'],
@@ -125,12 +121,12 @@
             window.history.replaceState(null, '', url.toString());
         }
 
-        drawActiveAreas(activeAreas, imageView) { 
+        drawActiveAreas(activeAreas, imageView) {
             let areasOnCanvas = [];
             activeAreas.forEach((activeArea, index) => {
                 const area = this.drawArea(activeArea, index, imageView);
                 areasOnCanvas.push(area?.overlay?.bounds);
-    			console.log("add active area ", area, areasOnCanvas);
+                console.log('add active area ', area, areasOnCanvas);
                 let scrollPosition = window.sessionStorage.getItem('scrollPosition');
                 $(document).scrollTop(parseInt(scrollPosition));
                 window.sessionStorage.removeItem('scrollPosition');
@@ -166,9 +162,9 @@
         }
 
         drawArea(area, shapeIndex, image, clickToLeave) {
-    		let imageRect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
-    		let areaSourceId = image.getTileSourceFromOrder(area.pageNo)?.id;
-    		let rect = image.viewer.getViewportCoordinates(imageRect, areaSourceId);
+            let imageRect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
+            let areaSourceId = image.getTileSourceFromOrder(area.pageNo)?.id;
+            let rect = image.viewer.getViewportCoordinates(imageRect, areaSourceId);
             let $area = $('#pageAreaFrame_' + area.logId + '_' + shapeIndex);
             let $label = $('#pageAreaLabel_' + area.logId + '_' + shapeIndex);
             let overlayId = area.logId + '_' + shapeIndex;
@@ -189,7 +185,7 @@
                 () => $(area.tooltip.element).addClass('hover'),
                 () => $(area.tooltip.element).removeClass('hover')
             );
-    		return area;
+            return area;
         }
     }
 
@@ -231,7 +227,7 @@
                 showNavigator: 'imageShowNavigator',
                 allowDownload: 'allowDownload',
                 allowZoom: 'allowZoom',
-    			maxZoom: 'maxZoom'
+                maxZoom: 'maxZoom',
             },
             data: {
                 footerHeight: 'height',
@@ -252,12 +248,8 @@
                 this.viewMode = imageElement.dataset[_config.datasets.image.viewMode];
 
                 this.topMarginElement = document.querySelector(_config.elementSelectors.data.topMarginElement)?.textContent;
-                this.leftMarginElement = document.querySelector(
-                    _config.elementSelectors.data.leftMarginElement
-                )?.textContent;
-                this.rightMarginElement = document.querySelector(
-                    _config.elementSelectors.data.rightMarginElement
-                )?.textContent;
+                this.leftMarginElement = document.querySelector(_config.elementSelectors.data.leftMarginElement)?.textContent;
+                this.rightMarginElement = document.querySelector(_config.elementSelectors.data.rightMarginElement)?.textContent;
 
                 const imageViewConfig = createZoomableImageConfig(imageElement);
                 this.viewer = new ImageView.Image(imageViewConfig);
@@ -270,9 +262,7 @@
 
                 this.tileSources = createTileSource();
 
-                this.tileSourceIdToOrder = Object.fromEntries(
-                    Object.entries(this.tileSources).map(([order, obj]) => [viewerJS.iiif.getId(obj), order])
-                );
+                this.tileSourceIdToOrder = Object.fromEntries(Object.entries(this.tileSources).map(([order, obj]) => [viewerJS.iiif.getId(obj), order]));
 
                 if (this.viewMode == 'sequence') {
                     this.sequence = new ImageView.Sequence(this.viewer, this.zoom);
@@ -290,7 +280,7 @@
                                 showTooltip: element.dataset[_config.datasets.data.showTooltip],
                                 highlightClassName: 'focus',
                                 highlightOnHover: true,
-                            }); 
+                            });
                             this.overlayGroups.push(overlays);
                         } catch (e) {
                             console.error('Error parsing coords string ', coordsString, e);
@@ -312,9 +302,7 @@
                 const viewerRight = this.viewer.element.offsetLeft + this.viewer.element.offsetWidth;
                 const sidebarRightLeft = document.querySelector(this.rightMarginElement)?.offsetLeft;
                 const margins = {
-                    left:
-                        (document.querySelector(this.leftMarginElement)?.offsetWidth ?? 0) +
-                        (document.querySelector(this.leftMarginElement)?.offsetLeft ?? 0),
+                    left: (document.querySelector(this.leftMarginElement)?.offsetWidth ?? 0) + (document.querySelector(this.leftMarginElement)?.offsetLeft ?? 0),
                     right: sidebarRightLeft ? viewerRight - sidebarRightLeft : 0,
                     top: document.querySelector(this.topMarginElement)?.offsetHeight ?? 0,
                 };
@@ -444,12 +432,8 @@
         if (document.querySelector(_config.elementSelectors.controls.zoomSlider)) {
             zoom.setSlider(_config.elementSelectors.controls.zoomSlider, 3);
         }
-        document
-            .querySelectorAll(_config.elementSelectors.controls.rotateLeft)
-            .forEach((button) => button.addEventListener('click', (e) => rotation.rotateLeft()));
-        document
-            .querySelectorAll(_config.elementSelectors.controls.rotateRight)
-            .forEach((button) => button.addEventListener('click', (e) => rotation.rotateRight()));
+        document.querySelectorAll(_config.elementSelectors.controls.rotateLeft).forEach((button) => button.addEventListener('click', (e) => rotation.rotateLeft()));
+        document.querySelectorAll(_config.elementSelectors.controls.rotateRight).forEach((button) => button.addEventListener('click', (e) => rotation.rotateRight()));
         document.querySelectorAll(_config.elementSelectors.controls.reset).forEach((button) =>
             button.addEventListener('click', (e) => {
                 rotation.rotateTo(0);
@@ -463,42 +447,38 @@
             element: imageElement,
             fittingMode: getFittingMode(document.querySelector(_config.elementSelectors.data.pageType)?.textContent),
             margins: {
-                bottom: Number(
-                    document.querySelector(_config.elementSelectors.data.footer)?.dataset[
-                        _config.datasets.data.footerHeight
-                    ]
-                ),
+                bottom: Number(document.querySelector(_config.elementSelectors.data.footer)?.dataset[_config.datasets.data.footerHeight]),
             },
             zoom: {
                 enabled: imageElement.dataset[_config.datasets.image.allowZoom] !== 'false',
-    			max: parseInt(imageElement.dataset[_config.datasets.image.maxZoom]),
+                max: parseInt(imageElement.dataset[_config.datasets.image.maxZoom]),
             },
             sequence: getSequenceSettings(imageElement.dataset[_config.datasets.image.viewMode]),
             navigator: {
                 enabled: imageElement.dataset[_config.datasets.image.showNavigator] === 'true',
-    			position: "BOTTOM_RIGHT"
+                position: 'BOTTOM_RIGHT',
             },
         };
     }
 
     function getSequenceSettings(viewMode) {
         let columns;
-    	switch ((viewMode || '').toLowerCase()) {
+        switch ((viewMode || '').toLowerCase()) {
             case 'double':
                 columns = 2;
-    			break;
+                break;
             case 'sequence':
             case 'single':
             default:
-               columns = 1;
+                columns = 1;
         }
-    	return {
-    		columns: columns,
-    		useWindowing: true,
-    		windowSize: _sequenceWindowSize,
-    		windowExpandThreshold: _expandThreshold,
-    		windowExpandSize: _expandBatchSize
-    	}
+        return {
+            columns: columns,
+            useWindowing: true,
+            windowSize: _sequenceWindowSize,
+            windowExpandThreshold: _expandThreshold,
+            windowExpandSize: _expandBatchSize,
+        };
     }
 
     function getFittingMode(pageType) {
@@ -564,11 +544,7 @@
 
             // init area select
             try {
-                let styles = viewerJS.helper.getCss('image-fragment', [
-                    'borderTopColor',
-                    'borderTopWidth',
-                    'background-color',
-                ]);
+                let styles = viewerJS.helper.getCss('image-fragment', ['borderTopColor', 'borderTopWidth', 'background-color']);
                 var fragmentSelectConfig = {
                     removeOldAreas: true,
                     drawCondition: (event) => this.active && this.fragmentSelect?.currentOverlay == undefined,
@@ -597,8 +573,7 @@
             if (this.fragmentSelect) {
                 this.fragmentSelect.finishedHook.subscribe((area) => {
                     var areaString = this.getAreaString(area);
-                    var pageUrl =
-                        window.location.origin + window.location.pathname + window.location.search + '#xywh=' + areaString;
+                    var pageUrl = window.location.origin + window.location.pathname + window.location.search + '#xywh=' + areaString;
                     var imageUrl = this.getRegionUrl(area);
                     console.log('set area data ', pageUrl, imageUrl);
                     $('[data-fragment-link="page"]').attr('data-copy-share-image', pageUrl);
@@ -613,14 +588,7 @@
 
         getAreaString(area) {
             if (area && area.x != undefined && area.y != undefined && area.width != undefined && area.height != undefined) {
-                var areaString =
-                    area.x.toFixed(0) +
-                    ',' +
-                    area.y.toFixed(0) +
-                    ',' +
-                    area.width.toFixed(0) +
-                    ',' +
-                    area.height.toFixed(0);
+                var areaString = area.x.toFixed(0) + ',' + area.y.toFixed(0) + ',' + area.width.toFixed(0) + ',' + area.height.toFixed(0);
                 return areaString;
             } else {
                 return 'full';
@@ -701,10 +669,7 @@
         }
 
         toggleImageShare($panel) {
-            if (
-                $panel.closest('.fullscreen__view-sidebar-accordeon-panel').hasClass('share-image-area') &&
-                $panel.hasClass('in')
-            ) {
+            if ($panel.closest('.fullscreen__view-sidebar-accordeon-panel').hasClass('share-image-area') && $panel.hasClass('in')) {
                 this.startFragmentSelect();
             }
         }
@@ -727,8 +692,7 @@
             this.container = document.querySelector(this.config.container);
             // console.log('init voyager3d', this);
             if (this.isVisible()) {
-                this.loaded = this.initView().then(() => {
-                });
+                this.loaded = this.initView().then(() => {});
             }
         }
 
@@ -2502,7 +2466,6 @@
 
     /** Central keydown dispatcher for the immersive view. */
 
-
     /** Dispatcher priorities of every immersive key handler, lowest runs first; the single place that defines who wins a key. */
     const KEY_PRIORITY = Object.freeze({
         shortcutsModal: 10,
@@ -2703,7 +2666,6 @@
     }
 
     /** Left rail panel wiring: open/close, keyboard toggles, resize, TOC + metadata folds. */
-
 
     /** Rail panel ids in toolbar order; the Alt+digit shortcuts 1-5 map onto this. */
     const PANEL_SHORTCUT_IDS = ['immersivePanelToc', 'immersivePanelFulltext', 'immersivePanelSearch', 'immersivePanelMetadata', 'immersivePanelLayoutTags'];
@@ -3115,7 +3077,6 @@
 
     /** Keyboard-shortcuts help modal with platform-specific modifier keycaps. */
 
-
     /**
      * Keyboard-shortcuts help modal: opened via the rail button or the `?` key,
      * closed via its X button, Escape or a click on the scrim. The rail button
@@ -3204,7 +3165,6 @@
     }
 
     /** OCR text ↔ image region hover linking for the immersive fulltext panel (block > line > word). */
-
 
     const ACTIVE_CLASS = 'is-linked-active';
 
@@ -3650,7 +3610,6 @@
 
     /** Annotations toggle: persisted checkbox, root state class and the `a` shortcut. */
 
-
     /** State class on the .immersive root while annotations are switched on (panel markup AND image overlays key off it). */
     const STATE_CLASS = '-annotations-on';
 
@@ -3731,7 +3690,6 @@
     }
 
     /** Joins ALTO annotations onto the rendered page text and its image overlays by element id. */
-
 
     /**
      * Indexes the panel's region elements by ALTO element id (blocks, lines and
@@ -3826,7 +3784,6 @@
     }
 
     /** Margin-note cards for a page's handwriting blocks: line anchoring, collision stacking, popovers and hover coupling to text and image. */
-
 
     /**
      * Below this panel content width (px) the margin column collapses and notes render inline
@@ -4487,7 +4444,6 @@
 
     /** Fulltext panel wiring: combined block/line/word text with image hover linking and layout annotations. */
 
-
     /**
      * Wires the fulltext panel: loads the nested OCR levels for the visible page,
      * renders them, and mounts the bidirectional text ↔ image hover linking. The
@@ -4737,10 +4693,11 @@
     /**
      * Normalizes the layout-tag index endpoint response: tags without a label are
      * dropped, pages become ascending, duplicate-free finite integers, missing
-     * names fall back to the label. Pure + tested.
+     * names fall back to the label, a missing group name to the group key.
+     * Pure + tested.
      *
      * @param {object} json  the /layout/tags/index response
-     * @returns {{pi:string, pageCount:number, tags:{label:string, name:string, styleClass:string, pages:number[]}[]}}
+     * @returns {{pi:string, pageCount:number, tags:{label:string, name:string, styleClass:string, type:string, group:string, groupName:string, groupStyleClass:string, pages:number[]}[]}}
      */
     function parseLayoutTagIndex(json) {
         const src = json && typeof json === 'object' ? json : {};
@@ -4748,11 +4705,15 @@
             .filter((t) => t && typeof t.label === 'string' && t.label.length > 0)
             .map((t) => {
                 const pages = Array.from(new Set((Array.isArray(t.pages) ? t.pages : []).map(Number).filter((p) => Number.isInteger(p) && p >= 1))).sort((a, b) => a - b);
+                const group = typeof t.group === 'string' ? t.group : '';
                 return {
                     label: t.label,
                     name: typeof t.name === 'string' && t.name ? t.name : t.label,
                     styleClass: typeof t.styleClass === 'string' ? t.styleClass : '',
                     type: typeof t.type === 'string' ? t.type : '',
+                    group,
+                    groupName: group && typeof t.groupName === 'string' && t.groupName ? t.groupName : group,
+                    groupStyleClass: group && typeof t.groupStyleClass === 'string' ? t.groupStyleClass : '',
                     pages,
                 };
             });
@@ -4842,7 +4803,8 @@
     }
 
     /**
-     * One entry per page and tag, ordered by page, then by the given tag order.
+     * One entry per page and tag, ordered by page, then by the given tag order —
+     * a grouped tag keeps its own entries, the group only eases the selection.
      * `occurrencesOf(page, label)` returns the loaded occurrences or undefined
      * while the page detail is still pending. Pure + tested.
      *
@@ -4913,22 +4875,54 @@
     }
 
     /**
-     * Tags shown in the pick menu: those with pages in the range or already
-     * selected, narrowed by the free-text filter (name or label, case-insensitive);
-     * selected tags always stay visible. Pure + tested.
+     * Pick-menu items in index order: tags sharing a configured group fold into one
+     * item at the position of their first member, every other tag is an item of its
+     * own. An item's pages are the union of its tags' pages; its style class is the
+     * group's own configured class (never a member's), or the tag's. Pure + tested.
      *
-     * @param {{label:string, name:string, pages:number[]}[]} tags
+     * @param {{label:string, name:string, styleClass?:string, group?:string, groupName?:string, groupStyleClass?:string, pages:number[]}[]} tags
+     * @returns {{key:string, name:string, styleClass:string, labels:string[], tags:Array, pages:number[]}[]}
+     */
+    function groupItems(tags) {
+        const items = [];
+        const byGroup = new Map();
+        (tags || []).forEach((tag) => {
+            if (!tag.group) {
+                items.push({ key: tag.label, name: tag.name, styleClass: tag.styleClass || '', labels: [tag.label], tags: [tag], pages: tag.pages });
+                return;
+            }
+            let item = byGroup.get(tag.group);
+            if (!item) {
+                item = { key: tag.group, name: tag.groupName || tag.group, styleClass: '', labels: [], tags: [], pages: [] };
+                byGroup.set(tag.group, item);
+                items.push(item);
+            }
+            if (!item.styleClass && tag.groupStyleClass) item.styleClass = tag.groupStyleClass;
+            item.labels.push(tag.label);
+            item.tags.push(tag);
+            item.pages = hitPages(item.tags, 1, Number.MAX_SAFE_INTEGER);
+        });
+        return items;
+    }
+
+    /**
+     * Items shown in the pick menu: those with pages in the range or a selected
+     * tag, narrowed by the free-text filter (item name, tag names or labels,
+     * case-insensitive); items with a selected tag always stay visible.
+     * Pure + tested.
+     *
+     * @param {ReturnType<typeof groupItems>} items
      * @param {{selected:Set<string>, filter:string, from:number, to:number}} opts
      * @returns {Array}
      */
-    function filterTags(tags, { selected, filter, from, to }) {
+    function filterItems(items, { selected, filter, from, to }) {
         const f = String(filter || '')
             .trim()
             .toLowerCase();
-        return tags.filter((t) => {
-            if (selected.has(t.label)) return true;
-            if (!tagPages(t, from, to).length) return false;
-            return !f || t.name.toLowerCase().includes(f) || t.label.toLowerCase().includes(f);
+        return items.filter((item) => {
+            if (item.labels.some((label) => selected.has(label))) return true;
+            if (!tagPages(item, from, to).length) return false;
+            return !f || item.name.toLowerCase().includes(f) || item.tags.some((t) => t.name.toLowerCase().includes(f) || t.label.toLowerCase().includes(f));
         });
     }
 
@@ -5014,20 +5008,24 @@
 
     /** Layout-tag panel state: selection, page range, cursor and per-page details, without any DOM. */
 
-
     /**
      * Creates the panel state. Queries derive everything from the index, the
      * selection, the range and the loaded details; transitions keep the cursor
-     * valid (it prefers an entry on the pages the viewer currently shows).
+     * valid (it prefers an entry on the pages the viewer currently shows). The
+     * selection holds tag labels; the pick items (one per tag, or one per
+     * configured group of tags) are derived from the index and only ease the
+     * selection — the hit list keeps one entry per tag.
      *
      * @param {number} pageCount
      * @returns {object}
      */
     function createLayoutTagsState(pageCount) {
-        const s = { index: null, failed: false, selected: new Set(), from: 1, to: pageCount, filter: '', cursorKey: null, details: new Map(), inFlight: new Set() };
+        const s = { index: null, items: [], failed: false, selected: new Set(), from: 1, to: pageCount, filter: '', cursorKey: null, details: new Map(), inFlight: new Set() };
         const allTags = () => (s.index ? s.index.tags : []);
         const tagByLabel = (label) => allTags().find((t) => t.label === label) || null;
+        const itemByKey = (key) => s.items.find((i) => i.key === key) || null;
         const selectedTags = () => allTags().filter((t) => s.selected.has(t.label));
+        const selectedItems = () => s.items.filter((i) => i.labels.some((label) => s.selected.has(label)));
         const occurrencesOf = (page, label) => {
             if (!s.details.has(page)) return undefined;
             const byLabel = s.details.get(page);
@@ -5080,27 +5078,42 @@
             },
             allTags,
             tagByLabel,
+            itemByKey,
             selectedTags,
+            selectedItems,
             occurrencesOf,
             entries,
             cursorEntry() {
                 const list = entries();
                 return list[cursorIndex(list, s.cursorKey)] || null;
             },
-            displayName(label) {
-                const tag = tagByLabel(label);
-                return tag ? tag.name : label;
+            /** Display name of a pick item key or a tag label. */
+            displayName(key) {
+                const item = itemByKey(key);
+                if (item) return item.name;
+                const tag = tagByLabel(key);
+                return tag ? tag.name : key;
             },
-            styleTokens(label) {
-                const tag = tagByLabel(label);
+            /** Style tokens of a pick item key (a group's own configured class) or a tag label; empty without a configured class. */
+            styleTokens(key) {
+                const item = itemByKey(key);
+                if (item) return styleClassTokens(item.styleClass);
+                const tag = tagByLabel(key);
                 return tag ? styleClassTokens(tag.styleClass) : [];
             },
             tagType(label) {
                 const tag = tagByLabel(label);
                 return tag && tag.type ? tag.type : '';
             },
-            visibleTags: () => filterTags(allTags(), s),
-            inRangeCount: (tag) => tagPages(tag, s.from, s.to).length,
+            /** Whether 'all', 'some' or 'none' of an item's tags are selected. */
+            itemSelection(key) {
+                const item = itemByKey(key);
+                if (!item) return s.selected.has(key) ? 'all' : 'none';
+                const on = item.labels.filter((label) => s.selected.has(label)).length;
+                return on === item.labels.length ? 'all' : on ? 'some' : 'none';
+            },
+            visibleItems: () => filterItems(s.items, s),
+            inRangeCount: (item) => tagPages(item, s.from, s.to).length,
             rangeIsFull: () => s.from === 1 && s.to === pageCount,
             compositionKey: () => [s.failed, Array.from(s.selected).sort().join(','), s.from, s.to].join('|'),
             progress() {
@@ -5109,6 +5122,7 @@
             },
             setIndex(index) {
                 s.index = index;
+                s.items = groupItems(index ? index.tags : []);
                 s.failed = false;
             },
             setFailed() {
@@ -5121,9 +5135,12 @@
                 s.cursorKey = key;
             },
             preferCursorOnPages,
-            toggleTag(label, currentPages) {
-                if (s.selected.has(label)) s.selected.delete(label);
-                else s.selected.add(label);
+            /** Toggles a pick item: all of its tags off when they all were on, else all on. A tag label toggles that tag alone. */
+            toggleItem(key, currentPages) {
+                const item = itemByKey(key);
+                const labels = item ? item.labels : [key];
+                const allOn = labels.every((label) => s.selected.has(label));
+                labels.forEach((label) => (allOn ? s.selected.delete(label) : s.selected.add(label)));
                 keepOrResetCursor(currentPages);
             },
             setRange(from, to, currentPages) {
@@ -5147,8 +5164,7 @@
         };
     }
 
-    /** Layout-tag pick menu: multi-select rows with optional filter; the trigger shows the selection as text and colour dots. */
-
+    /** Layout-tag pick menu: multi-select rows (one per tag or configured group) with optional filter; the trigger shows the selection as text and colour dots. */
 
     const TRIGGER_DOTS = 4;
 
@@ -5164,7 +5180,7 @@
      * @param {HTMLElement|null} opts.filterWrap
      * @param {HTMLInputElement|null} opts.filterInput
      * @param {{register: Function}} opts.keys
-     * @param {(label: string) => void} opts.onToggle
+     * @param {(key: string) => void} opts.onToggle  called with the pick item's key (a tag label or a group key)
      * @returns {{build: Function, sync: Function, close: Function, setFilterVisible: Function, destroy: Function}}
      */
     function setupPickMenu({ state, labels, trigger, menu, list, dots, text, filterWrap, filterInput, keys, onToggle }) {
@@ -5193,57 +5209,63 @@
 
         const syncRows = () => {
             list.querySelectorAll('.immersive__layout-tags-pick-row').forEach((row) => {
-                const tag = state.tagByLabel(row.dataset.tagLabel);
-                if (!tag) return;
-                const inRange = state.inRangeCount(tag);
-                const selected = state.selected.has(tag.label);
+                const item = state.itemByKey(row.dataset.itemKey);
+                if (!item) return;
+                const inRange = state.inRangeCount(item);
+                const selection = state.itemSelection(item.key);
                 const cb = row.querySelector('input');
                 const count = row.querySelector('.immersive__layout-tags-pick-count');
                 row.classList.toggle('-empty', !inRange);
-                cb.checked = selected;
-                cb.disabled = !inRange && !selected;
+                cb.checked = selection === 'all';
+                cb.indeterminate = selection === 'some';
+                cb.disabled = !inRange && selection === 'none';
                 if (count) count.textContent = String(inRange);
             });
         };
 
         const build = () => {
             list.replaceChildren();
-            const tags = state.visibleTags();
-            if (!tags.length) {
+            const items = state.visibleItems();
+            if (!items.length) {
                 list.append(el('p', 'immersive__layout-tags-pick-none', labels.labelFilterNone || ''));
                 return;
             }
-            tags.forEach((tag, i) => {
+            items.forEach((item, i) => {
                 const row = el('div', 'immersive__layout-tags-pick-row');
-                row.classList.add(...state.styleTokens(tag.label));
-                row.dataset.tagLabel = tag.label;
+                const tokens = state.styleTokens(item.key);
+                row.classList.add(...tokens);
+                row.dataset.itemKey = item.key;
                 const id = `immersiveLayoutTagsPick-${i}`;
                 const cb = el('input', 'immersive__layout-tags-pick-checkbox');
                 cb.type = 'checkbox';
                 cb.id = id;
-                cb.addEventListener('change', () => onToggle(tag.label));
+                cb.addEventListener('change', () => onToggle(item.key));
                 const label = el('label', 'immersive__layout-tags-pick-label');
                 label.htmlFor = id;
-                label.title = tag.label;
-                const dot = el('span', 'immersive__layout-tags-dot');
-                dot.setAttribute('aria-hidden', 'true');
-                label.append(dot, el('span', 'immersive__layout-tags-pick-name', tag.name));
-                row.append(cb, label, el('span', 'immersive__layout-tags-pick-count', String(state.inRangeCount(tag))));
+                label.title = item.labels.join(', ');
+                // a colour dot only for entries with a configured style class
+                if (tokens.length) {
+                    const dot = el('span', 'immersive__layout-tags-dot');
+                    dot.setAttribute('aria-hidden', 'true');
+                    label.append(dot);
+                }
+                label.append(el('span', 'immersive__layout-tags-pick-name', item.name));
+                row.append(cb, label, el('span', 'immersive__layout-tags-pick-count', String(state.inRangeCount(item))));
                 list.append(row);
             });
             syncRows();
         };
 
         const sync = () => {
-            const chosen = state.selectedTags();
+            const chosen = state.selectedItems();
             if (dots) {
                 dots.replaceChildren();
                 chosen
-                    .filter((tag) => styleClassTokens(tag.styleClass).length)
+                    .filter((item) => state.styleTokens(item.key).length)
                     .slice(0, TRIGGER_DOTS)
-                    .forEach((tag) => {
+                    .forEach((item) => {
                         const dot = el('span', 'immersive__layout-tags-dot');
-                        dot.classList.add(...styleClassTokens(tag.styleClass));
+                        dot.classList.add(...state.styleTokens(item.key));
                         dots.append(dot);
                     });
             }
@@ -5286,7 +5308,6 @@
     }
 
     /** Layout-tag hit list: rows grouped by page, per-page counts and error markers, the active row and the progress line. */
-
 
     const REVEAL_MARGIN = 8;
 
@@ -5353,14 +5374,19 @@
                 const item = el('li');
                 const btn = el('button', 'immersive__layout-tags-hit');
                 btn.type = 'button';
-                btn.classList.add(...state.styleTokens(entry.label));
+                const tokens = state.styleTokens(entry.label);
+                btn.classList.add(...tokens);
                 btn.dataset.spotIndex = String(i);
                 btn.dataset.spotKey = entryKey(entry);
                 btn.dataset.pageNo = String(entry.page);
                 btn.dataset.tagLabel = entry.label;
-                const dot = el('span', 'immersive__layout-tags-dot');
-                dot.setAttribute('aria-hidden', 'true');
-                btn.append(dot, el('span', 'immersive__layout-tags-hit-name', state.displayName(entry.label)), el('span', 'immersive__layout-tags-hit-count'));
+                // a colour dot only for tags with a configured style class
+                if (tokens.length) {
+                    const dot = el('span', 'immersive__layout-tags-dot');
+                    dot.setAttribute('aria-hidden', 'true');
+                    btn.append(dot);
+                }
+                btn.append(el('span', 'immersive__layout-tags-hit-name', state.displayName(entry.label)), el('span', 'immersive__layout-tags-hit-count'));
                 btn.addEventListener('click', () => onActivate(i));
                 item.append(btn);
                 typeList.append(item);
@@ -5437,18 +5463,19 @@
 
     /** Layout-tag panel wiring: index and detail loading, page range, cursor and image highlights; pick menu and hit list are sub-modules. */
 
-
     const OWNER = 'layout-tags';
     /** Modifier drawing an occurrence as a bar instead of a box. */
     const STROKE_CLASS = '-stroke';
 
     /**
      * Wires the layout-tag panel: the record-wide index is fetched once (on the
-     * first open) and drives a multi-select pick menu, a page-range row and a hit
-     * list grouped by page. Page details (occurrence counts and rects) are loaded
-     * only for the rows in view, in small page-range batches. Activating a hit
-     * opens the page and highlights every occurrence of that tag on it; the
-     * highlights are redrawn on page change and cleared when the panel closes.
+     * first open) and drives a multi-select pick menu (one entry per tag, or per
+     * configured group of tags that are selected together), a page-range row and
+     * a hit list grouped by page with one row per tag. Page details (occurrence
+     * counts and rects) are loaded only for the rows in view, in small page-range
+     * batches. Activating a hit opens the page and highlights every occurrence of
+     * that tag on it; the highlights are redrawn on page change and cleared when
+     * the panel closes.
      *
      * @param {IvViewer} viewer
      * @param {string} pi
@@ -5491,7 +5518,7 @@
             filterWrap,
             filterInput: filterWrap && filterWrap.querySelector('input'),
             keys,
-            onToggle: (label) => toggleTag(label),
+            onToggle: (key) => toggleItem(key),
         });
         bag.add(() => pick.destroy());
         const hits = createHitList({ state, labels, mount: hitsMount, panel, sticky, progress: q('[data-immersive-layout-tags="progress"]'), onActivate: (i) => goToEntry(i) });
@@ -5594,8 +5621,8 @@
             pumpVisible();
             renderHighlights();
         };
-        const toggleTag = (label) => {
-            state.toggleTag(label, currentPages());
+        const toggleItem = (key) => {
+            state.toggleItem(key, currentPages());
             refresh(true);
         };
         const goToEntry = (i) => {
@@ -5837,7 +5864,6 @@
 
     /** Search panel wiring: in-work IIIF content search with hit list and highlights. */
 
-
     /**
      * Wires the in-place IIIF content search: result list in the left panel,
      * prev/next hit buttons, and hit highlights on the image.
@@ -5987,7 +6013,6 @@
     }
 
     /** Title page picker: "go to page" input plus a labelled listbox per page. */
-
 
     /**
      * Builds the title page picker: a "go to page" input plus a listbox with one
@@ -6157,7 +6182,6 @@
     }
 
     /** Thumbnail overview overlay: lazy riot grid with modal focus handling. */
-
 
     /**
      * Mounts the thumbnail grid overlay lazily (riot `thumbnails` tag) with modal
@@ -6336,7 +6360,6 @@
 
     /** Bottom bar and page-status wiring: indicator and actions. */
 
-
     /**
      * Wires the paging UI and the bottom-bar actions: page indicator (bottom bar +
      * title pill + canvas aria-label), the action buttons
@@ -6466,7 +6489,6 @@
     }
 
     /** Image-filter popover wiring plus a11y for the immersive Bootstrap popovers. */
-
 
     const FILTER_TRIGGER_SELECTOR = '[data-popover-element="#immersiveFilterPopover"]';
 
@@ -6651,7 +6673,6 @@
 
     /** Immersive view bootstrap: engine construction plus the UI wiring modules. */
 
-
     /** Hides the stage loading indicator at the latest after this, even without a painted tile. */
     const STAGE_LOADER_TIMEOUT_MS = 8000;
 
@@ -6791,5 +6812,4 @@
             initImmersiveViewer(immersiveRoot);
         }
     });
-
 })();

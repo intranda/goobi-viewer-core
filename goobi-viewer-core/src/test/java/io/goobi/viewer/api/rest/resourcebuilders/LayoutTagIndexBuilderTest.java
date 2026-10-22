@@ -63,6 +63,23 @@ class LayoutTagIndexBuilderTest extends AbstractTest {
 
     /**
      * @see LayoutTagIndexBuilder#build(String,int,SolrDocumentList)
+     * @verifies deliver group keys names and style classes
+     */
+    @Test
+    void build_shouldDeliverGroupKeysNamesAndStyleClasses() {
+        LayoutTagIndex index = builder().build(PI, 10, docs(page(1, "gr_unterstrichen", "gr_durchgestrichen", "gr_jacob_grimm")));
+        Assertions.assertEquals("test_marks", tag(index, "gr_unterstrichen").getGroup());
+        Assertions.assertEquals("test_marks", tag(index, "gr_durchgestrichen").getGroup());
+        // no message for the test key, so the group name falls back to the key
+        Assertions.assertEquals("test_marks", tag(index, "gr_unterstrichen").getGroupName());
+        Assertions.assertEquals("test-marks", tag(index, "gr_unterstrichen").getGroupStyleClass());
+        Assertions.assertNull(tag(index, "gr_jacob_grimm").getGroup());
+        Assertions.assertNull(tag(index, "gr_jacob_grimm").getGroupName());
+        Assertions.assertNull(tag(index, "gr_jacob_grimm").getGroupStyleClass());
+    }
+
+    /**
+     * @see LayoutTagIndexBuilder#build(String,int,SolrDocumentList)
      * @verifies drop the printed label
      */
     @Test

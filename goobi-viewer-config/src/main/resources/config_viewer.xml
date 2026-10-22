@@ -68,11 +68,19 @@
                           in the messages under the label itself; @name (optional) names another message key, or
                           a literal, for labels that cannot serve as key. Any other class works as well when the
                           theme defines its colour itself.
+         - group:         (optional) a display group of the immersive view's layout-tag panel: its entry offers
+                          one checkbox that selects every tag carrying this group's @key in its @group attribute
+                          (wordTag and annotationTag alike); the hit list and the highlights keep one row and one
+                          colour per tag. @key doubles as the message key of the group's display name, @name
+                          (optional) names another key or a literal. @styleClass (optional) colours the group's
+                          entry like a tag's class does - without one the entry shows no colour dot, as any tag
+                          without a class. Indexing and the ALTO files stay untouched.
          Example (replace the placeholder LABELs with the ones your ALTO uses):
     <altoLayoutTags printedLabel="printed">
-        <wordTag label="underlined" type="underline" />
-        <wordTag label="struckthrough" type="strikethrough" />
-        <wordTag label="marked" type="mark" />
+        <group key="marks" styleClass="alto-tag-color-7" />
+        <wordTag label="underlined" type="underline" group="marks" />
+        <wordTag label="struckthrough" type="strikethrough" group="marks" />
+        <wordTag label="marked" type="mark" group="marks" />
         <annotationTag label="annotator_a" styleClass="alto-tag-color-1" />
         <annotationTag label="annotator_b" styleClass="alto-tag-color-2" name="Annotator B" />
     </altoLayoutTags>
