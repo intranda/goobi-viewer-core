@@ -41,6 +41,7 @@ import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserRole;
+import io.goobi.viewer.model.translations.admin.TranslationGroup;
 
 class AdminBeanTest extends AbstractDatabaseEnabledTest {
 
@@ -73,6 +74,31 @@ class AdminBeanTest extends AbstractDatabaseEnabledTest {
         new AdminBean().getConfiguredTranslationGroups();
 
         assertNull(AdminBean.getTranslationGroupsEditorSession());
+    }
+
+    /**
+     * @see AdminBean#getConfiguredTranslationGroups()
+     * @verifies return same instance on repeated calls
+     */
+    @Test
+    void getConfiguredTranslationGroups_shouldReturnSameInstanceOnRepeatedCalls() {
+        AdminBean bean = new AdminBean();
+        List<TranslationGroup> first = bean.getConfiguredTranslationGroups();
+        List<TranslationGroup> second = bean.getConfiguredTranslationGroups();
+        Assertions.assertSame(first, second);
+    }
+
+    /**
+     * @see AdminBean#resetTranslationGroups()
+     * @verifies rebuild groups on next call
+     */
+    @Test
+    void resetTranslationGroups_shouldRebuildGroupsOnNextCall() {
+        AdminBean bean = new AdminBean();
+        List<TranslationGroup> first = bean.getConfiguredTranslationGroups();
+        bean.resetTranslationGroups();
+        List<TranslationGroup> second = bean.getConfiguredTranslationGroups();
+        Assertions.assertNotSame(first, second);
     }
 
     /**

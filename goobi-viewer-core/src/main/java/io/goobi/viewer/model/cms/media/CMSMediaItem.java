@@ -87,6 +87,8 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     public static final String CONTENT_TYPE_SVG = "image/svg+xml";
     /** Constant <code>CONTENT_TYPE_SVG="image/svg+xml"</code>. */
     public static final String CONTENT_TYPE_ICO = "image/x-icon";
+    /** Constant <code>CONTENT_TYPE_WEBP="image/webp"</code>. */
+    public static final String CONTENT_TYPE_WEBP = "image/webp";
     /** Constant <code>CONTENT_TYPE_PDF="application/pdf"</code>. */
     public static final String CONTENT_TYPE_PDF = "application/pdf";
     /** Constant <code>CONTENT_TYPE_GIF="application/gif"</code>. */
@@ -194,6 +196,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
      * Determines this media item's file's content type via the extension.
      *
      * @return Content type string
+     * @should return webp content type for webp file
      */
     public String getContentType() {
         if (fileName == null) {
@@ -215,6 +218,8 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
                 return CONTENT_TYPE_SVG;
             case "ico":
                 return CONTENT_TYPE_ICO;
+            case "webp":
+                return CONTENT_TYPE_WEBP;
             case "pdf":
                 return CONTENT_TYPE_PDF;
             case "gif":

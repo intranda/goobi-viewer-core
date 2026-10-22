@@ -31,6 +31,7 @@ import io.goobi.viewer.api.rest.model.SitemapRequestParameters;
 import io.goobi.viewer.api.rest.model.ToolsRequestParameters;
 import io.goobi.viewer.api.rest.v1.tasks.TasksResource;
 import io.goobi.viewer.model.job.TaskType;
+import io.swagger.v3.oas.annotations.media.DiscriminatorMapping;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
@@ -53,7 +54,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 })
 @Schema(name = "ViewerTaskParameter",
         description = "Contains the type of the task to execute as well as possible additional parameters depending on the type of the task",
-        requiredProperties = { "type" })
+        requiredProperties = { "type" },
+        discriminatorProperty = "type",
+        discriminatorMapping = {
+                @DiscriminatorMapping(value = "UPDATE_SITEMAP", schema = SitemapRequestParameters.class),
+                @DiscriminatorMapping(value = "UPDATE_DATA_REPOSITORY_NAMES", schema = ToolsRequestParameters.class),
+                @DiscriminatorMapping(value = "PRERENDER_PDF", schema = PrerenderPdfsRequestParameters.class) })
 public class TaskParameter {
 
     @Schema(description = "The type of the task to execute")

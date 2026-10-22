@@ -59,12 +59,14 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 /**
  * REST resource for managing client application registrations and their access credentials.
@@ -95,11 +97,27 @@ public class ClientApplicationsResource {
         this.clientManager = clientManager;
     }
 
+    /**
+     * Registers the calling client application as a new, pending trusted client using the identifier sent in the request.
+     *
+     * <p>The client identifier is read from the 'X-goobi-content-protection' request header. A new {@link ClientApplication} is
+     * persisted with access status {@code REQUESTED} and the caller's IP address; the registration must be approved separately (see
+     * {@link #setClient(String, ClientApplication)}) before the client is granted access.
+     *
+     * @return the registration status as JSON
+     * @throws ContentLibException if a client is already registered with this identifier
+     * @throws DAOException if the new client cannot be persisted
+     */
     @POST
     @jakarta.ws.rs.Path(CLIENTS_REGISTER)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Request registration as a trusted client application", tags = { "clients" })
-    @ApiResponse(responseCode = "201", description = "Client registered successfully; registration is pending approval")
+    @Operation(summary = "Request registration as a trusted client application", tags = { "clients" },
+            description = "The client identifier is read from the 'X-goobi-content-protection' request header, not from the request"
+                    + " body. A newly registered client is stored with access status REQUESTED and must be approved through the client"
+                    + " management endpoint before it is granted access.")
+    @ApiResponse(responseCode = "201", description = "Client registered successfully; registration is pending approval",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(type = "object", example = "{\"status\":\"REQUESTED\"}")))
     @ApiResponse(responseCode = "400", description = "A client with this machine identifier is already registered")
     public Response register() throws ContentLibException, DAOException {
         String clientIdentifier = ClientApplicationManager.getClientIdentifier(servletRequest);
@@ -111,11 +129,28 @@ public class ClientApplicationsResource {
         return Response.status(Response.Status.CREATED).entity(createRegistrationResponse(client)).build();
     }
 
+    /**
+     * Requests access for a previously registered client application and reports its current access status.
+     *
+     * <p>The client identifier is read from the 'X-goobi-content-protection' request header and must belong to a client already
+     * registered via {@link #register()}. On success the client is stored in the current HTTP session for later access condition
+     * checks, and its last access date is updated in the database the first time this happens within the session.
+     *
+     * @return the access status as JSON
+     * @throws ContentLibException if no client is registered with the given identifier
+     * @throws DAOException if the client's access record cannot be read or updated
+     */
     @GET
     @jakarta.ws.rs.Path(CLIENTS_REQUEST)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Request access for a registered client application", tags = { "clients" })
-    @ApiResponse(responseCode = "200", description = "Access status for the requesting client")
+    @Operation(summary = "Request access for a registered client application", tags = { "clients" },
+            description = "The client identifier is read from the 'X-goobi-content-protection' request header and must belong to an"
+                    + " already registered client; a missing header is rejected before the client lookup. On the first successful"
+                    + " request in a session the client's last access date is updated in the database and the client is remembered in"
+                    + " the HTTP session for subsequent access condition checks.")
+    @ApiResponse(responseCode = "200", description = "Access status for the requesting client",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(type = "object", example = "{\"access\":true,\"status\":\"GRANTED\"}")))
     @ApiResponse(responseCode = "400", description = "Client not yet registered")
     @ApiResponse(responseCode = "401", description = "Missing client identifier header (X-goobi-content-protection)")
     public String request() throws ContentLibException, DAOException {
@@ -147,6 +182,7 @@ public class ClientApplicationsResource {
      */
     @PUT
     @AuthorizationBinding
+    @SecurityRequirement(name = AuthorizationFilter.SECURITY_SCHEME_TOKEN)
     @jakarta.ws.rs.Path(CLIENTS_CLIENT)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Set properties of an existing client",
@@ -155,15 +191,13 @@ public class ClientApplicationsResource {
                     + " Requires an access token in the query paramter or header field 'token'.",
             tags = { "clients" })
     @ApiResponse(responseCode = "200",
-            description = "Any changes requested have been persisted. The current state of the client is contained within the response body as JSON")
+            description = "Any changes requested have been persisted. The current state of the client is contained within the response body as JSON",
+            useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "The body is not a valid JSON object or contains invalid data")
     @ApiResponse(responseCode = "401",
             description = "No authorization for access to this resource. See documentation about accessing protected resources")
     @ApiResponse(responseCode = "404", description = "No client with given clientIdentifier was found in database")
     @ApiResponse(responseCode = "500", description = "An internal error occurred")
-    // 405 can occur when special characters (e.g. semicolons) in the path parameter cause JAX-RS
-    // path matching to fail before the method is dispatched.
-    @ApiResponse(responseCode = "405", description = "Method not allowed for the given path parameters")
     public ClientApplication setClient(
             // Pattern requires an alphanumeric first character to prevent values like '.' or '..'
             // which Tomcat treats as relative path references and may normalise before dispatch.
@@ -222,11 +256,12 @@ public class ClientApplicationsResource {
      */
     @GET
     @AuthorizationBinding
+    @SecurityRequirement(name = AuthorizationFilter.SECURITY_SCHEME_TOKEN)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get a list of all registered clients", tags = { "clients" },
             description = "Clients are returned as json objects. Requires an access token in the query paramter or header field 'token'."
                     + " Optional 'first' and 'count' query parameters paginate the response; omitting both returns the full list.")
-    @ApiResponse(responseCode = "200", description = "List of all registered client applications")
+    @ApiResponse(responseCode = "200", description = "List of all registered client applications", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Negative pagination parameter")
     @ApiResponse(responseCode = "401",
             description = "No authorization for access to this resource. See documentation about accessing protected resources")
@@ -266,10 +301,11 @@ public class ClientApplicationsResource {
     @GET
     @jakarta.ws.rs.Path(CLIENTS_CLIENT)
     @AuthorizationBinding
+    @SecurityRequirement(name = AuthorizationFilter.SECURITY_SCHEME_TOKEN)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get the client with the given client identifier", tags = { "clients" },
             description = "The client is returned as a json object. Requires an access token in the query paramter or header field 'token'.")
-    @ApiResponse(responseCode = "200", description = "Client application object")
+    @ApiResponse(responseCode = "200", description = "Client application object", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "The requested client identifier refers to an internal resource")
     @ApiResponse(responseCode = "401",
             description = "No authorization for access to this resource. See documentation about accessing protected resources")

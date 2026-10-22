@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Stand-in for the metadata payloads inside an OAI-PMH response. OAI-PMH.xsd declares the children of metadata, about
+  and description with processContents="strict", so validating the envelope alone requires a declared element to put
+  in their place. The payloads themselves are produced by other systems and are not checked here.
+-->
+<schema targetNamespace="urn:goobi:oai-test:payload"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        elementFormDefault="qualified">
+  <element name="payload">
+    <complexType/>
+  </element>
+</schema>

@@ -202,10 +202,10 @@ public interface IDAO {
      * addUser.
      *
      * @param user user to persist
-     * @return true if user was added successfully; false otherwise
+     * @return the persisted user if the add succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean addUser(User user) throws DAOException;
+    public User addUser(User user) throws DAOException;
 
     /**
      * updateUser.
@@ -237,7 +237,7 @@ public interface IDAO {
      * @return true on success
      * @throws DAOException
      */
-    public boolean addUserToken(io.goobi.viewer.model.security.user.UserToken token) throws DAOException;
+    public io.goobi.viewer.model.security.user.UserToken addUserToken(io.goobi.viewer.model.security.user.UserToken token) throws DAOException;
 
     /**
      * @param token UserToken to delete
@@ -347,10 +347,10 @@ public interface IDAO {
      * addUserGroup.
      *
      * @param userGroup user group to persist
-     * @return true if user group was added successfully; false otherwise
+     * @return the persisted user group if the add succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean addUserGroup(UserGroup userGroup) throws DAOException;
+    public UserGroup addUserGroup(UserGroup userGroup) throws DAOException;
 
     /**
      * updateUserGroup.
@@ -438,10 +438,10 @@ public interface IDAO {
      * addBookmarkList.
      *
      * @param bookmarkList bookmark list to persist
-     * @return true if bookmark list was added successfully; false otherwise
+     * @return the persisted bookmark list if the add succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean addBookmarkList(BookmarkList bookmarkList) throws DAOException;
+    public BookmarkList addBookmarkList(BookmarkList bookmarkList) throws DAOException;
 
     /**
      * updateBookmarkList.
@@ -515,10 +515,10 @@ public interface IDAO {
      * addRole.
      *
      * @param role role to persist
-     * @return true if role was added successfully; false otherwise
+     * @return the persisted role if the add succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean addRole(Role role) throws DAOException;
+    public Role addRole(Role role) throws DAOException;
 
     /**
      * updateRole.
@@ -574,10 +574,10 @@ public interface IDAO {
      * addUserRole.
      *
      * @param userRole user role assignment to persist
-     * @return true if user role was added successfully; false otherwise
+     * @return the persisted user role if the add succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean addUserRole(UserRole userRole) throws DAOException;
+    public UserRole addUserRole(UserRole userRole) throws DAOException;
 
     /**
      * updateUserRole.
@@ -868,10 +868,10 @@ public interface IDAO {
      * addTicket.
      *
      * @param ticket access ticket to persist
-     * @return true if ticket was added successfully; false otherwise
+     * @return the persisted ticket if the add succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean addTicket(AccessTicket ticket) throws DAOException;
+    public AccessTicket addTicket(AccessTicket ticket) throws DAOException;
 
     /**
      * updateTicket.
@@ -1011,10 +1011,10 @@ public interface IDAO {
      * addCommentGroup.
      *
      * @param commentGroup comment group to persist
-     * @return true if comment group was added successfully; false otherwise
+     * @return the persisted comment group if the add succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean addCommentGroup(CommentGroup commentGroup) throws DAOException;
+    public CommentGroup addCommentGroup(CommentGroup commentGroup) throws DAOException;
 
     /**
      * updateCommentGroup.
@@ -1123,10 +1123,10 @@ public interface IDAO {
      * addComment.
      *
      * @param comment comment to persist
-     * @return true if comment was added successfully; false otherwise
+     * @return the persisted comment if the add succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean addComment(Comment comment) throws DAOException;
+    public Comment addComment(Comment comment) throws DAOException;
 
     /**
      * updateComment.
@@ -1222,10 +1222,10 @@ public interface IDAO {
      * addSearch.
      *
      * @param search saved search to persist
-     * @return true if search was added successfully; false otherwise
+     * @return the persisted search if the add succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean addSearch(Search search) throws DAOException;
+    public Search addSearch(Search search) throws DAOException;
 
     /**
      * updateSearch.
@@ -1267,10 +1267,10 @@ public interface IDAO {
      * addDownloadJob.
      *
      * @param uploadJob upload job to persist
-     * @return true if upload job was added successfully; false otherwise
+     * @return the persisted upload job if the add succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean addUploadJob(UploadJob uploadJob) throws DAOException;
+    public UploadJob addUploadJob(UploadJob uploadJob) throws DAOException;
 
     /**
      * updateDownloadJob.
@@ -1439,7 +1439,7 @@ public interface IDAO {
      * addCMSPage.
      *
      * @param page CMS page to persist
-     * @return true if CMS page was added successfully; false otherwise
+     * @return the persisted CMS page if the add succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public CMSPage addCMSPage(CMSPage page) throws DAOException;
@@ -1520,10 +1520,10 @@ public interface IDAO {
      * addCMSMediaItem.
      *
      * @param item CMS media item to persist
-     * @return true if CMS media item was added successfully; false otherwise
+     * @return the persisted CMS media item if the add succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean addCMSMediaItem(CMSMediaItem item) throws DAOException;
+    public CMSMediaItem addCMSMediaItem(CMSMediaItem item) throws DAOException;
 
     /**
      * updateCMSMediaItem.
@@ -1573,10 +1573,10 @@ public interface IDAO {
      * addCMSNavigationItem.
      *
      * @param item CMS navigation item to persist
-     * @return true if navigation item was added successfully; false otherwise
+     * @return the persisted navigation item if the add succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean addCMSNavigationItem(CMSNavigationItem item) throws DAOException;
+    public CMSNavigationItem addCMSNavigationItem(CMSNavigationItem item) throws DAOException;
 
     /**
      * updateCMSNavigationItem.
@@ -1617,10 +1617,10 @@ public interface IDAO {
      * addStaticPage.
      *
      * @param page static page to persist
-     * @return true if page added successfully; false otherwise
+     * @return the persisted page if the add succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean addStaticPage(CMSStaticPage page) throws DAOException;
+    public CMSStaticPage addStaticPage(CMSStaticPage page) throws DAOException;
 
     /**
      * updateStaticPage.
@@ -1737,10 +1737,10 @@ public interface IDAO {
      * addCategory.
      *
      * @param category CMS category to persist
-     * @return true if category added successfully; false otherwise
+     * @return the persisted category if the add succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean addCategory(CMSCategory category) throws DAOException;
+    public CMSCategory addCategory(CMSCategory category) throws DAOException;
 
     /**
      * updateCategory.
@@ -1803,10 +1803,10 @@ public interface IDAO {
      * addTranskribusJob.
      *
      * @param job Transkribus job to persist
-     * @return true if job added successfully; false otherwise
+     * @return the persisted job if the add succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean addTranskribusJob(TranskribusJob job) throws DAOException;
+    public TranskribusJob addTranskribusJob(TranskribusJob job) throws DAOException;
 
     /**
      * updateTranskribusJob.
@@ -2050,10 +2050,10 @@ public interface IDAO {
      * addDynamicCollection.
      *
      * @param collection dynamic collection to persist
-     * @return true if the dynamic collection was added successfully; false otherwise
+     * @return the persisted dynamic collection if the add succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean addDynamicCollection(DynamicCollection collection) throws DAOException;
+    public DynamicCollection addDynamicCollection(DynamicCollection collection) throws DAOException;
 
     /**
      * updateDynamicCollection.
@@ -2189,10 +2189,10 @@ public interface IDAO {
      * addAnnotation.
      *
      * @param annotation crowdsourcing annotation to persist
-     * @return true if annotation was added successfully; false otherwise
+     * @return the persisted annotation if the add succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean addAnnotation(CrowdsourcingAnnotation annotation) throws DAOException;
+    public CrowdsourcingAnnotation addAnnotation(CrowdsourcingAnnotation annotation) throws DAOException;
 
     /**
      * updateAnnotation.
@@ -2340,10 +2340,10 @@ public interface IDAO {
      * Persist a new {@link CMSRecordNote}.
      *
      * @param note record note to add
-     * @return true if note added successfully; false otherwise
+     * @return the persisted note if the add succeeded; null otherwise
      * @throws DAOException if a database error occurs
      */
-    public boolean addRecordNote(CMSRecordNote note) throws DAOException;
+    public CMSRecordNote addRecordNote(CMSRecordNote note) throws DAOException;
 
     /**
      * Updates an existing {@link CMSRecordNote}.
@@ -2373,7 +2373,7 @@ public interface IDAO {
 
     public CMSSlider getSlider(Long id) throws DAOException;
 
-    public boolean addSlider(CMSSlider slider) throws DAOException;
+    public CMSSlider addSlider(CMSSlider slider) throws DAOException;
 
     public CMSSlider updateSlider(CMSSlider slider) throws DAOException;
 
@@ -2385,7 +2385,7 @@ public interface IDAO {
 
     public ThemeConfiguration getTheme(String name) throws DAOException;
 
-    public boolean addTheme(ThemeConfiguration theme) throws DAOException;
+    public ThemeConfiguration addTheme(ThemeConfiguration theme) throws DAOException;
 
     public ThemeConfiguration updateTheme(ThemeConfiguration theme) throws DAOException;
 
@@ -2429,7 +2429,7 @@ public interface IDAO {
 
     public CustomSidebarWidget getCustomWidget(Long id) throws DAOException;
 
-    public boolean addCustomWidget(CustomSidebarWidget widget) throws DAOException;
+    public CustomSidebarWidget addCustomWidget(CustomSidebarWidget widget) throws DAOException;
 
     public CustomSidebarWidget updateCustomWidget(CustomSidebarWidget widget) throws DAOException;
 
@@ -2474,7 +2474,7 @@ public interface IDAO {
 
     public List<DailySessionUsageStatistics> getUsageStatistics(LocalDate start, LocalDate end) throws DAOException;
 
-    public boolean addUsageStatistics(DailySessionUsageStatistics statistics) throws DAOException;
+    public DailySessionUsageStatistics addUsageStatistics(DailySessionUsageStatistics statistics) throws DAOException;
 
     public DailySessionUsageStatistics updateUsageStatistics(DailySessionUsageStatistics statistics) throws DAOException;
 
@@ -2484,13 +2484,13 @@ public interface IDAO {
 
     public boolean deleteCMSContent(CMSContent content) throws DAOException;
 
-    public boolean addCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException;
+    public PersistentCMSComponent addCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException;
 
     public PersistentCMSComponent getCMSComponent(Long id) throws DAOException;
 
     public boolean deleteViewerMessage(ViewerMessage message) throws DAOException;
 
-    public boolean addViewerMessage(ViewerMessage message) throws DAOException;
+    public ViewerMessage addViewerMessage(ViewerMessage message) throws DAOException;
 
     public ViewerMessage updateViewerMessage(ViewerMessage message) throws DAOException;
 
@@ -2527,7 +2527,7 @@ public interface IDAO {
 
     public RecurringTaskTrigger getRecurringTaskTriggerForTask(ITaskType task) throws DAOException;
 
-    public boolean addRecurringTaskTrigger(RecurringTaskTrigger trigger) throws DAOException;
+    public RecurringTaskTrigger addRecurringTaskTrigger(RecurringTaskTrigger trigger) throws DAOException;
 
     public RecurringTaskTrigger updateRecurringTaskTrigger(RecurringTaskTrigger trigger) throws DAOException;
 
@@ -2535,7 +2535,7 @@ public interface IDAO {
 
     public int deleteViewerMessagesBefore(LocalDateTime date) throws DAOException;
 
-    public boolean addHighlight(HighlightData object) throws DAOException;
+    public HighlightData addHighlight(HighlightData object) throws DAOException;
 
     public HighlightData updateHighlight(HighlightData object) throws DAOException;
 

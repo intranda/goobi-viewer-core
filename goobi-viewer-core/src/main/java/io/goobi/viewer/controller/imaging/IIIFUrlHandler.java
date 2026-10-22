@@ -159,7 +159,7 @@ public class IIIFUrlHandler {
                     if (fileUrl.endsWith("info.json")) {
                         fileUrl = fileUrl.substring(0, fileUrl.length() - 9);
                     }
-                    StringBuilder sb = new StringBuilder(fileUrl);
+                    StringBuilder sb = new StringBuilder(StringTools.appendTrailingSlash(fileUrl));
                     sb.append(region).append("/");
                     sb.append(size).append("/");
                     sb.append(rotation).append("/");

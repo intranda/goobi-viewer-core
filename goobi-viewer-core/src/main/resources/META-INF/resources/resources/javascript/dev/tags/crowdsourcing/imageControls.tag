@@ -90,7 +90,6 @@
     }    
 
     toggleThumbs() {
-    	console.log("toggle thumbs " + this.opts.showthumbs);
     	this.opts.showthumbs = !this.opts.showthumbs;
     	this.handleAction("toggleThumbs", this.opts.showthumbs)
     }

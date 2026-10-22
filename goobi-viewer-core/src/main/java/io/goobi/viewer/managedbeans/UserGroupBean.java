@@ -96,7 +96,7 @@ public class UserGroupBean implements Serializable {
                 return;
             }
             currentOwnUserGroup.setOwner(ub.getUser());
-            if (DataManager.getInstance().getDao().addUserGroup(currentOwnUserGroup)) {
+            if (DataManager.getInstance().getDao().addUserGroup(currentOwnUserGroup) != null) {
                 resetCurrentUserGroupAction();
                 Messages.info("savedSuccessfully");
                 logger.debug("Bookshelf '{}' added.", currentOwnUserGroup.getName());

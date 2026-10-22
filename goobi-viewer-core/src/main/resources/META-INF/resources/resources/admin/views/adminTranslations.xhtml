@@ -13,6 +13,10 @@
             <f:event
                 type="preRenderView"
                 listener="#{navigationHelper.setCurrentPageAdmin('adminTranslations')}" />
+            <!-- Rebuild translation-group completeness on entering the overview so edits are reflected. -->
+            <f:event
+                type="preRenderView"
+                listener="#{adminBean.resetTranslationGroups()}" />
         </f:metadata>
     </ui:define>
 

@@ -55,6 +55,8 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
@@ -89,10 +91,33 @@ public class RecordsListResource {
     @Inject
     private ApiUrls urls;
 
+    /**
+     * Returns a page of matching records as an ordered collection of manifests, in which anchor records appear as collection entries
+     * without their volumes.
+     *
+     * <p>The query, date range, subtheme and access-condition filters are combined into a single Solr query, and first/rows page through
+     * the results (100 rows if omitted). Records this query matches but that fail to generate a manifest — for example an invalid
+     * configured URI or a missing logo — are silently skipped rather than failing the whole page. An empty, syntactically invalid, or
+     * unresolvable sort field is reported as a client error instead of surfacing as an internal one.
+     *
+     * @param query filter query
+     * @param firstRow index of the first result to return
+     * @param rows number of results to return
+     * @param start filter for records from this date or later
+     * @param end filter for records from this date or earlier
+     * @param subtheme filter for records of this subtheme
+     * @param sort Solr field name to sort by
+     * @return the ordered collection page of matching record manifests
+     * @throws IllegalRequestException if the query or sort field is invalid
+     */
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records" }, summary = "List records in an ordered collection page, use query parameter for filtering")
-    @ApiResponse(responseCode = "200", description = "Ordered collection page of record manifests")
+    @Operation(tags = { "records" }, summary = "List records in an ordered collection page, use query parameter for filtering",
+            description = "The query, date range, subtheme and access-condition filters are combined into a single Solr query, and"
+                    + " first/rows page through the results (100 rows if omitted). Records this query matches but cannot be rendered as a"
+                    + " manifest are silently skipped rather than failing the whole page. An empty, syntactically invalid, or unresolvable"
+                    + " sort field is reported as a client error instead of surfacing as an internal one.")
+    @ApiResponse(responseCode = "200", description = "Ordered collection page of record manifests", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid query or date parameters")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable or internal error")
     public OrderedCollectionPage<IPresentationModelElement> listManifests(
@@ -133,7 +158,12 @@ public class RecordsListResource {
     }
 
     /**
-     * 
+     * Returns metadata for records matching a statically configured template, one JSON array entry per Solr document that yields at least
+     * one configured field.
+     *
+     * <p>The template name may be a comma-separated list; each named template is looked up, queried and its matches appended to the same
+     * response array in turn. A template name that is syntactically valid but not configured results in a not-found response.
+     *
      * @param template JSON configuration template name
      * @return {@link Response}
      * @throws IndexUnreachableException
@@ -142,8 +172,12 @@ public class RecordsListResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_LIST_JSON)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "json" }, summary = "List record metadata as JSON. Solr query and field mapping are configured statically.")
-    @ApiResponse(responseCode = "200", description = "Record metadata as JSON array")
+    @Operation(tags = { "records", "json" }, summary = "List record metadata as JSON. Solr query and field mapping are configured statically.",
+            description = "The template name may be a comma-separated list; each named template is looked up, queried and its matches are"
+                    + " appended to the same response array in turn. A template name that is syntactically valid but not configured results"
+                    + " in a not-found response.")
+    @ApiResponse(responseCode = "200", description = "Record metadata as JSON array",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, array = @ArraySchema(schema = @Schema(type = "object"))))
     @ApiResponse(responseCode = "400", description = "Missing template name")
     @ApiResponse(responseCode = "404", description = "Template configuration not found")
     public Response getRecordMetadataAsJson(

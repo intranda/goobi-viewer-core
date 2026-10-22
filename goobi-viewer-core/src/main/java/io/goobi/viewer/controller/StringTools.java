@@ -995,8 +995,13 @@ public final class StringTools {
      * @should return correct range for open interval notation
      * @should return correct range for half open interval notation
      * @should throw IllegalArgumentException for invalid input
+     * @should throw IllegalArgumentException for null input
      */
     public static IntegerRange parseIntRange(String input) {
+
+        if (input == null || StringUtils.isBlank(input)) {
+            throw new IllegalArgumentException("Empty String cannot be parsed as int range");
+        }
 
         if (StringTools.isInteger(input)) {
             return IntegerRange.of(0, Integer.parseInt(input));
@@ -1006,7 +1011,7 @@ public final class StringTools {
         Matcher m = p.matcher(input.trim());
 
         if (!m.matches()) {
-            throw new IllegalArgumentException("Ungültiges Format: " + input);
+            throw new IllegalArgumentException("Invalud input for int range: " + input);
         }
 
         boolean startInclusive = m.group(1).equals("[");

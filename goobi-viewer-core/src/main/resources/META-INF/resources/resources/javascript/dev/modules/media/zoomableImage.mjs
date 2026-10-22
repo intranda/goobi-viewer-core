@@ -33,15 +33,17 @@ const _config = {
             rotateRight: '.rotate-right',
             reset: '.reset',
             zoomSlider: '.zoom-slider',
+			downloadContent: '.download-canvas-content' 
         },
     },
     datasets: {
         image: {
             viewMode: 'imageViewMode',
             showNavigator: 'imageShowNavigator',
-            allowDownload: 'allowDownload',
             allowZoom: 'allowZoom',
-			maxZoom: 'maxZoom'
+			maxZoom: 'maxZoom',
+			allowDownloadContent: "allowDownload",
+			downloadFilename: "downloadFilename"
         },
         data: {
             footerHeight: 'height',
@@ -69,6 +71,11 @@ export default class ZoomableImage {
             this.rightMarginElement = document.querySelector(
                 _config.elementSelectors.data.rightMarginElement
             )?.textContent;
+			
+			//download canvas content
+			if(imageElement.dataset[_config.datasets.image.allowDownloadContent] === 'true') {				
+				this.downloadButton = _initCanvasDownload(imageElement, document.querySelector(_config.elementSelectors.controls.downloadContent), imageElement.dataset[_config.datasets.image.downloadFilename]);
+			}
 
             const imageViewConfig = createZoomableImageConfig(imageElement);
             if (_debug) console.log('create image view with config ', imageViewConfig);
@@ -207,6 +214,22 @@ export default class ZoomableImage {
         }
         return this.tileSourceIdToOrder[id];
     }
+}
+
+function _initCanvasDownload(imageContainer, button, filename) {
+	if(imageContainer && button) {
+		if(_debug)console.log("init download of  ", imageContainer, " by ", button);
+		button.addEventListener("click", () => {
+			const canvas = imageContainer.querySelector("canvas");
+			if(_debug)console.log("download image ", filename, " of ", canvas);
+			const link = document.createElement('a');
+		    link.download = filename;
+		    link.href = canvas.toDataURL("image/jpeg");
+		    link.click();
+		    link.remove();
+		})
+				
+	}
 }
 
 function _drawPageAreas(image) {

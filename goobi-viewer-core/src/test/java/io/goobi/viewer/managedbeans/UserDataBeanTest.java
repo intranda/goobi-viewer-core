@@ -63,4 +63,14 @@ class UserDataBeanTest extends AbstractDatabaseEnabledTest {
         Assertions.assertEquals(Long.valueOf(4), comments.get(0).getId());
         Assertions.assertEquals(Long.valueOf(3), comments.get(1).getId());
     }
+
+    /**
+     * @see UserDataBean#getLatestActivity(User, int)
+     * @verifies return empty list if user null
+     */
+    @Test
+    void getLatestActivity_shouldReturnEmptyListIfUserNull() throws Exception {
+        UserDataBean udb = new UserDataBean();
+        Assertions.assertTrue(udb.getLatestActivity(null, 6).isEmpty());
+    }
 }

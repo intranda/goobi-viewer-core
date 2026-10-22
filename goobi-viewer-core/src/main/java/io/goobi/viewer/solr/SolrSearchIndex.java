@@ -95,14 +95,15 @@ public class SolrSearchIndex implements java.io.Closeable {
 
     public static final int MAX_HITS_EXPANDED = 100000;
 
-    private long lastPing = 0;
+    private volatile long lastPing = 0;
 
     /** Application-scoped map containing already looked up data repository names of records. */
     private Map<String, String> dataRepositoryNames = new HashMap<>();
     /** Timestamps of when each data repository name was last fetched from Solr. */
     private Map<String, Long> dataRepositoryTimestamps = new HashMap<>();
 
-    private SolrClient client;
+    /** volatile: read unsynchronized by every query method, so a replacement must become visible without a lock. */
+    private volatile SolrClient client; //NOSONAR S3077: SolrClient is thread-safe; volatile only publishes the replaced reference
 
     private List<String> solrFields = null;
     /**
@@ -127,49 +128,66 @@ public class SolrSearchIndex implements java.io.Closeable {
 
     /**
      * Checks whether the server's configured URL matches that in the config file. If not, a new server instance is created.
+     *
+     * @should return while the old client is still closing
+     * @should close the replaced client off the calling thread
      */
     public void checkReloadNeeded() {
-        if (!(client instanceof Http2SolrClient)) {
+        SolrClient currentClient = client;
+        if (!(currentClient instanceof Http2SolrClient)) {
             return;
         }
 
-        String baseUrl = ((Http2SolrClient) client).getBaseURL();
+        String baseUrl = ((Http2SolrClient) currentClient).getBaseURL();
         if (!DataManager.getInstance().getConfiguration().getSolrUrl().equals(baseUrl)) {
             // Re-init Solr client if the configured Solr URL has been changed
             logger.info("Solr URL has changed, re-initializing Solr client...");
-            synchronized (this) {
-                // Reset all cached Solr field lists so they are reloaded from the new client
-                solrFields = null;
-                booleanSolrFields = null;
-                sortFieldNames = null;
-                try {
-                    client.close();
-                } catch (IOException e) {
-                    logger.error(e.getMessage());
-                }
-                client = getNewSolrClient();
-            }
+            replaceClient(currentClient);
         } else if (lastPing == 0 || System.currentTimeMillis() - lastPing > 60000) {
             // Check whether the HTTP connection pool of the Solr client has been shut down and re-init
             try {
-                client.ping();
+                currentClient.ping();
             } catch (IOException | SolrServerException e) {
                 logger.warn("HTTP client was closed, re-initializing Solr client...");
-                synchronized (this) {
-                    // Reset all cached Solr field lists so they are reloaded from the new client
-                    solrFields = null;
-                    booleanSolrFields = null;
-                    sortFieldNames = null;
-                    try {
-                        client.close();
-                    } catch (IOException e1) {
-                        logger.error(e1.getMessage());
-                    }
-                    client = getNewSolrClient();
-                }
+                replaceClient(currentClient);
             }
             lastPing = System.currentTimeMillis();
         }
+    }
+
+    /**
+     * Replaces the given Solr client with a freshly created one and closes the given client in the background.
+     *
+     * <p>Does nothing if the client has already been replaced in the meantime, so that a broken client observed by many
+     * request threads at once is exchanged exactly once instead of once per thread.
+     *
+     * @param staleClient the client to replace
+     * @should replace the client only once for the same stale client
+     * @should replace the client only once when called concurrently
+     */
+    void replaceClient(SolrClient staleClient) {
+        synchronized (this) {
+            if (client != staleClient) {
+                return;
+            }
+            client = getNewSolrClient();
+            // Reset all cached Solr field lists so they are reloaded from the new client
+            solrFields = null;
+            booleanSolrFields = null;
+            sortFieldNames = null;
+        }
+
+        // Http2SolrClient.close() waits for its Jetty thread pool to terminate and retries indefinitely while a pooled
+        // thread is stuck, so it must run neither on the calling thread nor under this instance's monitor.
+        Thread closer = new Thread(() -> {
+            try {
+                staleClient.close();
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
+        }, "solr-client-closer");
+        closer.setDaemon(true);
+        closer.start();
     }
 
     @Override
@@ -1372,6 +1390,29 @@ public class SolrSearchIndex implements java.io.Closeable {
         }
 
         return false;
+    }
+
+    /**
+     * Checks whether the index answers an actual search query, rather than just the ping handler.
+     *
+     * <p>The query matches every indexed record and is therefore valid for any index; an empty index returns zero hits and still counts as
+     * a successful check, because only the ability to answer a query is being verified.
+     *
+     * @return true if the query was answered by the index; false otherwise
+     * @should return true if index online
+     */
+    public boolean checkSolrQueryResponse() {
+        if (client == null) {
+            return false;
+        }
+
+        try {
+            QueryResponse resp = search(SolrConstants.PI + ":*", 0, 1, null, null, Collections.singletonList(SolrConstants.PI), null, null);
+            return resp != null && resp.getResults() != null;
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.warn("Solr monitoring query failed: {}", SolrTools.extractExceptionMessageHtmlTitle(e.getMessage()));
+            return false;
+        }
     }
 
     /**

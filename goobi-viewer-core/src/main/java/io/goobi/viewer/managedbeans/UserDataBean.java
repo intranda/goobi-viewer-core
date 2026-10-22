@@ -359,8 +359,12 @@ public class UserDataBean implements Serializable {
      * @param numEntries maximum number of activity entries to return
      * @return a list of recent user activity entries (searches, bookmarks, comments) for the given user
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return empty list if user null
      */
     public List<UserActivity> getLatestActivity(User user, int numEntries) throws DAOException {
+        if (user == null) {
+            return Collections.emptyList();
+        }
         List<Search> searches = DataManager.getInstance().getDao().getSearches(user, 0, numEntries, "dateUpdated", true, null);
         List<Bookmark> bookmarks = DataManager.getInstance()
                 .getDao()

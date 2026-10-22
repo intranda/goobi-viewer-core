@@ -280,7 +280,7 @@ public class AdminCommentBean implements Serializable {
             }
             Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
         } else {
-            if (DataManager.getInstance().getDao().addCommentGroup(commentGroup)) {
+            if (DataManager.getInstance().getDao().addCommentGroup(commentGroup) != null) {
                 Messages.info("addedSuccessfully");
                 currentCommentGroup = null;
                 return "pretty:adminUserCommentGroups";
@@ -334,7 +334,7 @@ public class AdminCommentBean implements Serializable {
                 Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
             }
         } else {
-            if (DataManager.getInstance().getDao().addComment(comment)) {
+            if (DataManager.getInstance().getDao().addComment(comment) != null) {
                 Messages.info("addedSuccessfully");
             } else {
                 Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);

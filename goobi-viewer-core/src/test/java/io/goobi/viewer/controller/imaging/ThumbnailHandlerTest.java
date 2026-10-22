@@ -519,6 +519,22 @@ class ThumbnailHandlerTest extends AbstractTest {
     }
 
     /**
+     * @see ThumbnailHandler#getThumbnailUrl(java.util.Optional, int, int)
+     * @verifies return plain file url for webp
+     */
+    @Test
+    void getThumbnailUrl_shouldReturnPlainFileUrlForWebp() {
+        String currentApiUrl = "https://viewer.goobi.io/api/v1";
+        String filename = "image 01.webp";
+
+        CMSMediaItem item = new CMSMediaItem();
+        item.setFileName(filename);
+
+        assertEquals(currentApiUrl + ApiUrls.CMS_MEDIA + ApiUrls.CMS_MEDIA_FILES_FILE.replace("{filename}", StringTools.encodeUrl(filename)),
+                handler.getThumbnailUrl(item, 100, 200));
+    }
+
+    /**
      * @see ThumbnailHandler#getSize(Integer,Integer)
      * @verifies use width only if height null or zero
      */

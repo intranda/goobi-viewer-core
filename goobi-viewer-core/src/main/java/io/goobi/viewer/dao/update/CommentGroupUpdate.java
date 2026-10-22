@@ -57,7 +57,7 @@ public class CommentGroupUpdate implements IModelUpdate {
         CommentGroup commentGroup = dao.getCommentGroupUnfiltered();
         if (commentGroup == null) {
             commentGroup = CommentGroup.createCommentGroupAll();
-            if (DataManager.getInstance().getDao().addCommentGroup(commentGroup)) {
+            if (DataManager.getInstance().getDao().addCommentGroup(commentGroup) != null) {
                 logger.info("Added static \"all comments\" comment group to DB.");
                 return true;
             }

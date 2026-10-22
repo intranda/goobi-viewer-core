@@ -120,6 +120,17 @@ class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @see CmsMediaBean#getImageFilter()
+     * @verifies match webp files
+     */
+    @Test
+    void getImageFilter_shouldMatchWebpFiles() {
+        Assertions.assertTrue("image.webp".matches(CmsMediaBean.getImageFilter()));
+        Assertions.assertTrue("image.WebP".matches(CmsMediaBean.getImageFilter()));
+        Assertions.assertTrue("image.webp".matches(CmsMediaBean.getMediaFilter()));
+    }
+
+    /**
      * @verifies return url ending with expected path
      * @see CmsMediaBean#getMediaUrl(CMSMediaItem)
      */

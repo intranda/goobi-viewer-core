@@ -211,7 +211,7 @@ class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void addAnnotation_shouldPersistAnnotationAndPreserveFieldsAfterSaveAndReload() throws DAOException {
-        boolean added = DataManager.getInstance().getDao().addAnnotation(daoAnno);
+        boolean added = DataManager.getInstance().getDao().addAnnotation(daoAnno) != null;
         Assertions.assertTrue(added);
         //        URI uri = URI.create(Long.toString(daoAnno.getId()));
         CrowdsourcingAnnotation fromDAO = DataManager.getInstance().getDao().getAnnotation(daoAnno.getId());

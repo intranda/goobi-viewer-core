@@ -44,6 +44,8 @@ public class RequestHandler {
     private Verb verb = null;
     @XStreamAlias("metadataPrefix")
     private Metadata metadataPrefix = null;
+    /** Prefix as supplied by the client, kept to tell a missing argument apart from an unsupported format. */
+    private transient String rawMetadataPrefix = null;
     @XStreamAlias("identifier")
     private String identifier = null;
     @XStreamAlias("from")
@@ -63,7 +65,8 @@ public class RequestHandler {
             verb = Verb.getByTitle(request.getParameterValues("verb")[0]);
         }
         if (request.getParameter("metadataPrefix") != null) {
-            metadataPrefix = Metadata.getByMetadataPrefix(request.getParameterValues("metadataPrefix")[0]);
+            rawMetadataPrefix = request.getParameterValues("metadataPrefix")[0];
+            metadataPrefix = Metadata.getByMetadataPrefix(rawMetadataPrefix);
         }
         if (request.getParameter("identifier") != null) {
             identifier = request.getParameterValues("identifier")[0];
@@ -117,6 +120,15 @@ public class RequestHandler {
      */
     public Metadata getMetadataPrefix() {
         return metadataPrefix;
+    }
+
+    /**
+     * Returns the metadata prefix as supplied by the client, whether or not it names a known format.
+     *
+     * @return the raw metadataPrefix argument, or null if none was given
+     */
+    public String getRawMetadataPrefix() {
+        return rawMetadataPrefix;
     }
 
     /**

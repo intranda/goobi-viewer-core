@@ -35,8 +35,9 @@ public class MonitoringStatus {
     public static final String KEY_DATABASE = "database";
     public static final String KEY_IMAGES = "images";
     public static final String KEY_MESSAGE_QUEUE = "mq";
-    public static final String KEY_SOLR = "solr";
-    public static final String KEY_SOLRSCHEMA = "solrschema";
+    public static final String KEY_SOLR_PING = "solr_ping";
+    public static final String KEY_SOLR_QUERY = "solr_query";
+    public static final String KEY_SOLR_SCHEMA = "solr_schema";
 
     public static final String STATUS_DISABLED = "disabled";
     public static final String STATUS_ERROR = "error";
@@ -47,8 +48,9 @@ public class MonitoringStatus {
     private final String theme;
 
     public MonitoringStatus() {
-        monitoring.put(KEY_SOLR, STATUS_OK);
-        monitoring.put(KEY_SOLRSCHEMA, STATUS_OK);
+        monitoring.put(KEY_SOLR_PING, STATUS_OK);
+        monitoring.put(KEY_SOLR_QUERY, STATUS_OK);
+        monitoring.put(KEY_SOLR_SCHEMA, STATUS_OK);
         monitoring.put(KEY_DATABASE, STATUS_OK);
         monitoring.put(KEY_IMAGES, STATUS_OK);
         this.theme = DataManager.getInstance().getConfiguration().getTheme();

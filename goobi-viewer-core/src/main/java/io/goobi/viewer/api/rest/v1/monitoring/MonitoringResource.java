@@ -71,28 +71,48 @@ public class MonitoringResource {
     private MessageQueueManager messageBroker;
 
     /**
+     * Checks the availability of Solr, the database and the message queue, and reports version information for viewer-core, its
+     * connector, indexer, content server and installed modules.
+     *
+     * <p>Solr is checked twice: the ping handler reports reachability, a minimal search query reports that the index actually answers
+     * queries.
+     *
+     * <p>Each check is independent: a failing Solr, query, schema, database or message queue check is recorded in the response rather than
+     * aborting the request, so the response can report a subset of failures alongside the version information.
+     *
      * @return {@link MonitoringStatus} as JSON
      */
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Checks and reports the availability of relevant data providing services", tags = { "monitoring" })
+    @Operation(summary = "Checks and reports the availability of relevant data providing services", tags = { "monitoring" },
+            description = "The message queue status is reported as disabled when the internal broker is not configured to start in the"
+                    + " application configuration. A failing content server version lookup is logged and leaves that entry in the"
+                    + " version map empty rather than failing the whole request.")
     @ApiResponse(responseCode = "200",
-            description = "Status report for all monitored services (Solr, database, message queue). Service errors appear in the response body")
+            description = "Status report for all monitored services (Solr availability and query response, database, message queue)."
+                    + " Service errors appear in the response body",
+            useReturnTypeSchema = true)
     public MonitoringStatus checkServices() {
         logger.trace("checkServices");
         MonitoringStatus ret = new MonitoringStatus();
 
         // Check Solr
         if (!DataManager.getInstance().getSearchIndex().pingSolrIndex()) {
-            ret.getMonitoring().put(MonitoringStatus.KEY_SOLR, MonitoringStatus.STATUS_ERROR);
+            ret.getMonitoring().put(MonitoringStatus.KEY_SOLR_PING, MonitoringStatus.STATUS_ERROR);
             logger.warn("Solr monitoring check failed.");
+        }
+
+        // Check Solr query response
+        if (!DataManager.getInstance().getSearchIndex().checkSolrQueryResponse()) {
+            ret.getMonitoring().put(MonitoringStatus.KEY_SOLR_QUERY, MonitoringStatus.STATUS_ERROR);
+            logger.warn("Solr query monitoring check failed.");
         }
 
         // Check Solr schema version
         String[] result = SolrTools.checkSolrSchemaName();
         int status = Integer.parseInt(result[0]);
         if (status != 200) {
-            ret.getMonitoring().put(MonitoringStatus.KEY_SOLRSCHEMA, result[1]);
+            ret.getMonitoring().put(MonitoringStatus.KEY_SOLR_SCHEMA, result[1]);
         }
 
         // Check DB

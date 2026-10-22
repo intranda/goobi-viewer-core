@@ -22,8 +22,6 @@
 
 package io.goobi.viewer.model.job.mq;
 
-import java.util.Collections;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,7 +35,7 @@ import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.security.tickets.AccessTicket;
 
 /**
- * Message handler that removes all expired download access tickets from the database.
+ * Message handler that removes all expired access tickets from the database, regardless of their type.
  */
 public class PurgeExpiredDownloadsHandler implements MessageHandler<MessageStatus> {
 
@@ -49,8 +47,7 @@ public class PurgeExpiredDownloadsHandler implements MessageHandler<MessageStatu
         try {
             for (AccessTicket ticket : DataManager.getInstance()
                     .getDao()
-                    .getActiveTickets(0, Integer.MAX_VALUE, null, false,
-                            Collections.singletonMap("type", AccessTicket.AccessTicketType.DOWNLOAD.name()))) {
+                    .getActiveTickets(0, Integer.MAX_VALUE, null, false, null)) {
                 if (ticket.isExpired() && DataManager.getInstance().getDao().deleteTicket(ticket)) {
                     count++;
                 }
@@ -59,7 +56,7 @@ public class PurgeExpiredDownloadsHandler implements MessageHandler<MessageStatu
             logger.error(e);
             return MessageStatus.ERROR;
         }
-        logger.info("{} expired download tickets removed.", count);
+        logger.info("{} expired access tickets removed.", count);
 
         return MessageStatus.FINISH;
     }

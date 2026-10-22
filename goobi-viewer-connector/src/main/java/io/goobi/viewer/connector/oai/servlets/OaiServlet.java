@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletOutputStream;
@@ -56,6 +58,10 @@ public class OaiServlet extends HttpServlet {
     private static final Logger logger = LogManager.getLogger(OaiServlet.class);
 
     private static final String PARAM_RESUMPTION_TOKEN = "resumptionToken";
+
+    /** Arguments defined by the protocol, besides the verb; anything else makes a request illegal. */
+    private static final Set<String> PROTOCOL_ARGUMENTS =
+            Set.of("identifier", "metadataPrefix", "from", "until", "set", PARAM_RESUMPTION_TOKEN);
 
     /** {@inheritDoc} */
     @Override
@@ -95,20 +101,11 @@ public class OaiServlet extends HttpServlet {
         RequestHandler handler = new RequestHandler(request);
 
         // handle request
-        if (handler.getVerb() == null) {
-            Element requestType = new Element("request", Format.OAI_NS);
-            requestType.setAttribute("verb", "missing");
-            if (DataManager.getInstance().getConfiguration().isBaseUrlUseInRequestElement()) {
-                requestType.setText(DataManager.getInstance().getConfiguration().getBaseURL());
-            } else {
-                requestType.setText(request.getRequestURL().toString().replace("/M2M/", "/viewer/"));
-            }
-            root.addContent(requestType);
-            root.addContent(new ErrorCode().getBadVerb());
-        } else if (!checkDatestamps(handler.getFrom(), handler.getUntil())) {
-            // Check for invalid from/until parameters
-            logger.trace("Invalid timestamps");
-            root.addContent(new ErrorCode().getBadArgument());
+        Element argumentError = createArgumentError(request, handler);
+        if (argumentError != null) {
+            // The specification asks for the bare base URL in badVerb and badArgument responses
+            root.addContent(createBaseUrlOnlyRequestElement(request));
+            root.addContent(argumentError);
         } else {
             Element requestType = new Element("request", Format.OAI_NS);
             requestType.setAttribute("verb", handler.getVerb().getTitle());
@@ -157,7 +154,7 @@ public class OaiServlet extends HttpServlet {
                     case LISTIDENTIFIERS:
                         logger.debug("ListIdentifiers");
                         if (handler.getMetadataPrefix() == null) {
-                            root.addContent(new ErrorCode().getBadArgument());
+                            root.addContent(createUnresolvedMetadataPrefixError(handler));
                         } else if (!DataManager.getInstance()
                                 .getConfiguration()
                                 .isMetadataFormatEnabled(handler.getMetadataPrefix().getMetadataPrefix())) {
@@ -192,7 +189,7 @@ public class OaiServlet extends HttpServlet {
                         break;
                     case LISTRECORDS:
                         if (handler.getMetadataPrefix() == null) {
-                            root.addContent(new ErrorCode().getBadArgument());
+                            root.addContent(createUnresolvedMetadataPrefixError(handler));
                         } else if (!DataManager.getInstance()
                                 .getConfiguration()
                                 .isMetadataFormatEnabled(handler.getMetadataPrefix().getMetadataPrefix())) {
@@ -233,7 +230,7 @@ public class OaiServlet extends HttpServlet {
                         break;
                     case GETRECORD:
                         if (handler.getMetadataPrefix() == null) {
-                            root.addContent(new ErrorCode().getBadArgument());
+                            root.addContent(createUnresolvedMetadataPrefixError(handler));
                         } else if (!DataManager.getInstance()
                                 .getConfiguration()
                                 .isMetadataFormatEnabled(handler.getMetadataPrefix().getMetadataPrefix())) {
@@ -292,6 +289,136 @@ public class OaiServlet extends HttpServlet {
                 }
             }
         }
+    }
+
+    /**
+     * Checks the request against the argument rules of the OAI-PMH specification.
+     *
+     * @param request request being answered
+     * @param handler parsed request arguments
+     * @return the error element to answer with, or null if the arguments are acceptable
+     * @should return badVerb if the verb is missing or repeated
+     * @should return badArgument if a datestamp range is invalid
+     * @should return badArgument if an argument is illegal or repeated
+     * @should return badArgument if the resumption token is not exclusive
+     * @should return null for an acceptable request
+     */
+    static Element createArgumentError(HttpServletRequest request, RequestHandler handler) {
+        if (handler.getVerb() == null || isRepeated(request, "verb")) {
+            return new ErrorCode().getBadVerb();
+        }
+        if (!checkDatestamps(handler.getFrom(), handler.getUntil())) {
+            logger.trace("Invalid timestamps");
+            return new ErrorCode().getBadArgument();
+        }
+        if (hasIllegalOrRepeatedArgument(request)) {
+            logger.trace("Illegal or repeated argument");
+            return new ErrorCode().getBadArgument();
+        }
+        if (isExclusiveResumptionTokenViolated(request)) {
+            logger.trace("resumptionToken combined with other arguments");
+            return new ErrorCode().getBadArgument();
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns whether the request carries the given argument more than once.
+     *
+     * @param request request being answered
+     * @param argument name of the argument
+     * @return true if the argument is present more than once
+     */
+    static boolean isRepeated(HttpServletRequest request, String argument) {
+        String[] values = request.getParameterValues(argument);
+        return values != null && values.length > 1;
+    }
+
+    /**
+     * Returns whether the request carries an argument that the protocol does not define, or any argument twice.
+     *
+     * <p>The verb is checked separately, because a repeated verb is a badVerb rather than a badArgument condition.
+     *
+     * @param request request being answered
+     * @return true if an argument is not part of the protocol or occurs more than once
+     * @should return true for an unknown argument
+     * @should return true for a repeated argument
+     * @should return false for the arguments of the protocol
+     */
+    static boolean hasIllegalOrRepeatedArgument(HttpServletRequest request) {
+        for (Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
+            if ("verb".equals(entry.getKey())) {
+                continue;
+            }
+            if (!PROTOCOL_ARGUMENTS.contains(entry.getKey()) || entry.getValue().length > 1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns whether the request combines the exclusive resumptionToken argument with another one.
+     *
+     * <p>The specification declares resumptionToken exclusive: a request carrying it must not carry any argument
+     * besides the verb. The combination is rejected before the token itself is looked at, because the request is
+     * already malformed regardless of whether the token would have been valid.
+     *
+     * @param request request being answered
+     * @return true if a resumption token is present alongside another argument
+     * @should return false if only a resumption token is given
+     * @should return true if another argument accompanies the resumption token
+     */
+    static boolean isExclusiveResumptionTokenViolated(HttpServletRequest request) {
+        if (request.getParameter(PARAM_RESUMPTION_TOKEN) == null) {
+            return false;
+        }
+        for (String parameter : request.getParameterMap().keySet()) {
+            if (!"verb".equals(parameter) && !PARAM_RESUMPTION_TOKEN.equals(parameter)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Creates the error for a request whose metadata prefix could not be resolved.
+     *
+     * <p>A prefix that was not supplied at all is a missing argument; one that was supplied but names no known format
+     * is a format the repository cannot disseminate. The specification reserves badArgument for the former case.
+     *
+     * @param handler request being answered
+     * @return badArgument if no prefix was given, cannotDisseminateFormat otherwise
+     * @should return badArgument if no prefix was given
+     * @should return cannotDisseminateFormat if the prefix is unknown
+     */
+    static Element createUnresolvedMetadataPrefixError(RequestHandler handler) {
+        if (handler.getRawMetadataPrefix() == null) {
+            return new ErrorCode().getBadArgument();
+        }
+        return new ErrorCode().getCannotDisseminateFormat();
+    }
+
+    /**
+     * Creates the request element for a badVerb or badArgument response.
+     *
+     * <p>The OAI-PMH specification requires the base URL of the request and nothing else in these two cases: the
+     * arguments must not be echoed, because they are the ones that could not be interpreted.
+     *
+     * @param request request being answered
+     * @return request element carrying the base URL as its only content
+     * @should carry no attributes
+     */
+    static Element createBaseUrlOnlyRequestElement(HttpServletRequest request) {
+        Element requestType = new Element("request", Format.OAI_NS);
+        if (DataManager.getInstance().getConfiguration().isBaseUrlUseInRequestElement()) {
+            requestType.setText(DataManager.getInstance().getConfiguration().getBaseURL());
+        } else {
+            requestType.setText(request.getRequestURL().toString().replace("/M2M/", "/viewer/"));
+        }
+        return requestType;
     }
 
     /**

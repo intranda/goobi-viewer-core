@@ -69,7 +69,7 @@ public class SessionListener implements HttpSessionListener {
             // Remove the per-session PRIV_* access-permission cache so its entries (up to
             // millions of AccessPermission objects on long-lived sessions) become eligible for
             // GC. clearSessionPermissions handles IllegalStateException internally if the
-            // session has already been invalidated. refs #27880
+            // session has already been invalidated.
             AccessConditionUtils.clearSessionPermissions(event.getSession());
         }
     }

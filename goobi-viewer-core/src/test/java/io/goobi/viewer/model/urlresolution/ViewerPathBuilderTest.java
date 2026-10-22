@@ -91,6 +91,21 @@ class ViewerPathBuilderTest extends AbstractTest {
     }
 
     /**
+     * @see ViewerPathBuilder#createPath(String, String, String, String)
+     * @verifies encode spaces as %20 and plus signs as %2B
+     */
+    @Test
+    void createPath_shouldEncodeSpacesAs20AndPlusSignsAs2B() throws DAOException {
+        // Decoded URL as provided by PrettyContext
+        String url = "http://localhost:8082/viewer/fulltext/PPN123/1/M+M (Weis, De Mattia)/";
+        String serverUrl = "http://localhost:8082/viewer";
+        String applicationName = "/viewer";
+        Optional<ViewerPath> path = ViewerPathBuilder.createPath(serverUrl, applicationName, url, "");
+        assertTrue(path.isPresent());
+        assertEquals("fulltext/PPN123/1/M%2BM%20%28Weis%2C%20De%20Mattia%29/", path.get().getCombinedPath().toString());
+    }
+
+    /**
      * @see ViewerPathBuilder#createPath(HttpServletRequest)
      * @verifies strip scheme, host, port and context path from URL and return remaining path
      */

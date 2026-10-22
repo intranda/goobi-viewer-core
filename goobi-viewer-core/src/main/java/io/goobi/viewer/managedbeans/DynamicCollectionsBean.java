@@ -100,6 +100,22 @@ public class DynamicCollectionsBean implements Serializable {
     }
 
     /**
+     * Reloads the collection list from the database, reporting DAO errors instead of propagating them.
+     *
+     * <p>Invoked when the collections overview page is opened, because this bean is session scoped: collection labels are written directly to the
+     * database by the translations editor, and other editors may change collections concurrently.
+     *
+     * @should pick up collections added to the database after bean creation
+     */
+    public void reloadCollections() {
+        try {
+            updateCollections();
+        } catch (DAOException e) {
+            logger.error("Error reloading dynamic collections: {}", e.getMessage());
+        }
+    }
+
+    /**
      * Getter for the field <code>collections</code>.
      *
      * @return the list of all dynamic collections
@@ -226,6 +242,7 @@ public class DynamicCollectionsBean implements Serializable {
             }
             updateCollections();
             invalidateBrowseView(getCurrentCollection());
+            selectDynamicCollectionsSource();
         }
         return "pretty:adminCmsCollections";
     }
@@ -274,6 +291,17 @@ public class DynamicCollectionsBean implements Serializable {
         CollectionBrowseBean collectionBrowseBean = BeanUtils.getCollectionBrowseBean();
         if (collectionBrowseBean != null) {
             collectionBrowseBean.removeDynamicCollectionView(collection.getName());
+        }
+    }
+
+    /**
+     * Switches the collection administration to the dynamic collections source, so that the overview returned to after saving lists the collection
+     * that has just been edited.
+     */
+    private static void selectDynamicCollectionsSource() {
+        CmsCollectionsBean cmsCollectionsBean = BeanUtils.getCMSCollectionsBean();
+        if (cmsCollectionsBean != null) {
+            cmsCollectionsBean.selectDynamicCollectionsSource();
         }
     }
 
@@ -445,14 +473,14 @@ public class DynamicCollectionsBean implements Serializable {
     }
 
     /**
-     * Builds the search-result URL listing the records of the given collection. The collection's stored Solr query is used directly as the search
-     * query, so the link works regardless of whether the {@code DC_DYNAMIC} facet is configured in the viewer config.
+     * Builds the search-result URL listing the records of the given collection. The collection is passed as the active {@code DC_DYNAMIC} facet, so
+     * the search shows it as the selected collection, matching the links of the collection listings in the frontend.
      *
      * @param collection collection to build the search URL for
      * @return an absolute search page URL listing the collection's records
      */
     public String getSearchUrl(DynamicCollection collection) {
-        String query = StringTools.encodeUrl(StringUtils.trimToEmpty(collection.getSolrQuery()));
-        return PrettyUrlTools.getAbsolutePageUrl("newSearch5", "-", query, 1, "-", "-");
+        String facetString = StringTools.encodeUrl(collection.getFacetString(), true);
+        return PrettyUrlTools.getAbsolutePageUrl("newSearch5", "-", "-", 1, "-", facetString);
     }
 }

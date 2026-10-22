@@ -151,7 +151,7 @@ public class CustomWidgetEditBean implements Serializable {
                         throw new DAOException("Updating database failed");
                     }
                 } else {
-                    if (!DataManager.getInstance().getDao().addCustomWidget(widget)) {
+                    if (DataManager.getInstance().getDao().addCustomWidget(widget) == null) {
                         throw new DAOException("Updating database failed");
                     }
                 }

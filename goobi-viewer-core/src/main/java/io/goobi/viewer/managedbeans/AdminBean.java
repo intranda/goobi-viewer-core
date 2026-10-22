@@ -117,6 +117,8 @@ public class AdminBean implements Serializable {
     private UserRole currentUserRole = null;
     private IpRange currentIpRange = null;
     private TranslationGroup currentTranslationGroup = null;
+    /** Session-scoped cached copy of {@link #getAllTranslationGroups()}; guarded by {@link #TRANSLATION_LOCK}. null = not built / invalidated. */
+    private List<TranslationGroup> cachedTranslationGroups = null;
     private MaintenanceMode maintenanceMode;
 
     /** Current password for password change. */
@@ -273,7 +275,8 @@ public class AdminBean implements Serializable {
             Messages.error("email", ViewerResourceBundle.getTranslation("user_emailTaken", null).replace("{0}", user.getEmail().trim()));
             return false;
         }
-        if (UserTools.isNicknameInUse(user.getNickName(), user.getId())) {
+        // Users without a nickname (e.g. accounts created without a display name) skip the uniqueness check
+        if (user.getNickName() != null && UserTools.isNicknameInUse(user.getNickName(), user.getId())) {
             Messages.error("displayName", ViewerResourceBundle.getTranslation("user_nicknameTaken", null).replace("{0}", user.getNickName().trim()));
             return false;
         }
@@ -320,7 +323,7 @@ public class AdminBean implements Serializable {
                 user.setNewPassword(passwordOne);
 
             }
-            if (DataManager.getInstance().getDao().addUser(user)) {
+            if (DataManager.getInstance().getDao().addUser(user) != null) {
                 Messages.info("newUserCreated");
                 currentPassword = null;
                 passwordOne = "";
@@ -441,7 +444,7 @@ public class AdminBean implements Serializable {
                 return "pretty:adminGroupEdit";
             }
         } else {
-            if (DataManager.getInstance().getDao().addUserGroup(getCurrentUserGroup())) {
+            if (DataManager.getInstance().getDao().addUserGroup(getCurrentUserGroup()) != null) {
                 Messages.info(StringConstants.MSG_ADMIN_ADDED_SUCCESSFULLY);
             } else {
                 Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
@@ -499,7 +502,7 @@ public class AdminBean implements Serializable {
                 Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
             }
         } else {
-            if (DataManager.getInstance().getDao().addRole(getCurrentRole())) {
+            if (DataManager.getInstance().getDao().addRole(getCurrentRole()) != null) {
                 Messages.info(StringConstants.MSG_ADMIN_ADDED_SUCCESSFULLY);
             } else {
                 Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
@@ -618,7 +621,7 @@ public class AdminBean implements Serializable {
                 // If the user group is not yet persisted, add it to DB first
                 if (userRole.getUserGroup() != null && userRole.getUserGroup().getId() == null) {
                     logger.trace("adding new user group: {}", userRole.getUserGroup());
-                    if (!DataManager.getInstance().getDao().addUserGroup(userRole.getUserGroup())) {
+                    if (DataManager.getInstance().getDao().addUserGroup(userRole.getUserGroup()) == null) {
                         logger.error("Could not save UserRole: {}", userRole);
                         Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
                         continue;
@@ -633,7 +636,7 @@ public class AdminBean implements Serializable {
                     }
                 } else {
                     // new
-                    if (DataManager.getInstance().getDao().addUserRole(userRole)) {
+                    if (DataManager.getInstance().getDao().addUserRole(userRole) != null) {
                         Messages.info("userGroup_memberAddSuccess");
                     } else {
                         Messages.error("userGroup_memberAddFailure");
@@ -1194,7 +1197,7 @@ public class AdminBean implements Serializable {
      * @return true if at least one group is not fully translated; false otherwise
      */
     public boolean isDisplayTranslationsDashboardWidget() {
-        for (TranslationGroup group : getConfiguredTranslationGroups()) {
+        for (TranslationGroup group : getCachedTranslationGroups()) {
             if (!group.isFullyTranslated()) {
                 return true;
             }
@@ -1231,7 +1234,7 @@ public class AdminBean implements Serializable {
      * @return id of the synthetic dynamic collections translation group; -1 if it is not available
      */
     public int getDynamicCollectionsTranslationGroupId() {
-        for (TranslationGroup group : getAllTranslationGroups()) {
+        for (TranslationGroup group : getCachedTranslationGroups()) {
             if (TranslationGroupType.DYNAMIC_COLLECTIONS.equals(group.getType())) {
                 return group.getId();
             }
@@ -1246,7 +1249,7 @@ public class AdminBean implements Serializable {
      * @return List containing the synthetic dynamic collections translation group; empty if no dynamic collections exist
      */
     public List<TranslationGroup> getDynamicCollectionsTranslationGroups() {
-        return getAllTranslationGroups().stream()
+        return getCachedTranslationGroups().stream()
                 .filter(group -> TranslationGroupType.DYNAMIC_COLLECTIONS.equals(group.getType()))
                 .collect(Collectors.toList());
     }
@@ -1257,7 +1260,7 @@ public class AdminBean implements Serializable {
      * @return Number of configured translation grouns
      */
     public long getConfiguredTranslationGroupsCount() {
-        return getAllTranslationGroups()
+        return getCachedTranslationGroups()
                 .stream()
                 .filter(g -> !g.isLoadError())
                 .filter(g -> g.getEntryCount() - g.getFullyTranslatedEntryCount() > 0)
@@ -1268,12 +1271,40 @@ public class AdminBean implements Serializable {
      * getConfiguredTranslationGroups.
      *
      * @return All configured <code>TranslationGroup</code>s
+     * @should not overwrite existing translation lock
+     * @should not set translation lock when none exists
+     * @should return same instance on repeated calls
      */
     public List<TranslationGroup> getConfiguredTranslationGroups() {
+        return getCachedTranslationGroups();
+    }
+
+    /**
+     * Session-scoped cached accessor for {@link #getAllTranslationGroups()}. Building the groups is expensive
+     * (Solr facet/field-name queries plus a message-bundle scan per key and locale), and the dashboard references
+     * the list several times per render, so the result is cached until {@link #resetTranslationGroups()} clears it.
+     *
+     * @return the cached list of translation groups
+     */
+    private List<TranslationGroup> getCachedTranslationGroups() {
         synchronized (TRANSLATION_LOCK) {
-            List<TranslationGroup> ret = getAllTranslationGroups();
-            logger.trace("groups: {}", ret.size());
-            return ret;
+            if (cachedTranslationGroups == null) {
+                cachedTranslationGroups = getAllTranslationGroups();
+                logger.trace("built translation groups: {}", cachedTranslationGroups.size());
+            }
+            return cachedTranslationGroups;
+        }
+    }
+
+    /**
+     * Invalidates the cached translation groups so the next access rebuilds them. Called after translation edits
+     * and when entering the translations admin section, so the editor and overview always see current data.
+     *
+     * @should rebuild groups on next call
+     */
+    public void resetTranslationGroups() {
+        synchronized (TRANSLATION_LOCK) {
+            cachedTranslationGroups = null;
         }
     }
 
@@ -1340,6 +1371,7 @@ public class AdminBean implements Serializable {
         if (currentTranslationGroup != null) {
             currentTranslationGroup.saveSelectedEntry();
             currentTranslationGroup = null;
+            resetTranslationGroups();
         }
     }
 
@@ -1424,6 +1456,7 @@ public class AdminBean implements Serializable {
         }
 
         currentTranslationGroup.saveSelectedEntry();
+        resetTranslationGroups();
         return "pretty:adminTranslations";
     }
 
@@ -1462,7 +1495,7 @@ public class AdminBean implements Serializable {
      * @param id Looks up and loads <code>currentTranslationGroup</code> that matches the given id
      */
     public void setCurrentTranslationGroupId(int id) {
-        List<TranslationGroup> groups = getAllTranslationGroups();
+        List<TranslationGroup> groups = getCachedTranslationGroups();
         if (id >= 0 && groups.size() > id) {
             TranslationGroup group = groups.get(id);
             if (!group.equals(currentTranslationGroup)) {

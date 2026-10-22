@@ -1,4 +1,4 @@
-e; /**
+/**
  * This file is part of the Goobi viewer - a content presentation and management
  * application for digitized objects.
  *
@@ -502,6 +502,19 @@ var Crowdsourcing = (function (crowdsourcing) {
         } else {
             return undefined;
         }
+    };
+
+    /**
+     * The physical page order (1-based) of the currently open canvas, as assigned by the
+     * server (matches PersistentAnnotation.targetPageOrder). This is read from the canvas id
+     * itself (".../pages/{pageNo}/canvas/") rather than derived from currentCanvasIndex: the
+     * two only coincide if the record's page order happens to start at 1 without gaps, which
+     * does not always hold (e.g. volumes with continuous cross-volume page numbering).
+     */
+    crowdsourcing.Item.prototype.getCurrentPageOrder = function () {
+        let pageId = this.getCurrentPageId();
+        let match = pageId ? /\/pages\/(\d+)\/canvas\/?(?:[?#]|$)/.exec(pageId) : null;
+        return match ? parseInt(match[1], 10) : this.currentCanvasIndex + 1;
     };
 
     crowdsourcing.Item.prototype.loadNextItem = function (requireConfirmation) {

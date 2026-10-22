@@ -43,7 +43,6 @@ import de.intranda.api.services.Service;
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
-import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
@@ -67,9 +66,13 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.security.RequiredPrivileges;
+import io.goobi.viewer.solr.SolrConstants.DocType;
 import jakarta.ws.rs.BadRequestException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -118,12 +121,8 @@ public class RecordsFilesImageResource extends ImageResource {
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
         request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filename);
         request.setAttribute(ImageResource.IIIF_VERSION, "3.0");
-        //Privilege must be PRIV_BORN_DIGITAL for born digital PDFs, and PRIV_VIEW_IMAGES otherwise (i.e. for images)
-        if (ImageFileFormat.PDF.equals(ImageFileFormat.getImageFileFormatFromFileExtension(filename))) {
-            request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES);
-        } else {
-            request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_VIEW_IMAGES);
-        }
+        // Born-digital download resources require PRIV_DOWNLOAD_BORN_DIGITAL_FILES, pages PRIV_VIEW_IMAGES, independent of the file type
+        request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, getRequiredPrivileges(IPrivilegeHolder.PRIV_VIEW_IMAGES));
 
         String requestUrl = request.getRequestURI();
         String baseImageUrl = RECORDS_FILES_IMAGE.replace("{pi}", pi).replace("{filename}", filename);
@@ -147,7 +146,7 @@ public class RecordsFilesImageResource extends ImageResource {
                     && (!(Region.FULL_IMAGE.equals(region) || Region.SQUARE_IMAGE.equals(region))
                             || scaleWidth.orElse(Integer.MAX_VALUE) > maxUnzoomedImageWidth)) {
                 request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE,
-                        new String[] { IPrivilegeHolder.PRIV_VIEW_IMAGES, IPrivilegeHolder.PRIV_ZOOM_IMAGES });
+                        getRequiredPrivileges(IPrivilegeHolder.PRIV_VIEW_IMAGES, IPrivilegeHolder.PRIV_ZOOM_IMAGES));
             }
         } else {
             //image info request
@@ -155,13 +154,24 @@ public class RecordsFilesImageResource extends ImageResource {
         }
     }
 
+    /**
+     * Renders the record's image file as a single-page PDF via the content server and streams it to the response.
+     *
+     * @return streaming output that writes the rendered pdf
+     * @throws ContentLibException if rendering fails
+     */
     @GET
     @Path(RECORDS_FILES_IMAGE_PDF)
     @Produces("application/pdf")
     @AccessConditionBinding
     @ContentServerPdfBinding
     @RecordFileDownloadBinding
-    @Operation(tags = { "records" }, summary = "Returns the image for the given filename as PDF")
+    @Operation(tags = { "records" }, summary = "Returns the image for the given filename as PDF",
+            description = "Renders the source image as a single-page PDF document, not a paginated export of the entire record, and delivers it"
+                    + " as an attachment named \"{pi}_{basename}.pdf\", where {basename} is the source file name without its extension.")
+    @ApiResponse(responseCode = "200", description = "PDF rendition of the image",
+            content = @Content(mediaType = "application/pdf", schema = @Schema(type = "string", format = "binary")))
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     // Access-denied and error responses are returned as application/json even though the declared content type is application/pdf
     @ApiResponse(responseCode = "403", description = "Access denied or record not found in index")
     @ApiResponse(responseCode = "404", description = "Image or record not found")
@@ -188,11 +198,25 @@ public class RecordsFilesImageResource extends ImageResource {
         return super.getPdf();
     }
 
+    /**
+     * Redirects to the canonical {@code info.json} url of this record image resource.
+     *
+     * @return a 303 redirect response
+     */
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
     @AccessConditionBinding
     @ContentServerImageInfoBinding
-    @Operation(tags = { "records", "iiif" }, summary = "IIIF image identifier for the given filename. Returns a IIIF 2.1.1 image information object")
+    @Operation(tags = { "records", "iiif" }, summary = "IIIF image identifier for the given filename. Returns a IIIF 3.0 image information object",
+            description = "Redirects (HTTP 303) to the canonical IIIF image information document (info.json) for the image file of the"
+                    + " record; the target URL is the resource's own base URL with \"/info.json\" appended. A filename segment that is a"
+                    + " page order number instead of a file name is redirected (HTTP 302) to the same operation with the file name resolved"
+                    + " from the index. The redirect itself is not access-checked; the record's access conditions are enforced on the"
+                    + " information document the caller is redirected to.")
+    @ApiResponse(responseCode = "302", description = "Redirect to the same operation with the page order number replaced by the file name")
+    @ApiResponse(responseCode = "303", description = "Redirect to the canonical IIIF image information (info.json)")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "500", description = "The data repository of the record could not be resolved from the index")
     @Override
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
         return super.redirectToCanonicalImageInfo();
@@ -276,5 +300,19 @@ public class RecordsFilesImageResource extends ImageResource {
             throw new BadRequestException("Invalid record identifier: " + pi);
         }
         return pi;
+    }
+
+    /**
+     * Privileges required for requests to this resource. Which ones apply is decided by the access check based on the DOCTYPE of the Solr document
+     * listing the requested file: files of {@link DocType#DOWNLOAD_RESOURCE} documents require
+     * {@link IPrivilegeHolder#PRIV_DOWNLOAD_BORN_DIGITAL_FILES}, all others (i.e. pages) the given privileges.
+     *
+     * @param pagePrivileges privileges required for page files
+     * @return {@link RequiredPrivileges}
+     * @should require born digital privilege for download resources
+     * @should require given privileges for pages
+     */
+    static RequiredPrivileges getRequiredPrivileges(String... pagePrivileges) {
+        return RequiredPrivileges.of(pagePrivileges).withDocType(DocType.DOWNLOAD_RESOURCE, IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES);
     }
 }

@@ -203,7 +203,7 @@ public class CMSTemplateManager implements Serializable {
 
     public void reloadContentManager() {
         try {
-            // Module-aware reload (#15809): forward all module-contributed component folders alongside core+theme.
+            // Module-aware reload: forwards all module-contributed component folders alongside core+theme.
             // Module folders may resolve to JAR-internal paths; collectModuleComponentFolders takes care of mounting
             // the JarFileSystem for such URLs.
             List<Path> moduleFolders = collectModuleComponentFolders();

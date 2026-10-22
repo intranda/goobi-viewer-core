@@ -21,6 +21,11 @@
  */
 package io.goobi.viewer.api.rest.model.tasks;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
@@ -29,8 +34,10 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.dao.IDAO;
+import io.goobi.viewer.model.security.tickets.AccessTicket;
+import io.goobi.viewer.model.security.tickets.AccessTicket.AccessTicketType;
 
 class TaskManagerTest extends AbstractDatabaseEnabledTest {
 
@@ -42,6 +49,26 @@ class TaskManagerTest extends AbstractDatabaseEnabledTest {
         Assertions.assertNotNull(DataManager.getInstance().getDao().getTicket(1L));
         Assertions.assertEquals(1, TaskManager.deleteExpiredDownloadTickets());
         Assertions.assertNull(DataManager.getInstance().getDao().getTicket(1L));
+    }
+
+    /**
+     * @see TaskManager#deleteExpiredDownloadTickets()
+     * @verifies delete expired tickets of every type
+     */
+    @Test
+    void deleteExpiredDownloadTickets_shouldDeleteExpiredTicketsOfEveryType() throws Exception {
+        IDAO dao = DataManager.getInstance().getDao();
+
+        AccessTicket recordTicket = new AccessTicket();
+        recordTicket.setType(AccessTicketType.RECORD);
+        recordTicket.setEmail("user3@example.com");
+        recordTicket.setPi("PPN789");
+        recordTicket.setPasswordHash("$2a$10$H580saN37o2P03A5myUCm.V0ac/lO.79AfkiNjVhDzljqS3RGojzO");
+        recordTicket.setExpirationDate(DateTools.now().minusDays(1));
+        assertNotNull(dao.addTicket(recordTicket));
+
+        assertEquals(2, TaskManager.deleteExpiredDownloadTickets());
+        assertNull(dao.getTicket(recordTicket.getId()));
     }
 
     /**

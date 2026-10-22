@@ -39,12 +39,19 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.log.LogFile;
 import io.goobi.viewer.model.log.LogLine;
 import io.goobi.viewer.model.log.LogLineParser;
+import io.goobi.viewer.api.rest.filters.UserLoggedInFilter;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * REST endpoint for log file polling (WebSocket fallback).
@@ -54,6 +61,7 @@ import jakarta.ws.rs.core.Response;
  */
 @jakarta.ws.rs.Path("/logs")
 @AdminLoggedInBinding
+@SecurityRequirement(name = UserLoggedInFilter.SECURITY_SCHEME_BEARER)
 public class LogViewerResource {
 
     private static final Logger logger = LogManager.getLogger(LogViewerResource.class);
@@ -62,8 +70,23 @@ public class LogViewerResource {
     @GET
     @jakarta.ws.rs.Path("/{logfile}")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags = { "monitoring" }, summary = "Requires an admin identity. Read new lines from one of the viewer log files",
+            description = "Polling fallback for the log viewer's WebSocket connection. Without 'sinceOffset' the tail of the file is"
+                    + " returned, its length configured by logViewer/initialLines; with an offset only the bytes appended since then."
+                    + " The response always reports the file's current size as the offset for the next poll. At most 1 MiB is read per"
+                    + " request. A configured log file that does not exist yet yields an empty line list rather than an error.")
+    @ApiResponse(responseCode = "200",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(type = "object",
+                            description = "Object holding 'lines', an array of parsed log lines with timestamp, level, thread,"
+                                    + " location and message, and 'nextOffset', the byte offset to pass to the next request")),
+            description = "Parsed log lines and the offset for the next request")
+    @ApiResponse(responseCode = "400", description = "Unknown log file name; valid names are viewer, oai, ics and indexer")
+    @ApiResponse(responseCode = "401", description = "No admin identity: neither a bearer token of an admin user nor an admin session")
+    @ApiResponse(responseCode = "500", description = "Log file could not be read")
     public Response getLogLines(
-            @PathParam("logfile") String logfileName,
+            @Parameter(description = "Name of the log file to read: viewer, oai, ics or indexer") @PathParam("logfile") String logfileName,
+            @Parameter(description = "Byte offset returned by a previous request; omit or pass 0 to receive the tail of the file")
             @QueryParam("sinceOffset") Long sinceOffset) {
 
         var optLogFile = LogFile.fromName(logfileName);

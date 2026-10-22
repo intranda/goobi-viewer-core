@@ -24,7 +24,6 @@ package io.goobi.viewer.controller;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-// Added Jsoup imports for the cleanRichText/isCleanRichText implementation (Task 1).
 // Jsoup is encapsulated here — callers must never import org.jsoup.* directly.
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Attribute;

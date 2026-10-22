@@ -134,7 +134,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
         }
 
         UserRole membership = new UserRole(this, user, role);
-        return DataManager.getInstance().getDao().addUserRole(membership);
+        return DataManager.getInstance().getDao().addUserRole(membership) != null;
     }
 
     /**

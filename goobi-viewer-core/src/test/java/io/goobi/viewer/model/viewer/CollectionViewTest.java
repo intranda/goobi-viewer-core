@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -53,7 +54,10 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.CollectionViewBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
+import io.goobi.viewer.model.cms.collections.DynamicCollection;
+import io.goobi.viewer.model.cms.collections.DynamicCollectionTranslation;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
@@ -158,6 +162,33 @@ class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
         HierarchicalBrowseDcElement schrift2000 = collection.getCollectionElement("zeitschriften.2000", true);
         Assertions.assertTrue(elements.indexOf(schrift1900) > elements.indexOf(schrift2000));
 
+    }
+
+    /**
+     * @see CollectionView#populateCollectionList()
+     * @verifies reattach dynamic collection info when repopulating
+     */
+    @Test
+    void populateCollectionList_shouldReattachDynamicCollectionInfoWhenRepopulating() throws Exception {
+        String language = BeanUtils.getLocale() != null ? BeanUtils.getLocale().getLanguage() : Locale.ENGLISH.getLanguage();
+
+        DynamicCollection dynamicCollection = new DynamicCollection("cv_dyncol_1");
+        dynamicCollection.setSolrQuery("ISWORK:true");
+        dynamicCollection.addLabel(new DynamicCollectionTranslation(language, "Dynamic collection one"));
+        DataManager.getInstance().getDao().addDynamicCollection(dynamicCollection);
+        try {
+            CollectionView collection =
+                    new CollectionView(SolrConstants.DC_DYNAMIC, () -> Map.of("cv_dyncol_1", new CollectionResult("cv_dyncol_1", 1L)));
+            collection.setIgnoreHierarchy(true);
+            collection.populateCollectionList();
+            assertEquals("Dynamic collection one", collection.getVisibleDcElements().get(0).getLabel());
+
+            // Repopulating creates new browse elements, so the DB info has to be attached to those as well
+            collection.populateCollectionList();
+            assertEquals("Dynamic collection one", collection.getVisibleDcElements().get(0).getLabel());
+        } finally {
+            DataManager.getInstance().getDao().deleteDynamicCollection(dynamicCollection);
+        }
     }
 
     /**

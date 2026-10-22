@@ -238,7 +238,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
         bookmarkList.setName(name);
         bookmarkList.setOwner(user);
         bookmarkList.setIsPublic(false);
-        if (!DataManager.getInstance().getDao().addBookmarkList(bookmarkList)) {
+        if (DataManager.getInstance().getDao().addBookmarkList(bookmarkList) == null) {
             throw new RestApiException("Failed to persist bookmark list", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
         return bookmarkList;
@@ -287,7 +287,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
         Optional<BookmarkList> bookmarkList = DataManager.getInstance().getBookmarkManager().getBookmarkList(session);
         if (bookmarkList.isPresent()) {
             bookmarkList.get().setName(name);
-            boolean success = DataManager.getInstance().getDao().addBookmarkList(bookmarkList.get());
+            boolean success = DataManager.getInstance().getDao().addBookmarkList(bookmarkList.get()) != null;
             return new SuccessMessage(success);
         }
 

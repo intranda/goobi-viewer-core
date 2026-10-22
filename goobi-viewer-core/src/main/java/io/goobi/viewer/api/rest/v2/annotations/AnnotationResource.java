@@ -75,6 +75,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 
@@ -127,7 +128,9 @@ public class AnnotationResource {
     @jakarta.ws.rs.Path("/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Get a page within the annotation collection over all annotations")
-    @ApiResponse(responseCode = "400", description = "If the page number is out of bounds")
+    @ApiResponse(responseCode = "200", description = "A page of annotations from the annotation collection")
+    @ApiResponse(responseCode = "400", description = "The page number is less than 1 or not a number")
+    @ApiResponse(responseCode = "500", description = "The annotations could not be read from the database")
     public AnnotationPage getAnnotationCollectionPage(@PathParam("page")
     Integer page)
             throws ContentLibException, DAOException {
@@ -146,7 +149,7 @@ public class AnnotationResource {
     @jakarta.ws.rs.Path(ANNOTATIONS_ANNOTATION)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Get an annotation by its identifier")
-    @ApiResponse(responseCode = "404", description = "If the page number is out of bounds")
+    @ApiResponse(responseCode = "404", description = "No annotation found for the given id")
     public IAnnotation getAnnotation(@Parameter(description = "Identifier of the annotation")
     @PathParam("id")
     Long id)
@@ -166,7 +169,7 @@ public class AnnotationResource {
     @jakarta.ws.rs.Path(ANNOTATIONS_COMMENT)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Get an annotation by its identifier")
-    @ApiResponse(responseCode = "404", description = "If the page number is out of bounds")
+    @ApiResponse(responseCode = "404", description = "No comment annotation found for the given id")
     public IAnnotation getComment(@Parameter(description = "Identifier of the annotation")
     @PathParam("id")
     Long id)
@@ -180,7 +183,6 @@ public class AnnotationResource {
      * @param anno incoming annotation to persist
      * @return {@link IAnnotation}
      * @throws DAOException
-     * @throws NotImplementedException
      */
     @POST
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -190,14 +192,15 @@ public class AnnotationResource {
     @ApiResponse(responseCode = "501",
             description = "Persisting this kind of annotation or its target is not implemented."
                     + " Only W3C Web Annotations targeting a manifest, canvas or part of a canvas may be persisted")
-    public IAnnotation addAnnotation(IncomingAnnotation anno) throws DAOException, NotImplementedException {
+    public IAnnotation addAnnotation(IncomingAnnotation anno) throws DAOException {
         AnnotationConverter converter = new AnnotationConverter(urls);
         CrowdsourcingAnnotation pAnno = createPersistentAnnotation(anno);
         if (pAnno != null) {
             DataManager.getInstance().getDao().addAnnotation(pAnno);
             return converter.getAsWebAnnotation(pAnno);
         }
-        throw new NotImplementedException();
+        // Wrapped so the mapper can classify it; a bare NotImplementedException has no mapper and surfaces as 500.
+        throw new WebApplicationException(new NotImplementedException());
     }
 
     /**
@@ -212,7 +215,6 @@ public class AnnotationResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Delete an existing annotation")
     @ApiResponse(responseCode = "200", description = "Return the deleted annotation")
-    @ApiResponse(responseCode = "401", description = "Not logged in — must be authenticated to delete annotations")
     @ApiResponse(responseCode = "403", description = "Not allowed to delete this annotation — it was created by another user")
     @ApiResponse(responseCode = "404", description = "Annotation not found by the given id")
     public IAnnotation deleteAnnotation(@Parameter(description = "Identifier of the annotation")

@@ -24,7 +24,6 @@ package io.goobi.viewer.api.rest.model.tasks;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -56,7 +55,6 @@ import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.search.SearchHitsNotifier;
 import io.goobi.viewer.model.security.tickets.AccessTicket;
-import io.goobi.viewer.model.security.tickets.AccessTicket.AccessTicketType;
 import io.goobi.viewer.model.sitemap.SitemapBuilder;
 import io.goobi.viewer.model.statistics.usage.StatisticsIndexTask;
 import io.goobi.viewer.servlets.utils.ServletUtils;
@@ -247,20 +245,23 @@ public class TaskManager {
     }
 
     /**
+     * Removes all expired access tickets from the database, regardless of their type.
+     *
      * @return count Number of deleted rows
      * @throws DAOException
      * @should delete all expired tickets
+     * @should delete expired tickets of every type
      */
     static int deleteExpiredDownloadTickets() throws DAOException {
         int count = 0;
         for (AccessTicket ticket : DataManager.getInstance()
                 .getDao()
-                .getActiveTickets(0, Integer.MAX_VALUE, null, false, Collections.singletonMap("type", AccessTicketType.DOWNLOAD.name()))) {
+                .getActiveTickets(0, Integer.MAX_VALUE, null, false, null)) {
             if (ticket.isExpired() && DataManager.getInstance().getDao().deleteTicket(ticket)) {
                 count++;
             }
         }
-        logger.info("{} expired download tickets removed.", count);
+        logger.info("{} expired access tickets removed.", count);
 
         return count;
     }

@@ -21,7 +21,6 @@
  */
 package io.goobi.viewer.api.rest.model.statistics.index;
 
-// New DTO for #15809: single point on the "imported records over time" line chart.
 /**
  * Single point on the "imported records over time" line chart.
  *

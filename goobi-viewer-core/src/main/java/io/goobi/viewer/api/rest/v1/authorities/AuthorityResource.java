@@ -52,6 +52,9 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.metadata.MetadataTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -84,12 +87,35 @@ public class AuthorityResource {
         //
     }
 
+    /**
+     * Resolves an authority (normdata) record identified by the given URL and returns its metadata as JSON.
+     *
+     * <p>The url may append a second, {@code $}-separated segment. Whenever the first url points to viaf.org, the authority record
+     * resolved from it is added as a cross-reference entry; a second segment additionally contributes the VIAF cluster url. Depending
+     * on {@code template}, either every available field is returned (no template, {@code _DEFAULT}, {@code _ALL}, or an unconfigured
+     * template name), or only the fields configured for that template, always excluding the raw GND URI field from the templated
+     * output.
+     *
+     * @param inUrl identifier url of the resource
+     * @param template metadata template to use
+     * @param lang language to use for metadata fields
+     * @return the resolved normdata as a JSON array string
+     * @throws ContentNotFoundException if no authority record is found for the given url
+     * @throws PresentationException if a class-linkage error (NoSuchMethodError) prevents building the JSON response
+     */
     @GET
     @jakarta.ws.rs.Path(AUTHORITY_RESOLVER)
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    @Operation(tags = { "authority" }, summary = "Get a normdata authority resource identified by its escaped url")
-    @ApiResponse(responseCode = "200", description = "Authority record data for the given identifier")
+    @Operation(tags = { "authority" }, summary = "Get a normdata authority resource identified by its escaped url",
+            description = "The identifier url may append a second, '$'-separated segment. Whenever the first url points to viaf.org,"
+                    + " the authority record resolved from it is added as a cross-reference entry, and a second segment additionally"
+                    + " contributes the VIAF cluster url. Depending on the 'template' parameter, either every available normdata field"
+                    + " is returned (no template, '_DEFAULT',"
+                    + " '_ALL', or an unconfigured template), or only the fields configured for that template, with the raw GND"
+                    + " URI field always excluded from the templated output.")
+    @ApiResponse(responseCode = "200", description = "Authority record data for the given identifier",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, array = @ArraySchema(schema = @Schema(type = "object"))))
     @ApiResponse(responseCode = "400", description = "Invalid or missing authority URL")
     @ApiResponse(responseCode = "404", description = "No authority record found for the given URL")
     @ApiResponse(responseCode = "500", description = "Error fetching authority data")

@@ -43,4 +43,17 @@ class CMSMediaItemTest {
         Assertions.assertEquals(Priority.IMPORTANT, media.getPriority());
     }
 
+    /**
+     * @see CMSMediaItem#getContentType()
+     * @verifies return webp content type for webp file
+     */
+    @Test
+    void getContentType_shouldReturnWebpContentTypeForWebpFile() {
+        CMSMediaItem media = new CMSMediaItem();
+        media.setFileName("image.webp");
+        Assertions.assertEquals(CMSMediaItem.CONTENT_TYPE_WEBP, media.getContentType());
+        media.setFileName("image.WEBP");
+        Assertions.assertEquals(CMSMediaItem.CONTENT_TYPE_WEBP, media.getContentType());
+    }
+
 }

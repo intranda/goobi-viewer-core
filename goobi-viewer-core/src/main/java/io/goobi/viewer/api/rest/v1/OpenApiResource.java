@@ -39,15 +39,20 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
+import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
+import io.goobi.viewer.api.rest.filters.UserLoggedInFilter;
 import io.goobi.viewer.controller.DataManager;
 import io.swagger.v3.jaxrs2.integration.JaxrsOpenApiContextBuilder;
 import io.swagger.v3.oas.integration.OpenApiConfigurationException;
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
+import io.swagger.v3.oas.models.tags.Tag;
 
 /**
  * @author Florian Alpers
@@ -93,6 +98,9 @@ public class OpenApiResource {
             oApi.setServers(servers);
 
             oApi.setInfo(getInfo());
+            oApi.setTags(getTags());
+            applyTokenSecurityScheme(oApi);
+            applyBearerSecurityScheme(oApi);
 
             return oApi;
         } catch (OpenApiConfigurationException e) {
@@ -112,6 +120,79 @@ public class OpenApiResource {
     }
 
     /**
+     * Returns the security scheme describing the API token.
+     *
+     * <p>The token is a static value the operator configures; it is sent in the request header named by
+     * {@link AuthorizationFilter#TOKEN_HEADER}. The deprecated query parameter fall-back is deliberately left
+     * undocumented: a machine readable spec is an invitation to use what it describes, and a token in the URL
+     * leaks into access logs, Referer headers and browser history.
+     *
+     * @return the api key security scheme for the token header
+     * @should describe an api key scheme for the token header
+     */
+    public static SecurityScheme getTokenSecurityScheme() {
+        return new SecurityScheme()
+                .type(SecurityScheme.Type.APIKEY)
+                .in(SecurityScheme.In.HEADER)
+                .name(AuthorizationFilter.TOKEN_HEADER)
+                .description("Static API token issued by the viewer operator. Send it in the `" + AuthorizationFilter.TOKEN_HEADER
+                        + "` request header. Endpoints without this requirement are open; endpoints protected by a user or admin"
+                        + " session are not covered by this scheme.");
+    }
+
+    /**
+     * Declares the token security scheme on the given spec.
+     *
+     * <p>Adds to the existing {@link Components} rather than replacing them: the reader has already filled in the model
+     * schemas at this point, and {@code setComponents} would drop them. Applied after {@code read()} for the same reason —
+     * the reader assigns the scheme map wholesale, so a pre-populated configuration could be overwritten.
+     *
+     * <p>Static so the build-time spec generator applies the identical scheme, instead of a copy that could drift.
+     *
+     * @param openApi spec to declare the scheme on
+     * @should add the scheme to existing components without replacing them
+     * @should create components when absent
+     */
+    public static void applyTokenSecurityScheme(OpenAPI openApi) {
+        Components components = openApi.getComponents() != null ? openApi.getComponents() : new Components();
+        components.addSecuritySchemes(AuthorizationFilter.SECURITY_SCHEME_TOKEN, getTokenSecurityScheme());
+        openApi.setComponents(components);
+    }
+
+    /**
+     * Returns the security scheme describing the user bearer token.
+     *
+     * <p>Issued by {@code POST /auth/login}, which returns the plaintext token in its response body. The endpoints
+     * requiring it also accept a logged-in browser session; that alternative is deliberately left undescribed, because
+     * a client cannot obtain a session through the API and no tooling can supply one.
+     *
+     * @return the http bearer security scheme
+     * @should describe an http bearer scheme
+     */
+    public static SecurityScheme getBearerSecurityScheme() {
+        return new SecurityScheme()
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("bearer")
+                .description("User token obtained from `POST /auth/login`, sent as `Authorization: Bearer <token>`."
+                        + " Endpoints requiring it also accept a logged in browser session, which this scheme does not"
+                        + " describe. Tokens expire and are invalidated when the user is deactivated or suspended.");
+    }
+
+    /**
+     * Declares the bearer security scheme on the given spec.
+     *
+     * <p>Adds to the existing {@link Components} for the same reason as {@link #applyTokenSecurityScheme(OpenAPI)}.
+     *
+     * @param openApi spec to declare the scheme on
+     * @should add the scheme to existing components without replacing them
+     */
+    public static void applyBearerSecurityScheme(OpenAPI openApi) {
+        Components components = openApi.getComponents() != null ? openApi.getComponents() : new Components();
+        components.addSecuritySchemes(UserLoggedInFilter.SECURITY_SCHEME_BEARER, getBearerSecurityScheme());
+        openApi.setComponents(components);
+    }
+
+    /**
      * Made static so the build-time OpenAPI spec generator can reuse the exact same
      * {@link Info} object as the runtime resource, instead of duplicating a slimmed-down
      * copy that could drift out of sync (no instance state is used here).
@@ -128,6 +209,46 @@ public class OpenApiResource {
                 .license(new License()
                         .name("GPL2 or later")
                         .url("https://github.com/intranda/goobi-viewer-core/blob/master/LICENSE"));
+    }
+
+    /**
+     * Returns the global tag list of the v1 API.
+     *
+     * <p>Operations reference these tags by name only. Declaring them here is what gives each group in the API
+     * documentation a description, and this list's order is the order in which the groups are presented. A tag
+     * used by an operation but missing here still forms a group, just an undescribed one at the end.
+     *
+     * <p>Static for the same reason as {@link #getInfo()}: the build-time spec generator reuses it, so the
+     * validated spec stays identical to what this resource serves.
+     *
+     * @return tags of the v1 API, in presentation order
+     */
+    public static List<Tag> getTags() {
+        return List.of(
+                tag("records", "Records addressed by persistent identifier: metadata, pages, files, images and downloads."),
+                tag("iiif", "IIIF Presentation 2.1.1, Image, Search and Change Discovery resources."),
+                tag("collections", "Information about and downloads of BagIt archives for a whole collection."),
+                tag("search", "OpenSearch description, quick filter facets and search result exports."),
+                tag("index", "Direct Solr index access: field list, geospatial search, heatmaps, queries and statistics."),
+                tag("annotations", "Web Annotations on records and pages, including comments and ALTO text annotations."),
+                tag("bookmarks", "Bookmark lists of the current user and public lists addressed by their share key."),
+                tag("rss", "RSS feeds of recent records and of bookmark lists, as XML or JSON."),
+                tag("json", "Record metadata rendered through statically configured JSON templates."),
+                tag("media", "CMS media items, optionally filtered by category."),
+                tag("authority", "Resolver for normdata authority resources addressed by their escaped URL."),
+                tag("localization", "Translations for message keys in the configured languages."),
+                tag("statistics", "Usage statistics per day or time frame, and moving wall information."),
+                tag("auth", "Session login and logout."),
+                tag("login", "OpenID Connect callbacks and header based login."),
+                tag("users", "Information about the current user and upload of avatar images."),
+                tag("clients", "Registration and administration of trusted client applications."),
+                tag("tasks", "Queueing of long running tasks in a limited thread pool, and their status."),
+                tag("cache", "Status of the internal image, thumbnail and PDF cache, and endpoints to clear it."),
+                tag("monitoring", "Availability report for the data providing services the viewer depends on."));
+    }
+
+    private static Tag tag(String name, String description) {
+        return new Tag().name(name).description(description);
     }
 
 }

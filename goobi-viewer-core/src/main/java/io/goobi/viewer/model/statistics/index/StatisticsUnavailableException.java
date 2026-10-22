@@ -21,12 +21,10 @@
  */
 package io.goobi.viewer.model.statistics.index;
 
-// New exception type for #15809: lets statistics services signal "upstream is down AND no fresh
-// cached snapshot is available" so the JAX-RS resource layer can translate to HTTP 503 instead of
-// silently returning empty data (which would render as a blank chart).
 /**
  * Thrown when a statistics aggregation cannot be served because Solr (or the underlying data source) is unreachable
- * AND no cached snapshot is available to fall back on. Translated to HTTP 503 by the resource layer.
+ * AND no cached snapshot is available to fall back on. Translated to HTTP 503 by the resource layer, so that callers
+ * can tell an outage apart from an empty result, which would render as a blank chart.
  */
 public class StatisticsUnavailableException extends Exception {
 

@@ -253,7 +253,7 @@ public final class UserTools {
             user.setNickName("Anonymous");
             user.setSuperuser(false);
             user.setSuspended(true);
-            if (DataManager.getInstance().getDao().addUser(user)) {
+            if (DataManager.getInstance().getDao().addUser(user) != null) {
                 logger.info("Added anonymous user '{}'.", User.EMAIL_ADDRESS_ANONYMOUS);
             }
         } else {

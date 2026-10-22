@@ -26,12 +26,15 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
+import jakarta.faces.model.SelectItem;
+
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.CmsCollectionsBean.CMSCollectionImageMode;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.model.cms.collections.DynamicCollection;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.translations.admin.MessageEntry;
 import io.goobi.viewer.solr.SolrConstants;
@@ -47,6 +50,19 @@ class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         bean.setSolrFieldNoUpdates(SolrConstants.DC);
         Assertions.assertFalse(bean.isDynamicCollectionsSource());
         bean.setSolrFieldNoUpdates(SolrConstants.DC_DYNAMIC);
+        Assertions.assertTrue(bean.isDynamicCollectionsSource());
+    }
+
+    /**
+     * @see CmsCollectionsBean#selectDynamicCollectionsSource()
+     * @verifies select the dynamic collections pseudo field
+     */
+    @Test
+    void selectDynamicCollectionsSource_shouldSelectTheDynamicCollectionsPseudoField() {
+        CmsCollectionsBean bean = new CmsCollectionsBean();
+        bean.setSolrFieldNoUpdates(SolrConstants.DC);
+        bean.selectDynamicCollectionsSource();
+        Assertions.assertEquals(SolrConstants.DC_DYNAMIC, bean.getSolrField());
         Assertions.assertTrue(bean.isDynamicCollectionsSource());
     }
 
@@ -71,6 +87,23 @@ class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         // Selected pseudo field keeps its option even without existing collections
         bean.setSolrFieldNoUpdates(SolrConstants.DC_DYNAMIC);
         Assertions.assertTrue(bean.getSourceSelectItems().stream().anyMatch(item -> SolrConstants.DC_DYNAMIC.equals(item.getValue())));
+    }
+
+    /**
+     * @see CmsCollectionsBean#getSourceSelectItems()
+     * @verifies label the dynamic source with the admin message key
+     */
+    @Test
+    void getSourceSelectItems_shouldLabelTheDynamicSourceWithTheAdminMessageKey() {
+        CmsCollectionsBean bean = new CmsCollectionsBean();
+        bean.setSolrFieldNoUpdates(SolrConstants.DC_DYNAMIC);
+        String label = bean.getSourceSelectItems()
+                .stream()
+                .filter(item -> SolrConstants.DC_DYNAMIC.equals(item.getValue()))
+                .map(SelectItem::getLabel)
+                .findAny()
+                .orElse(null);
+        Assertions.assertEquals(ViewerResourceBundle.getTranslation("admin__dynamic_collections", null), label);
     }
 
     /**

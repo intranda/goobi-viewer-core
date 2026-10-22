@@ -87,6 +87,8 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -157,19 +159,29 @@ public class IndexResource {
     private HttpServletResponse servletResponse;
 
     /**
+     * Returns the number of indexed records matching an optional Solr query.
+     *
+     * <p>Without a query, only top-level work records ({@code ISWORK:*}) are counted; supplying a query replaces that
+     * restriction rather than narrowing it, and either way the caller's access-condition suffixes are always applied.
      *
      * @param query optional Solr query to filter counted records
      * @return Indexed records statistics as JSON
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @throws IllegalRequestException if the query contains non-ASCII characters or has invalid Solr syntax
      */
     @GET
     @Path(INDEX_STATISTICS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "index" },
-            summary = "Statistics about indexed records")
-    @ApiResponse(responseCode = "200", description = "JSON object with record count statistics")
+            summary = "Statistics about indexed records",
+            description = "Without a query, only top-level work records are counted; supplying a query replaces that"
+                    + " restriction rather than narrowing it, and either way the caller's access-condition suffixes are always"
+                    + " applied. The query must consist of printable ASCII characters, and Solr syntax errors are rejected as an"
+                    + " invalid request.")
+    @ApiResponse(responseCode = "200", description = "JSON object with record count statistics",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "object")))
     @ApiResponse(responseCode = "400", description = "Invalid Solr query syntax")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public String getStatistics(
@@ -208,13 +220,21 @@ public class IndexResource {
     }
 
     /**
+     * Executes a caller-supplied Solr query against the index and returns matching records as JSON.
+     *
+     * <p>Result and facet field names are validated against a Solr field-identifier pattern. An omitted {@code resultFields} or
+     * {@code facetFields} property is treated as an empty list; only an explicit JSON {@code null} and malformed field names are
+     * rejected. Setting {@code randomize} discards any configured sort fields in favor of a random sort field, and setting
+     * {@code includeChildHits} aggregates matching child documents under their top-level structure and expands them into the
+     * response via Solr's expand mechanism.
      *
      * @param params query parameters including query, sort, facet, and result field configuration
      * @return Records as JSON
-     * @throws IndexUnreachableException
-     * @throws ViewerConfigurationException
-     * @throws DAOException
-     * @throws IllegalRequestException
+     * @throws IndexUnreachableException if the Solr index is unreachable
+     * @throws ViewerConfigurationException if the viewer configuration needed to build the JSON records cannot be read
+     * @throws DAOException if license types cannot be read from the database
+     * @throws IllegalRequestException if the query is invalid, or facetFields/resultFields is an explicit null or contains an
+     *             invalid field name
      */
     @POST
     @CORSBinding
@@ -223,8 +243,14 @@ public class IndexResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "index" },
-            summary = "Post a query directly to the Solr index")
-    @ApiResponse(responseCode = "200", description = "JSON object with matched documents and optional facets")
+            summary = "Post a query directly to the Solr index",
+            description = "Result and facet field names are validated against a Solr field-identifier pattern. An omitted"
+                    + " resultFields or facetFields property is treated as an empty list; only an explicit null and malformed"
+                    + " field names are rejected. Setting 'randomize' discards any configured sort fields in favor of a random"
+                    + " sort field, and setting 'includeChildHits' aggregates matching child documents under their top-level"
+                    + " structure via Solr's expand mechanism.")
+    @ApiResponse(responseCode = "200", description = "JSON object with matched documents and optional facets",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "object")))
     @ApiResponse(responseCode = "400", description = "Illegal query or query parameters")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public String getRecordsForQuery(RecordsRequestParameters params)
@@ -329,7 +355,7 @@ public class IndexResource {
             description = "The response is cached server-side for 5 minutes; updates to the Solr"
                     + " schema may take up to that long to become visible here.",
             tags = { "index" })
-    @ApiResponse(responseCode = "200", description = "JSON array of Solr field metadata")
+    @ApiResponse(responseCode = "200", description = "JSON array of Solr field metadata", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public List<SolrFieldInfo> getAllIndexFields() throws IOException {
         logger.trace("getAllIndexFields");
@@ -360,21 +386,32 @@ public class IndexResource {
     }
 
     /**
+     * Returns a heatmap over matching geospatial search results for the given Solr field.
+     *
+     * <p>The result excludes polygon coordinate documents ({@code MD_GEOJSON_POLYGON}, {@code MD_GPS_POLYGON}) so a heatmap
+     * over point data does not saturate, and always applies the caller's access-condition suffixes as a separate filter
+     * query, so they are enforced even for a {@code query} that starts with a Solr {@code {!join ...}} local param. The
+     * response is cacheable per client for 5 minutes.
+     *
      * @param solrField Solr field containing spatial coordinate data
      * @param wktRegion WKT coordinate string restricting the search area
      * @param filterQuery additional Solr query to filter results
      * @param facetQuery facetting expression applied to heatmap results
      * @param gridLevel heatmap grid resolution level
      * @return Heatmap as {@link String}
-     * @throws IOException
-     * @throws IndexUnreachableException
+     * @throws IndexUnreachableException if the Solr index is unreachable
+     * @throws IllegalRequestException if solrField, the region parameter, or gridLevel is invalid
+     * @throws ContentNotFoundException if the given Solr field does not exist in the index
      * @should return 400 when invalid solr field
      */
     @GET
     @Path(INDEX_SPATIAL_HEATMAP)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Returns a heatmap of geospatial search results", tags = { "index" })
-    @ApiResponse(responseCode = "200", description = "JSON heatmap data for the given spatial query")
+    @Operation(summary = "Returns a heatmap of geospatial search results", tags = { "index" },
+            description = "Polygon coordinate documents are excluded so point-based heatmaps do not saturate. The response is"
+                    + " cacheable per client for 5 minutes.")
+    @ApiResponse(responseCode = "200", description = "JSON heatmap data for the given spatial query",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "object")))
     @ApiResponse(responseCode = "400", description = "Invalid heatmap parameters or Solr field name format")
     @ApiResponse(responseCode = "404", description = "Solr field not found in index")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
@@ -420,9 +457,9 @@ public class IndexResource {
 
         // Exclude polygon docs (otherwise the heatmap saturates) and enforce the access-condition
         // suffix as a *filter query*. Applying these as a filter rather than concatenating them
-        // into the main query means the constraint holds even when mainQuery is a "{!join ...}",
-        // which closes the GVC-2026-25 bypass: the previous "{!join"-prefix branch skipped
-        // getAllSuffixes entirely, letting an unauthenticated caller read across access conditions.
+        // into the main query means the constraint holds even when mainQuery is a "{!join ...}".
+        // Concatenating the suffix into the main query instead would let a join query bypass it
+        // entirely and read across access conditions without authentication.
         // Any user facetQuery is ANDed in as a further filter clause; getHeatMap() runs
         // cleanUpQuery over the whole filter string.
         StringBuilder resultFilter = new StringBuilder()
@@ -453,11 +490,37 @@ public class IndexResource {
 
     }
 
+    /**
+     * Returns matching records or docstructs as GeoJSON feature objects for the given spatial field.
+     *
+     * <p>{@code region} restricts the search area to a WKT range (the whole world by default), {@code query} adds further
+     * filter criteria, and {@code facetQuery} narrows which documents contribute coordinates; for some query forms
+     * {@code region} is ignored once {@code facetQuery} is set. Up to
+     * 50,000 matching hits are evaluated and grouped by {@code searchScope} ({@code RECORDS}, {@code DOCSTRUCTS}, or
+     * {@code METADATA}; {@code RECORDS} by default), one feature per coordinate and label, labelled from {@code labelField}. A query
+     * built by the aggregated search-results view is detected and re-scoped to {@code METADATA} automatically.
+     *
+     * @param solrField Solr field containing spatial coordinate data
+     * @param wktRegion WKT coordinate string restricting the search area
+     * @param filterQuery additional Solr query to filter results
+     * @param facetQuery facetting expression applied to which documents contribute coordinates
+     * @param labelField the Solr field to be used as label for each feature
+     * @param searchScope the scope of documents to search in. One of 'RECORDS', 'DOCSTRUCTS' and 'METADATA'
+     * @return the matching features as a JSON array string in GeoJSON format
+     * @throws IndexUnreachableException if the Solr index is unreachable
+     * @throws PresentationException if the Solr request fails for a reason other than a query syntax error
+     * @throws IllegalRequestException if solrField or the region parameter is malformed
+     * @throws ContentNotFoundException if the given Solr field does not exist in the index
+     */
     @GET
     @Path(INDEX_SPATIAL_SEARCH)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Returns results of a geospatial search as GeoJson objects", tags = { "index" })
-    @ApiResponse(responseCode = "200", description = "JSON array of GeoJSON feature objects")
+    @Operation(summary = "Returns results of a geospatial search as GeoJson objects", tags = { "index" },
+            description = "The region, query, and facetQuery parameters combine to select which documents contribute"
+                    + " coordinates, up to 50,000 matching hits; the search scope defaults to 'RECORDS' and results are grouped"
+                    + " into one feature per coordinate and label, labelled from the given labelField.")
+    @ApiResponse(responseCode = "200", description = "JSON array of GeoJSON feature objects",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, array = @ArraySchema(schema = @Schema(type = "object"))))
     @ApiResponse(responseCode = "400", description = "Invalid Solr field name format or query syntax")
     @ApiResponse(responseCode = "404", description = "Solr field not found in index")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")

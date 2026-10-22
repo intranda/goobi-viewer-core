@@ -168,6 +168,26 @@ class DynamicCollectionsBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @see DynamicCollectionsBean#reloadCollections()
+     * @verifies pick up collections added to the database after bean creation
+     */
+    @Test
+    void reloadCollections_shouldPickUpCollectionsAddedToTheDatabaseAfterBeanCreation() throws DAOException {
+        DynamicCollectionsBean bean = new DynamicCollectionsBean();
+        assertFalse(bean.getCollections().stream().anyMatch(c -> "bean_reload_test".equals(c.getIdentifier())));
+
+        DynamicCollection added = new DynamicCollection("bean_reload_test");
+        added.setSolrQuery("*:*");
+        DataManager.getInstance().getDao().addDynamicCollection(added);
+        try {
+            bean.reloadCollections();
+            assertTrue(bean.getCollections().stream().anyMatch(c -> "bean_reload_test".equals(c.getIdentifier())));
+        } finally {
+            DataManager.getInstance().getDao().deleteDynamicCollection(added);
+        }
+    }
+
+    /**
      * @see DynamicCollectionsBean#setCollectionName(String)
      * @verifies compute the query hit count when loading an existing collection
      */

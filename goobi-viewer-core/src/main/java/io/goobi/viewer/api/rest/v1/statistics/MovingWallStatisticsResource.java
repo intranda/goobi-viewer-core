@@ -35,9 +35,13 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.statistics.MovingWallAnnualStatistics;
+import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 /**
  * REST resource providing statistics about moving wall access restrictions and record availability by publication year.
@@ -49,15 +53,29 @@ public class MovingWallStatisticsResource {
 
     private static final String VALUE_SEPARATOR = ";";
 
+    /**
+     * Returns the identifiers of records unlocked by the moving wall in the given year, as CSV.
+     *
+     * <p>A record is included when it is a work (ISWORK:true) whose DATE_PUBLICRELEASEDATE Solr field falls within the given calendar
+     * year; each line contains the release date and the record's persistent identifier, sorted by release date.
+     *
+     * @param year the year for which to retrieve moving wall statistics
+     * @return CSV listing of unlocked record identifiers with their release dates
+     */
     @GET
     @jakarta.ws.rs.Path(ApiUrls.STATISTICS_MOVING_WALL_YEAR)
     @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, "text/csv" })
     @AuthorizationBinding
-    @Operation(summary = "Requires an authentication token. Get moving wall unlocked record identifiers for the given year", tags = { "statistics" })
-    @ApiResponse(responseCode = "200", description = "CSV list of record identifiers unlocked by the moving wall for the given year")
+    @SecurityRequirement(name = AuthorizationFilter.SECURITY_SCHEME_TOKEN)
+    @Operation(summary = "Requires an authentication token. Get moving wall unlocked record identifiers for the given year", tags = { "statistics" },
+            description = "A record is included when it is a work whose release date (the DATE_PUBLICRELEASEDATE Solr field) falls"
+                    + " within the given calendar year; entries are sorted by that date. Although json and plain text are also declared"
+                    + " as possible response media types, the response body is always CSV.")
+    @ApiResponse(responseCode = "200", description = "CSV list of record identifiers unlocked by the moving wall for the given year",
+            content = { @Content(mediaType = "text/csv", schema = @Schema(type = "string")),
+                    @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")),
+                    @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string")) })
     @ApiResponse(responseCode = "400", description = "Invalid year value (not an integer)")
-    // Added 404 response: JAX-RS returns 404 when the {year} path parameter cannot be parsed as an integer (non-integer input)
-    @ApiResponse(responseCode = "404", description = "Year parameter could not be parsed as an integer")
     @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable or internal error")
     public Response getStatisticsForYear(

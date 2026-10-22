@@ -49,11 +49,11 @@ public class FuzzySearchTerm {
     /**
      * Regex matching all characters within words, including umlauts etc.
      */
-    public static final String WORD_PATTERN = "[\\p{L}=-_\\d⸗¬]+";
+    public static final String WORD_PATTERN = "[\\p{L}=_\\d⸗¬-]+";
     /**
      * Regex matching anything not matching {@link #WORD_PATTERN}, including an empty string.
      */
-    public static final String NOT_WORD_PATTERN = "[^\\p{L}=-_\\d⸗¬]*";
+    public static final String NOT_WORD_PATTERN = "[^\\p{L}=_\\d⸗¬-]*";
     /**
      * Regex matching a word (according to {@link #WORD_PATTERN}, surrounded by other characters (according to {@link #NOT_WORD_PATTERN}. The word
      * itself is the first capture group
@@ -66,9 +66,13 @@ public class FuzzySearchTerm {
     private final boolean wildcardBack;
     private final int maxDistance;
 
+    /**
+     * @param term search term, possibly containing fuzzy syntax
+     * @should handle null term
+     */
     public FuzzySearchTerm(String term) {
-        this.fullTerm = term;
-        if (isFuzzyTerm(term)) {
+        this.fullTerm = term == null ? "" : term;
+        if (isFuzzyTerm(this.fullTerm)) {
             this.term =
                     this.fullTerm.replaceAll("[*]{0,1}([^\\p{L}=-_\\d⸗¬*]*)[*]{0,1}~\\d", "$1") //NOSONAR no catastrophic backtracking detected
                             .toLowerCase();
@@ -76,7 +80,7 @@ public class FuzzySearchTerm {
                     .replaceAll("[*]{0,1}" + WORD_PATTERN + "[*]{0,1}~(\\d)", "$1")); //NOSONAR no catastrophic backtracking detected
             wildcardBack = this.fullTerm.endsWith("*~" + this.maxDistance);
         } else {
-            this.term = term;
+            this.term = this.fullTerm;
             this.maxDistance = 0;
             wildcardBack = this.fullTerm.endsWith("*");
         }
@@ -103,8 +107,13 @@ public class FuzzySearchTerm {
         return wildcardFront;
     }
 
+    /**
+     * @param term term to check
+     * @return true if term uses fuzzy search syntax; false otherwise
+     * @should return false for null
+     */
     public static boolean isFuzzyTerm(String term) {
-        return term.matches("[*]{0,1}" + WORD_PATTERN + "[*]{0,1}~\\d");
+        return term != null && term.matches("[*]{0,1}" + WORD_PATTERN + "[*]{0,1}~\\d");
     }
 
     /**
@@ -143,7 +152,7 @@ public class FuzzySearchTerm {
      * @return Cleaned-up text
      */
     private static String cleanup(final String text) {
-        String ret = text;
+        String ret = text == null ? "" : text;
         if (StringUtils.isNotBlank(ret)) {
             ret = cleanHyphenations(ret);
             ret = StringTools.removeDiacriticalMarks(ret);
@@ -162,11 +171,11 @@ public class FuzzySearchTerm {
      * @return Cleaned-up text
      */
     private static String cleanHyphenations(String text) {
-        return text.replaceAll("[⸗¬-]", "");
+        return text == null ? "" : text.replaceAll("[⸗¬-]", "");
     }
 
     public static int calculateOptimalDistance(String term) {
-        if (StringUtils.isBlank(term)) {
+        if (term == null || StringUtils.isBlank(term)) {
             return 0;
         } else if (term.matches(IGNORE_FUZZY_PATTERN)) {
             return 0;

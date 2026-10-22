@@ -57,6 +57,8 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
@@ -84,14 +86,22 @@ public class RecordsImageResource {
 
     }
 
+    /**
+     * Redirects to the {@code info.json} of the representative image of the record.
+     *
+     * @return a 303 redirect response
+     * @throws URISyntaxException if the redirect URI cannot be constructed
+     */
     @GET
     @Path(RECORDS_IMAGE)
     @Produces({ MediaType.APPLICATION_JSON, ContentServerResource.MEDIA_TYPE_APPLICATION_JSONLD })
     @Operation(
             summary = "IIIF image identifier for the representative image of the process given by the identifier."
                     + " Returns a IIIF 3.0 image information object",
-            tags = { "iiif", "records" })
-    @ApiResponse(responseCode = "200", description = "Get the IIIF image information object as json")
+            tags = { "iiif", "records" },
+            description = "Redirects (HTTP 303) to the info.json of this record's representative image; the representative image is the Solr"
+                    + " THUMBNAIL file of the record, or the first page image if no thumbnail is set.")
+    @ApiResponse(responseCode = "303", description = "Redirect to the canonical IIIF image information (info.json)")
     @ApiResponse(responseCode = "404", description = "Either the record or the file for the representative image doesn't exist")
     @ApiResponse(responseCode = "500", description = "Internal error reading image or querying index")
     public Response getImageBase() throws URISyntaxException {
@@ -101,11 +111,21 @@ public class RecordsImageResource {
                 .build();
     }
 
+    /**
+     * Returns the IIIF image information for the representative image of the record.
+     *
+     * @return an empty string; the response body is written directly by the forwarded request
+     * @throws ContentNotFoundException if no record with the given identifier exists
+     */
     @GET
     @Path(RECORDS_IMAGE_INFO)
     @Produces({ MediaType.APPLICATION_JSON, ContentServerResource.MEDIA_TYPE_APPLICATION_JSONLD })
-    @Operation(summary = "IIIF image information for the representative image of the record", tags = { "iiif", "records" })
-    @ApiResponse(responseCode = "200", description = "IIIF 3.0 image information object")
+    @Operation(summary = "IIIF image information for the representative image of the record", tags = { "iiif", "records" },
+            description = "Resolves the representative image of the record (the Solr THUMBNAIL file, or the first page image if no thumbnail"
+                    + " is set) and forwards the request internally to its image information endpoint, which writes the response directly.")
+    @ApiResponse(responseCode = "200", description = "IIIF 3.0 image information object",
+            content = { @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "object")),
+                    @Content(mediaType = "application/ld+json", schema = @Schema(type = "object")) })
     @ApiResponse(responseCode = "404", description = "Record or representative image not found")
     public String getImageInfo() throws PresentationException, IndexUnreachableException, ServletException, IOException, ContentNotFoundException {
         String filename = getRepresentativeFilename(pi);
@@ -115,17 +135,36 @@ public class RecordsImageResource {
         return "";
     }
 
+    /**
+     * Returns the representative image of the record as a IIIF image request.
+     *
+     * @param region IIIF Image API region: full, square, x,y,w,h or pct:x,y,w,h
+     * @param size IIIF Image API size: one of max, full, 'w,', ',h', 'w,h', '!w,h' or 'pct:n'
+     * @param rotation rotation in degrees, normalised to 0-360; prefix with ! to mirror the image first
+     * @param quality IIIF Image API quality: default, color, gray or bitonal
+     * @param format image format: jpg, png or tif
+     * @return an empty string; the response body is written directly by the forwarded request
+     * @throws ContentNotFoundException if no record with the given identifier exists
+     */
     @GET
     @Path(RECORDS_IMAGE_IIIF)
     @Produces({ "image/jpg", "image/png", "image/tif" })
-    @Operation(summary = "Get the representative image of the record as a IIIF image request", tags = { "iiif", "records" })
-    @ApiResponse(responseCode = "200", description = "Image data in the requested format")
+    @Operation(summary = "Get the representative image of the record as a IIIF image request", tags = { "iiif", "records" },
+            description = "Resolves the representative image of the record (the Solr THUMBNAIL file, or the first page image if no thumbnail"
+                    + " is set) and forwards the IIIF image request internally to its image endpoint, which writes the response directly.")
+    @ApiResponse(responseCode = "200", description = "Image data in the requested format",
+            content = { @Content(mediaType = "image/jpg", schema = @Schema(type = "string", format = "binary")),
+                    @Content(mediaType = "image/png", schema = @Schema(type = "string", format = "binary")),
+                    @Content(mediaType = "image/tif", schema = @Schema(type = "string", format = "binary")) })
     @ApiResponse(responseCode = "403", description = "Access to this image is restricted")
     @ApiResponse(responseCode = "404", description = "Record or representative image not found")
     public String getImage(
-            @PathParam("region") String region, @PathParam("size") String size,
-            @PathParam("rotation") String rotation, @PathParam("quality") String quality,
-            @PathParam("format") String format)
+            @Parameter(description = "IIIF Image API region: full, square, x,y,w,h or pct:x,y,w,h") @PathParam("region") String region,
+            @Parameter(description = "IIIF Image API size: one of max, full, 'w,', ',h', 'w,h', '!w,h' or 'pct:n'") @PathParam("size") String size,
+            @Parameter(description = "Rotation in degrees, normalised to 0-360; prefix with ! to mirror the image first")
+            @PathParam("rotation") String rotation,
+            @Parameter(description = "IIIF Image API quality: default, color, gray or bitonal") @PathParam("quality") String quality,
+            @Parameter(description = "Image format: jpg, png or tif") @PathParam("format") String format)
             throws PresentationException, IndexUnreachableException, ServletException, IOException, ContentNotFoundException {
         String filename = getRepresentativeFilename(pi);
         String forwardUrl = new ApiUrls(ApiUrls.API).path(ApiUrls.RECORDS_FILES_IMAGE, ApiUrls.RECORDS_FILES_IMAGE_IIIF)

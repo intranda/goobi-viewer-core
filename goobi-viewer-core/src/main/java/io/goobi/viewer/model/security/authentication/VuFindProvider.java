@@ -147,7 +147,7 @@ public class VuFindProvider extends HttpAuthenticationProvider {
 
             // Add to bean and persist
             if (user.getId() == null) {
-                if (!DataManager.getInstance().getDao().addUser(user)) {
+                if (DataManager.getInstance().getDao().addUser(user) == null) {
                     throw new AuthenticationProviderException("Could not add user to DB.");
                 }
             } else {

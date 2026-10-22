@@ -104,18 +104,27 @@ public class ViewerRecordPDFResource {
         request.setAttribute("pi", pi);
     }
 
+    /**
+     * Generates the PDF for the entire record and streams it to the response.
+     *
+     * @return streaming output that writes the generated pdf
+     */
     @GET
     @jakarta.ws.rs.Path(ApiUrls.RECORDS_PDF)
     @Produces("application/pdf")
     @ContentServerPdfBinding
     @RecordFileDownloadBinding
-    @Operation(tags = { "records" }, summary = "Get PDF for entire record")
-    @ApiResponse(responseCode = "200", description = "PDF file", content = @Content(mediaType = "application/pdf"))
+    @Operation(tags = { "records" }, summary = "Get PDF for entire record",
+            description = "Pages are merged into a single PDF on every call; there is no whole-document cache or download queue, though"
+                    + " individual page renderings may still come from the content server's page cache. Existing PDF files already present"
+                    + " in the record's media folder are used automatically regardless of usePdfSource; PDF files in the record's dedicated"
+                    + " pdf folder are used only when usePdfSource is already true.")
+    @ApiResponse(responseCode = "200", description = "PDF file",
+            content = @Content(mediaType = "application/pdf", schema = @Schema(type = "string", format = "binary")))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "Record not found")
     @ApiResponse(responseCode = "500", description = "PDF generation error")
-    @ApiResponse(responseCode = "503", description = "PDF is still being created by another request, retry later")
     public StreamingOutput getPdf() {
         ViewerMessage message = new ViewerMessage(PdfDownloadJob.TYPE);
         message.getProperties().put("pi", this.pi);
@@ -138,16 +147,20 @@ public class ViewerRecordPDFResource {
 
     }
 
+    /**
+     * Returns aggregated size information for the merged PDF of the entire record.
+     *
+     * @return pdf info DTO whose title field holds the record identifier (not a descriptive title) and whose size is the total page file size
+     */
     @GET
     @jakarta.ws.rs.Path(ApiUrls.RECORDS_PDF_INFO)
     @Produces({ MediaType.APPLICATION_JSON })
     @ContentServerPdfInfoBinding
-    @Operation(tags = { "records" }, summary = "Get information about PDF for entire record")
-    @ApiResponse(responseCode = "200", description = "PDF information object",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Operation(tags = { "records" }, summary = "Get information about PDF for entire record",
+            description = "The size is the sum of the MDNUM_FILESIZE field across all Solr page documents of this record; the record's"
+                    + " existence is not verified, so an unknown identifier returns a zero size rather than an error.")
+    @ApiResponse(responseCode = "200", description = "PDF information object", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
-    @ApiResponse(responseCode = "404", description = "Record not found")
-    @ApiResponse(responseCode = "500", description = "Error reading PDF information")
     public PdfInformation getInfoAsJson() throws ContentLibException {
         // ContentLib's MetsPdfResource.extractBaseURIs() appends File.separator ("\") to the METS
         // folder path before calling URI.create(), which fails on Windows with "Illegal character
@@ -175,13 +188,20 @@ public class ViewerRecordPDFResource {
         return info;
     }
 
+    /**
+     * Returns epub information (title, page count, size) resolved from the record's METS file.
+     *
+     * @return epub info DTO
+     * @throws ContentLibException with a 404 status if the record's dataset cannot be resolved
+     */
     @GET
     @jakarta.ws.rs.Path(ApiUrls.RECORDS_EPUB_INFO)
     @Produces({ MediaType.APPLICATION_JSON })
     @ContentServerPdfInfoBinding
-    @Operation(tags = { "records" }, summary = "Get information about epub for entire record")
-    @ApiResponse(responseCode = "200", description = "ePub information object",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Operation(tags = { "records" }, summary = "Get information about epub for entire record",
+            description = "Unlike the PDF info operation, this resolves the record's full dataset and reports 404 if it cannot be found,"
+                    + " rather than returning zero-sized information for an unknown identifier.")
+    @ApiResponse(responseCode = "200", description = "ePub information object", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "404", description = "Record not found")
     @ApiResponse(responseCode = "500", description = "Error reading ePub information")

@@ -150,14 +150,6 @@
                                                                 alt=""
                                                                 src="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).mediaThumbnailURI}" />
                                                         </ui:fragment>
-                                                        <ui:fragment
-                                                            rendered="#{!adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem()}">
-                                                            <img
-                                                                src="#{imageDelivery.thumbs.getThumbnailPath(null)}"
-                                                                data-viewer-thumbnail="thumbnail"
-                                                                class="img-fluid"
-                                                                alt="" />
-                                                        </ui:fragment>
                                                     </div>
 
                                                     <!-- ACTIONS -->
@@ -467,8 +459,7 @@
                                         </div>
 
                                         <!-- CONCURRENT VIEWS LIMIT -->
-                                        <ui:fragment
-                                            rendered="#{adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name) > 0}">
+                                        <ui:fragment rendered="#{adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name) > 0}">
                                             <div class="form-group form-row mb-3">
                                                 <div class="col-2" />
                                                 <h:panelGroup
@@ -531,8 +522,7 @@
                                         </ui:fragment>
 
                                         <!-- PDF DOWNLOAD QUOTA -->
-                                        <ui:fragment
-                                            rendered="#{adminLicenseBean.getPdfQuotaRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name) > 0}">
+                                        <ui:fragment rendered="#{adminLicenseBean.getPdfQuotaRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name) > 0}">
                                             <div class="form-group form-row mb-3">
                                                 <div class="col-2" />
                                                 <h:panelGroup

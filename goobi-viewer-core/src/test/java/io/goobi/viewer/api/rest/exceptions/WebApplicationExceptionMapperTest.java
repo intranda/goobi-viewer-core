@@ -37,6 +37,8 @@ import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.goobi.viewer.exceptions.NotImplementedException;
+
 class WebApplicationExceptionMapperTest {
 
     private WebApplicationExceptionMapper mapper;
@@ -108,6 +110,29 @@ class WebApplicationExceptionMapperTest {
         Response response = mapper.toResponse(wae);
         assertEquals(400, response.getStatus(),
                 "Should return 400 even when NumberFormatException is wrapped in a RuntimeException");
+    }
+
+    /**
+     * @verifies return 500 when response status is set without cause
+     * @see WebApplicationExceptionMapper#toResponse
+     */
+    @Test
+    void toResponse_shouldReturn500WhenResponseStatusIsSetWithoutCause() {
+        Response response = mapper.toResponse(
+                new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build()));
+        assertEquals(500, response.getStatus(),
+                "A causeless WebApplicationException must keep the status of its own response");
+    }
+
+    /**
+     * @verifies return 501 when not implemented exception cause
+     * @see WebApplicationExceptionMapper#toResponse
+     */
+    @Test
+    void toResponse_shouldReturn501WhenNotImplementedExceptionCause() {
+        Response response = mapper.toResponse(new WebApplicationException(new NotImplementedException()));
+        assertEquals(501, response.getStatus(),
+                "A wrapped NotImplementedException must be reported as 501, not 500");
     }
 
     // Simulates Jersey's PathParamException: a WebApplicationException whose cause is

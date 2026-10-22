@@ -81,7 +81,7 @@ class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
         theme.getSocialMediaLink(SocialMediaService.instagram).setLinkUrl(INSTAGRAM_LINK);
         theme.getFooterLink(InternalService.contact).setLinkUrl(INTRANDA_LINK);
 
-        assertTrue(DataManager.getInstance().getDao().addTheme(theme));
+        assertNotNull(DataManager.getInstance().getDao().addTheme(theme));
         ThemeConfiguration loadedTheme = DataManager.getInstance().getDao().getTheme(THEME_NAME);
         assertNotNull(loadedTheme);
 
@@ -112,7 +112,7 @@ class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
         theme.getSocialMediaLink(SocialMediaService.instagram).setLinkUrl(INSTAGRAM_LINK);
         theme.getFooterLink(InternalService.contact).setLinkUrl(INTRANDA_LINK);
 
-        assertTrue(DataManager.getInstance().getDao().addTheme(theme));
+        assertNotNull(DataManager.getInstance().getDao().addTheme(theme));
         ThemeConfiguration loadedTheme = DataManager.getInstance().getDao().getTheme(THEME_NAME);
         assertEquals(logoItem, loadedTheme.getLogo().getMediaItem());
         assertEquals(iconItem, loadedTheme.getIcon().getMediaItem());
@@ -155,7 +155,7 @@ class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
         theme.getSocialMediaLink(SocialMediaService.instagram).setLinkUrl(INSTAGRAM_LINK);
         theme.getFooterLink(InternalService.contact).setLinkUrl(INTRANDA_LINK);
 
-        assertTrue(DataManager.getInstance().getDao().addTheme(theme));
+        assertNotNull(DataManager.getInstance().getDao().addTheme(theme));
         assertNotNull(DataManager.getInstance().getDao().getTheme(THEME_NAME));
         assertTrue(DataManager.getInstance().getDao().deleteTheme(theme));
         assertNull(DataManager.getInstance().getDao().getTheme(THEME_NAME));
@@ -171,10 +171,10 @@ class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
 
         ThemeConfiguration theme = new ThemeConfiguration(THEME_NAME);
         theme.setLabel(THEME_LABEL);
-        assertTrue(DataManager.getInstance().getDao().addTheme(theme));
+        assertNotNull(DataManager.getInstance().getDao().addTheme(theme));
         ThemeConfiguration theme2 = new ThemeConfiguration(THEME_NAME_ALT);
         theme.setLabel(THEME_LABEL_ALT);
-        assertTrue(DataManager.getInstance().getDao().addTheme(theme2));
+        assertNotNull(DataManager.getInstance().getDao().addTheme(theme2));
 
         List<ThemeConfiguration> themes = DataManager.getInstance().getDao().getConfiguredThemes();
         assertEquals(2, themes.size());

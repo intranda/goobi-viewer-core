@@ -219,15 +219,17 @@
                 rotateRight: '.rotate-right',
                 reset: '.reset',
                 zoomSlider: '.zoom-slider',
+                downloadContent: '.download-canvas-content',
             },
         },
         datasets: {
             image: {
                 viewMode: 'imageViewMode',
                 showNavigator: 'imageShowNavigator',
-                allowDownload: 'allowDownload',
                 allowZoom: 'allowZoom',
                 maxZoom: 'maxZoom',
+                allowDownloadContent: 'allowDownload',
+                downloadFilename: 'downloadFilename',
             },
             data: {
                 footerHeight: 'height',
@@ -250,6 +252,15 @@
                 this.topMarginElement = document.querySelector(_config.elementSelectors.data.topMarginElement)?.textContent;
                 this.leftMarginElement = document.querySelector(_config.elementSelectors.data.leftMarginElement)?.textContent;
                 this.rightMarginElement = document.querySelector(_config.elementSelectors.data.rightMarginElement)?.textContent;
+
+                //download canvas content
+                if (imageElement.dataset[_config.datasets.image.allowDownloadContent] === 'true') {
+                    this.downloadButton = _initCanvasDownload(
+                        imageElement,
+                        document.querySelector(_config.elementSelectors.controls.downloadContent),
+                        imageElement.dataset[_config.datasets.image.downloadFilename]
+                    );
+                }
 
                 const imageViewConfig = createZoomableImageConfig(imageElement);
                 this.viewer = new ImageView.Image(imageViewConfig);
@@ -377,6 +388,19 @@
                         ?.at(0) ?? id;
             }
             return this.tileSourceIdToOrder[id];
+        }
+    }
+
+    function _initCanvasDownload(imageContainer, button, filename) {
+        if (imageContainer && button) {
+            button.addEventListener('click', () => {
+                const canvas = imageContainer.querySelector('canvas');
+                const link = document.createElement('a');
+                link.download = filename;
+                link.href = canvas.toDataURL('image/jpeg');
+                link.click();
+                link.remove();
+            });
         }
     }
 
@@ -713,7 +737,7 @@
         }
 
         loadExplorer() {
-            const explorer = `<voyager-explorer id='voyager' bgcolor='#015999 #000' bgstyle='LinearGradient' style='display:none;' document='${this.getSceneUrl()}' uiMode='menu' resourceRoot='${this.resourcePath}'></voyager-explorer>`;
+            const explorer = `<voyager-explorer id='voyager' bgcolor='#015999 #000' bgstyle='LinearGradient' style='display:none; color:lightgray;' document='${this.getSceneUrl()}' uiMode='menu' resourceRoot='${this.resourcePath}'></voyager-explorer>`;
 
             show(this.loadStoryButton);
             hide(this.closeStoryButton);
@@ -733,7 +757,7 @@
         }
 
         loadStory() {
-            const story = `<voyager-story id='voyagerStory' bgcolor='#015999 #000' bgstyle='LinearGradient' style='display:none;' document='${this.getSceneUrl()}'></voyager-story>`;
+            const story = `<voyager-story id='voyagerStory' bgcolor='#015999 #000' bgstyle='LinearGradient' style='display:none; color:lightgray;' document='${this.getSceneUrl()}'></voyager-story>`;
 
             hide(this.loadStoryButton);
             show(this.closeStoryButton);

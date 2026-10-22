@@ -114,7 +114,8 @@
 		})
 		
 		generateCompleteYearMap(datamap) {
-			let keys = Array.from(datamap.keys());
+			// Object keys are not ordered numerically for negative years, so sort explicitly
+			let keys = Array.from(datamap.keys()).sort((a, b) => parseInt(a) - parseInt(b));
 			let startYear = parseInt(keys[0]);
 			let endYear = parseInt(keys[keys.length-1]);
 			let yearMap = new Map();
@@ -128,8 +129,11 @@
 		drawInitialRange() {
 			var points = this.chart.getDatasetMeta(0).data;
 			if(points && points.length){		
-				let startYearIndex = this.yearList.indexOf(this.startYear);
-				let endYearIndex = this.yearList.indexOf(this.endYear);
+				// Clamp to the nearest available year if the active range lies outside of the data
+				let startYearIndex = this.yearList.findIndex(y => y >= this.startYear);
+				if(startYearIndex < 0) startYearIndex = this.yearList.length - 1;
+				let endYearIndex = this.yearList.findLastIndex(y => y <= this.endYear);
+				if(endYearIndex < 0) endYearIndex = 0;
 				let x1 = points[startYearIndex].x;
 				let x2 = points[endYearIndex].x;
 				this.drawRect(x1, x2, this.refs.draw);

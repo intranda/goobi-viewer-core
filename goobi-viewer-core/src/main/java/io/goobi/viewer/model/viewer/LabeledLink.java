@@ -97,9 +97,9 @@ public class LabeledLink implements Serializable {
             return false;
         }
         // Compare by url to match hashCode() and avoid CDI lookup via getName() on every list comparison.
-        // Previously equals() used getName() which triggered BeanUtils.getLocale() → CDI bean lookup on
-        // every call (e.g. LinkedList.indexOf() in breadcrumb construction) and also violated the
-        // hashCode/equals contract (hashCode was url-based, equals was name-based).
+        // Comparing by getName() instead would trigger BeanUtils.getLocale() → CDI bean lookup on
+        // every call (e.g. LinkedList.indexOf() in breadcrumb construction) and would break the
+        // hashCode/equals contract, since hashCode is url-based.
         LabeledLink other = (LabeledLink) obj;
         if (url == null) {
             return other.url == null;

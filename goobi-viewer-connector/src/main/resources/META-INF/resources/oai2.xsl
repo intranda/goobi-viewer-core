@@ -496,15 +496,37 @@ p.intro {
 
 <xsl:template match="oai:header">
   <xsl:variable name="oai_identifier" select="oai:identifier"/>
+  <!--
+    Source format of this record, used to hide format badges the record does not support:
+      - mets/marcxml apply only to METS records (marcxml is derived from the METS/MODS section),
+      - lido applies only to LIDO records,
+      - oai_dc/epicur etc. are universal.
+    Detected from the record's metadata payload root namespace (GetRecord/ListRecords); for
+    ListIdentifiers (no payload) it falls back to the request's metadataPrefix. UNKNOWN (e.g. an
+    oai_dc listing mixing sources) leaves all badges in place.
+  -->
+  <xsl:variable name="sourceFormat">
+    <xsl:choose>
+      <xsl:when test="namespace-uri(../oai:metadata/*)='http://www.loc.gov/METS/'">METS</xsl:when>
+      <xsl:when test="namespace-uri(../oai:metadata/*)='http://www.lido-schema.org'">LIDO</xsl:when>
+      <xsl:when test="/oai:OAI-PMH/oai:request/@metadataPrefix='mets'">METS</xsl:when>
+      <xsl:when test="/oai:OAI-PMH/oai:request/@metadataPrefix='marcxml'">METS</xsl:when>
+      <xsl:when test="/oai:OAI-PMH/oai:request/@metadataPrefix='lido'">LIDO</xsl:when>
+      <xsl:otherwise>UNKNOWN</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
   <h3>OAI Record Header</h3>
   <table class="values">
     <tr><td class="key">OAI Identifier</td>
     <td class="value">
       <xsl:value-of select="$oai_identifier"/>
       <xsl:for-each select="$available_formats">
-        <xsl:text> </xsl:text><a class="link" href="?verb=GetRecord&amp;metadataPrefix={.}&amp;identifier={$oai_identifier}">
-          <xsl:value-of select="."/>
-        </a>
+        <xsl:variable name="fmt" select="."/>
+        <xsl:if test="not(($sourceFormat='LIDO' and ($fmt='mets' or $fmt='marcxml')) or ($sourceFormat='METS' and $fmt='lido'))">
+          <xsl:text> </xsl:text><a class="link" href="?verb=GetRecord&amp;metadataPrefix={$fmt}&amp;identifier={$oai_identifier}">
+            <xsl:value-of select="$fmt"/>
+          </a>
+        </xsl:if>
       </xsl:for-each>
       <xsl:text> </xsl:text><a class="link" href="?verb=ListMetadataFormats&amp;identifier={$oai_identifier}">formats</a>
     </td></tr>

@@ -165,7 +165,7 @@ public class BookmarkBean implements Serializable {
             }
 
             try {
-                if (DataManager.getInstance().getDao().addBookmarkList(bookmarkList)) {
+                if (DataManager.getInstance().getDao().addBookmarkList(bookmarkList) != null) {
                     String msg = ViewerResourceBundle.getTranslation("bookmarkList_createBookmarkListSuccess", null);
                     Messages.info(msg.replace("{0}", bookmarkList.getName()));
                     logger.debug("Bookmark list '{}' for user {} added.", bookmarkList.getName(), userBean.getUser().getId());

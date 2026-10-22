@@ -67,8 +67,9 @@ EXPOSE 8080
 
 # Ubuntu 24.04 ships a default 'ubuntu' user/group at 1000;
 # remove it, then create our unprivileged 'user' at uid/gid 1000.
+ENV USER=tomcat
 RUN userdel -r ubuntu 2>/dev/null || true; groupdel ubuntu 2>/dev/null || true; \
-    groupadd -g 1000 user && useradd -u 1000 -g user -M -s /usr/sbin/nologin user
+    groupadd -g 1000 ${USER} && useradd -u 1000 -g ${USER} -d ${CATALINA_HOME} -M -s /usr/sbin/nologin ${USER}
 
 # timeout must exceed healthcheck.sh's curl --max-time. start-period covers the
 # first-run schema initialisation, during which the app is legitimately absent.

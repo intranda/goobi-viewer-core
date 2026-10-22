@@ -21,7 +21,6 @@
  */
 package io.goobi.viewer.api.rest.model.statistics.index;
 
-// New DTO for #15809: aggregated counts for the "imported pages vs. full texts" bar chart.
 /**
  * Aggregated counts for the "imported pages vs. full texts" bar chart.
  *

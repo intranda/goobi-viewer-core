@@ -190,7 +190,7 @@ public class AccessTicketBean implements Serializable {
             ticket.setRequestMessage(ticketRequestMessage);
         }
 
-        if (DataManager.getInstance().getDao().addTicket(ticket)) {
+        if (DataManager.getInstance().getDao().addTicket(ticket) != null) {
             ticketEmail = null;
             ticketRequestMessage = null;
 

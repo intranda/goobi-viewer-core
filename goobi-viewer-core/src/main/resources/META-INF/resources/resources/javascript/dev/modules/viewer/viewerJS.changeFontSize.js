@@ -179,8 +179,8 @@ var viewerJS = (function (viewer) {
             console.log('_parseFontSize: string = ', string);
         }
 
-        // Was replace('px') without a replacement → returned "14undefined";
-        // parseInt happened to recover the leading digits. refs #27937
+        // replace() needs the explicit empty replacement; without it the result
+        // is "14undefined" and parseInt only happens to recover the digits.
         return parseInt(string.replace('px', ''));
     }
 

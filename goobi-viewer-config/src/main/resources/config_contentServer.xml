@@ -239,14 +239,18 @@
     <prewarmSourceImageCache /> hook in config_viewer.xml.
 
       -useCache: central switch
-      -maxEntries: LRU cap; rough heap budget = maxEntries × avg-image-MP × 4 bytes
-                   (~1.8 GB worst case at the defaults below for ~9 MP images)
-      -ttlSeconds: entry expiry on read; shorter values free heap sooner at the cost of more re-decodes
+      -maxHeapPercent: share of the JVM max heap the cache may occupy. This is the bound that
+                   actually limits memory: least-recently-used entries are evicted until the
+                   cache fits, and an image larger than the whole budget is not cached at all.
+      -maxEntries: secondary LRU cap against a flood of very small images. It does NOT bound
+                   heap on its own, because one decoded image ranges from a few hundred KB to
+                   several hundred MB.
+      -ttlSeconds: entry expiry; expired entries are skipped on read and dropped on the next insertion
       -burstWindowSeconds: window in which a second request for the same URI counts as a burst
-      -skipIfLargerThanMP: hard ceiling on cacheable image size in megapixels
+      -skipIfLargerThanMP: ceiling on cacheable image size in megapixels, checked before decoding
     -->
     <!-- disable per default, because it can lead to errors in image loading for large images, probably due ru differing subsampling rates -->
-    <sourceImageCache useCache="false" maxEntries="50" ttlSeconds="60"
+    <sourceImageCache useCache="false" maxHeapPercent="10" maxEntries="50" ttlSeconds="60"
                       burstWindowSeconds="30" skipIfLargerThanMP="50" />
 
 

@@ -55,6 +55,7 @@ import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.servers.Server;
+import io.swagger.v3.oas.models.tags.Tag;
 
 /**
  * @author Florian Alpers
@@ -94,8 +95,10 @@ public class OpenApiResource {
                 .readAllResources(false);
 
         Reader reader = new Reader(oasConfig);
-        return reader.read(getResourceClasses());
-
+        OpenAPI spec = reader.read(getResourceClasses());
+        spec.setTags(getTags());
+        applySecuritySchemes(spec);
+        return spec;
     }
 
     /**
@@ -143,6 +146,25 @@ public class OpenApiResource {
     }
 
     /**
+     * Declares the token and the bearer security scheme on the given spec.
+     *
+     * <p>Both schemes are defined once for the v1 API and reused verbatim here, so the two specs cannot end up
+     * describing the same header in different words.
+     *
+     * <p>They are declared even though no operation of the published resource set references one: the filters
+     * enforcing them are registered for v2 requests as well, and an operation whose security requirement names
+     * an undeclared scheme renders the whole spec invalid - a trap for the next class added to
+     * {@link #getResourceClasses()}.
+     *
+     * @param openApi spec to declare the schemes on
+     */
+    public static void applySecuritySchemes(OpenAPI openApi) {
+        // Fully qualified because the short name OpenApiResource is this class itself.
+        io.goobi.viewer.api.rest.v1.OpenApiResource.applyTokenSecurityScheme(openApi);
+        io.goobi.viewer.api.rest.v1.OpenApiResource.applyBearerSecurityScheme(openApi);
+    }
+
+    /**
      * @return {@link Info}
      */
     public static Info getInfo() {
@@ -155,6 +177,28 @@ public class OpenApiResource {
                 .license(new License()
                         .name("GPL2 or later")
                         .url("https://github.com/intranda/goobi-viewer-core/blob/master/LICENSE"));
+    }
+
+    /**
+     * Returns the global tag list of the v2 API.
+     *
+     * <p>Operations reference these tags by name only. Declaring them here is what gives each group in the API
+     * documentation a description, and this list's order is the order in which the groups are presented.
+     *
+     * <p>Static for the same reason as {@link #getInfo()}: the build-time spec generator reuses it, so the
+     * validated spec stays identical to what this resource serves.
+     *
+     * @return tags of the v2 API, in presentation order
+     */
+    public static List<Tag> getTags() {
+        return List.of(
+                tag("records", "Records addressed by persistent identifier: pages, sections, files and image downloads."),
+                tag("iiif", "IIIF Presentation 3.0, Image API and Search API resources."),
+                tag("annotations", "Web Annotations and comments for a record or a single page."));
+    }
+
+    private static Tag tag(String name, String description) {
+        return new Tag().name(name).description(description);
     }
 
 }

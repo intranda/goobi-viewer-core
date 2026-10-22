@@ -41,16 +41,21 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.TestUtils;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.collections.DynamicCollection;
+import io.goobi.viewer.model.cms.collections.DynamicCollectionTranslation;
 import io.goobi.viewer.solr.SolrConstants;
 
 class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -124,6 +129,44 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
         } finally {
             DataManager.getInstance().getDao().deleteDynamicCollection(dc);
         }
+    }
+
+    /**
+     * @see SearchFacets#parseFacetString(String,List,Map)
+     * @verifies use the dynamic collection label as label for query facets
+     */
+    @Test
+    void parseFacetString_shouldUseTheDynamicCollectionLabelAsLabelForQueryFacets() throws DAOException {
+        DynamicCollection dc = new DynamicCollection("dyncol_label_test");
+        dc.setSolrQuery("DOCSTRCT:monograph");
+        dc.addLabel(new DynamicCollectionTranslation(BeanUtils.getLocale().getLanguage(), "Fine Collection"));
+        DataManager.getInstance().getDao().addDynamicCollection(dc);
+        try {
+            List<IFacetItem> facetItems = new ArrayList<>();
+            SearchFacets.parseFacetString(SolrConstants.DC_DYNAMIC + ":dyncol_label_test;;", facetItems, null);
+            Assertions.assertEquals(1, facetItems.size());
+            Assertions.assertEquals("Fine Collection", facetItems.get(0).getLabel());
+            Assertions.assertEquals("Fine Collection", facetItems.get(0).getTranslatedLabel());
+        } finally {
+            DataManager.getInstance().getDao().deleteDynamicCollection(dc);
+        }
+    }
+
+    /**
+     * Collection listings link to the DC_DYNAMIC facet whether or not the facet is configured for display, so the pseudo field has to be resolved as
+     * a query facet in any case; passing it on to Solr as a real field would fail.
+     *
+     * @see SearchFacets#isFieldQueryFacet(String)
+     * @verifies return true for the dynamic collection field even if not configured as a facet
+     */
+    @Test
+    void isFieldQueryFacet_shouldReturnTrueForTheDynamicCollectionFieldEvenIfNotConfiguredAsAFacet() {
+        Configuration configuration = Mockito.mock(Configuration.class);
+        Mockito.when(configuration.isQueryFacetField(Mockito.anyString())).thenReturn(false);
+        DataManager.getInstance().injectConfiguration(configuration);
+
+        Assertions.assertTrue(SearchFacets.isFieldQueryFacet(SolrConstants.DC_DYNAMIC));
+        Assertions.assertFalse(SearchFacets.isFieldQueryFacet("MD_TITLE"));
     }
 
     /**
@@ -942,6 +985,109 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals(2, items.size());
         Assertions.assertEquals("FIELD2", items.get(1).getField());
         Assertions.assertEquals("bar", items.get(1).getValue());
+    }
+
+    /**
+     * @see SearchFacets#updateFacetItem(String, String, List, boolean)
+     * @verifies preserve literal plus signs in percent encoded values
+     */
+    @Test
+    void updateFacetItem_shouldPreserveLiteralPlusSignsInPercentEncodedValues() {
+        List<IFacetItem> items = new ArrayList<>(1);
+        SearchFacets.updateFacetItem("FIELD1", "M%20+%20M", items, false);
+        Assertions.assertEquals(1, items.size());
+        Assertions.assertEquals("M + M", items.get(0).getValue());
+    }
+
+    /**
+     * @see SearchFacets#parseFacetString(String,List,Map)
+     * @verifies preserve literal plus signs in percent encoded facet values
+     */
+    @Test
+    void parseFacetString_shouldPreserveLiteralPlusSignsInPercentEncodedFacetValues() {
+        List<IFacetItem> facetItems = new ArrayList<>();
+        SearchFacets.parseFacetString("MD_ARTIST%3A%22M%20+%20M%20geb.%201994%22", facetItems, null);
+        Assertions.assertEquals(1, facetItems.size());
+        Assertions.assertEquals("MD_ARTIST:\"M + M geb. 1994\"", facetItems.get(0).getLink());
+    }
+
+    /**
+     * @see SearchFacets#parseFacetString(String,List,Map)
+     * @verifies preserve encoded plus signs in percent encoded facet values
+     */
+    @Test
+    void parseFacetString_shouldPreserveEncodedPlusSignsInPercentEncodedFacetValues() {
+        List<IFacetItem> facetItems = new ArrayList<>();
+        SearchFacets.parseFacetString("MD_ARTIST%3A%22M%20%2B%20M%22", facetItems, null);
+        Assertions.assertEquals(1, facetItems.size());
+        Assertions.assertEquals("MD_ARTIST:\"M + M\"", facetItems.get(0).getLink());
+    }
+
+    /**
+     * @see SearchFacets#parseFacetString(String,List,Map)
+     * @verifies preserve escaped plus signs in viewer generated facet links
+     */
+    @Test
+    void parseFacetString_shouldPreserveEscapedPlusSignsInViewerGeneratedFacetLinks() throws UnsupportedEncodingException {
+        String link = URLEncoder.encode(BeanUtils.escapeCriticalUrlChracters("MD_ARTIST:M + M"), SearchBean.URL_ENCODING);
+        List<IFacetItem> facetItems = new ArrayList<>();
+        SearchFacets.parseFacetString(link, facetItems, null);
+        Assertions.assertEquals(1, facetItems.size());
+        Assertions.assertEquals("MD_ARTIST:M + M", facetItems.get(0).getLink());
+    }
+
+    /**
+     * @see SearchFacets#parseFacetString(String,List,Map)
+     * @verifies decode plus signs as spaces in form encoded facet values
+     */
+    @Test
+    void parseFacetString_shouldDecodePlusSignsAsSpacesInFormEncodedFacetValues() {
+        List<IFacetItem> facetItems = new ArrayList<>();
+        SearchFacets.parseFacetString("MD_ARTIST%3Aa+b", facetItems, null);
+        Assertions.assertEquals(1, facetItems.size());
+        Assertions.assertEquals("MD_ARTIST:a b", facetItems.get(0).getLink());
+    }
+
+    /**
+     * @see SearchFacets#decodeFacetString(String)
+     * @verifies preserve literal plus signs if spaces are percent encoded
+     */
+    @Test
+    void decodeFacetString_shouldPreserveLiteralPlusSignsIfSpacesArePercentEncoded() {
+        Assertions.assertEquals("a + b", SearchFacets.decodeFacetString("a%20+%20b"));
+        Assertions.assertEquals("a + b", SearchFacets.decodeFacetString("a + b"));
+    }
+
+    /**
+     * @see SearchFacets#decodeFacetString(String)
+     * @verifies decode plus signs as spaces if form encoded
+     */
+    @Test
+    void decodeFacetString_shouldDecodePlusSignsAsSpacesIfFormEncoded() {
+        Assertions.assertEquals("a b", SearchFacets.decodeFacetString("a+b"));
+        // Double-encoded
+        Assertions.assertEquals("a b", SearchFacets.decodeFacetString("a%2Bb"));
+    }
+
+    /**
+     * @see SearchFacets#decodeFacetString(String)
+     * @verifies restore escaped characters after decoding
+     */
+    @Test
+    void decodeFacetString_shouldRestoreEscapedCharactersAfterDecoding() {
+        Assertions.assertEquals("a+b/c", SearchFacets.decodeFacetString("aU002BbU002Fc"));
+        Assertions.assertEquals("100%", SearchFacets.decodeFacetString("100U0025"));
+    }
+
+    /**
+     * @see SearchFacets#decodeFacetString(String)
+     * @verifies return undecoded string if malformed
+     */
+    @Test
+    void decodeFacetString_shouldReturnUndecodedStringIfMalformed() {
+        Assertions.assertEquals("100%", SearchFacets.decodeFacetString("100%"));
+        // First pass succeeds, second pass fails on the resulting literal '%'
+        Assertions.assertEquals("100%", SearchFacets.decodeFacetString("100%25"));
     }
 
     /**

@@ -23,9 +23,11 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import io.goobi.viewer.connector.AbstractTest;
 import io.goobi.viewer.connector.oai.RequestHandler;
+import io.goobi.viewer.connector.utils.SolrSearchIndex;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -65,5 +67,30 @@ class METSFormatTest extends AbstractTest {
         doc.setField(SolrConstants.PI_TOPSTRUCT, "PPN517154005");
         Assertions.assertNull(METSFormat.generateMetsRecord(XmlTools.getStringFromElement("", StandardCharsets.UTF_8.name()), doc, new RequestHandler(),
                 null, null));
+    }
+
+    /**
+     * @see METSFormat#createGetRecord(RequestHandler,String)
+     * @verifies return cannotDisseminateFormat if record not mets
+     */
+    @Test
+    void createGetRecord_shouldReturnCannotDisseminateFormatIfRecordNotMets() throws Exception {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.PI_TOPSTRUCT, "455820");
+        doc.setField(SolrConstants.SOURCEDOCFORMAT, "LIDO");
+
+        SolrSearchIndex mockSolr = Mockito.mock(SolrSearchIndex.class);
+        Mockito.when(mockSolr.getListRecord(Mockito.eq("455820"), Mockito.anyList(), Mockito.any())).thenReturn(doc);
+
+        METSFormat format = new METSFormat();
+        format.solr = mockSolr;
+
+        RequestHandler handler = new RequestHandler();
+        handler.setIdentifier("455820");
+
+        Element result = format.createGetRecord(handler, null);
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals("error", result.getName());
+        Assertions.assertEquals("cannotDisseminateFormat", result.getAttributeValue("code"));
     }
 }

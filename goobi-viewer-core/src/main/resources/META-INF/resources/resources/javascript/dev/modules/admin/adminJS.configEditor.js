@@ -293,7 +293,9 @@ var adminJS = ( function( admin ) {
 			}
 		},
 		loadBackup: function(data) {
-			console.log("load backup ", data.status);
+			if ( _debug ) {
+				console.log("load backup ", data.status);
+			}
 			if(data.status === "success") {
 				$(document).ready(() => {						
 					setTimeout(adminJS.configEditor.showOverlayBar(true));

@@ -179,7 +179,8 @@ svg.icon.icon-flip-vertical {
 }
 
 /* Global: rotate icon when open (apply to wrapper via styleClass) */
-.icon-rot-on-open svg {
+.icon-rot-on-open svg,
+.icon-rot-on-open--90 svg {
     transition: transform 0.15s ease;
 }
 [aria-expanded='true'] .icon-rot-on-open svg,
@@ -193,6 +194,16 @@ details[open] .icon-rot-on-open svg,
 .widget__topbar.in .icon-rot-on-open svg,
 .icon-rot-on-open.-active svg {
     transform: rotate(180deg);
+}
+
+[aria-expanded='true'] .icon-rot-on-open--90 svg,
+[aria-pressed='true'] .icon-rot-on-open--90 svg,
+details[open] .icon-rot-on-open--90 svg,
+.collapse.show .icon-rot-on-open--90 svg,
+.is-open .icon-rot-on-open--90 svg,
+.-active .icon-rot-on-open--90 svg,
+.icon-rot-on-open--90.-active svg {
+    transform: rotate(90deg);
 }
 
 .icon-totop {

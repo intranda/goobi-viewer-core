@@ -47,7 +47,7 @@
                         <c:forEach
                             var="icon"
                             items="#{activeDocumentBean.viewManager.copyrightIndicatorLicense.icons}">
-                            <!-- Guard against empty icon values to prevent FacesFileNotFoundException (refs #1234) -->
+                            <!-- Guard against empty icon values to prevent FacesFileNotFoundException -->
                             <c:if test="#{not empty icon}">
                                 <ui:include src="#{navigationHelper.getResource('images/licence/'.concat(icon))}" />
                             </c:if>

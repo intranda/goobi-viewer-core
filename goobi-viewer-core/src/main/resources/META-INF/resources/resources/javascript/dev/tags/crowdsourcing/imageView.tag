@@ -162,7 +162,6 @@
 	}
 	
 	handleImageControlAction(event) {
-		console.log("image action ", event.action);
 		switch(event.action) {
 			case "toggleThumbs":
 				this.showThumbs = event.value;

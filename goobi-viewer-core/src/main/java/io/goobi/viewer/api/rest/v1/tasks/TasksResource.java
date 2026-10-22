@@ -60,6 +60,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -98,17 +99,43 @@ public class TasksResource {
         this.request = request;
     }
 
+    /**
+     * Creates a task for the given {@link TaskParameter#getType()} and starts it asynchronously.
+     *
+     * <p>If the internal message queue broker is enabled in the configuration, which is the default, only the three task types that
+     * carry a dedicated {@link TaskParameter} subtype are queued as a {@link ViewerMessage} and processed by the message queue consumer
+     * (sitemap update, data repository name update, PDF pre-rendering); any other type is accepted but creates no task. With the broker
+     * disabled, the task runs as an in-memory {@link Task} on a fixed pool of five worker threads. The task type also determines, via
+     * {@link Task#getAccessibility(ITaskType)}, the authorization required to create it (token, admin or session, depending on the
+     * type).
+     *
+     * @param desc parameters describing the task to create, including its type
+     * @return the created {@link Task} or {@link ViewerMessage}
+     * @throws WebApplicationException if no task type is given, the caller is not authorized to create it, or the message queue
+     *             rejects the task
+     */
     @POST
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "tasks" }, summary = "Create a (possibly time consuming) task to execute in a limited thread pool. See javadoc for details")
-    @ApiResponse(responseCode = "200", description = "Task has been accepted and started")
+    // Declared although this resource carries no @AuthorizationBinding: the token is checked programmatically per task type.
+    // Only the token variant is expressible here; the description states that admin and session types need something else.
+    @SecurityRequirement(name = AuthorizationFilter.SECURITY_SCHEME_TOKEN)
+    @Operation(tags = { "tasks" }, summary = "Create a (possibly time consuming) task to execute in a limited thread pool. See javadoc for details",
+            description = "With the internal message broker enabled, which is the default, only the three types that carry a dedicated"
+                    + " request body subtype are queued (sitemap update, data repository name update, PDF pre-rendering); any other type"
+                    + " is accepted but creates no task. With the broker disabled, the task runs in the local thread pool. The 'type'"
+                    + " also determines the authorization level required to create it (token, admin or session, depending on the type).")
+    @ApiResponse(responseCode = "200", description = "Task has been accepted and started",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(oneOf = { Task.class, ViewerMessage.class })))
+    @ApiResponse(responseCode = "204", description = "The task type is accepted but no task is created for it")
     @ApiResponse(responseCode = "400", description = "No task type provided or task type is invalid")
     @ApiResponse(responseCode = "401", description = "Not authorized to create this type of task")
     @ApiResponse(responseCode = "500", description = "Message queue unavailable or internal error")
     // Explicit @Content required to produce a valid OpenAPI requestBody with a content map;
     // @RequestBody(required=true) alone generates {"required":true} which is invalid per OpenAPI 3.
-    @RequestBody(required = true, content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = TaskParameter.class)))
+    @RequestBody(required = true, content = @Content(mediaType = MediaType.APPLICATION_JSON,
+            schema = @Schema(anyOf = { TaskParameter.class, SitemapRequestParameters.class, ToolsRequestParameters.class,
+                    PrerenderPdfsRequestParameters.class })))
     public Response addTask(TaskParameter desc) throws WebApplicationException {
         if (desc == null || desc.getType() == null) {
             throw new WebApplicationException(new IllegalRequestException("Must provide job type"));
@@ -177,7 +204,9 @@ public class TasksResource {
                 String messageId = this.messageBroker.addToQueue(message);
                 message.setMessageId(messageId);
             } catch (MessageQueueException e) {
-                throw new WebApplicationException(e);
+                logger.error("Failed to add task to the message queue", e);
+                // Passing the cause instead would let the mapper classify a broker outage as a client error.
+                throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
             }
 
             // TODO create useful response, containing the message id
@@ -190,12 +219,31 @@ public class TasksResource {
         return Response.ok(job).build();
     }
 
+    /**
+     * Returns a single task or message-queue job by id, provided the request is authorized to access it.
+     *
+     * <p>A purely numeric id is looked up among the tasks held in memory by the viewer's task manager; any other id is treated as a
+     * message queue job id and looked up first via the message broker, then, if not found there, in the database.
+     * Authorization depends on the {@link Task.Accessibility} of the underlying task type: token tasks require the same authorization
+     * header as other protected endpoints, admin tasks require an active admin session, and session tasks are only visible to the
+     * session that created them.
+     *
+     * @param id the id of the task
+     * @return the {@link Task} or {@link ViewerMessage} with the given id
+     * @throws ContentNotFoundException if no task or job is found for the given id, or the request is not authorized to access it
+     */
     @GET
     @Path(TASKS_TASK)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "tasks" },
-            summary = "Return the task with the given id, provided it is accessible by the request (determined by session or access token)")
-    @ApiResponse(responseCode = "200", description = "The task with the given id")
+            summary = "Return the task with the given id, provided it is accessible by the request (determined by session or access token)",
+            description = "Numeric ids resolve against the tasks held in memory by the viewer's task manager; any other id is treated as"
+                    + " an asynchronous message queue job and is looked up via the message broker, falling back to the database. Visibility"
+                    + " depends on the task's accessibility: token tasks require the same authorization token as other protected"
+                    + " endpoints, admin tasks require an active admin session, and session tasks are visible only within the session"
+                    + " that created them.")
+    @ApiResponse(responseCode = "200", description = "The task with the given id",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(oneOf = { Task.class, ViewerMessage.class })))
     // 400 is returned when the id contains characters not allowed by the schema pattern ^[A-Za-z0-9_-]+$
     @ApiResponse(responseCode = "400", description = "Invalid task id — must match ^[A-Za-z0-9_-]+$")
     @ApiResponse(responseCode = "404", description = "No task found for the given id, or the request is not authorized to access it")
@@ -252,10 +300,23 @@ public class TasksResource {
         }
     }
 
+    /**
+     * Returns the tasks held in memory by the viewer's task manager that the current request is authorized to see.
+     *
+     * <p>Unlike {@link #getTask(String)}, this only lists locally tracked tasks, not asynchronous message queue jobs. Visibility of
+     * each task depends on its accessibility: token tasks require the same authorization token as other protected endpoints, admin
+     * tasks require an active admin session, and session tasks are included only for the session that created them.
+     *
+     * @return the list of tasks visible to the current request
+     */
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "tasks" }, summary = "Return a list of all tasks accessible to the request (determined by session or access token)")
-    @ApiResponse(responseCode = "200", description = "List of tasks accessible to the current request")
+    @Operation(tags = { "tasks" }, summary = "Return a list of all tasks accessible to the request (determined by session or access token)",
+            description = "Only tasks held in memory by the viewer's task manager are listed; asynchronous message queue jobs (visible"
+                    + " individually via GET /tasks/{id}) are not included. Each task is filtered by its accessibility: token tasks"
+                    + " require the authorization token, admin tasks require an admin session, and session tasks are visible only to the"
+                    + " session that created them.")
+    @ApiResponse(responseCode = "200", description = "List of tasks accessible to the current request", useReturnTypeSchema = true)
     public List<Task> getTasks() {
         return DataManager.getInstance()
                 .getRestApiJobManager()

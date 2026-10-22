@@ -144,7 +144,6 @@ public class SitemapBuilder {
                 // Release the static reference so the worker thread object, its captured Runnable
                 // and the Sitemap (with its JDOM document tree, up to ~1 GB for large catalogs)
                 // become eligible for garbage collection immediately after generation finishes.
-                // Previously the reference lingered until the next daily sitemap run. refs #27880
                 workerThread = null;
             }
             if (!Integer.valueOf(HttpServletResponse.SC_OK).equals(ret.getInt("status"))) {

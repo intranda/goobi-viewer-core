@@ -445,6 +445,7 @@ var viewerJS = (function (viewer) {
             }
 
             $currBtn.toggleClass('in');
+            $currBtn.attr('aria-expanded', $currBtn.hasClass('in') ? 'true' : 'false');
             $(toggleArea).slideToggle();
             if (_debug) console.log('call script ', scriptName, hitsPopulated);
             if (hitsPopulated < _defaults.childHitsToLoadOnExpand) {

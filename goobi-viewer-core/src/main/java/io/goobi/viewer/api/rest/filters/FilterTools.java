@@ -40,6 +40,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.recordlock.LockRecordResult;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
@@ -146,5 +147,47 @@ public final class FilterTools {
         }
 
         return "full".equalsIgnoreCase(region) && imageWidth <= DataManager.getInstance().getConfiguration().getThumbnailImageAccessMaxWidth();
+    }
+
+    /**
+     * Access check for a single privilege.
+     */
+    @FunctionalInterface
+    public interface PrivilegeCheck {
+        /**
+         * @param privilege privilege name to check
+         * @return {@link AccessPermission} for privilege
+         * @throws IndexUnreachableException
+         * @throws DAOException
+         * @throws RecordNotFoundException
+         */
+        AccessPermission check(String privilege) throws IndexUnreachableException, DAOException, RecordNotFoundException;
+    }
+
+    /**
+     * Checks whether all given privileges are granted. Stops at the first privilege that is not granted.
+     *
+     * @param privileges privileges which must all be granted
+     * @param check access check to perform for each privilege
+     * @return true if privileges is not empty and all privileges are granted; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws RecordNotFoundException
+     * @should deny if only last privilege is granted
+     * @should deny if only first privilege is granted
+     * @should grant if all privileges are granted
+     * @should deny if no privileges given
+     */
+    public static boolean isGrantedForAllPrivileges(String[] privileges, PrivilegeCheck check)
+            throws IndexUnreachableException, DAOException, RecordNotFoundException {
+        if (privileges == null || privileges.length == 0) {
+            return false;
+        }
+        for (String privilege : privileges) {
+            if (!check.check(privilege).isGranted()) {
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -35,6 +35,8 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserToken;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -72,8 +74,12 @@ public class UserEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Operation(summary = "Get the IP address of the current request and, if logged in, information about the current user",
-            tags = { "users" })
-    @ApiResponse(responseCode = "200", description = "JSON object containing the client IP address and optional user info")
+            tags = { "users" },
+            description = "The user is resolved first from a Bearer token in the Authorization header and, if that does not yield a"
+                    + " user, from the session of a logged-in viewer user; if neither source resolves a user, the response simply omits"
+                    + " the user field instead of reporting an error.")
+    @ApiResponse(responseCode = "200", description = "JSON object containing the client IP address and optional user info",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = CurrentUserResponse.class)))
     @ApiResponse(responseCode = "400", description = "No servlet request available")
     public Response getUserInfo() {
         if (servletRequest == null) {

@@ -84,9 +84,9 @@ public class MediaResource {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
      */
-    // Return type changed from String to void: the media payload is streamed directly to the
-    // injected HttpServletResponse by MediaDeliveryService, so Jersey must not attempt to write
-    // an additional (empty) String body on top of the already-committed response.
+    // MediaDeliveryService streams the media payload directly to the injected HttpServletResponse,
+    // so this method returns void: Jersey must not write an additional (empty) String body on top
+    // of the already-committed response.
     @Hidden
     @GET
     @Path(RECORDS_FILES_AUDIO)
@@ -111,7 +111,6 @@ public class MediaResource {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
      */
-    // Return type changed from String to void, see comment on serveAudioContent.
     @Hidden
     @GET
     @Path(RECORDS_FILES_VIDEO)
@@ -127,7 +126,6 @@ public class MediaResource {
         serveMediaContent("video", format, pi, filename);
     }
 
-    // Return type changed from String to void, see comment on serveAudioContent.
     private void serveMediaContent(String type, String format, String identifier, String filepath)
             throws PresentationException, IndexUnreachableException, WebApplicationException {
         logger.trace("serveMediaContent: {}/{}/{}/{}", type, format, identifier, filepath);

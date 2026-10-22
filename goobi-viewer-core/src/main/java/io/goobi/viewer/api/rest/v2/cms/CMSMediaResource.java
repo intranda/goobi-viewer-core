@@ -31,6 +31,7 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_FILES_FILE_ICO;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_FILES_FILE_PDF;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_FILES_FILE_SVG;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_FILES_FILE_VIDEO;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_FILES_FILE_WEBP;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_ITEM_BY_FILE;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_ITEM_BY_ID;
 
@@ -107,11 +108,14 @@ import io.goobi.viewer.model.cms.media.CMSMediaItemMetadata;
 import io.goobi.viewer.model.cms.media.CMSMediaLister;
 import io.goobi.viewer.model.cms.media.MediaItem;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
+import io.goobi.viewer.api.rest.filters.UserLoggedInFilter;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 /**
  * REST resource for accessing CMS media files in the v2 API with category and type filtering.
@@ -183,6 +187,7 @@ public class CMSMediaResource {
             tags = { "media" },
             summary = "Get a list of CMS-Media Items")
     @AuthorizationBinding
+    @SecurityRequirement(name = AuthorizationFilter.SECURITY_SCHEME_TOKEN)
     public MediaList getAllMedia(
             @Parameter(
                     description = "Comma separated list of tags. Only media items with any of these tags will be included") @QueryParam("tags") 
@@ -311,9 +316,47 @@ public class CMSMediaResource {
         throw new ContentNotFoundException(FILE_NOT_FOUND_MESSAGE.replace("{}", path.toString()));
     }
 
-    // Return type changed from String to void: MediaDeliveryService streams the payload directly
-    // onto the injected HttpServletResponse, so Jersey must not try to write an extra (empty)
-    // String body on top of the already-committed response.
+    /**
+     * Serves a CMS media WebP file as-is. WebP is not supported by the IIIF image server, so these files bypass
+     * {@link CMSMediaImageResource3}.
+     *
+     * @param filename name of the WebP file in the CMS media folder
+     * @param response servlet response
+     * @return {@link StreamingOutput} writing the file content
+     * @throws ContentNotFoundException if the file does not exist
+     */
+    @GET
+    @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_WEBP)
+    @Produces("image/webp")
+    @CORSBinding
+    @Operation(tags = { "media" }, summary = "Get CMS media file content as WebP")
+    @ApiResponse(responseCode = "200", description = "WebP file content")
+    @ApiResponse(responseCode = "404", description = "WebP media file not found")
+    @MediaResourceBinding
+    public static StreamingOutput getWebpContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
+            throws ContentNotFoundException {
+        String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));
+        Path path = Paths.get(
+                DataManager.getInstance().getConfiguration().getViewerHome(),
+                DataManager.getInstance().getConfiguration().getCmsMediaFolder(),
+                decFilename);
+        if (Files.exists(path)) {
+            return new StreamingOutput() {
+
+                @Override
+                public void write(OutputStream out) throws IOException, WebApplicationException {
+                    try (InputStream in = Files.newInputStream(path)) {
+                        IOUtils.copy(in, out);
+                    }
+                }
+            };
+        }
+        throw new ContentNotFoundException(FILE_NOT_FOUND_MESSAGE.replace("{}", path.toString()));
+    }
+
+    // MediaDeliveryService streams the payload directly onto the injected HttpServletResponse,
+    // so this method returns void: Jersey must not write an extra (empty) String body on top of
+    // the already-committed response.
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_VIDEO)
     @Operation(tags = { "media" }, summary = "Stream CMS media file as video")
@@ -327,7 +370,6 @@ public class CMSMediaResource {
         serveMediaContent("video", file);
     }
 
-    // Return type changed from String to void, see comment on serveVideoContent.
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_AUDIO)
     @Operation(tags = { "media" }, summary = "Stream CMS media file as audio")
@@ -424,6 +466,7 @@ public class CMSMediaResource {
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES)
     @Produces(MediaType.APPLICATION_JSON)
     @UserLoggedInBinding
+    @SecurityRequirement(name = UserLoggedInFilter.SECURITY_SCHEME_BEARER)
     @Operation(tags = { "media" }, summary = "List all uploaded CMS media files (requires login)",
             description = "Optional 'first' and 'count' query parameters paginate the response;"
                     + " omitting both returns the full list. File order is filesystem-dependent.")
@@ -486,6 +529,7 @@ public class CMSMediaResource {
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES)
     @Produces(MediaType.APPLICATION_JSON)
     @AuthorizationBinding
+    @SecurityRequirement(name = AuthorizationFilter.SECURITY_SCHEME_TOKEN)
     @Operation(hidden = true)
     public void deleteAllFiles() throws IllegalRequestException {
         throw new IllegalRequestException("Deleting cms media files is not supported via REST");
@@ -497,6 +541,7 @@ public class CMSMediaResource {
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE)
     @Produces(MediaType.APPLICATION_JSON)
     @AuthorizationBinding
+    @SecurityRequirement(name = AuthorizationFilter.SECURITY_SCHEME_TOKEN)
     @Operation(hidden = true)
     public void deleteFile() throws IllegalRequestException {
         throw new IllegalRequestException("Deleting cms media files is not supported via REST");
@@ -520,7 +565,7 @@ public class CMSMediaResource {
     public Response getInvalidFilename(
             @PathParam("filename") String filename) throws IllegalRequestException {
         throw new IllegalRequestException("Invalid filename: must have a supported file extension"
-                + " (jpg, png, tif, gif, jp2, pdf, svg, ico, mp4, webm, mp3, ogg, html)");
+                + " (jpg, png, tif, gif, jp2, webp, pdf, svg, ico, mp4, webm, mp3, ogg, html)");
     }
 
     /**
@@ -540,6 +585,7 @@ public class CMSMediaResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @UserLoggedInBinding
+    @SecurityRequirement(name = UserLoggedInFilter.SECURITY_SCHEME_BEARER)
     // CSRF protection: multipart/form-data is a CORS "simple request" and bypasses preflight,
     // so the Origin/Referer allowlist filter (CSRFRequestFilter) is the only browser-side guard
     // available when webapi.csrf is enabled. Existing 403 already covers the rejection code.
@@ -725,7 +771,6 @@ public class CMSMediaResource {
      * @throws PresentationException
      * @throws WebApplicationException
      */
-    // Return type changed from String to void, see comment on serveVideoContent.
     private void serveMediaContent(String type, Path file) throws PresentationException, WebApplicationException {
         String mimeType = type + "/" + FilenameUtils.getExtension(file.getFileName().toString());
 

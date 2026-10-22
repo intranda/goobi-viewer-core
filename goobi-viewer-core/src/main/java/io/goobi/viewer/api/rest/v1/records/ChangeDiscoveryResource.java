@@ -94,8 +94,13 @@ public class ChangeDiscoveryResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "records", "iiif" },
-            summary = "Get a IIIF change discovery activity stream of all record changes")
-    @ApiResponse(responseCode = "200", description = "Return activity stream according to IIIF change discovery specification")
+            summary = "Get a IIIF change discovery activity stream of all record changes",
+            description = "The start date must match yyyy-MM-dd; a value that matches this pattern but is not a valid calendar date (e.g."
+                    + " day 31 in a 30-day month) is silently ignored rather than rejected. When a filter query is supplied, any Solr error"
+                    + " building the collection is reported as a client error instead of an internal one, since the filter is the most"
+                    + " likely cause.")
+    @ApiResponse(responseCode = "200", description = "Return activity stream according to IIIF change discovery specification",
+            useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid date format for 'start' parameter (expected yyyy-MM-dd)")
     @ApiResponse(responseCode = "500", description = "An internal error occurred, possibly due to an unreachable Solr index")
     public OrderedCollection<Activity> getAllChanges(

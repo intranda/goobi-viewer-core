@@ -57,6 +57,20 @@ public final class OpenApiSpecGenerator {
      * @should generate non empty paths for v2
      * @should set info for v1
      * @should set info for v2
+     * @should declare every operation tag globally for v1
+     * @should declare every operation tag globally for v2
+     * @should set a description for every declared tag
+     * @should declare a body schema for every success response for v1
+     * @should declare a body schema for every success response for v2
+     * @should describe every parameter for v1
+     * @should describe every parameter for v2
+     * @should reference every component schema for v1
+     * @should reference every component schema for v2
+     * @should declare the token and the bearer security scheme for v2
+     * @should describe every operation for v1
+     * @should describe every operation for v2
+     * @should declare a success or redirect response for every operation
+     * @should set a description for every declared response
      */
     public static OpenAPI buildOpenApi(String version) throws OpenApiConfigurationException {
         switch (version) {
@@ -74,6 +88,9 @@ public final class OpenApiSpecGenerator {
                 // could drift out of sync. Referenced by fully-qualified name here (not imported)
                 // because the short name "OpenApiResource" is already taken by the v2 import above.
                 v1Api.setInfo(io.goobi.viewer.api.rest.v1.OpenApiResource.getInfo());
+                v1Api.setTags(io.goobi.viewer.api.rest.v1.OpenApiResource.getTags());
+                io.goobi.viewer.api.rest.v1.OpenApiResource.applyTokenSecurityScheme(v1Api);
+                io.goobi.viewer.api.rest.v1.OpenApiResource.applyBearerSecurityScheme(v1Api);
                 return v1Api;
             case "v2":
                 // v2 publishes an explicit class set (no package scan) - reuse it verbatim.
@@ -82,6 +99,8 @@ public final class OpenApiSpecGenerator {
                 // v2/OpenApiResource.getInfo() is public static, so reuse it verbatim to stay
                 // runtime-faithful; otherwise the generated spec lacks the required "info" object.
                 v2Api.setInfo(OpenApiResource.getInfo());
+                v2Api.setTags(OpenApiResource.getTags());
+                OpenApiResource.applySecuritySchemes(v2Api);
                 return v2Api;
             default:
                 throw new IllegalArgumentException("Unknown API version: " + version);

@@ -42,11 +42,13 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.job.mq.Center3DObjectHandler;
+import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.POST;
@@ -62,12 +64,13 @@ import jakarta.ws.rs.core.Response;
  * that positions the rotation pivot at the object's bounding-box centre.
  *
  * <p>
- * Both endpoints are admin-only and respond immediately with the number of queued tasks – the actual centering work happens asynchronously in the
- * message queue.
+ * Both endpoints require the API token and respond immediately with the number of queued tasks – the actual centering work happens asynchronously
+ * in the message queue.
  */
 @jakarta.ws.rs.Path(TASKS_CENTER_3D)
 @ViewerRestServiceBinding
 @AuthorizationBinding
+@SecurityRequirement(name = AuthorizationFilter.SECURITY_SCHEME_TOKEN)
 public class Center3DTaskResource {
 
     private static final Logger logger = LogManager.getLogger(Center3DTaskResource.class);

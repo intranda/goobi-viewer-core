@@ -46,11 +46,6 @@
                 <ignoreVersion type="regex">4.*</ignoreVersion>
             </ignoreVersions>
         </rule>
-        <rule groupId="org.springframework" artifactId="spring-*">
-            <ignoreVersions>
-                <ignoreVersion type="regex">7.*</ignoreVersion>
-            </ignoreVersions>
-        </rule>
         <rule groupId="org.omnifaces" artifactId="omnifaces">
             <ignoreVersions>
                 <ignoreVersion type="regex">5.*</ignoreVersion>

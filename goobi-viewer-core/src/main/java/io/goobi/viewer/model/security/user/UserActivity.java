@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
+import org.jboss.weld.exceptions.IllegalArgumentException;
 
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
@@ -34,9 +35,10 @@ import io.goobi.viewer.model.search.Search;
 /**
  * Represents a single recorded activity of a user, such as creating a comment, bookmark, search, or annotation.
  *
- * <p>Each instance captures the activity type, a human-readable label, the timestamp, and whether it is an update
- * to an existing item. Factory methods are provided for constructing instances from domain objects such as
- * {@link io.goobi.viewer.model.annotation.comments.Comment} or {@link io.goobi.viewer.model.search.Search}.
+ * <p>
+ * Each instance captures the activity type, a human-readable label, the timestamp, and whether it is an update to an existing item. Factory methods
+ * are provided for constructing instances from domain objects such as {@link io.goobi.viewer.model.annotation.comments.Comment} or
+ * {@link io.goobi.viewer.model.search.Search}.
  *
  * @author Florian Alpers
  */
@@ -106,6 +108,9 @@ public class UserActivity {
     }
 
     public static UserActivity getFromBookmark(Bookmark bookmark) {
+        if (bookmark == null || bookmark.getBookmarkList() == null || bookmark.getBookmarkList().getName() == null) {
+            throw new IllegalArgumentException("Cannot create user activity from null");
+        }
         String listName = truncate(bookmark.getBookmarkList().getName(), 22);
         String bookmarkName = truncate(bookmark.getName(), MAX_LABEL_LENGTH - listName.length() - 3);
         String label = bookmarkName + " (" + listName + ")";
@@ -116,22 +121,18 @@ public class UserActivity {
         return new UserActivity(ActivityType.SEARCH, truncate(search.getName()), search.getDateUpdated(), false);
     }
 
-    
     public ActivityType getType() {
         return type;
     }
 
-    
     public String getLabel() {
         return label;
     }
 
-    
     public LocalDateTime getDate() {
         return date;
     }
 
-    
     public boolean isUpdate() {
         return update;
     }

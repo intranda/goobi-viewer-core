@@ -63,11 +63,13 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.managedbeans.CreateRecordBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.api.rest.filters.UserLoggedInFilter;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 /**
  * @author Florian Alpers
@@ -75,6 +77,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @jakarta.ws.rs.Path(TEMP_MEDIA_FILES_FILE_IMAGE)
 @CORSBinding
 @AdminLoggedInBinding
+@SecurityRequirement(name = UserLoggedInFilter.SECURITY_SCHEME_BEARER)
 public class TempMediaImageResource extends ImageResource {
 
     private static final Logger logger = LogManager.getLogger(TempMediaImageResource.class);
@@ -128,13 +131,21 @@ public class TempMediaImageResource extends ImageResource {
         //don't do anyhting. The resource url has already been set in constructor
     }
 
+    /**
+     * Redirects to the canonical {@code info.json} url of this temporary image resource.
+     *
+     * @return a 303 redirect response
+     */
     @Override
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
     @ContentServerImageInfoBinding
     @Operation(tags = { "iiif" },
-            summary = "IIIF image identifier for the CMS image file of the given filename. Returns a IIIF 2.1.1 image information object")
-    @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 image information object")
+            summary = "IIIF image identifier for the CMS image file of the given filename. Returns a IIIF 2.1.1 image information object",
+            description = "Redirects (HTTP 303) to the canonical IIIF image information document (info.json) for this temporarily uploaded"
+                    + " image; the target URL is the resource's own base URL with \"/info.json\" appended. Like every operation of this"
+                    + " resource, this requires a logged-in administrator.")
+    @ApiResponse(responseCode = "303", description = "Redirect to the canonical IIIF image information (info.json)")
     @ApiResponse(responseCode = "400", description = "Invalid filename (e.g. unsupported format)")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
     @ApiResponse(responseCode = "403", description = "Not authorized (admin login required)")

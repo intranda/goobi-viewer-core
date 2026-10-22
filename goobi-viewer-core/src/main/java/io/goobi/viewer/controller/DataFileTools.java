@@ -473,8 +473,7 @@ public final class DataFileTools {
 
     /**
      * Compares the hosts of the content api url (urls/iiif) and the data api url (urls/rest). Used as a recursion guard: an external content fallback
-     * must only target a different host than the viewer itself, otherwise it would call back into the same endpoint (the infinite recursion that led
-     * to the fallback removal in a57b93da9a).
+     * must only target a different host than the viewer itself, otherwise it would call back into the same endpoint and recurse infinitely.
      *
      * @param iiifUrl content api base url (urls/iiif)
      * @param restUrl data api base url (urls/rest)
@@ -521,8 +520,8 @@ public final class DataFileTools {
                     return fulltext;
                 }
             } catch (ContentNotFoundException e) {
-                // External content fallback for plaintext, mirroring loadAlto(). Host guard prevents
-                // the self-call recursion removed in a57b93da9a.
+                // External content fallback for plaintext, mirroring loadAlto(). The host guard prevents
+                // the self-call that would recurse infinitely.
                 if (isLoadFulltextFromExternalSource()) {
                     return fetchFulltextFromExternalSource(FileTools.getBottomFolderFromPathString(fulltextFilePath),
                             FileTools.getFilenameFromPathString(fulltextFilePath));
@@ -615,7 +614,7 @@ public final class DataFileTools {
 
     /**
      * Indicates whether an external content source is configured for the ocr/fulltext fallback, i.e. urls/iiif points to a different host than
-     * urls/rest. Guards against the self-call recursion removed in a57b93da9a.
+     * urls/rest. Guards against the self-call that would recurse infinitely.
      *
      * @return true if urls/iiif and urls/rest resolve to different hosts
      * @should return true when iiif and rest urls have different hosts
@@ -667,8 +666,7 @@ public final class DataFileTools {
         } catch (ContentNotFoundException e) {
             // External content fallback: when the ALTO file is missing locally and urls/iiif points
             // to a different host than urls/rest, fetch it from that external goobi content server.
-            // The host guard prevents the self-call that caused the infinite recursion removed in
-            // a57b93da9a.
+            // The host guard prevents the self-call that would recurse infinitely.
             if (isLoadAltoFromExternalSource()) {
                 return fetchAltoFromExternalSource(pi, filename);
             }

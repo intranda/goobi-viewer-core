@@ -78,7 +78,11 @@ public class LIDOFormat extends Format {
                 filterQuerySuffix);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should return cannotDisseminateFormat if record not lido
+     */
     @Override
     public Element createGetRecord(RequestHandler handler, String filterQuerySuffix) {
         if (handler.getIdentifier() == null) {
@@ -86,11 +90,17 @@ public class LIDOFormat extends Format {
         }
         List<String> fieldList = new ArrayList<>(Arrays.asList(IDENTIFIER_FIELDS));
         fieldList.addAll(Arrays.asList(DATE_FIELDS));
+        fieldList.add(SolrConstants.SOURCEDOCFORMAT);
         fieldList.addAll(setSpecFields);
         try {
             SolrDocument doc = solr.getListRecord(handler.getIdentifier(), fieldList, filterQuerySuffix);
             if (doc == null) {
                 return new ErrorCode().getIdDoesNotExist();
+            }
+            // The lookup above matches by identifier only, so a record in a different source format (e.g. METS) could be returned. Refuse to
+            // disseminate it as LIDO instead of wrapping foreign content in a <lido> root element.
+            if (!"LIDO".equals(doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT))) {
+                return new ErrorCode().getCannotDisseminateFormat();
             }
             return generateLidoRecords(Collections.singletonList(doc), 1L, 0, 1, handler, "GetRecord", setSpecFields, filterQuerySuffix);
         } catch (IOException | SolrServerException e) {

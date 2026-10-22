@@ -84,6 +84,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.SchemaProperty;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
@@ -158,8 +159,6 @@ public class UserAvatarResource extends ImageResource {
     public static URI getMediaFileUrl(Long userId) throws WebApplicationException {
         try {
             // Use NotFoundException (HTTP 404) directly so missing avatars return the correct status code.
-            // Previously ContentNotFoundException was caught and wrapped in WebApplicationException(Throwable),
-            // which defaults to HTTP 500.
             return getUserAvatarFile(userId).map(PathConverter::toURI)
                     .orElseThrow(() -> new NotFoundException("No avatar file found for user " + userId));
         } catch (IOException e) {
@@ -197,13 +196,19 @@ public class UserAvatarResource extends ImageResource {
         //don't do anyhting. The resource url has already been set in constructor
     }
 
+    /**
+     * Redirects to the canonical {@code info.json} url of this user's avatar image.
+     *
+     * @return a 303 redirect response
+     */
     @Override
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
     @ContentServerImageInfoBinding
-    @Operation(tags = { "users" }, summary = "IIIF image identifier for an uploaded user avatar image. Returns a IIIF 2.1.1 image information object")
-    @ApiResponse(responseCode = "200", description = "Avatar image information")
-    @ApiResponse(responseCode = "302", description = "Redirect to canonical IIIF image info URL")
+    @Operation(tags = { "users" }, summary = "IIIF image identifier for an uploaded user avatar image. Returns a IIIF 2.1.1 image information object",
+            description = "Redirects (HTTP 303) to the canonical IIIF image information document (info.json) for this user's avatar image;"
+                    + " the target URL is the resource's own base URL with \"/info.json\" appended.")
+    @ApiResponse(responseCode = "303", description = "Redirect to the canonical IIIF image information (info.json)")
     // 400 is returned when the path parameter {userId} cannot be parsed as a valid integer
     @ApiResponse(responseCode = "400", description = "Invalid user ID")
     @ApiResponse(responseCode = "404", description = "No avatar found for the given user")
@@ -213,6 +218,16 @@ public class UserAvatarResource extends ImageResource {
         return super.redirectToCanonicalImageInfo();
     }
 
+    /**
+     * Uploads a new avatar image for the currently authenticated user.
+     *
+     * @param enabled accepted for compatibility with the request schema, but not evaluated by this endpoint
+     * @param uploadFilename file name to store the avatar under; only its extension is used to derive the stored file name, so an upload with a
+     *            different extension than the current avatar is stored alongside it rather than replacing it
+     * @param uploadedInputStream avatar image file content
+     * @param fileDetail multipart content disposition metadata of the file part
+     * @return a response indicating success, or the reason the upload was rejected
+     */
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
@@ -220,19 +235,27 @@ public class UserAvatarResource extends ImageResource {
     // so the Origin/Referer allowlist filter (CSRFRequestFilter) is the only browser-side guard
     // available when webapi.csrf is enabled.
     @CSRFGuarded
-    @Operation(summary = "Upload a new avatar image for the current user", tags = { "users" })
+    @Operation(summary = "Upload a new avatar image for the current user", tags = { "users" },
+            description = "The uploaded file always becomes the avatar of the currently authenticated user, not of the {userId} in the path."
+                    + " It replaces an existing avatar file of the same extension; a different extension is stored alongside the old file"
+                    + " instead of replacing it. The upload is limited to 16 MiB. The existing avatar file of the {userId} in the path is"
+                    + " resolved before the upload is handled, so the operation answers with 404 for a user that has no avatar yet.")
     // required=true signals schemathesis that an empty body is not a valid test case,
     // preventing false "schema-compliant request rejected" failures for empty POSTs.
-    @RequestBody(required = true, content = @Content(mediaType = "multipart/form-data"))
+    @RequestBody(required = true, content = @Content(mediaType = "multipart/form-data",
+            schemaProperties = {
+                    @SchemaProperty(name = "file", schema = @Schema(type = "string", format = "binary", description = "The avatar image file")),
+                    @SchemaProperty(name = "filename", schema = @Schema(type = "string", description = "File name to store the avatar under")),
+                    @SchemaProperty(name = "enabled", schema = @Schema(type = "boolean",
+                            description = "Accepted for compatibility with the request schema, but not evaluated by this endpoint")) }))
     @ApiResponse(responseCode = "200", description = "Avatar uploaded successfully")
     // 400 is returned when the {userId} path parameter is not a valid integer, or when
     // the framework rejects a missing/malformed multipart body before the method is invoked.
     @ApiResponse(responseCode = "400", description = "Invalid user ID or missing/malformed multipart body")
     @ApiResponse(responseCode = "403",
             description = "CSRF protection: Origin not in allowlist (only sent when webapi.csrf is enabled)")
-    @ApiResponse(responseCode = "404", description = "User not found")
+    @ApiResponse(responseCode = "404", description = "The user in the path has no existing avatar file, which is resolved before the upload")
     @ApiResponse(responseCode = "406", description = "Invalid upload — missing file stream or no active user session")
-    @ApiResponse(responseCode = "409", description = "A file with this name already exists")
     @ApiResponse(responseCode = "413",
             description = "Upload exceeds the maximum avatar size (mirrors the JSF maxsize attribute)")
     @ApiResponse(responseCode = "500", description = "Internal server error during file upload")
@@ -242,7 +265,7 @@ public class UserAvatarResource extends ImageResource {
             @FormDataParam("filename")
             String uploadFilename,
             @FormDataParam("file")
-            InputStream uploadedInputStream, @FormDataParam("file")
+            InputStream uploadedInputStream, @Parameter(hidden = true) @FormDataParam("file")
             FormDataContentDisposition fileDetail) {
 
         if (uploadedInputStream == null) {

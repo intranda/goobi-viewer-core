@@ -23,14 +23,9 @@
     </ui:define>
 
     <ui:define name="content">
-        <!-- Must stay h:outputStylesheet, not a plain <link> in ui:define name="head":
-             Mojarra's HeadRenderer.encodeEnd calls encodeHeadResources() only after the
-             head children are rendered, so this ends up as the last <link> in <head> and
-             wins the cascade over viewer.min.css. A plain <link> placed in the head would
-             render earlier and silently lose the font-size fix again. Trade-off: unlike
-             the versioned Scalar script below, h:outputStylesheet carries no cache-buster
-             here, so a recheck after editing rest_api.css needs a hard reload - Mojarra's
-             default resource max-age is 7 days. -->
+        <!-- Unlike the versioned Scalar script above, h:outputStylesheet carries no
+             cache-buster, so a recheck after editing rest_api.css needs a hard reload -
+             Mojarra's default resource max-age is 7 days. -->
         <h:outputStylesheet
             library="css"
             name="/misc/rest_api.css" />

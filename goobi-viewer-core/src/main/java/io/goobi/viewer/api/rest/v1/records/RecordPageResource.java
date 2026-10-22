@@ -63,7 +63,10 @@ import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.intranda.api.iiif.presentation.v2.AnnotationList;
 import de.intranda.api.iiif.presentation.v2.Canvas2;
+import de.intranda.api.iiif.presentation.v2.Collection2;
 import de.intranda.api.iiif.presentation.v2.Layer;
+import de.intranda.api.iiif.presentation.v2.Manifest2;
+import de.intranda.api.iiif.presentation.v2.Sequence;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -101,6 +104,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
@@ -135,11 +139,27 @@ public class RecordPageResource {
         request.setAttribute("pi", pi);
     }
 
+    /**
+     * Returns the named entities (persons, corporations, events, locations or miscellaneous) recognized on a single page.
+     *
+     * <p>Tags are extracted from the page's indexed ALTO file; pages for which no ALTO file is indexed, or for which the fulltext view
+     * permission is not granted, are silently omitted from the result rather than causing an error. The type filter is matched against the
+     * type recorded in the ALTO file; tags whose recorded type is not one of the known types are reported as "miscellaneous" and therefore
+     * appear only when no type is given.
+     *
+     * @param pageNo page number (1-based)
+     * @param type tag type to consider (person, corporation, event or location)
+     * @return the named entities found on the page, grouped by tag
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_PAGES_NER_TAGS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records" }, summary = "Get NER tags for a single page")
-    @ApiResponse(responseCode = "200", description = "NER tags for the requested page")
+    @Operation(tags = { "records" }, summary = "Get NER tags for a single page",
+            description = "Tags are extracted from the page's indexed ALTO file; a page for which no ALTO file is indexed, or for which the"
+                    + " fulltext view permission is not granted, is silently omitted from the result rather than causing an error. The type"
+                    + " filter is matched against the type recorded in the ALTO file; tags whose recorded type is not one of the known types"
+                    + " are reported as 'miscellaneous' and therefore appear only when no type is given.")
+    @ApiResponse(responseCode = "200", description = "NER tags for the requested page", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
@@ -153,11 +173,29 @@ public class RecordPageResource {
         return builder.getNERTags(pi, type, pageNo, pageNo, 1, servletRequest);
     }
 
+    /**
+     * Returns the IIIF 2.1.1 base sequence of all canvases for the record.
+     *
+     * <p>Unlike the manifest and canvas endpoints, this returns only the sequence element, not the surrounding manifest. Access requires
+     * the record's basic list permission.
+     *
+     * @param mode build mode for manifest to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest
+     *             with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources
+     *             from files
+     * @param preferedView set prefered goobi-viewer view for rendering attribute of canvases. Only valid values is 'fullscreen', any other
+     *             value results in default object/image view being referenced.
+     * @return the {@link Sequence} of all canvases of the record
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if the identifier refers to a collection, which
+     *             has no sequence
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_PAGES_SEQUENCE)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 base sequence")
-    @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 base sequence for the record")
+    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 base sequence",
+            description = "Unlike the manifest and canvas endpoints, this returns only the sequence element, not the surrounding manifest."
+                    + " Access requires the record's basic list permission.")
+    @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 base sequence for the record",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Sequence.class)))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "403", description = "Access denied or record not accessible (e.g. record not found in index)")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
@@ -178,11 +216,28 @@ public class RecordPageResource {
         return builder.getBaseSequence(pi, buildMode, preferedView);
     }
 
+    /**
+     * Returns the full IIIF 2.1.1 manifest for the record, with the base sequence restricted to the given page.
+     *
+     * <p>The manifest still describes the whole record (and, for multi-volume works, its child volumes); the canvas sequence embedded in it
+     * is limited to the requested page instead of listing every page of the record, and the manifest carries no structural ranges. Access
+     * requires the record's basic list permission.
+     *
+     * @param pageNo page number (1-based)
+     * @param mode build mode for manifest to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest
+     *             with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources
+     *             from files
+     * @return the {@link Manifest2} or {@link Collection2} for the record
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_PAGES_MANIFEST)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 manifest for record")
-    @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 manifest for the given page")
+    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 manifest for record",
+            description = "The manifest still describes the whole record (and, for multi-volume works, its child volumes); the canvas"
+                    + " sequence embedded in it is limited to the requested page instead of listing every page of the record, and the"
+                    + " manifest carries no structural ranges. Access requires the record's basic list permission.")
+    @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 manifest for the given page",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(oneOf = { Manifest2.class, Collection2.class })))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
     // 403 is returned by AccessConditionRequestFilter when the record is not found in the Solr index
     @ApiResponse(responseCode = "403", description = "Access denied or record not accessible (e.g. record not found in index)")
@@ -202,11 +257,23 @@ public class RecordPageResource {
         return b.getManifest(pi, List.of(pageNo), buildMode);
     }
 
+    /**
+     * Returns the IIIF 2.1.1 canvas for a single page.
+     *
+     * <p>The canvas includes links to other content representations of the page (e.g. fulltext/ALTO) and, if any exist, the page's
+     * crowdsourcing annotations. Access requires the record's basic list permission.
+     *
+     * @param pageNo page number (1-based)
+     * @return the {@link Canvas2} for the requested page
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_PAGES_CANVAS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 canvas for a page")
-    @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 canvas for the given page")
+    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 canvas for a page",
+            description = "The canvas includes links to other content representations of the page (e.g. fulltext/ALTO) and, if any exist,"
+                    + " the page's crowdsourcing annotations. Access requires the record's basic list permission.")
+    @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 canvas for the given page",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Canvas2.class)))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "No record or page found for the given identifiers")
@@ -220,11 +287,24 @@ public class RecordPageResource {
         return builder.getCanvas(pi, pageNo);
     }
 
+    /**
+     * Returns the crowdsourcing annotations created for a single page.
+     *
+     * <p>Annotations are read from the database, not the Solr index, and are delivered as an Open Annotation collection. This includes
+     * every crowdsourcing motivation (e.g. describing, commenting, tagging), which distinguishes it from the dedicated comments endpoint.
+     *
+     * @param pageNo page number (1-based)
+     * @return the annotation collection for the requested page
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_PAGES_ANNOTATIONS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "annotations" }, summary = "List annotations for a page")
-    @ApiResponse(responseCode = "200", description = "Annotation collection for the given page")
+    @Operation(tags = { "records", "annotations" }, summary = "List annotations for a page",
+            description = "Annotations are read from the database, not the Solr index, and are delivered as an Open Annotation collection."
+                    + " This includes every crowdsourcing motivation (e.g. describing, commenting, tagging), which distinguishes it from the"
+                    + " dedicated comments endpoint.")
+    @ApiResponse(responseCode = "200", description = "Annotation collection for the given page",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = AnnotationList.class)))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public IAnnotationCollection getAnnotationsForRecord(
@@ -237,11 +317,23 @@ public class RecordPageResource {
         return new OpenAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, pageNo, false, servletRequest);
     }
 
+    /**
+     * Returns the comments left on a single page.
+     *
+     * <p>Comments are read from the database and delivered as an Open Annotation collection, one annotation per comment. Unlike the
+     * annotations endpoint, this only returns simple page comments, not other crowdsourcing motivations.
+     *
+     * @param pageNo page number (1-based)
+     * @return the annotation collection of comments for the requested page
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_PAGES_COMMENTS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "annotations" }, summary = "List comments for a page")
-    @ApiResponse(responseCode = "200", description = "Annotation collection of comments for the given page")
+    @Operation(tags = { "records", "annotations" }, summary = "List comments for a page",
+            description = "Comments are read from the database and delivered as an Open Annotation collection, one annotation per comment."
+                    + " Unlike the annotations endpoint, this only returns simple page comments, not other crowdsourcing motivations.")
+    @ApiResponse(responseCode = "200", description = "Annotation collection of comments for the given page",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = AnnotationList.class)))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public IAnnotationCollection getCommentsForPage(
@@ -270,8 +362,11 @@ public class RecordPageResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_PAGES_TEXT)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Get the text content of a single page as annotations", tags = { "records" })
-    @ApiResponse(responseCode = "200", description = "Annotation collection containing page text")
+    @Operation(summary = "Get the text content of a single page as annotations", tags = { "records" },
+            description = "If the record's fulltext view permission is not granted, an empty annotation collection is returned instead of an"
+                    + " error response. Where an ALTO file is available its content is preferred over plain fulltext.")
+    @ApiResponse(responseCode = "200", description = "Annotation collection containing page text",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = AnnotationList.class)))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public IAnnotationCollection getTextForPage(

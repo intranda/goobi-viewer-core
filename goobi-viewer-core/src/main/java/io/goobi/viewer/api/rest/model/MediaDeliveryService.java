@@ -142,10 +142,7 @@ public class MediaDeliveryService {
 
         // The writable channel is bound to `out` (not directly to response.getOutputStream())
         // so that data actually flows through the GZIPOutputStream when compression is enabled.
-        // Previously the channel wrapped the raw response stream, which caused the gzip header
-        // from GZIPOutputStream's constructor to be emitted followed by uncompressed payload --
-        // producing a corrupt body. For the non-gzip case `out` equals response.getOutputStream(),
-        // so behaviour is unchanged there.
+        // For the non-gzip case `out` equals response.getOutputStream().
         try (RandomAccessFile raf = new RandomAccessFile(file.toString(), "r"); FileChannel input = raf.getChannel();
                 OutputStream out = acceptsGzip ? new GZIPOutputStream(response.getOutputStream(), DEFAULT_BUFFER_SIZE) : response.getOutputStream();
                 WritableByteChannel output = Channels.newChannel(out)) {

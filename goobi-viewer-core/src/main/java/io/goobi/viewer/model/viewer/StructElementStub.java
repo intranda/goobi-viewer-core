@@ -74,8 +74,6 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     protected boolean volume = false;
     /** True if this element represents a CMS page. */
     protected boolean cmsPage = false;
-    /** Number of contained volumes (anchors only). */
-    protected long numVolumes = 0;
     /** Volume label of this element (only for records that are part of a multi-volume record). */
     protected String volumeNo = null;
     /** Volume number of this element (only for records that are part of a multi-volume record). */
@@ -197,15 +195,6 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     
     public void setCmsPage(boolean cmsPage) {
         this.cmsPage = cmsPage;
-    }
-
-    /**
-     * Getter for the field <code>numVolumes</code>.
-     *
-     * @return the number of volumes contained in this anchor record
-     */
-    public long getNumVolumes() {
-        return numVolumes;
     }
 
     /**

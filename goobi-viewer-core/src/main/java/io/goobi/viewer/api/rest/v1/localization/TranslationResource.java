@@ -48,6 +48,8 @@ import io.goobi.viewer.messages.MessagesTranslation;
 import io.goobi.viewer.model.translations.Translation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
@@ -73,7 +75,9 @@ public class TranslationResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "localization" }, summary = "Get translations for message keys",
             description = "Pass a list of message keys to get translations for all configured languages")
-    @ApiResponse(responseCode = "200", description = "Return translations for given keys, or empty object if no keys provided")
+    @ApiResponse(responseCode = "200", description = "Return translations for given keys, or empty object if no keys provided",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(type = "object", description = "Message keys mapped to per-language translation arrays")))
     public TranslationList getTranslations(
             // 'keys' is optional: when omitted, an empty translation list is returned
             @QueryParam("keys") @Parameter(description = "A comma separated list of message keys", required = false) final String inKeys)

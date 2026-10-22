@@ -21,7 +21,6 @@
  */
 package io.goobi.viewer.api.rest.model.statistics.index;
 
-// New DTO for #15809: single bar/slice of the "publications by type" Chart.js component.
 /**
  * Single bar/slice of the "publications by type" chart.
  *

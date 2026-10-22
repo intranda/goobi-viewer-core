@@ -146,223 +146,224 @@
                     <ul
                         class="search-list__hits-list-items"
                         role="list">
-                    <ui:repeat
-                        value="#{resultGroup.hits}"
-                        var="hit"
-                        varStatus="status">
-                        <li class="search-list__hit #{hit.cssClass}">
-                            <!-- COinS IMPLEMENTATION -->
-                            <span
-                                class="Z3988"
-                                title="#{hit.browseElement.contextObject}" />
+                        <ui:repeat
+                            value="#{resultGroup.hits}"
+                            var="hit"
+                            varStatus="status">
+                            <li class="search-list__hit #{hit.cssClass}">
+                                <!-- COinS IMPLEMENTATION -->
+                                <span
+                                    class="Z3988"
+                                    title="#{hit.browseElement.contextObject}" />
 
-                            <!-- HEADER -->
-                            <div class="search-list__hit-header">
-                                <ui:include src="/resources/includes/search/browseElement.xhtml">
-                                    <ui:param
-                                        name="browseElement"
-                                        value="#{hit.browseElement}" />
-                                    <ui:param
-                                        name="showBookmarkIcon"
-                                        value="#{configurationBean.bookmarksEnabled}" />
-                                </ui:include>
+                                <!-- HEADER -->
+                                <div class="search-list__hit-header">
+                                    <ui:include src="/resources/includes/search/browseElement.xhtml">
+                                        <ui:param
+                                            name="browseElement"
+                                            value="#{hit.browseElement}" />
+                                        <ui:param
+                                            name="showBookmarkIcon"
+                                            value="#{configurationBean.bookmarksEnabled}" />
+                                    </ui:include>
 
-                                <!-- Related archive entry -->
-                                <ui:fragment rendered="#{hit.altUrl != null}">
-                                    <a
-                                        class="search-list__hit-archive-link"
-                                        href="#{request.contextPath}/#{hit.altUrl}"
-                                        title="#{hit.altLabel}">
-                                        <util:icon-text
-                                            icon="archive"
-                                            text="#{msg.archives__open_in_archive_view}"
-                                            textPosition="left" />
-                                    </a>
-                                </ui:fragment>
-                            </div>
+                                    <!-- Related archive entry -->
+                                    <ui:fragment rendered="#{hit.altUrl != null}">
+                                        <a
+                                            class="search-list__hit-archive-link"
+                                            href="#{request.contextPath}/#{hit.altUrl}"
+                                            title="#{hit.altLabel}">
+                                            <util:icon-text
+                                                icon="archive"
+                                                text="#{msg.archives__open_in_archive_view}"
+                                                textPosition="left" />
+                                        </a>
+                                    </ui:fragment>
+                                </div>
 
-                            <!-- CONTENT -->
-                            <!-- GET CHILD HITS -->
-                            <ui:fragment rendered="#{hit.hasHitCount}">
-                                <div class="search-list__child-hits-button-wrapper">
-                                    <button
-                                        onclick="
+                                <!-- CONTENT -->
+                                <!-- GET CHILD HITS -->
+                                <ui:fragment rendered="#{hit.hasHitCount}">
+                                    <div class="search-list__child-hits-button-wrapper">
+                                        <button
+                                            onclick="
                                             viewerJS.searchList.openChildHits(
                                                 this,
                                                 'search_subhits_ajaxloader_#{status.index}'
                                             )
                                         "
-                                        type="button"
-                                        class="btn btn--clean"
-                                        data-toggle="hit-content"
-                                        data-toggle-id="childHits_#{status.index}"
-                                        data-load-hits-script="loadChildHits_#{status.index}"
-                                        data-childhits="#{hit.hitCount}">
-                                        <util:icon
-                                            icon="caret-right"
-                                            svgClass="icon"
-                                            styleClass="icon-rot-on-open" />
-                                        <h:outputFormat
-                                            rendered="#{hit.cmsPageHitCount > 0}"
-                                            value="#{msg.searchChildCmsPageHitCount}">
-                                            <f:param value="#{hit.cmsPageHitCount}" />
-                                        </h:outputFormat>
-                                        <h:outputFormat
-                                            rendered="#{hit.metadataAndDocstructHitCount > 0}"
-                                            value="#{msg.searchChildMetadataHitCount}">
-                                            <h:outputText
+                                            type="button"
+                                            class="btn btn--clean"
+                                            aria-expanded="false"
+                                            data-toggle="hit-content"
+                                            data-toggle-id="childHits_#{status.index}"
+                                            data-load-hits-script="loadChildHits_#{status.index}"
+                                            data-childhits="#{hit.hitCount}">
+                                            <util:icon
+                                                icon="caret-right"
+                                                svgClass="icon"
+                                                styleClass="icon-rot-on-open--90" />
+                                            <h:outputFormat
                                                 rendered="#{hit.cmsPageHitCount > 0}"
-                                                value=", " />
-                                            <f:param value="#{hit.metadataAndDocstructHitCount}" />
-                                        </h:outputFormat>
-                                        <h:outputFormat
-                                            rendered="#{hit.pageHitCount > 0}"
-                                            value="#{msg.searchChildFulltextHitCount}">
-                                            <h:outputText
-                                                rendered="#{hit.cmsPageHitCount > 0 or hit.metadataAndDocstructHitCount > 0}"
-                                                value=", " />
-                                            <f:param value="#{hit.pageHitCount}" />
-                                        </h:outputFormat>
-                                        <h:outputFormat
-                                            rendered="#{hit.eventHitCount > 0}"
-                                            value="#{msg.searchChildEventHitCount}">
-                                            <h:outputText
-                                                rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0}"
-                                                value=", " />
-                                            <f:param value="#{hit.eventHitCount}" />
-                                        </h:outputFormat>
-                                        <h:outputFormat
-                                            rendered="#{hit.ugcHitCount > 0}"
-                                            value="#{msg.searchChildUgcHitCount}">
-                                            <h:outputText
-                                                rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0 or hit.eventHitCount > 0}"
-                                                value=", " />
-                                            <f:param value="#{hit.ugcHitCount}" />
-                                        </h:outputFormat>
-                                        <h:outputFormat
-                                            rendered="#{hit.archiveHitCount > 0}"
-                                            value="#{msg.searchChildArchiveHitCount}">
-                                            <h:outputText
-                                                rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0 or hit.eventHitCount > 0 or hit.ugcHitCount > 0}"
-                                                value=", " />
-                                            <f:param value="#{hit.archiveHitCount}" />
-                                        </h:outputFormat>
-                                    </button>
-                                    <h:commandScript
-                                        name="loadChildHits_#{status.index}"
-                                        action="#{hit.loadChildHits(configurationBean.searchChildHitsToLoadOnExpand)}"
-                                        render="childHitGroup"
-                                        oncomplete="viewerJS.searchList.initChildHitThumbs('childHits_#{status.index}');" />
-                                    <!-- END OF EXPAND BUTTON AREA -->
-                                </div>
+                                                value="#{msg.searchChildCmsPageHitCount}">
+                                                <f:param value="#{hit.cmsPageHitCount}" />
+                                            </h:outputFormat>
+                                            <h:outputFormat
+                                                rendered="#{hit.metadataAndDocstructHitCount > 0}"
+                                                value="#{msg.searchChildMetadataHitCount}">
+                                                <h:outputText
+                                                    rendered="#{hit.cmsPageHitCount > 0}"
+                                                    value=", " />
+                                                <f:param value="#{hit.metadataAndDocstructHitCount}" />
+                                            </h:outputFormat>
+                                            <h:outputFormat
+                                                rendered="#{hit.pageHitCount > 0}"
+                                                value="#{msg.searchChildFulltextHitCount}">
+                                                <h:outputText
+                                                    rendered="#{hit.cmsPageHitCount > 0 or hit.metadataAndDocstructHitCount > 0}"
+                                                    value=", " />
+                                                <f:param value="#{hit.pageHitCount}" />
+                                            </h:outputFormat>
+                                            <h:outputFormat
+                                                rendered="#{hit.eventHitCount > 0}"
+                                                value="#{msg.searchChildEventHitCount}">
+                                                <h:outputText
+                                                    rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0}"
+                                                    value=", " />
+                                                <f:param value="#{hit.eventHitCount}" />
+                                            </h:outputFormat>
+                                            <h:outputFormat
+                                                rendered="#{hit.ugcHitCount > 0}"
+                                                value="#{msg.searchChildUgcHitCount}">
+                                                <h:outputText
+                                                    rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0 or hit.eventHitCount > 0}"
+                                                    value=", " />
+                                                <f:param value="#{hit.ugcHitCount}" />
+                                            </h:outputFormat>
+                                            <h:outputFormat
+                                                rendered="#{hit.archiveHitCount > 0}"
+                                                value="#{msg.searchChildArchiveHitCount}">
+                                                <h:outputText
+                                                    rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0 or hit.eventHitCount > 0 or hit.ugcHitCount > 0}"
+                                                    value=", " />
+                                                <f:param value="#{hit.archiveHitCount}" />
+                                            </h:outputFormat>
+                                        </button>
+                                        <h:commandScript
+                                            name="loadChildHits_#{status.index}"
+                                            action="#{hit.loadChildHits(configurationBean.searchChildHitsToLoadOnExpand)}"
+                                            render="childHitGroup"
+                                            oncomplete="viewerJS.searchList.initChildHitThumbs('childHits_#{status.index}');" />
+                                        <!-- END OF EXPAND BUTTON AREA -->
+                                    </div>
 
-                                <!-- DISPLAY OF CHILD HITS -->
-                                <div
-                                    class="search-list__hit-content"
-                                    data-toggle-id="childHits_#{status.index}"
-                                    style="display: none">
-                                    <h:panelGroup
-                                        id="childHitGroup"
-                                        pt:data-hits-populated="#{hit.hitsPopulated}">
-                                        <ui:repeat
-                                            var="childHit"
-                                            value="#{hit.children}">
-                                            <div class="search-list__hit-content-set">
-                                                <div class="search-list__hit-text-area">
-                                                    <div class="search-list__struct-title">
-                                                        <h4>
-                                                            <a href="#{request.contextPath}/#{childHit.url}">
-                                                                <h:outputFormat
-                                                                    escape="false"
-                                                                    value="#{childHit.displayText}" />
-                                                            </a>
-                                                        </h4>
-                                                        <ui:fragment rendered="#{childHit.includeMetadata()}">
-                                                            <div class="search-list__struct-title__metadata">
-                                                                <ui:include src="/resources/includes/search/browseElementMetadata.xhtml">
-                                                                    <ui:param
-                                                                        name="browseElement"
-                                                                        value="#{childHit.browseElement}" />
-                                                                </ui:include>
-                                                            </div>
-                                                        </ui:fragment>
+                                    <!-- DISPLAY OF CHILD HITS -->
+                                    <div
+                                        class="search-list__hit-content"
+                                        data-toggle-id="childHits_#{status.index}"
+                                        style="display: none">
+                                        <h:panelGroup
+                                            id="childHitGroup"
+                                            pt:data-hits-populated="#{hit.hitsPopulated}">
+                                            <ui:repeat
+                                                var="childHit"
+                                                value="#{hit.children}">
+                                                <div class="search-list__hit-content-set">
+                                                    <div class="search-list__hit-text-area">
+                                                        <div class="search-list__struct-title">
+                                                            <h4>
+                                                                <a href="#{request.contextPath}/#{childHit.url}">
+                                                                    <h:outputFormat
+                                                                        escape="false"
+                                                                        value="#{childHit.displayText}" />
+                                                                </a>
+                                                            </h4>
+                                                            <ui:fragment rendered="#{childHit.includeMetadata()}">
+                                                                <div class="search-list__struct-title__metadata">
+                                                                    <ui:include src="/resources/includes/search/browseElementMetadata.xhtml">
+                                                                        <ui:param
+                                                                            name="browseElement"
+                                                                            value="#{childHit.browseElement}" />
+                                                                    </ui:include>
+                                                                </div>
+                                                            </ui:fragment>
+                                                        </div>
+                                                        <div>
+                                                            <!-- Related record for archive entry -->
+                                                            <!-- TODO proper placement -->
+                                                            <ui:fragment rendered="#{childHit.altUrl != null}">
+                                                                <a
+                                                                    href="#{request.contextPath}/#{childHit.altUrl}"
+                                                                    title="#{childHit.altLabel}">
+                                                                    #{msg.archives__open_record}
+                                                                    <util:icon icon="photo" />
+                                                                </a>
+                                                            </ui:fragment>
+                                                        </div>
+                                                        <div class="search-list__struct-child-hits">
+                                                            <ui:repeat
+                                                                var="grandChildHit"
+                                                                value="#{childHit.children}">
+                                                                <dl class="dl-horizontal">
+                                                                    <dt>
+                                                                        <util:icon
+                                                                            icon="#{grandChildHit.iconName}"
+                                                                            svgClass="icon icon-sm"
+                                                                            ariaLabel="#{grandChildHit.translatedType}" />
+                                                                    </dt>
+                                                                    <dd>
+                                                                        <a href="#{request.contextPath}/#{grandChildHit.url}">
+                                                                            <h:outputFormat
+                                                                                escape="false"
+                                                                                value="#{grandChildHit.displayText}" />
+                                                                        </a>
+                                                                        <ui:fragment rendered="#{grandChildHit.includeMetadata()}">
+                                                                            <div class="search-list__struct-child-hits__metadata">
+                                                                                <ui:include src="/resources/includes/search/browseElementMetadata.xhtml">
+                                                                                    <ui:param
+                                                                                        name="browseElement"
+                                                                                        value="#{grandChildHit.browseElement}" />
+                                                                                </ui:include>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                    </dd>
+                                                                </dl>
+                                                            </ui:repeat>
+                                                        </div>
                                                     </div>
-                                                    <div>
-                                                        <!-- Related record for archive entry -->
-                                                        <!-- TODO proper placement -->
-                                                        <ui:fragment rendered="#{childHit.altUrl != null}">
-                                                            <a
-                                                                href="#{request.contextPath}/#{childHit.altUrl}"
-                                                                title="#{childHit.altLabel}">
-                                                                #{msg.archives__open_record}
-                                                                <util:icon icon="photo" />
-                                                            </a>
-                                                        </ui:fragment>
-                                                    </div>
-                                                    <div class="search-list__struct-child-hits">
-                                                        <ui:repeat
-                                                            var="grandChildHit"
-                                                            value="#{childHit.children}">
-                                                            <dl class="dl-horizontal">
-                                                                <dt>
-                                                                    <util:icon
-                                                                        icon="#{grandChildHit.iconName}"
-                                                                        svgClass="icon icon-sm"
-                                                                        ariaLabel="#{grandChildHit.translatedType}" />
-                                                                </dt>
-                                                                <dd>
-                                                                    <a href="#{request.contextPath}/#{grandChildHit.url}">
-                                                                        <h:outputFormat
-                                                                            escape="false"
-                                                                            value="#{grandChildHit.displayText}" />
-                                                                    </a>
-                                                                    <ui:fragment rendered="#{grandChildHit.includeMetadata()}">
-                                                                        <div class="search-list__struct-child-hits__metadata">
-                                                                            <ui:include src="/resources/includes/search/browseElementMetadata.xhtml">
-                                                                                <ui:param
-                                                                                    name="browseElement"
-                                                                                    value="#{grandChildHit.browseElement}" />
-                                                                            </ui:include>
-                                                                        </div>
-                                                                    </ui:fragment>
-                                                                </dd>
-                                                            </dl>
-                                                        </ui:repeat>
+                                                    <div class="search-list__subhit-thumbnail">
+                                                        <ui:include src="/resources/includes/search/browseElementThumbnail.xhtml">
+                                                            <ui:param
+                                                                name="browseElement"
+                                                                value="#{childHit.browseElement}" />
+                                                        </ui:include>
                                                     </div>
                                                 </div>
-                                                <div class="search-list__subhit-thumbnail">
-                                                    <ui:include src="/resources/includes/search/browseElementThumbnail.xhtml">
-                                                        <ui:param
-                                                            name="browseElement"
-                                                            value="#{childHit.browseElement}" />
-                                                    </ui:include>
-                                                </div>
+                                            </ui:repeat>
+                                            <!-- LOADER -->
+                                            <span
+                                                class="search-list__loader d-none"
+                                                id="search_subhits_ajaxloader_#{status.index}">
+                                                <img
+                                                    src="#{request.contextPath}/resources/images/ajax_preloader.gif"
+                                                    class="img-fluid"
+                                                    alt="Search List Loader" />
+                                            </span>
+                                            <div class="search-list__hit-content-more">
+                                                <ui:fragment rendered="#{hit.hitsPopulated > 0 and (hit.hitsPopulated+hit.hitsPreloaded) lt hit.hitCount}">
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn--clean"
+                                                        onclick="loadChildHits_#{status.index}()">
+                                                        #{msg.searchList_getMoreHits}
+                                                    </button>
+                                                </ui:fragment>
                                             </div>
-                                        </ui:repeat>
-                                        <!-- LOADER -->
-                                        <span
-                                            class="search-list__loader d-none"
-                                            id="search_subhits_ajaxloader_#{status.index}">
-                                            <img
-                                                src="#{request.contextPath}/resources/images/ajax_preloader.gif"
-                                                class="img-fluid"
-                                                alt="Search List Loader" />
-                                        </span>
-                                        <div class="search-list__hit-content-more">
-                                            <ui:fragment rendered="#{hit.hitsPopulated > 0 and (hit.hitsPopulated+hit.hitsPreloaded) lt hit.hitCount}">
-                                                <button
-                                                    type="button"
-                                                    class="btn btn--clean"
-                                                    onclick="loadChildHits_#{status.index}()">
-                                                    #{msg.searchList_getMoreHits}
-                                                </button>
-                                            </ui:fragment>
-                                        </div>
-                                    </h:panelGroup>
-                                </div>
-                            </ui:fragment>
-                        </li>
-                    </ui:repeat>
+                                        </h:panelGroup>
+                                    </div>
+                                </ui:fragment>
+                            </li>
+                        </ui:repeat>
                     </ul>
 
                     <!-- EXPAND LINK -->

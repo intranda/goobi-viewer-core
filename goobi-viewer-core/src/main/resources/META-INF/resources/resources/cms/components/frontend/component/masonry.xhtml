@@ -55,21 +55,22 @@
                     $.ajax({
     url: '#{cc.attrs.imagelistItem.content.tileGridUrl}',
     type: 'GET',
-    datatype: 'JSON',
-}).then(function (data) {
-    //console.log("init masonry with", data)
-    var masonryConfig = {
-        $grid: $('#masonry#{cc.clientId}'),
-        language: currentLang,
-        loaderSelector: '.tpl-masonry__loader#{cc.clientId}',
-        itemSelector: '.grid-item#{cc.clientId}',
-        columnWidth: '.grid-sizer#{cc.clientId}',
-        gutter: '.gutter-sizer#{cc.clientId}',
-    };
-    $(document).ready(() => {
-        cmsJS.masonry.init(masonryConfig, data);
+    dataType: 'json',
+})
+    .then(function (data) {
+        // init masonry
+        $(document).ready(() => {
+            var masonryConfig = {
+                $grid: $('#masonry#{cc.clientId}'),
+                language: currentLang,
+                loaderSelector: '.tpl-masonry__loader#{cc.clientId}',
+            };
+            cmsJS.masonry.init(masonryConfig, data);
+        });
+    })
+    .fail(function (jqXHR, textStatus, errorThrown) {
+        console.error('Masonry: failed to load tile grid', textStatus, errorThrown);
     });
-});
                 </script>
             </div>
         </ui:fragment>
