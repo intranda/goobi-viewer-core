@@ -538,7 +538,7 @@ public class RecordResource {
                     + " the requester has no fulltext access to are silently skipped rather than causing an error, but still count towards"
                     + " the page ranges.")
     @ApiResponse(responseCode = "200", description = "NER tags for the given record", useReturnTypeSchema = true)
-    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier or step below 1")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public DocumentReference getNERTags(
@@ -550,26 +550,29 @@ public class RecordResource {
                     schema = @Schema(minimum = "1", maximum = "2147483647")) @QueryParam("step") Integer stepSize,
             @Parameter(description = "Tag type to consider (person, corporation, event or location)") @QueryParam("type") String type)
             throws PresentationException, IndexUnreachableException {
+        requireValidStep(stepSize);
         NERBuilder b = new NERBuilder();
         return b.getNERTags(pi, type, start, end, stepSize == null ? 1 : stepSize, servletRequest);
     }
 
     /**
-     * Returns the plain-text transcription of every page of the record within a single text file.
+     * Returns the ALTO layout tags (handwritten annotations, underlines, strikes, marks) of the record, grouped into consecutive page
+     * ranges of the given step size; pages the requester has no fulltext access to are skipped but still count towards the ranges.
      *
-     * <p>Text is assembled from plaintext files where available, falling back to text extracted from ALTO for pages
-     * without one. The aggregate size is capped by a configured maximum; a request whose combined text would exceed it is
-     * rejected in favor of {@link #getPlaintextAsZip()}.
-     *
-     * @return the concatenated plaintext of the record
-     * @throws ContentLibException if the aggregate plaintext size exceeds the configured limit
+     * @param start first page order (inclusive), or null
+     * @param end last page order (inclusive), or null
+     * @param stepSize number of pages per group, at least 1 (default 1)
+     * @param label layout-tag LABEL to filter by; null returns all labels
+     * @return the layout tags for the record, grouped by page range
+     * @should return tag groups for record
+     * @should return 400 for step below one
      */
     @GET
     @jakarta.ws.rs.Path(RECORDS_LAYOUT_TAGS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records" }, summary = "Get ALTO layout tags for a record")
     @ApiResponse(responseCode = "200", description = "Layout tags for the given record")
-    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier or step below 1")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public DocumentReference getLayoutTags(
@@ -581,8 +584,15 @@ public class RecordResource {
                     schema = @Schema(minimum = "1", maximum = "2147483647")) @QueryParam("step") Integer stepSize,
             @Parameter(description = "Layout-tag label to filter by; omit for all labels") @QueryParam("type") String label)
             throws PresentationException, IndexUnreachableException {
+        requireValidStep(stepSize);
         LayoutTagBuilder b = new LayoutTagBuilder();
         return b.getLayoutTags(pi, label, start, end, stepSize == null ? 1 : stepSize, servletRequest);
+    }
+
+    private static void requireValidStep(Integer stepSize) {
+        if (stepSize != null && stepSize < 1) {
+            throw new BadRequestException("Step must be at least 1, got: " + stepSize);
+        }
     }
 
     /**
@@ -611,6 +621,16 @@ public class RecordResource {
         return new LayoutTagIndexBuilder(DataManager.getInstance().getConfiguration(), locale).getLayoutTagIndex(se, servletRequest);
     }
 
+    /**
+     * Returns the plain-text transcription of every page of the record within a single text file.
+     *
+     * <p>Text is assembled from plaintext files where available, falling back to text extracted from ALTO for pages
+     * without one. The aggregate size is capped by a configured maximum; a request whose combined text would exceed it is
+     * rejected in favor of {@link #getPlaintextAsZip()}.
+     *
+     * @return the concatenated plaintext of the record
+     * @throws ContentLibException if the aggregate plaintext size exceeds the configured limit
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_PLAINTEXT)
     @Produces({ MediaType.TEXT_PLAIN })

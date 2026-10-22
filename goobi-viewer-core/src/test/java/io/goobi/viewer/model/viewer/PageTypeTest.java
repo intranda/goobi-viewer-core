@@ -129,6 +129,17 @@ class PageTypeTest extends AbstractTest {
     }
 
     /**
+     * @see PageType#getByName(String,boolean)
+     * @verifies ignore configured names if flag is false
+     */
+    @Test
+    void getByName_shouldIgnoreConfiguredNamesIfFlagIsFalse() {
+        // config_viewer.test.xml maps viewImage to "viewImage_value"
+        Assertions.assertEquals(PageType.viewImage, PageType.getByName("viewImage_value", true));
+        Assertions.assertEquals(PageType.other, PageType.getByName("viewImage_value", false));
+    }
+
+    /**
      * @see PageType#isDocumentPage()
      * @verifies treat immersive as document page
      */

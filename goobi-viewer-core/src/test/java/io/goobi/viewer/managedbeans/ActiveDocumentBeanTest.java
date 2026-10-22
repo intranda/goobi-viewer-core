@@ -657,6 +657,17 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @verifies not throw NPE when viewManager is null
+     * @see ActiveDocumentBean#getFullscreenImageUrl()
+     */
+    @Test
+    void getFullscreenImageUrl_shouldNotThrowNPEWhenViewManagerIsNull() throws Exception {
+        // The test config sets useImmersive="alto", so the immersive redirect check runs against a bean without a ViewManager
+        adb.setNavigationHelper(navigationHelper);
+        Assertions.assertDoesNotThrow(() -> adb.getFullscreenImageUrl());
+    }
+
+    /**
      * @verifies not throw NPE when current page is null
      */
     @Test

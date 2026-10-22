@@ -1640,14 +1640,14 @@ public class ActiveDocumentBean implements Serializable {
      * @throws PresentationException
      * @should not throw NPE when getCurrentPage returns null in double page mode
      * @should not throw NPE when current page is null
+     * @should not throw NPE when viewManager is null
      */
     public String getFullscreenImageUrl() throws IndexUnreachableException, PresentationException {
-
-        PageType preferredPageType = isRedirectToImmersiveView() ? PageType.viewImmersive : PageType.viewFullscreen;
-
         // Capture vm once so that a concurrent reset() cannot null the volatile field mid-method.
         // Also capture getCurrentPage() once to avoid TOCTOU between the null check and isDoubleImage().
         ViewManager vm = this.viewManager;
+        PageType preferredPageType = isRedirectToImmersiveView(vm) ? PageType.viewImmersive : PageType.viewFullscreen;
+
         if (vm != null && vm.isDoublePageMode()) {
             PhysicalElement currentPage = vm.getCurrentPage();
             if (currentPage != null && !currentPage.isDoubleImage()) {
@@ -1662,12 +1662,12 @@ public class ActiveDocumentBean implements Serializable {
         return getPageUrl(preferredPageType.getName(), imageToShow);
     }
 
-    private boolean isRedirectToImmersiveView() throws IndexUnreachableException, PresentationException {
+    private static boolean isRedirectToImmersiveView(ViewManager vm) throws IndexUnreachableException, PresentationException {
         String immersiveViewCondition = DataManager.getInstance().getConfiguration().getUseImmersiveViewForFullscreenCondition();
         if ("all".equalsIgnoreCase(immersiveViewCondition)) {
             return true;
         } else if ("alto".equalsIgnoreCase(immersiveViewCondition)) {
-            StructElement top = getViewManager().getTopStructElement();
+            StructElement top = vm != null ? vm.getTopStructElement() : null;
             return top != null && top.isLayoutTagAvailable();
         } else {
             return false;

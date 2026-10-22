@@ -330,10 +330,7 @@ public enum PageType {
      * @param includeConfiguredValues if true (default), allow finding the PageType be the values returned by
      *            {@link Configuration#getPageType(PageType)}. Otherwise only the actual values of the {@link PageType} enum are resolved
      * @return the PageType matching the given name, or {@link #other} if not found
-     * @should return correct type for raw names
-     * @should return correct type for mapped names
-     * @should return correct type for enum names
-     * @should return correct type if name starts with metadata
+     * @should ignore configured names if flag is false
      */
     public static PageType getByName(String name, boolean includeConfiguredValues) {
         if (name == null) {
@@ -351,10 +348,12 @@ public enum PageType {
             return PageType.viewMetadata;
         }
         // look for configured names
-        for (PageType p : PageType.values()) {
-            String configName = DataManager.getInstance().getConfiguration().getPageType(p);
-            if (configName != null && configName.equalsIgnoreCase(name)) {
-                return p;
+        if (includeConfiguredValues) {
+            for (PageType p : PageType.values()) {
+                String configName = DataManager.getInstance().getConfiguration().getPageType(p);
+                if (configName != null && configName.equalsIgnoreCase(name)) {
+                    return p;
+                }
             }
         }
         return PageType.other;

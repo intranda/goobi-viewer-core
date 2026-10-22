@@ -24,6 +24,7 @@ package io.goobi.viewer.api.rest.v1.records;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ANNOTATIONS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_COMMENTS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LAYER;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LAYOUT_TAGS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LAYOUT_TAGS_INDEX;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_METADATA_SOURCE;
@@ -273,6 +274,44 @@ class RecordResourceTest extends AbstractRestApiTest {
             JSONObject doc = new JSONObject(entity);
             assertNotNull(doc.getJSONArray("pages"));
             assertEquals(322, doc.getJSONArray("pages").length());
+        }
+    }
+
+    /**
+     * @verifies return tag groups for record
+     * @see RecordResource#getLayoutTags(Integer,Integer,Integer,String)
+     */
+    @Test
+    void getLayoutTags_shouldReturnTagGroupsForRecord() {
+        String url = urls.path(RECORDS_RECORD, RECORDS_LAYOUT_TAGS).params(PI_NER).build();
+        try (Response response = target(url)
+                .queryParam("start", 1)
+                .queryParam("end", 3)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(200, response.getStatus(), "Should return status 200: " + response.getStatusInfo().getReasonPhrase());
+            String entity = response.readEntity(String.class);
+            assertNotNull(entity);
+            JSONObject doc = new JSONObject(entity);
+            assertEquals(PI_NER, doc.getString("pi"));
+            assertEquals(3, doc.getJSONArray("pages").length());
+        }
+    }
+
+    /**
+     * @verifies return 400 for step below one
+     * @see RecordResource#getLayoutTags(Integer,Integer,Integer,String)
+     */
+    @Test
+    void getLayoutTags_shouldReturn400ForStepBelowOne() {
+        String url = urls.path(RECORDS_RECORD, RECORDS_LAYOUT_TAGS).params(PI_NER).build();
+        try (Response response = target(url)
+                .queryParam("step", 0)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(400, response.getStatus(), "Should return status 400: " + response.getStatusInfo().getReasonPhrase());
         }
     }
 
