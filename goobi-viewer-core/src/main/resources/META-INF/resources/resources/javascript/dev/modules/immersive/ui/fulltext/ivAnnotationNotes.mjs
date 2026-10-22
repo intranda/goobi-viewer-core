@@ -27,6 +27,9 @@ const NOTE_GAP = 2;
 const POPOVER_TEMPLATE =
     '<div class="popover immersive__anno-popover" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>';
 
+/** Hover state shared with the text ↔ image link, so card words and image regions light up alike. */
+const LINKED_CLASS = 'is-linked-active';
+
 /** Registers a mouseenter/mouseleave pair on `el` and records it in `registry` for teardown. */
 function bindHover(el, enter, leave, registry) {
     el.addEventListener('mouseenter', enter);
@@ -45,18 +48,44 @@ function collectLineEls(flat, els, pi, pageNo) {
     return lineEls;
 }
 
+/** True while a text selection starts inside `el` — a click that ends such a drag must not open the popover. */
+function hasSelectionInside(el) {
+    const selection = typeof window.getSelection === 'function' ? window.getSelection() : null;
+    return !!selection && String(selection).length > 0 && !!selection.anchorNode && el.contains(selection.anchorNode);
+}
+
+/** Popover body: the card's text word by word with its markup, selectable for copying; built fresh on every show. */
+function buildPopoverContent(textEl) {
+    const text = document.createElement('div');
+    text.className = 'immersive__anno-popover-text';
+    textEl.childNodes.forEach((node) => text.append(node.cloneNode(true)));
+    text.querySelectorAll('[data-iv-word-id]').forEach((span) => {
+        delete span.dataset.ivWordId;
+        span.classList.remove(LINKED_CLASS);
+    });
+    return text;
+}
+
 /**
- * Bootstrap popovers on the note cards, one open at a time. The outside-click
- * listener is bound in the capture phase because OpenSeadragon stops click
- * propagation over its canvas; Escape stops propagation so the immersive key
- * dispatcher does not also close the panel.
+ * Bootstrap popovers on the note cards, one open at a time, opened by click,
+ * Enter or Space. They open to the right, beside the card over the scan, and
+ * live in `container` (the immersive root: outside the panel's overflow clip,
+ * inside the `.immersive` styling context). The outside-click listener is
+ * bound in the capture phase because OpenSeadragon stops click propagation
+ * over its canvas; Escape stops propagation so the immersive key dispatcher
+ * does not also close the panel.
  */
-function createNotePopovers(scrollContainer) {
+function createNotePopovers(container) {
     const $ = env.$ || null;
     const capable = !!($ && $.fn && typeof $.fn.popover === 'function');
     let openNote = null;
     const hide = () => {
         if (openNote && capable) $(openNote).popover('hide');
+    };
+    const toggle = (noteEl) => {
+        const wasOpen = openNote === noteEl;
+        hide();
+        if (!wasOpen) $(noteEl).popover('show');
     };
     const onDocumentClick = (e) => {
         if (!openNote || !(e.target instanceof Element)) return;
@@ -64,26 +93,30 @@ function createNotePopovers(scrollContainer) {
         hide();
     };
     document.addEventListener('click', onDocumentClick, true);
-    const attach = (noteEl, authorName, fullText) => {
+    const attach = (noteEl, authorName, textEl) => {
         if (!capable) return;
         $(noteEl).popover({
             trigger: 'manual',
-            placement: 'left',
-            container: scrollContainer || 'body',
+            placement: 'right',
+            boundary: 'viewport',
+            container: container || 'body',
             template: POPOVER_TEMPLATE,
+            html: true,
+            sanitize: false,
             title: authorName || '',
-            content: fullText,
+            content: () => buildPopoverContent(textEl),
         });
         noteEl.setAttribute('aria-haspopup', 'dialog');
         noteEl.setAttribute('aria-expanded', 'false');
         noteEl.addEventListener('click', () => {
-            if (!noteEl.classList.contains(TRUNCATED_CLASS)) return;
-            const wasOpen = openNote === noteEl;
-            hide();
-            if (!wasOpen) $(noteEl).popover('show');
+            if (hasSelectionInside(noteEl)) return;
+            toggle(noteEl);
         });
         noteEl.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && openNote === noteEl) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggle(noteEl);
+            } else if (e.key === 'Escape' && openNote === noteEl) {
                 e.preventDefault();
                 e.stopPropagation();
                 hide();
@@ -118,11 +151,12 @@ function createNotePopovers(scrollContainer) {
     return { attach, hide, destroy };
 }
 
-/** One card per block, anchored to the nearest printed line; hovering a card lights its anchor line and its image region. */
 /**
  * Fills a card's text from the block's source elements word by word, so the
  * words keep their markup (type classes + tag style classes) but none of the
- * source's region ids or link state.
+ * source's link state. Each word remembers its source region id under
+ * `data-iv-word-id` (not `data-iv-region-id`, which would collide with the
+ * panel's region index) for the word-level hover coupling to the image.
  */
 function renderNoteText(textEl, blockSources, wordsById, pi, pageNo) {
     blockSources.forEach((srcEl, i) => {
@@ -136,6 +170,7 @@ function renderNoteText(textEl, blockSources, wordsById, pi, pageNo) {
             if (j > 0) textEl.append(' ');
             const span = document.createElement('span');
             span.textContent = wordEl.textContent;
+            if (wordEl.dataset.ivRegionId) span.dataset.ivWordId = wordEl.dataset.ivRegionId;
             const word = wordsById.get(altoElementId(wordEl.dataset.ivRegionId, pi, pageNo) || '');
             if (word) span.classList.add(...wordMarkupClasses(word));
             textEl.append(span);
@@ -143,12 +178,18 @@ function renderNoteText(textEl, blockSources, wordsById, pi, pageNo) {
     });
 }
 
+/**
+ * One card per block, anchored to the nearest printed line; hovering a card lights
+ * its anchor line and its image region. The card is a focusable div, not a button,
+ * so its text stays selectable for copying.
+ */
 function buildNotes({ blocks, sources, anchors, popovers, getRegionEls, wordsById, pi, pageNo }) {
     return blocks
         .map((block) => {
             const blockSources = sources.get(block.id) || [];
-            const noteEl = document.createElement('button');
-            noteEl.type = 'button';
+            const noteEl = document.createElement('div');
+            noteEl.setAttribute('role', 'button');
+            noteEl.setAttribute('tabindex', '0');
             noteEl.className = 'immersive__anno-note';
             styleClassTokens(block.styleClass).forEach((cls) => noteEl.classList.add(cls));
             const who = document.createElement('span');
@@ -160,7 +201,7 @@ function buildNotes({ blocks, sources, anchors, popovers, getRegionEls, wordsByI
             if (blockSources.length) renderNoteText(text, blockSources, wordsById, pi, pageNo);
             else text.textContent = block.text || '';
             noteEl.append(text);
-            popovers.attach(noteEl, block.authorName, text.textContent);
+            popovers.attach(noteEl, block.authorName, text);
             const midY = block.rect.y + block.rect.h / 2;
             const anchorIdx = nearestAnchorIndex(midY, anchors);
             const anchor = anchorIdx >= 0 ? anchors[anchorIdx] : null;
@@ -201,7 +242,12 @@ function bindAnchorHover(notes) {
     return listeners;
 }
 
-/** Couples the image regions (drawn note areas and OCR text regions) to the cards: hover lights the card and scrolls it into view. */
+/**
+ * Couples the image regions (drawn note areas and OCR text regions) to the cards:
+ * hover lights the card and scrolls it into view. Word regions and the card's
+ * words are coupled one to one in both directions, sharing the text ↔ image
+ * link's `is-linked-active` state.
+ */
 function createRegionCoupling({ notes, sources, scrollContainer }) {
     const revealCard = (noteEl) => {
         if (!scrollContainer) return;
@@ -226,27 +272,55 @@ function createRegionCoupling({ notes, sources, scrollContainer }) {
             srcEl.querySelectorAll('[data-iv-region-id]').forEach(collect);
         });
     });
+    const wordSpans = new Map();
+    notes.forEach((note) => {
+        note.noteEl.querySelectorAll('[data-iv-word-id]').forEach((span) => wordSpans.set(span.dataset.ivWordId, { span, note }));
+    });
+    let textRegions = new Map();
     const listeners = [];
-    const bindRegion = (el, note) => {
+    const bindRegion = (el, note, span) => {
         bindHover(
             el,
             () => {
                 note.noteEl.classList.add('is-anno-active');
+                if (span) span.classList.add(LINKED_CLASS);
                 revealCard(note.noteEl);
                 if (note.anchor && !note.aboveAnchor) note.anchor.el.classList.add('is-anno-anchor');
             },
             () => {
                 note.noteEl.classList.remove('is-anno-active');
+                if (span) span.classList.remove(LINKED_CLASS);
                 if (note.anchor && !note.aboveAnchor) note.anchor.el.classList.remove('is-anno-anchor');
             },
             listeners
         );
     };
-    const attachRegions = (annoRegionMap, textRegionMap) => {
-        listeners.splice(0).forEach(([el, enter, leave]) => {
+    const spanListeners = [];
+    wordSpans.forEach(({ span }, id) => {
+        bindHover(
+            span,
+            () => {
+                span.classList.add(LINKED_CLASS);
+                const region = textRegions.get(id);
+                if (region) region.classList.add(LINKED_CLASS);
+            },
+            () => {
+                span.classList.remove(LINKED_CLASS);
+                const region = textRegions.get(id);
+                if (region) region.classList.remove(LINKED_CLASS);
+            },
+            spanListeners
+        );
+    });
+    const unbind = (registry) => {
+        registry.splice(0).forEach(([el, enter, leave]) => {
             el.removeEventListener('mouseenter', enter);
             el.removeEventListener('mouseleave', leave);
         });
+    };
+    const attachRegions = (annoRegionMap, textRegionMap) => {
+        unbind(listeners);
+        textRegions = textRegionMap || new Map();
         if (annoRegionMap) {
             annoRegionMap.forEach((el, id) => {
                 const note = notesById.get(id);
@@ -255,12 +329,17 @@ function createRegionCoupling({ notes, sources, scrollContainer }) {
         }
         if (textRegionMap) {
             textRegionMap.forEach((el, id) => {
-                const note = regionIdToNote.get(id);
-                if (note) bindRegion(el, note);
+                const word = wordSpans.get(id);
+                const note = word ? word.note : regionIdToNote.get(id);
+                if (note) bindRegion(el, note, word ? word.span : null);
             });
         }
     };
-    return { attachRegions };
+    const destroy = () => {
+        attachRegions(null, null);
+        unbind(spanListeners);
+    };
+    return { attachRegions, destroy };
 }
 
 /**
@@ -269,14 +348,12 @@ function createRegionCoupling({ notes, sources, scrollContainer }) {
  * would overflow above the first printed line shifts the text down via the
  * --immersive-anno-shift custom property instead of being clamped onto the line.
  */
-/** Marks the cards whose clamped text overflows; only those can be unfolded. */
+/** Marks the cards whose clamped text overflows, so they can hint at the full text in the popover. */
 function markTruncation(notes) {
     notes.forEach(({ noteEl }) => {
         const text = noteEl.querySelector('.immersive__anno-note-text');
         const cut = !!text && text.scrollHeight > text.clientHeight + 1;
         noteEl.classList.toggle(TRUNCATED_CLASS, cut);
-        if (cut) noteEl.setAttribute('aria-haspopup', 'dialog');
-        else noteEl.removeAttribute('aria-haspopup');
     });
 }
 
@@ -376,7 +453,7 @@ export function mountBlockAnnotations({ box, layout, pi, pageNo, flat, els: give
     const lineEls = collectLineEls(flat, els, pi, pageNo);
     const sources = markAnnotationSources(blocks, els, lineEls);
     const anchors = lineEls.filter(({ el }) => !el.closest('.immersive__anno-src')).map(({ rect, el }) => ({ y: rect.y, h: rect.h, el }));
-    const popovers = createNotePopovers(scrollContainer);
+    const popovers = createNotePopovers(box.closest('.immersive') || scrollContainer);
     const wordsById = new Map(((layout && layout.words) || []).map((w) => [w.id, w]));
     const notes = buildNotes({ blocks, sources, anchors, popovers, getRegionEls, wordsById, pi, pageNo });
     const anchorListeners = bindAnchorHover(notes);
@@ -397,7 +474,7 @@ export function mountBlockAnnotations({ box, layout, pi, pageNo, flat, els: give
         destroy() {
             if (observer) observer.disconnect();
             popovers.destroy(notes);
-            coupling.attachRegions(null, null);
+            coupling.destroy();
             anchorListeners.splice(0).forEach(([el, enter, leave]) => {
                 el.removeEventListener('mouseenter', enter);
                 el.removeEventListener('mouseleave', leave);

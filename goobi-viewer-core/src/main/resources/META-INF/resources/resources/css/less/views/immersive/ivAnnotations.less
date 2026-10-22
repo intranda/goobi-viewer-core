@@ -229,7 +229,7 @@
         line-height: 1.4;
         white-space: normal;
         color: @immersive-chrome-fg;
-        cursor: default;
+        cursor: pointer;
         transition: top @immersive-transition;
 
         &:hover,
@@ -244,7 +244,6 @@
 
         /* EXPANDABLE */
         &.-truncated {
-            cursor: pointer;
             padding-bottom: 6px;
 
             &::after {
@@ -282,6 +281,16 @@
         -webkit-box-orient: vertical;
         -webkit-line-clamp: @immersive-anno-note-lines;
         overflow: hidden;
+
+        span {
+            border-radius: 2px;
+            transition: background-color @immersive-transition;
+
+            &.is-linked-active {
+                background-color: ~'rgba(var(--immersive-ocr-word-rgb), 0.9)';
+                color: var(--immersive-ocr-word-fg);
+            }
+        }
     }
 
     &__anno-popover.popover {
@@ -306,19 +315,27 @@
             font-size: @immersive-anno-font-note;
         }
 
-        &.bs-popover-top .arrow::before,
+        &.bs-popover-top .arrow::before {
+            border-top-color: @immersive-chrome-border-color;
+        }
         &.bs-popover-top .arrow::after {
             border-top-color: @immersive-chrome-bg;
         }
-        &.bs-popover-right .arrow::before,
+        &.bs-popover-right .arrow::before {
+            border-right-color: @immersive-chrome-border-color;
+        }
         &.bs-popover-right .arrow::after {
             border-right-color: @immersive-chrome-bg;
         }
-        &.bs-popover-bottom .arrow::before,
+        &.bs-popover-bottom .arrow::before {
+            border-bottom-color: @immersive-chrome-border-color;
+        }
         &.bs-popover-bottom .arrow::after {
             border-bottom-color: @immersive-chrome-bg;
         }
-        &.bs-popover-left .arrow::before,
+        &.bs-popover-left .arrow::before {
+            border-left-color: @immersive-chrome-border-color;
+        }
         &.bs-popover-left .arrow::after {
             border-left-color: @immersive-chrome-bg;
         }
@@ -332,6 +349,7 @@
     &.-annotations-on &__anno-note.is-anno-active {
         background-color: var(--immersive-anno-note-hover-bg);
         outline: 1px solid @immersive-accent;
+        outline-offset: -1px;
     }
 
     &__anno-region {

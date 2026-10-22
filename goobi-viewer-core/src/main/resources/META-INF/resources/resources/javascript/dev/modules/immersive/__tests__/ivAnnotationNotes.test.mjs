@@ -1,4 +1,5 @@
 /** DOM tests for the margin-note cards: anchoring, layout, hover coupling and teardown. */
+import { jest } from '@jest/globals';
 import { mountBlockAnnotations } from '../ui/fulltext/ivAnnotationNotes.mjs';
 
 describe('mountBlockAnnotations (jsdom)', () => {
@@ -40,8 +41,9 @@ describe('mountBlockAnnotations (jsdom)', () => {
         expect(mounted).not.toBeNull();
         const card = box.querySelector('.immersive__anno-note');
         expect(card.classList.contains('alto-annotation--jacob-grimm')).toBe(true);
-        expect(card.tagName).toBe('BUTTON');
-        expect(card.getAttribute('type')).toBe('button');
+        expect(card.tagName).toBe('DIV');
+        expect(card.getAttribute('role')).toBe('button');
+        expect(card.getAttribute('tabindex')).toBe('0');
         expect(card.querySelector('.immersive__anno-note-author').textContent).toBe('Jacob Grimm');
         expect(box.style.getPropertyValue('--immersive-anno-shift')).toBe('2px');
         mounted.destroy();
@@ -176,6 +178,121 @@ describe('mountBlockAnnotations (jsdom)', () => {
         const layout = { blocks: [{ id: 'b-9', author: 'gr_jacob_grimm', authorName: 'Jacob Grimm', rect: { x: 0, y: 200, w: 200, h: 20 }, text: 'Randnotiz' }] };
         const mounted = mountBlockAnnotations({ box, layout, pi: 'PI1', pageNo: 2, flat, els });
         expect(box.style.getPropertyValue('--immersive-anno-shift')).toBe('');
+        mounted.destroy();
+    });
+});
+
+describe('mountBlockAnnotations popovers, copying and word coupling (jsdom)', () => {
+    const regionId = (id) => `http://h/api/v1/annotations/alto_PI1_2_${id}/?format=oa`;
+    let popoverCalls;
+
+    beforeEach(() => {
+        popoverCalls = [];
+        window.$.fn.popover = jest.fn(function (arg) {
+            popoverCalls.push({ el: this[0], arg });
+            return this;
+        });
+    });
+
+    afterEach(() => {
+        delete window.$.fn.popover;
+        document.body.innerHTML = '';
+        jest.restoreAllMocks();
+    });
+
+    const mount = () => {
+        const box = document.createElement('div');
+        Object.defineProperty(box, 'clientWidth', { get: () => 700 });
+        const line = document.createElement('div');
+        line.className = 'immersive__fulltext-line';
+        line.dataset.ivRegionId = regionId('l-1');
+        ['s-1', 's-2'].forEach((id, i) => {
+            if (i > 0) line.append(' ');
+            const word = document.createElement('span');
+            word.className = 'immersive__fulltext-word';
+            word.dataset.ivRegionId = regionId(id);
+            word.textContent = i ? 'notiz' : 'Rand';
+            line.appendChild(word);
+        });
+        box.appendChild(line);
+        document.body.appendChild(box);
+        const flat = [{ id: regionId('l-1'), level: 'line', rect: { x: 0, y: 100, w: 500, h: 24 } }];
+        const els = new Map([['l-1', line]]);
+        const layout = {
+            blocks: [{ id: 'b-9', author: 'gr_jacob_grimm', authorName: 'Jacob Grimm', rect: { x: 0, y: 90, w: 600, h: 60 }, text: 'Rand notiz' }],
+            words: [{ id: 's-2', tags: ['gr_unterstrichen'], types: ['underline'] }],
+        };
+        const mounted = mountBlockAnnotations({ box, layout, pi: 'PI1', pageNo: 2, flat, els });
+        return { box, mounted, card: box.querySelector('.immersive__anno-note') };
+    };
+    const options = () => popoverCalls.find((c) => typeof c.arg === 'object').arg;
+    const commands = () => popoverCalls.filter((c) => typeof c.arg === 'string').map((c) => c.arg);
+
+    test('every card is a focusable button-like element that opens its popover on click, not only a truncated one', () => {
+        const { card, mounted } = mount();
+        expect(card.tagName).toBe('DIV');
+        expect(card.getAttribute('role')).toBe('button');
+        expect(card.getAttribute('tabindex')).toBe('0');
+        expect(card.getAttribute('aria-haspopup')).toBe('dialog');
+        expect(card.classList.contains('-truncated')).toBe(false);
+        expect(options()).toMatchObject({ trigger: 'manual', html: true, title: 'Jacob Grimm', placement: 'right', boundary: 'viewport' });
+        card.click();
+        expect(commands()).toEqual(['show']);
+        mounted.destroy();
+    });
+
+    test('Enter and Space open the popover; a click that ends a text selection inside the card does not', () => {
+        const { card, mounted } = mount();
+        card.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+        card.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+        expect(commands()).toEqual(['show', 'show']);
+        const span = card.querySelector('.immersive__anno-note-text span');
+        jest.spyOn(window, 'getSelection').mockReturnValue({ toString: () => 'Rand', anchorNode: span });
+        card.click();
+        expect(commands()).toEqual(['show', 'show']);
+        mounted.destroy();
+    });
+
+    test('the popover shows the annotated text word by word with its markup, free of card-only state', () => {
+        const { card, mounted } = mount();
+        // the click that opens the popover leaves the pointer on a word: its hover state must not be cloned
+        card.querySelector('.immersive__anno-note-text span').classList.add('is-linked-active');
+        const content = options().content();
+        expect(content.className).toBe('immersive__anno-popover-text');
+        const spans = Array.from(content.querySelectorAll('span'));
+        expect(spans.map((s) => s.textContent)).toEqual(['Rand', 'notiz']);
+        expect(spans[1].classList.contains('immersive__anno-word-underline')).toBe(true);
+        expect(spans[0].classList.contains('is-linked-active')).toBe(false);
+        expect(content.querySelector('[data-iv-word-id]')).toBeNull();
+        mounted.destroy();
+    });
+
+    test('hovering a word in the card lights its image region and vice versa, word by word', () => {
+        const { card, mounted } = mount();
+        const overlay1 = document.createElement('div');
+        const overlay2 = document.createElement('div');
+        mounted.attachRegions(
+            null,
+            new Map([
+                [regionId('s-1'), overlay1],
+                [regionId('s-2'), overlay2],
+            ])
+        );
+        const [span1, span2] = card.querySelectorAll('.immersive__anno-note-text span');
+        span1.dispatchEvent(new Event('mouseenter'));
+        expect(overlay1.classList.contains('is-linked-active')).toBe(true);
+        expect(overlay2.classList.contains('is-linked-active')).toBe(false);
+        expect(span1.classList.contains('is-linked-active')).toBe(true);
+        span1.dispatchEvent(new Event('mouseleave'));
+        expect(overlay1.classList.contains('is-linked-active')).toBe(false);
+        expect(span1.classList.contains('is-linked-active')).toBe(false);
+        overlay2.dispatchEvent(new Event('mouseenter'));
+        expect(card.classList.contains('is-anno-active')).toBe(true);
+        expect(span2.classList.contains('is-linked-active')).toBe(true);
+        expect(span1.classList.contains('is-linked-active')).toBe(false);
+        overlay2.dispatchEvent(new Event('mouseleave'));
+        expect(card.classList.contains('is-anno-active')).toBe(false);
+        expect(span2.classList.contains('is-linked-active')).toBe(false);
         mounted.destroy();
     });
 });
