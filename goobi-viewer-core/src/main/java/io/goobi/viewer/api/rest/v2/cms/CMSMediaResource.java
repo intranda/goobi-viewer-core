@@ -31,6 +31,7 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_FILES_FILE_ICO;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_FILES_FILE_PDF;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_FILES_FILE_SVG;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_FILES_FILE_VIDEO;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_FILES_FILE_WEBP;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_ITEM_BY_FILE;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_ITEM_BY_ID;
 
@@ -315,6 +316,44 @@ public class CMSMediaResource {
         throw new ContentNotFoundException(FILE_NOT_FOUND_MESSAGE.replace("{}", path.toString()));
     }
 
+    /**
+     * Serves a CMS media WebP file as-is. WebP is not supported by the IIIF image server, so these files bypass
+     * {@link CMSMediaImageResource3}.
+     *
+     * @param filename name of the WebP file in the CMS media folder
+     * @param response servlet response
+     * @return {@link StreamingOutput} writing the file content
+     * @throws ContentNotFoundException if the file does not exist
+     */
+    @GET
+    @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_WEBP)
+    @Produces("image/webp")
+    @CORSBinding
+    @Operation(tags = { "media" }, summary = "Get CMS media file content as WebP")
+    @ApiResponse(responseCode = "200", description = "WebP file content")
+    @ApiResponse(responseCode = "404", description = "WebP media file not found")
+    @MediaResourceBinding
+    public static StreamingOutput getWebpContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
+            throws ContentNotFoundException {
+        String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));
+        Path path = Paths.get(
+                DataManager.getInstance().getConfiguration().getViewerHome(),
+                DataManager.getInstance().getConfiguration().getCmsMediaFolder(),
+                decFilename);
+        if (Files.exists(path)) {
+            return new StreamingOutput() {
+
+                @Override
+                public void write(OutputStream out) throws IOException, WebApplicationException {
+                    try (InputStream in = Files.newInputStream(path)) {
+                        IOUtils.copy(in, out);
+                    }
+                }
+            };
+        }
+        throw new ContentNotFoundException(FILE_NOT_FOUND_MESSAGE.replace("{}", path.toString()));
+    }
+
     // MediaDeliveryService streams the payload directly onto the injected HttpServletResponse,
     // so this method returns void: Jersey must not write an extra (empty) String body on top of
     // the already-committed response.
@@ -526,7 +565,7 @@ public class CMSMediaResource {
     public Response getInvalidFilename(
             @PathParam("filename") String filename) throws IllegalRequestException {
         throw new IllegalRequestException("Invalid filename: must have a supported file extension"
-                + " (jpg, png, tif, gif, jp2, pdf, svg, ico, mp4, webm, mp3, ogg, html)");
+                + " (jpg, png, tif, gif, jp2, webp, pdf, svg, ico, mp4, webm, mp3, ogg, html)");
     }
 
     /**

@@ -467,7 +467,8 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageUrl(path)) {
             return iiifUrlHandler.getModifiedIIIFFUrl(path, null, scale, null, null, null);
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(path)) {
-            return iiifUrlHandler.getIIIFImageUrl(path, RegionRequest.FULL, scale, Rotation.NONE, Colortype.DEFAULT, format);
+            return iiifUrlHandler.getIIIFImageUrl(IIIFUrlResolver.getIIIFImageBaseUrl(path), RegionRequest.FULL, scale, Rotation.NONE,
+                    Colortype.DEFAULT, format);
         } else {
             // Reached only with a non-null page: every caller resolves the page through ImageDeliveryBean.getCurrentPageIfExists()
             return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, scale.toString(), "0", //NOSONAR
@@ -504,7 +505,8 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageUrl(path)) {
             return IIIFUrlResolver.getModifiedIIIFFUrl(path, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(path)) {
-            return IIIFUrlResolver.getIIIFImageUrl(path, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
+            return IIIFUrlResolver.getIIIFImageUrl(IIIFUrlResolver.getIIIFImageBaseUrl(path), Region.SQUARE_IMAGE, getScale(size, size).toString(),
+                    null, null, null);
         } else {
             // Reached only with a non-null page: every caller resolves the page through ImageDeliveryBean.getCurrentPageIfExists()
             return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.SQUARE_IMAGE, size + ",", "0", //NOSONAR
@@ -645,8 +647,7 @@ public class ThumbnailHandler {
             return thumbnailUrl;
         } else if (IIIFUrlResolver.isIIIFImageUrl(thumbnailUrl)) {
             return IIIFUrlResolver.getModifiedIIIFFUrl(thumbnailUrl, null, getScale(width, height).toString(), null, null, null);
-        } else if (IIIFUrlResolver.isIIIFImageInfoUrl(thumbnailUrl)) {
-            return IIIFUrlResolver.getIIIFImageUrl(thumbnailUrl, null, getScale(width, height).toString(), null, null, null);
+
         } else if (thumbnailUrl != null) {
             String region = Region.FULL_IMAGE;
 
@@ -703,7 +704,8 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageUrl(path)) {
             return iiifUrlHandler.getModifiedIIIFFUrl(path, RegionRequest.FULL, Scale.MAX, Rotation.NONE, Colortype.DEFAULT, format);
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(path)) {
-            return iiifUrlHandler.getIIIFImageUrl(path, RegionRequest.FULL, Scale.MAX, Rotation.NONE, Colortype.DEFAULT, format);
+            return iiifUrlHandler.getIIIFImageUrl(IIIFUrlResolver.getIIIFImageBaseUrl(path), RegionRequest.FULL, Scale.MAX, Rotation.NONE,
+                    Colortype.DEFAULT, format);
         } else {
             return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, scale.toString(), "0", StringConstants.DEFAULT,
                     format.getFileExtension());
@@ -736,7 +738,8 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageUrl(thumbnailUrl)) {
             return IIIFUrlResolver.getModifiedIIIFFUrl(thumbnailUrl, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(thumbnailUrl)) {
-            return IIIFUrlResolver.getIIIFImageUrl(thumbnailUrl, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
+            return IIIFUrlResolver.getIIIFImageUrl(IIIFUrlResolver.getIIIFImageBaseUrl(thumbnailUrl), Region.SQUARE_IMAGE,
+                    getScale(size, size).toString(), null, null, null);
         } else if (se != null) {
             return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, se.getPi(), Region.SQUARE_IMAGE, size + ",", "0", StringConstants.DEFAULT,
                     "jpg");
@@ -887,9 +890,10 @@ public class ThumbnailHandler {
                 ret = getThumbnailPath(EPUB_THUMB).toString();
             } else if (mediaType.isMEI() || StringUtils.isNotBlank(doc.getMetadataValue(SolrConstants.FILENAME_MEI))) {
                 ret = getThumbnailPath(MEI_THUMB).toString();
-            } else if (logger.isWarnEnabled()) {
-                ret = thumbnailUrl;
-                logger.warn("Mime type of '{}' (file: {}) not supported: {}", doc.getPi(), getFilename(doc).orElse("unknown"), mimeType);
+            } else {
+                if (logger.isWarnEnabled()) {
+                    logger.warn("Mime type of '{}' (file: {}) not supported: {}", doc.getPi(), getFilename(doc).orElse("unknown"), mimeType);
+                }
             }
         }
 
@@ -1079,6 +1083,7 @@ public class ThumbnailHandler {
      * @param width maximum thumbnail width in pixels
      * @param height maximum thumbnail height in pixels
      * @return the thumbnail image URL for the given CMS media item scaled to fit within the given bounds
+     * @should return plain file url for webp
      */
     public String getThumbnailUrl(Optional<CMSMediaItem> optional, int width, int height) {
         return optional.map(item -> {
@@ -1089,6 +1094,8 @@ public class ThumbnailHandler {
                 switch (contentType) {
                     case CMSMediaItem.CONTENT_TYPE_VIDEO, CMSMediaItem.CONTENT_TYPE_AUDIO, CMSMediaItem.CONTENT_TYPE_PDF:
                     case CMSMediaItem.CONTENT_TYPE_XML, CMSMediaItem.CONTENT_TYPE_SVG, CMSMediaItem.CONTENT_TYPE_ICO:
+                    case CMSMediaItem.CONTENT_TYPE_WEBP:
+                        // WebP is not supported by the image server; deliver the original file
                         return imageApiUrl;
                     case CMSMediaItem.CONTENT_TYPE_GIF:
                         return imageApiUrl + "/full.gif";

@@ -22,7 +22,8 @@
 		<xstream.version>1.4.21</xstream.version>
 		<!-- AWS SDK's netty-nio-client (via ics/s3) and Solr's ZooKeeper client both pin their own
 		     Netty to the 4.1.x line upstream; see dependencyManagement below -->
-		<netty.version>4.1.136.Final</netty.version>
+		<netty.version>4.1.138.Final</netty.version>
+		<zookeeper.version>3.9.6</zookeeper.version>
 	</properties>
 
 	<!-- Force all transitive Netty artifacts (pulled in via AWS SDK's netty-nio-client and Solr's
@@ -38,6 +39,17 @@
 				<version>${netty.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<!-- solr-solrj pulls in ZooKeeper (and through it Netty 4.1) transitively; pin the patched release -->
+			<dependency>
+				<groupId>org.apache.zookeeper</groupId>
+				<artifactId>zookeeper</artifactId>
+				<version>${zookeeper.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.zookeeper</groupId>
+				<artifactId>zookeeper-jute</artifactId>
+				<version>${zookeeper.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

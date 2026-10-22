@@ -131,7 +131,7 @@ class ApiUrlsPatternTest {
         for (String ok : new String[] { "a.jpg", "a.JPG", "a.Jpeg", "a.tif", "a.TIFF", "a.png", "a.PNG", "a.gif", "a.jp2", "a.JP2" }) {
             assertTrue(p.matcher(ok).matches(), "expected match: " + ok);
         }
-        for (String bad : new String[] { "a.txt", "a.bmp", "a.pdf" }) {
+        for (String bad : new String[] { "a.txt", "a.bmp", "a.pdf", "a.webp" }) {
             assertFalse(p.matcher(bad).matches(), "expected no match: " + bad);
         }
     }
@@ -141,6 +141,7 @@ class ApiUrlsPatternTest {
      * @see ApiUrls#CMS_MEDIA_FILES_FILE_HTML
      * @see ApiUrls#CMS_MEDIA_FILES_FILE_SVG
      * @see ApiUrls#CMS_MEDIA_FILES_FILE_ICO
+     * @see ApiUrls#CMS_MEDIA_FILES_FILE_WEBP
      * @see ApiUrls#CMS_MEDIA_FILES_FILE_AUDIO
      * @see ApiUrls#CMS_MEDIA_FILES_FILE_VIDEO
      * @verifies match non-image media extensions case insensitively
@@ -151,6 +152,7 @@ class ApiUrlsPatternTest {
         assertMatch(ApiUrls.CMS_MEDIA_FILES_FILE_HTML, new String[] { "a.html", "a.HTML" }, new String[] { "a.htm" });
         assertMatch(ApiUrls.CMS_MEDIA_FILES_FILE_SVG, new String[] { "a.svg", "a.SVG" }, new String[] { "a.png" });
         assertMatch(ApiUrls.CMS_MEDIA_FILES_FILE_ICO, new String[] { "a.ico", "a.ICO" }, new String[] { "a.png" });
+        assertMatch(ApiUrls.CMS_MEDIA_FILES_FILE_WEBP, new String[] { "a.webp", "a.WEBP" }, new String[] { "a.png" });
         assertMatch(ApiUrls.CMS_MEDIA_FILES_FILE_AUDIO, new String[] { "a.mp3", "a.MP3", "a.WAV" }, new String[] { "a.txt" });
         assertMatch(ApiUrls.CMS_MEDIA_FILES_FILE_VIDEO, new String[] { "a.mp4", "a.MP4", "a.MOV" }, new String[] { "a.txt" });
     }

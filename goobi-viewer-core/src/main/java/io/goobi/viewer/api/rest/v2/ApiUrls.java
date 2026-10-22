@@ -205,6 +205,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String CMS_MEDIA_FILES_FILE_HTML = "/files/{filename: [^\\/]*\\.([hH][tT][mM][lL])}";
     public static final String CMS_MEDIA_FILES_FILE_SVG = "/files/{filename: [^\\/]*\\.([sS][vV][gG])}";
     public static final String CMS_MEDIA_FILES_FILE_ICO = "/files/{filename: [^\\/]*\\.([iI][cC][oO])}";
+    public static final String CMS_MEDIA_FILES_FILE_WEBP = "/files/{filename: [^\\/]*\\.([wW][eE][bB][pP])}";
     public static final String CMS_MEDIA_FILES_FILE_AUDIO =
             "/files/{filename: .*\\.([mM][pP]3|[mM][pP][eE][gG]|[wW][aA][vV]|[oO][gG][gG]|[wW][mM][aA])}";
     public static final String CMS_MEDIA_FILES_FILE_VIDEO =

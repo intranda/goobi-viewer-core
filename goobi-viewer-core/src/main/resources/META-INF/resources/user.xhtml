@@ -90,13 +90,16 @@
             <c:forEach
                 var="module"
                 items="#{configurationBean.modules}">
-                <div class="user-settings__crowdsourcing-box">
-                    <c:forEach
-                        var="contribution"
-                        items="#{module.getWidgets('userSettings')}">
-                        <ui:include src="/#{contribution}" />
-                    </c:forEach>
-                </div>
+                <!-- Render the box only if the module contributes at least one user settings widget -->
+                <ui:fragment rendered="#{not empty module.getWidgets('userSettings')}">
+                    <div class="user-settings__crowdsourcing-box">
+                        <c:forEach
+                            var="contribution"
+                            items="#{module.getWidgets('userSettings')}">
+                            <ui:include src="/#{contribution}" />
+                        </c:forEach>
+                    </div>
+                </ui:fragment>
             </c:forEach>
         </ui:fragment>
     </ui:define>

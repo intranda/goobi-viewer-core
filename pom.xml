@@ -53,17 +53,17 @@
 		<sonar.java.target>21</sonar.java.target>
 
 		<!-- Shared dependency versions (later of the previous drifts preferred) -->
-		<checkstyle.version>14.0.0</checkstyle.version>
+		<checkstyle.version>14.3.0</checkstyle.version>
 		<commons-configuration2.version>2.15.1</commons-configuration2.version>
 		<commons-io.version>2.22.0</commons-io.version>
 		<commons-jxpath.version>1.4.0</commons-jxpath.version>
-		<commons-lang3.version>3.20.0</commons-lang3.version>
+		<commons-lang3.version>3.21.0</commons-lang3.version>
 		<epubconvert.version>1.1.2</epubconvert.version>
 		<httpclient.version>4.5.14</httpclient.version>
 		<httpcore.version>4.4.16</httpcore.version>
 		<jakarta.servlet-api.version>6.0.0</jakarta.servlet-api.version>
 		<jakarta.transaction-api.version>2.0.1</jakarta.transaction-api.version>
-		<jackson.version>2.22.2</jackson.version>
+		<jackson.version>2.22.3</jackson.version>
 		<jdom2.version>2.0.6.1</jdom2.version>
 		<!-- https://github.com/stleary/JSON-java -->
 		<json.version>20260814</json.version>
@@ -74,23 +74,23 @@
 		<!-- Shared plugin versions -->
 		<maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
 		<maven-dependency-plugin.version>3.11.0</maven-dependency-plugin.version>
-		<maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
-		<maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
-		<maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
-		<maven-war-plugin.version>3.4.0</maven-war-plugin.version>
-		<maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+		<maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
+		<maven-surefire-plugin.version>3.6.0</maven-surefire-plugin.version>
+		<maven-jar-plugin.version>3.5.1</maven-jar-plugin.version>
+		<maven-war-plugin.version>3.5.1</maven-war-plugin.version>
+		<maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
 		<maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
 		<maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
 		<git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
-		<buildnumber-maven-plugin.version>3.3.0</buildnumber-maven-plugin.version>
-		<jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
-		<versions-maven-plugin.version>2.21.0</versions-maven-plugin.version>
-		<dependency-check-maven.version>12.2.1</dependency-check-maven.version>
-		<flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
+		<buildnumber-maven-plugin.version>3.3.1</buildnumber-maven-plugin.version>
+		<jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
+		<versions-maven-plugin.version>2.22.0</versions-maven-plugin.version>
+		<dependency-check-maven.version>12.2.2</dependency-check-maven.version>
+		<flatten-maven-plugin.version>1.8.0</flatten-maven-plugin.version>
 
 		<!-- Mockito is shared by core and connector. The agent jar is handed to surefire explicitly because
 		     the JDK deprecates self-attaching agents. -->
-		<mockito.version>5.23.0</mockito.version>
+		<mockito.version>5.24.0</mockito.version>
 		<mockito.agent.jar>${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar</mockito.agent.jar>
 	</properties>
 

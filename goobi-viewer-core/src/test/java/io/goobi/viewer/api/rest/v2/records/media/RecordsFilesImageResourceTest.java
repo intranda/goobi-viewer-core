@@ -21,11 +21,16 @@
  */
 package io.goobi.viewer.api.rest.v2.records.media;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import jakarta.ws.rs.BadRequestException;
 
 import org.junit.jupiter.api.Test;
+
+import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.security.RequiredPrivileges;
+import io.goobi.viewer.solr.SolrConstants.DocType;
 
 class RecordsFilesImageResourceTest {
 
@@ -41,5 +46,25 @@ class RecordsFilesImageResourceTest {
         assertThrows(BadRequestException.class, () -> RecordsFilesImageResource.requireValidPi("|"));
         assertThrows(BadRequestException.class, () -> RecordsFilesImageResource.requireValidPi("<xml>"));
         assertThrows(BadRequestException.class, () -> RecordsFilesImageResource.requireValidPi("%00"));
+    }
+
+    /**
+     * @verifies require born digital privilege for download resources
+     * @see RecordsFilesImageResource#getRequiredPrivileges
+     */
+    @Test
+    void getRequiredPrivileges_shouldRequireBornDigitalPrivilegeForDownloadResources() {
+        RequiredPrivileges required = RecordsFilesImageResource.getRequiredPrivileges(IPrivilegeHolder.PRIV_VIEW_IMAGES);
+        assertArrayEquals(new String[] { IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES }, required.getPrivileges(DocType.DOWNLOAD_RESOURCE));
+    }
+
+    /**
+     * @verifies require given privileges for pages
+     * @see RecordsFilesImageResource#getRequiredPrivileges
+     */
+    @Test
+    void getRequiredPrivileges_shouldRequireGivenPrivilegesForPages() {
+        String[] viewAndZoom = { IPrivilegeHolder.PRIV_VIEW_IMAGES, IPrivilegeHolder.PRIV_ZOOM_IMAGES };
+        assertArrayEquals(viewAndZoom, RecordsFilesImageResource.getRequiredPrivileges(viewAndZoom).getPrivileges(DocType.PAGE));
     }
 }
