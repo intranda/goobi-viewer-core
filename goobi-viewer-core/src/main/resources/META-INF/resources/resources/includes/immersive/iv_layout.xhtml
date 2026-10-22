@@ -3,7 +3,11 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:util="http://goobi.io/util">
-    <div class="immersive#{!embedded ? ' immersive--fullscreen' : ''}">
+    <div
+        class="immersive#{!embedded ? ' immersive--fullscreen' : ''}"
+        data-label-normdata-title="#{msg.normdataPopoverTitle}"
+        data-label-normdata-close="#{msg.normdataPopoverClose}"
+        data-label-normdata-show="#{msg.normdataExpand}">
         <h1 class="sr-only">#{activeDocumentBean.titleBarLabel}</h1>
         <!-- VIEWER HERO -->
         <section class="immersive__viewer">
@@ -78,14 +82,20 @@
         </ui:include>
     </div>
 
+    <!-- NORMDATA POPOVERS -->
     <script type="text/javascript">
-        viewerJS.normdata.init({
-            path: '#{request.contextPath}',
-            lang: {
-                popoverTitle: '#{msg.normdataPopoverTitle}',
-                popoverClose: '#{msg.normdataPopoverClose}',
-                showNormdata: '#{msg.normdataExpand}',
-            },
-        });
+        //<![CDATA[
+        (function () {
+            var labels = document.querySelector('.immersive').dataset;
+            viewerJS.normdata.init({
+                path: '#{request.contextPath}',
+                lang: {
+                    popoverTitle: labels.labelNormdataTitle,
+                    popoverClose: labels.labelNormdataClose,
+                    showNormdata: labels.labelNormdataShow,
+                },
+            });
+        })();
+        //]]>
     </script>
 </ui:composition>

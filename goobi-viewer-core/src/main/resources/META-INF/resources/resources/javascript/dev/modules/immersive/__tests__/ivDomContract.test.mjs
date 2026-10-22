@@ -22,11 +22,12 @@ const listModules = (dir) =>
         if (entry.isDirectory()) return entry.name === '__tests__' ? [] : listModules(path.join(dir, entry.name));
         return entry.name.endsWith('.mjs') ? [path.join(dir, entry.name)] : [];
     });
-const jsFiles = listModules(JS_ROOT);
-const js = readAll(jsFiles);
-const xhtml = readAll(XHTML_FILES);
 const kebab = (s) => s.replace(/[A-Z]/g, (c) => '-' + c.toLowerCase());
 const matches = (src, re, group = 1) => Array.from(src.matchAll(re), (m) => m[group]);
+const jsFiles = listModules(JS_ROOT);
+const xhtml = readAll(XHTML_FILES);
+// inline page scripts read data-label-* too (normdata init in iv_layout.xhtml)
+const js = readAll(jsFiles) + '\n' + matches(xhtml, /<script\b(?![^>]*\/>)[^>]*>([\s\S]*?)<\/script>/g).join('\n');
 
 const xhtmlIds = new Set(matches(xhtml, /\bid="([^"#{]+)"/g));
 const xhtmlAttrs = Array.from(xhtml.matchAll(/(data-[a-z-]+)(?:="([^"]*)")?/g), (m) => ({ name: m[1], value: m[2] || '' }));

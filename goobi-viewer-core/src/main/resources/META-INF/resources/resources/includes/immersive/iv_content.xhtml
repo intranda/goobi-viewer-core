@@ -75,7 +75,17 @@
     <!-- FILTER POPOVER -->
     <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.allowsImageView}">
         <popover id="immersiveFilterPopover">
-            <imageFilters />
+            <imageFilters
+                data-label-brightness="#{msg.label__image_filter_brightness}"
+                data-label-contrast="#{msg.label__image_filter_contrast}"
+                data-label-saturate="#{msg.label__image_filter_saturate}"
+                data-label-grayscale="#{msg.label__image_filter_grayscale}"
+                data-label-bitonal="#{msg.label__image_filter_bitonal}"
+                data-label-blur="#{msg.label__image_filter_blur}"
+                data-label-sharpen="#{msg.label__image_filter_sharpen}"
+                data-label-invert="#{msg.label__image_filter_invert}"
+                data-label-rotate="#{msg.label__image_filter_rotate}"
+                data-label-clear-all="#{msg.action__reset_all_image_filters}" />
         </popover>
     </ui:fragment>
 </ui:composition>

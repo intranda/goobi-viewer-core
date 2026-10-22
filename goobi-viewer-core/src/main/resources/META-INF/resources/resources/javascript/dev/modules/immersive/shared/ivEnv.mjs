@@ -21,8 +21,4 @@ export const env = {
     get viewerJS() {
         return win().viewerJS;
     },
-    /** Image-filter labels the page script provides (iv_image.xhtml). */
-    get immersiveFilterConfig() {
-        return win().immersiveFilterConfig;
-    },
 };

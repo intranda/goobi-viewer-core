@@ -5,7 +5,7 @@
  * toggles) caused by the library stacking event forwarders per load().
  */
 import { jest } from '@jest/globals';
-import { bindImageFiltersRendering } from '../ui/ivImageFilters.mjs';
+import { bindImageFiltersRendering, filterConfigFrom } from '../ui/ivImageFilters.mjs';
 import { Emitter } from '../engine/ivViewer.mjs';
 
 function fakeOsd() {
@@ -129,8 +129,7 @@ describe('setupImageFilters', () => {
     let tag;
 
     function mountFilter({ originClean = true } = {}) {
-        document.body.innerHTML = `<button data-popover-element="#immersiveFilterPopover"></button><imagefilters></imagefilters>`;
-        window.immersiveFilterConfig = { filters: {} };
+        document.body.innerHTML = `<button data-popover-element="#immersiveFilterPopover"></button><imagefilters data-label-brightness="Helligkeit" data-label-clear-all="Zurücksetzen"></imagefilters>`;
         tag = { filters: [], resetAll: jest.fn(), unmount: jest.fn() };
         global.riot = { mount: jest.fn(() => [tag]) };
         window.$.fn.popover = jest.fn();
@@ -149,7 +148,6 @@ describe('setupImageFilters', () => {
     afterEach(() => {
         window.$.fn.popover = realPopover;
         delete global.riot;
-        delete window.immersiveFilterConfig;
         document.body.innerHTML = '';
     });
 
@@ -160,7 +158,15 @@ describe('setupImageFilters', () => {
         window.$(btn).trigger('shown.bs.popover');
         window.$(btn).trigger('shown.bs.popover');
         expect(global.riot.mount).toHaveBeenCalledTimes(1);
-        expect(global.riot.mount.mock.calls[0][1]).toEqual(expect.objectContaining({ image: viewer.viewer, config: window.immersiveFilterConfig }));
+        expect(global.riot.mount.mock.calls[0][1]).toEqual(
+            expect.objectContaining({
+                image: viewer.viewer,
+                config: expect.objectContaining({
+                    filters: expect.objectContaining({ brightness: { label: 'Helligkeit' }, blur: { visible: false } }),
+                    messages: { clearAll: 'Zurücksetzen' },
+                }),
+            })
+        );
         expect(window.$.fn.popover).toHaveBeenCalledWith('update');
         viewer.onReset.emit();
         expect(tag.resetAll).toHaveBeenCalledTimes(1);
@@ -178,5 +184,20 @@ describe('setupImageFilters', () => {
         expect(global.riot.mount).not.toHaveBeenCalled();
         expect(window.$.fn.popover).toHaveBeenCalledWith('hide');
         expect(btn.hidden).toBe(true);
+    });
+});
+
+describe('filterConfigFrom', () => {
+    test('maps the data-label attributes to the riot config, keeps blur hidden and leaves missing labels to the tag defaults', () => {
+        document.body.innerHTML = `<imagefilters data-label-brightness="Helligkeit" data-label-bitonal="Bitonal" data-label-rotate="Farbdrehung" data-label-clear-all="Zurücksetzen"></imagefilters>`;
+        const config = filterConfigFrom(document.querySelector('imagefilters').dataset);
+        expect(config.filters.brightness).toEqual({ label: 'Helligkeit' });
+        expect(config.filters.threshold).toEqual({ label: 'Bitonal' });
+        expect(config.filters.hue).toEqual({ label: 'Farbdrehung' });
+        expect(config.filters.contrast).toEqual({});
+        expect(config.filters.blur).toEqual({ visible: false });
+        expect(config.messages).toEqual({ clearAll: 'Zurücksetzen' });
+        expect(Object.keys(config.filters).sort()).toEqual(['blur', 'brightness', 'contrast', 'grayscale', 'hue', 'invert', 'saturate', 'sharpen', 'threshold']);
+        document.body.innerHTML = '';
     });
 });

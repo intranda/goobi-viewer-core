@@ -13,9 +13,6 @@ test('reads the libraries lazily from window', () => {
     expect(env.riot).toBe(global.riot);
     expect(env.rxjs).toBe(global.rxjs);
     expect(env.viewerJS).toBe(global.viewerJS);
-    global.immersiveFilterConfig = { filters: {} };
-    expect(env.immersiveFilterConfig).toBe(global.immersiveFilterConfig);
-    delete global.immersiveFilterConfig;
     delete global.riot;
     delete global.rxjs;
     delete global.viewerJS;

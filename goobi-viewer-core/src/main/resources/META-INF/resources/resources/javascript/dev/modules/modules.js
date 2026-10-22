@@ -1255,10 +1255,6 @@
         get viewerJS() {
             return win().viewerJS;
         },
-        /** Image-filter labels the page script provides (iv_image.xhtml). */
-        get immersiveFilterConfig() {
-            return win().immersiveFilterConfig;
-        },
     };
 
     /**
@@ -6633,6 +6629,31 @@
     }
 
     /**
+     * Builds the riot imageFilters config from the translated labels the page puts on the
+     * <imageFilters> element (a missing label keeps the tag's default); blur stays hidden.
+     *
+     * @param {DOMStringMap} dataset
+     * @returns {{filters: object, messages: {clearAll?: string}}}
+     */
+    function filterConfigFrom(dataset) {
+        const filter = (label) => (label ? { label } : {});
+        return {
+            filters: {
+                brightness: filter(dataset.labelBrightness),
+                contrast: filter(dataset.labelContrast),
+                saturate: filter(dataset.labelSaturate),
+                grayscale: filter(dataset.labelGrayscale),
+                threshold: filter(dataset.labelBitonal),
+                blur: { ...filter(dataset.labelBlur), visible: false },
+                sharpen: filter(dataset.labelSharpen),
+                invert: filter(dataset.labelInvert),
+                hue: filter(dataset.labelRotate),
+            },
+            messages: dataset.labelClearAll ? { clearAll: dataset.labelClearAll } : {},
+        };
+    }
+
+    /**
      * Mounts the reused imageFilters riot tag on the viewer's live ImageView.Image so the
      * Filter popover adjusts brightness/contrast/etc.
      *
@@ -6640,8 +6661,9 @@
      * @returns {boolean} whether the tag was mounted
      */
     function mountImageFilters(viewer, bag) {
-        if (!document.querySelector('imageFilters') || !env.immersiveFilterConfig) return false;
-        const [tag] = env.riot.mount('imageFilters', { image: viewer.viewer, config: env.immersiveFilterConfig });
+        const mount = document.querySelector('imageFilters');
+        if (!mount) return false;
+        const [tag] = env.riot.mount('imageFilters', { image: viewer.viewer, config: filterConfigFrom(mount.dataset) });
         if (tag) {
             bag.add(() => {
                 if (typeof tag.unmount === 'function') tag.unmount(true);
