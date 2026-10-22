@@ -97,9 +97,9 @@ public class LayoutTagBuilder {
         final List<String> fieldList = Arrays.asList(SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.IDDOC,
                 SolrConstants.IDDOC_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.FILENAME_ALTO);
         SolrDocumentList solrDocuments = DataManager.getInstance().getSearchIndex().search(query, fieldList);
-        Collections.sort(solrDocuments, docOrderComparator);
 
         if (solrDocuments != null && !solrDocuments.isEmpty()) {
+            Collections.sort(solrDocuments, docOrderComparator);
             String topStructPi = null;
             if (solrDocuments.get(0).containsKey(SolrConstants.PI_TOPSTRUCT)) {
                 topStructPi = SolrTools.getAsString(solrDocuments.get(0).getFieldValue(SolrConstants.PI_TOPSTRUCT));
@@ -131,9 +131,10 @@ public class LayoutTagBuilder {
                                 altoString = alto.getOne();
                                 charset = alto.getTwo();
                             } catch (FileNotFoundException e) {
+                                logger.debug("ALTO file not found: {}", altoFileName);
                                 continue;
                             }
-                            Integer pageOrder = getPageOrder(solrDoc);
+                            Integer pageOrder = getPageOrderFromSolrDoc(solrDoc);
                             List<TagCount> tags = ALTOTools.getLayoutTags(altoString, charset, label, wordTagLabels);
                             for (TagCount tagCount : tags) {
                                 for (ElementReference reference : tagCount.getReferences()) {
@@ -153,10 +154,6 @@ public class LayoutTagBuilder {
             return doc;
         }
         return new DocumentReference();
-    }
-
-    private static Integer getPageOrder(SolrDocument solrDoc) {
-        return (Integer) solrDoc.getFieldValue(SolrConstants.ORDER);
     }
 
     private static TagGroup createPageReference(List<SolrDocument> solrDocs) {

@@ -97,7 +97,7 @@ public class LayoutTagEnricher implements TextEnricher {
         if (classes.isEmpty()) {
             return content;
         }
-        return "<span class=\"alto-tag " + String.join(" ", classes) + "\">" + content + "</span>";
+        return "<span class=\"alto-tag " + AltoHtmlBuilder.escapeAttribute(String.join(" ", classes)) + "\">" + content + "</span>";
     }
 
 }

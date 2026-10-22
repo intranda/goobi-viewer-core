@@ -63,7 +63,7 @@
                           its type. A declared word tag also determines what the immersive view's layout-tag panel
                           counts and highlights: the drawn strokes (ALTO <GraphicalElement>), not the words they run
                           across - pages whose ALTO records no stroke keep their word references.
-         - annotationTag: annotation-author tag; @styleClass picks the colour slot the immersive view uses for the
+         - annotationTag: annotation-author tag; @styleClass (optional) picks the colour slot the immersive view uses for the
                           author's blocks, margin notes and highlights (see wordTag). The display name is looked up
                           in the messages under the label itself; @name (optional) names another message key, or
                           a literal, for labels that cannot serve as key. Any other class works as well when the

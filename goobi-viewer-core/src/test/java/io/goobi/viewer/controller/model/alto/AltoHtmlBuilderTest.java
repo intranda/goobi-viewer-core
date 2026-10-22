@@ -107,4 +107,30 @@ class AltoHtmlBuilderTest {
         Assertions.assertTrue(html.contains("<span class=\"alto-tag alto-tag--underline alto-tag--strikethrough\">Dageminde</span>"), html);
     }
 
+    /**
+     * @see AltoHtmlBuilder#build(String, String)
+     * @verifies omit the class of an annotation style without style class
+     */
+    @Test
+    void build_shouldOmitTheClassOfAnAnnotationStyleWithoutStyleClass() throws Exception {
+        Map<String, AnnotationStyle> annotationStyles = new LinkedHashMap<>();
+        annotationStyles.put("gr_wilhelm_grimm", new AnnotationStyle(null, "Wilhelm Grimm"));
+        String html = new AltoHtmlBuilder("gr_printed", annotationStyles, new LayoutTagEnricher()).build(alto, StringTools.DEFAULT_ENCODING);
+        Assertions.assertTrue(
+                html.contains("<p class=\"alto-block alto-annotation\" data-author=\"gr_wilhelm_grimm\" title=\"Wilhelm Grimm\">"), html);
+        Assertions.assertFalse(html.contains("alto-annotation null"), html);
+    }
+
+    /**
+     * @see AltoHtmlBuilder#build(String, String)
+     * @verifies escape the style class
+     */
+    @Test
+    void build_shouldEscapeTheStyleClass() throws Exception {
+        Map<String, AnnotationStyle> annotationStyles = new LinkedHashMap<>();
+        annotationStyles.put("gr_wilhelm_grimm", new AnnotationStyle("hand\" onmouseover=\"x", "Wilhelm Grimm"));
+        String html = new AltoHtmlBuilder("gr_printed", annotationStyles, new LayoutTagEnricher()).build(alto, StringTools.DEFAULT_ENCODING);
+        Assertions.assertTrue(html.contains("alto-annotation hand&quot; onmouseover=&quot;x\""), html);
+        Assertions.assertFalse(html.contains("onmouseover=\"x"), html);
+    }
 }

@@ -202,6 +202,7 @@ public final class ALTOTools {
      * @should filter by label
      * @should keep only graphical references for word tags
      * @should keep references of word tags without graphical reference
+     * @should ignore layout tags without label
      */
     @SuppressWarnings("rawtypes")
     public static List<TagCount> getLayoutTags(String alto, final String inCharset, String label, Collection<String> wordTagLabels) {
@@ -216,7 +217,8 @@ public final class ALTOTools {
             // of its declarations before the word-tag filter can tell the stroke from the text it covers.
             Map<String, List<GeometricData>> referencesByLabel = new LinkedHashMap<>();
             for (Tag tag : doc.getTags().getTagsAsList()) {
-                if (tag.getTagType() == TagType.LAYOUT_TAG && (label == null || label.equals(tag.getLabel()))) {
+                if (tag.getTagType() == TagType.LAYOUT_TAG && StringUtils.isNotEmpty(tag.getLabel())
+                        && (label == null || label.equals(tag.getLabel()))) {
                     referencesByLabel.computeIfAbsent(tag.getLabel(), k -> new ArrayList<>()).addAll(tag.getReferences());
                 }
             }
@@ -342,17 +344,20 @@ public final class ALTOTools {
      *
      * @param alto ALTO XML document as a string
      * @param charset character encoding of the ALTO document
+     * @param locale locale for the annotation author names; null uses the current request locale
      * @return the structured HTML, or null on error
      * @should include authority data URI attributes in output
+     * @should translate annotation names for the given locale
+     * @should escape entity attribute values
      */
-    public static String getFulltextHtml(String alto, String charset) {
+    public static String getFulltextHtml(String alto, String charset, Locale locale) {
         if (alto == null) {
             throw new IllegalArgumentException("alto may not be null");
         }
         Configuration config = DataManager.getInstance().getConfiguration();
         LayoutTagEnricher layoutEnricher = new LayoutTagEnricher(config.getAltoLayoutWordTagTypes(), config.getAltoLayoutWordTags());
         AltoHtmlBuilder builder = new AltoHtmlBuilder(config.getAltoLayoutPrintedLabel(),
-                translateAnnotationTagNames(config.getAltoLayoutAnnotationTags(), null),
+                translateAnnotationTagNames(config.getAltoLayoutAnnotationTags(), locale),
                 CHAR_CLEANUP_ENRICHER, new NamedEntityEnricher(), layoutEnricher);
         try {
             return builder.build(alto, charset != null ? charset : StringTools.DEFAULT_ENCODING);

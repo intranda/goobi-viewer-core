@@ -40,6 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
+import java.util.List;
 
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
@@ -440,6 +441,34 @@ class RecordResourceTest extends AbstractRestApiTest {
                 .accept(MediaType.TEXT_PLAIN)
                 .get()) {
             assertEquals(404, response.getStatus(), "Non-existent PI should return HTTP 404, not 500");
+        }
+    }
+
+    /**
+     * @verifies return 400 for start or end below one
+     * @see RecordResource#getLayoutTags(Integer,Integer,Integer,String)
+     */
+    @Test
+    void getLayoutTags_shouldReturn400ForStartOrEndBelowOne() {
+        String url = urls.path(RECORDS_RECORD, RECORDS_LAYOUT_TAGS).params(PI_NER).build();
+        try (Response response = target(url).queryParam("start", 0).request().accept(MediaType.APPLICATION_JSON).get()) {
+            assertEquals(400, response.getStatus(), "Should return status 400: " + response.getStatusInfo().getReasonPhrase());
+        }
+        try (Response response = target(url).queryParam("end", -1).request().accept(MediaType.APPLICATION_JSON).get()) {
+            assertEquals(400, response.getStatus(), "Should return status 400: " + response.getStatusInfo().getReasonPhrase());
+        }
+    }
+
+    /**
+     * @see RecordResource#getNERTags(Integer,Integer,Integer,String)
+     */
+    @Test
+    void getNERTags_shouldReturn400ForStartEndOrStepBelowOne() {
+        String url = urls.path(RECORDS_RECORD, RECORDS_NER_TAGS).params(PI_NER).build();
+        for (String param : List.of("start", "end", "step")) {
+            try (Response response = target(url).queryParam(param, 0).request().accept(MediaType.APPLICATION_JSON).get()) {
+                assertEquals(400, response.getStatus(), param + "=0 should return status 400: " + response.getStatusInfo().getReasonPhrase());
+            }
         }
     }
 }

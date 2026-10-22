@@ -85,15 +85,15 @@ public class NamedEntityEnricher implements TextEnricher {
             String tagType = Optional.ofNullable(tag.getType()).map(String::toLowerCase).orElse("");
             String tagUri = Optional.ofNullable(tag.getUri()).orElse("");
 
-            String tagRestUri = TAG_RESTURI_TEMPATE.replace("{restUri}", this.restUri).replace("{tagUri}", tagUri);
+            String tagRestUri = TAG_RESTURI_TEMPATE.replace("{restUri}", this.restUri).replace("{tagUri}", AltoHtmlBuilder.escapeAttribute(tagUri));
             String searchString = "%s:%%22%s%%22".formatted(NormDataImporter.FIELD_IDENTIFIER,
                     tagUri.replaceAll("^https?:\\/\\/d-nb.info\\/gnd\\/([\\d-]+)\\/?$", "$1"));
             String tagSearchUri = getSearchPageUrl(searchString);
 
-            String enriched = CONTENT_TEMPLATE.replace("{tagRef}", tagRef)
-                    .replace("{tagType}", tagType)
+            String enriched = CONTENT_TEMPLATE.replace("{tagRef}", AltoHtmlBuilder.escapeAttribute(tagRef))
+                    .replace("{tagType}", AltoHtmlBuilder.escapeAttribute(tagType))
                     .replace("{tagRestUri}", tagRestUri)
-                    .replace("{tagSearchUri}", tagSearchUri)
+                    .replace("{tagSearchUri}", AltoHtmlBuilder.escapeAttribute(tagSearchUri))
                     .replace("{tagLabel}", content);
 
             sb.append(enriched);

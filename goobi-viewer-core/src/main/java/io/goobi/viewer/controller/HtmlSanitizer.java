@@ -284,7 +284,7 @@ public final class HtmlSanitizer {
 
     /**
      * Sanitize page-level fulltext output produced by the ALTO display pipeline (see
-     * {@link io.goobi.viewer.controller.ALTOTools#getFulltextHtml(String, String)} and the
+     * {@link io.goobi.viewer.controller.ALTOTools#getFulltextHtml(String, String, java.util.Locale)} and the
      * {@code AltoHtmlBuilder}/{@code NamedEntityEnricher} it pipes through). Allows only the {@code <button>} tag with
      * the exact attribute set that {@code NamedEntityEnricher.CONTENT_TEMPLATE} emits:
      * {@code class}, {@code type}, and the four

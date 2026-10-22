@@ -253,7 +253,7 @@ class ALTOToolsTest extends AbstractTest {
     }
 
     /**
-     * @see ALTOTools#getFulltextHtml(String,String)
+     * @see ALTOTools#getFulltextHtml(String,String,Locale)
      * @verifies include authority data URI attributes in output
      */
     @Test
@@ -262,7 +262,7 @@ class ALTOToolsTest extends AbstractTest {
         Assertions.assertTrue(file.isFile());
         // Named-entity button markup lives on the HTML display path (getFulltextHtml), not the plain-text path.
         String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
-        String text = ALTOTools.getFulltextHtml(alto, StringTools.DEFAULT_ENCODING);
+        String text = ALTOTools.getFulltextHtml(alto, StringTools.DEFAULT_ENCODING, null);
         Assertions.assertNotNull(text);
         Assertions.assertTrue(text.contains("data-entity-authority-data-uri="));
     }
@@ -300,7 +300,7 @@ class ALTOToolsTest extends AbstractTest {
         File file = new File("src/test/resources/data/viewer/data/1/alto/PPN648829383/00000014.xml");
         Assertions.assertTrue(file.isFile());
         String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
-        String text = ALTOTools.getFulltextHtml(alto, StringTools.DEFAULT_ENCODING);
+        String text = ALTOTools.getFulltextHtml(alto, StringTools.DEFAULT_ENCODING, null);
         Assertions.assertNotNull(text);
         int buttonCount = StringUtils.countMatches(text, "view-fulltext__entity-action-button");
         Assertions.assertTrue(buttonCount >= 2,
@@ -321,7 +321,7 @@ class ALTOToolsTest extends AbstractTest {
         File file = new File("src/test/resources/data/alto_ner_multiword.xml");
         Assertions.assertTrue(file.isFile());
         String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
-        String text = ALTOTools.getFulltextHtml(alto, StringTools.DEFAULT_ENCODING);
+        String text = ALTOTools.getFulltextHtml(alto, StringTools.DEFAULT_ENCODING, null);
         Assertions.assertNotNull(text);
 
         // Each word of the multi-word entity becomes its own button showing its own content.
@@ -348,7 +348,7 @@ class ALTOToolsTest extends AbstractTest {
         File file = new File("src/test/resources/data/alto_layouttags.xml");
         Assertions.assertTrue(file.isFile());
         String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
-        String text = ALTOTools.getFulltextHtml(alto, StringTools.DEFAULT_ENCODING);
+        String text = ALTOTools.getFulltextHtml(alto, StringTools.DEFAULT_ENCODING, null);
         Assertions.assertNotNull(text);
         // The fixture carries only layout tags (no NamedEntityTag), so no entity buttons must be produced ...
         Assertions.assertFalse(text.contains("view-fulltext__entity-action-button"), text);
@@ -530,5 +530,58 @@ class ALTOToolsTest extends AbstractTest {
         Map<String, AnnotationStyle> tags = Map.of("hand_x", new AnnotationStyle("alto-annotation--x", null));
         Map<String, AnnotationStyle> ret = ALTOTools.translateAnnotationTagNames(tags, Locale.GERMAN);
         Assertions.assertNull(ret.get("hand_x").name());
+    }
+
+    /**
+     * @see ALTOTools#getLayoutTags(String,String,String,Collection)
+     * @verifies ignore layout tags without label
+     */
+    @Test
+    void getLayoutTags_shouldIgnoreLayoutTagsWithoutLabel() throws Exception {
+        File file = new File("src/test/resources/data/alto_layouttags.xml");
+        Assertions.assertTrue(file.isFile());
+        String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING)
+                .replace("<LayoutTag ID=\"RT-2\" LABEL=\"gr_unterstrichen\"/>", "<LayoutTag ID=\"RT-2\"/>");
+        Assertions.assertTrue(alto.contains("<LayoutTag ID=\"RT-2\"/>"));
+
+        List<TagCount> all = ALTOTools.getLayoutTags(alto, StringTools.DEFAULT_ENCODING, null, Collections.emptySet());
+        for (TagCount tc : all) {
+            Assertions.assertTrue(StringUtils.isNotEmpty(tc.getValue()), "tag without label must be skipped: " + all);
+        }
+        // RT-10 and RT-11 still carry the label
+        Assertions.assertTrue(all.stream().anyMatch(tc -> "gr_unterstrichen".equals(tc.getValue())), all.toString());
+    }
+
+    /**
+     * @see ALTOTools#getFulltextHtml(String,String,Locale)
+     * @verifies translate annotation names for the given locale
+     */
+    @Test
+    void getFulltextHtml_shouldTranslateAnnotationNamesForTheGivenLocale() throws Exception {
+        File file = new File("src/test/resources/data/alto_layouttags.xml");
+        Assertions.assertTrue(file.isFile());
+        String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
+        // config_viewer.test.xml maps gr_jacob_oder_wilhelm_grimm to the message key ADDRESS
+        String german = ALTOTools.getFulltextHtml(alto, StringTools.DEFAULT_ENCODING, Locale.GERMAN);
+        Assertions.assertTrue(german.contains("title=\"Adresse\""), german);
+        String english = ALTOTools.getFulltextHtml(alto, StringTools.DEFAULT_ENCODING, Locale.ENGLISH);
+        Assertions.assertTrue(english.contains("title=\"Address\""), english);
+    }
+
+    /**
+     * @see ALTOTools#getFulltextHtml(String,String,Locale)
+     * @verifies escape entity attribute values
+     */
+    @Test
+    void getFulltextHtml_shouldEscapeEntityAttributeValues() throws Exception {
+        File file = new File("src/test/resources/data/alto_ner_multiword.xml");
+        Assertions.assertTrue(file.isFile());
+        String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING)
+                .replace("URI=\"https://d-nb.info/gnd/118756559\"", "URI=\"https://d-nb.info/gnd/118756559&quot;x\"");
+        Assertions.assertTrue(alto.contains("&quot;x"));
+        String text = ALTOTools.getFulltextHtml(alto, StringTools.DEFAULT_ENCODING, null);
+        Assertions.assertNotNull(text);
+        Assertions.assertTrue(text.contains("118756559&quot;x"), text);
+        Assertions.assertFalse(text.contains("118756559\"x"), text);
     }
 }

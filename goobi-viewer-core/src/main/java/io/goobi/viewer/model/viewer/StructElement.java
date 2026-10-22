@@ -783,7 +783,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         if (layoutTagAvailable == null) {
             layoutTagAvailable = DataManager.getInstance()
                     .getSearchIndex()
-                    .getHitCount(SolrConstants.PI_TOPSTRUCT + ":" + pi + " AND MD_LAYOUTTAG:*") > 0;
+                    .getHitCount(SolrConstants.PI_TOPSTRUCT + ":" + pi + " AND " + SolrConstants.MD_LAYOUTTAG + ":*") > 0;
         }
 
         return layoutTagAvailable;

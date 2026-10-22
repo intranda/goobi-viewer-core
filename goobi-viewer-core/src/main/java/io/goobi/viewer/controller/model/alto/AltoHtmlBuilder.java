@@ -161,7 +161,10 @@ public class AltoHtmlBuilder {
         AnnotationStyle style = label != null ? annotationStyles.get(label) : null;
         sb.append("<p class=\"alto-block");
         if (style != null) {
-            sb.append(" alto-annotation ").append(style.styleClass());
+            sb.append(" alto-annotation");
+            if (StringUtils.isNotBlank(style.styleClass())) {
+                sb.append(' ').append(escapeAttribute(style.styleClass()));
+            }
         }
         sb.append('"');
         if (style != null) {
@@ -236,7 +239,7 @@ public class AltoHtmlBuilder {
         return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
     }
 
-    private static String escapeAttribute(String s) {
+    static String escapeAttribute(String s) {
         return escapeText(s).replace("\"", "&quot;");
     }
 

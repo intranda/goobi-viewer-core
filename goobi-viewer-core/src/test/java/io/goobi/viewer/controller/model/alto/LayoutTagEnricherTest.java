@@ -136,4 +136,14 @@ class LayoutTagEnricherTest {
         Assertions.assertEquals("Diʒ", enricher.enrich("Diʒ", word("s-1")));
     }
 
+    /**
+     * @see LayoutTagEnricher#enrich(String, LineElement)
+     * @verifies escape configured class values
+     */
+    @Test
+    void enrich_shouldEscapeConfiguredClassValues() {
+        LayoutTagEnricher unsafe = new LayoutTagEnricher(Map.of("gr_durchgestrichen", "strike\"through"), Map.of("gr_durchgestrichen", "my\" class"));
+        Assertions.assertEquals("<span class=\"alto-tag alto-tag--strike&quot;through my&quot; class\">Dageminde</span>",
+                unsafe.enrich("Dageminde", word("s-151")));
+    }
 }

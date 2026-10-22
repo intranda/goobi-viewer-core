@@ -538,7 +538,7 @@ public class RecordResource {
                     + " the requester has no fulltext access to are silently skipped rather than causing an error, but still count towards"
                     + " the page ranges.")
     @ApiResponse(responseCode = "200", description = "NER tags for the given record", useReturnTypeSchema = true)
-    @ApiResponse(responseCode = "400", description = "Invalid record identifier or step below 1")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier or start, end or step below 1")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public DocumentReference getNERTags(
@@ -550,7 +550,9 @@ public class RecordResource {
                     schema = @Schema(minimum = "1", maximum = "2147483647")) @QueryParam("step") Integer stepSize,
             @Parameter(description = "Tag type to consider (person, corporation, event or location)") @QueryParam("type") String type)
             throws PresentationException, IndexUnreachableException {
-        requireValidStep(stepSize);
+        requirePositive("start", start);
+        requirePositive("end", end);
+        requirePositive("step", stepSize);
         NERBuilder b = new NERBuilder();
         return b.getNERTags(pi, type, start, end, stepSize == null ? 1 : stepSize, servletRequest);
     }
@@ -566,14 +568,15 @@ public class RecordResource {
      * @return the layout tags for the record, grouped by page range
      * @should return tag groups for record
      * @should return 400 for step below one
+     * @should return 400 for start or end below one
      */
     @GET
     @jakarta.ws.rs.Path(RECORDS_LAYOUT_TAGS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records" }, summary = "Get ALTO layout tags for a record")
-    @ApiResponse(responseCode = "200", description = "Layout tags for the given record")
-    @ApiResponse(responseCode = "400", description = "Invalid record identifier or step below 1")
-    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
+    @ApiResponse(responseCode = "200",
+            description = "Layout tags for the given record; an unknown identifier or an empty page range yields an empty document")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier or start, end or step below 1")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public DocumentReference getLayoutTags(
             @Parameter(description = "First page to get tags for",
@@ -584,14 +587,16 @@ public class RecordResource {
                     schema = @Schema(minimum = "1", maximum = "2147483647")) @QueryParam("step") Integer stepSize,
             @Parameter(description = "Layout-tag label to filter by; omit for all labels") @QueryParam("type") String label)
             throws PresentationException, IndexUnreachableException {
-        requireValidStep(stepSize);
+        requirePositive("start", start);
+        requirePositive("end", end);
+        requirePositive("step", stepSize);
         LayoutTagBuilder b = new LayoutTagBuilder();
         return b.getLayoutTags(pi, label, start, end, stepSize == null ? 1 : stepSize, servletRequest);
     }
 
-    private static void requireValidStep(Integer stepSize) {
-        if (stepSize != null && stepSize < 1) {
-            throw new BadRequestException("Step must be at least 1, got: " + stepSize);
+    private static void requirePositive(String name, Integer value) {
+        if (value != null && value < 1) {
+            throw new BadRequestException(name + " must be at least 1, got: " + value);
         }
     }
 

@@ -370,7 +370,8 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getAltoLayoutTagOrder_shouldReturnLabelsInDocumentOrder() {
         // the annotation tag sits between the word tags in config_viewer.test.xml, so element type must not group
-        assertEquals(List.of("gr_unterstrichen", "gr_jacob_grimm", "gr_wilhelm_grimm_test", "gr_durchgestrichen", "test_angestrichen"),
+        assertEquals(List.of("gr_unterstrichen", "gr_jacob_grimm", "gr_wilhelm_grimm_test", "gr_durchgestrichen", "test_angestrichen",
+                "gr_jacob_oder_wilhelm_grimm"),
                 DataManager.getInstance().getConfiguration().getAltoLayoutTagOrder());
     }
 
@@ -396,6 +397,18 @@ class ConfigurationTest extends AbstractTest {
         assertNotNull(wilhelm);
         assertEquals("test-wilhelm", wilhelm.styleClass());
         assertEquals("gr_wilhelm_grimm_test", wilhelm.name());
+    }
+
+    /**
+     * @see Configuration#getAltoLayoutAnnotationTags()
+     * @verifies accept an annotation tag without style class
+     */
+    @Test
+    void getAltoLayoutAnnotationTags_shouldAcceptAnAnnotationTagWithoutStyleClass() {
+        AnnotationStyle unstyled = DataManager.getInstance().getConfiguration().getAltoLayoutAnnotationTags().get("gr_jacob_oder_wilhelm_grimm");
+        assertNotNull(unstyled);
+        assertNull(unstyled.styleClass());
+        assertEquals("ADDRESS", unstyled.name());
     }
 
     /**

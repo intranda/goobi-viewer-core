@@ -57,6 +57,7 @@
 		<annotationTag label="gr_wilhelm_grimm_test" styleClass="test-wilhelm" />
 		<wordTag label="gr_durchgestrichen" styleClass="test-strike" type="strikethrough" group="test_marks" />
 		<wordTag label="test_angestrichen" type="mark" />
+		<annotationTag label="gr_jacob_oder_wilhelm_grimm" name="ADDRESS" />
 	</altoLayoutTags>
 	<!-- teiFolder: contains TEI metadata/fulltext files -->
 	<teiFolder>tei</teiFolder>

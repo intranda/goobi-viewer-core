@@ -2174,6 +2174,7 @@ public class Configuration extends AbstractConfiguration {
      * @return an ordered map of label to annotation style; empty if none configured (callers fall back to defaults)
      * @should return configured annotation tags
      * @should default the name to the label
+     * @should accept an annotation tag without style class
      */
     public Map<String, AnnotationStyle> getAltoLayoutAnnotationTags() {
         Map<String, AnnotationStyle> ret = new LinkedHashMap<>();
@@ -2183,8 +2184,8 @@ public class Configuration extends AbstractConfiguration {
                 String label = tag.getString("[@label]");
                 String styleClass = tag.getString("[@styleClass]");
                 String name = tag.getString("[@name]", label);
-                if (StringUtils.isNotEmpty(label) && StringUtils.isNotEmpty(styleClass)) {
-                    ret.put(label, new AnnotationStyle(styleClass, name));
+                if (StringUtils.isNotEmpty(label)) {
+                    ret.put(label, new AnnotationStyle(StringUtils.isNotEmpty(styleClass) ? styleClass : null, name));
                 }
             }
         }

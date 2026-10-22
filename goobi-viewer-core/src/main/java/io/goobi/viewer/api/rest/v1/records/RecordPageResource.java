@@ -444,7 +444,8 @@ public class RecordPageResource {
     @jakarta.ws.rs.Path(RECORDS_PAGES_LAYOUT)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get the ALTO layout-tag annotations of a single page", tags = { "records" })
-    @ApiResponse(responseCode = "200", description = "Layout annotations of the page (empty when none exist or access is denied)")
+    @ApiResponse(responseCode = "200",
+            description = "Layout annotations of the page (empty when none exist, access is denied or the record is unknown)")
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
     public LayoutAnnotations getLayoutAnnotationsForPage(
             @Parameter(description = "Page number (1-based)",

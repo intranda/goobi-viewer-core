@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -182,6 +183,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     private String altoCharset;
     /** Sanitized HTML rendering of the ALTO full-text — cached, as JSF evaluates the getter several times per render. */
     private String altoFulltextHtml;
+    /** Locale the cached HTML was rendered for; the annotation author names in it are translated. */
+    private Locale altoFulltextHtmlLocale;
     /** Format of the loaded word coordinates XML document. */
     private CoordsFormat wordCoordsFormat = CoordsFormat.UNCHECKED;
     /** Data repository name for the record to which this page belongs. */
@@ -995,8 +998,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         }
         if (StringUtils.isNotEmpty(altoText)) {
             wordCoordsFormat = CoordsFormat.ALTO;
-            if (altoFulltextHtml == null) {
-                String text = ALTOTools.getFulltextHtml(altoText, altoCharset);
+            Locale locale = BeanUtils.getLocale();
+            if (altoFulltextHtml == null || !Objects.equals(altoFulltextHtmlLocale, locale)) {
+                String text = ALTOTools.getFulltextHtml(altoText, altoCharset, locale);
                 if (StringUtils.isNotEmpty(text)) {
                     // Sanitize the ALTO-produced HTML (which carries NamedEntityEnricher button
                     // markup) through the dedicated allowlist that permits the <button> tag and the
@@ -1013,6 +1017,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
                     }
                 }
                 altoFulltextHtml = text;
+                altoFulltextHtmlLocale = locale;
             }
             return altoFulltextHtml;
         }
