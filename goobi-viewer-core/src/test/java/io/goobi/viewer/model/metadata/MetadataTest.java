@@ -188,6 +188,28 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @verifies resolve numvolumes param to the live member count for a group
+     * @see Metadata#populate(StructElement, String, java.util.List, Locale)
+     */
+    @Test
+    void populate_shouldResolveNumvolumesParamLiveForGroup() throws Exception {
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":287831965_F75a", null);
+        Assertions.assertNotNull(doc);
+        StructElement group = new StructElement((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
+        Assertions.assertTrue(group.isGroup());
+
+        long expected = SearchHelper.getGroupMemberCount(group.getGroupIdField(), "287831965_F75a");
+        Assertions.assertTrue(expected > 0, "test index group must have members");
+
+        Metadata metadata = new Metadata("MD_PODCASTFOLGEN", "",
+                Collections.singletonList(new MetadataParameter().setType(MetadataParameterType.NUMVOLUMES)));
+        metadata.populate(group, String.valueOf(group.getLuceneId()), null, Locale.ENGLISH);
+
+        Assertions.assertFalse(metadata.isBlank(null));
+        assertEquals(String.valueOf(expected), metadata.getValues().get(0).getComboValueShort(0));
+    }
+
+    /**
      * @verifies return true if all values have different ownerIddoc
      */
     @Test

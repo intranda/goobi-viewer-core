@@ -897,6 +897,7 @@ public class Metadata implements MetadataListElement, Serializable {
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @should store pi and logid from struct element
+     * @should resolve numvolumes param to the live member count for a group
      */
     public boolean populate(StructElement se, String ownerIddoc, List<StringPair> sortFields, Locale locale)
             throws IndexUnreachableException, PresentationException {
@@ -971,13 +972,14 @@ public class Metadata implements MetadataListElement, Serializable {
             int indexOfParam = params.indexOf(param);
             // logger.trace("{} ({})", param.toString(), indexOfParam); //NOSONAR Debug
 
-            // Live volume count (e.g. the number of years for a newspaper): computed at render time from the
-            // anchor's PI rather than read from the stored NUMVOLUMES field, so it is current even if the anchor
-            // has not been re-indexed yet. Only meaningful for anchors; produces no value otherwise.
+            // Live volume count (e.g. the number of years for a newspaper, or the number of episodes of a podcast group):
+            // computed at render time from the anchor's or group's PI rather than read from the stored NUMVOLUMES field,
+            // so it is current even if the anchor/group has not been re-indexed yet. Produces no value for other records.
             if (MetadataParameterType.NUMVOLUMES.equals(param.getType())) {
-                if (se.isAnchor()) {
+                if (se.isAnchor() || se.isGroup()) {
                     try {
-                        long volumeCount = SearchHelper.getVolumeCount(se.getPi());
+                        long volumeCount = se.isAnchor() ? SearchHelper.getVolumeCount(se.getPi())
+                                : SearchHelper.getGroupMemberCount(se.getGroupIdField(), se.getPi());
                         if (volumeCount > 0) {
                             setParamValue(0, indexOfParam, Collections.singletonList(String.valueOf(volumeCount)), param.getKey(), null,
                                     null, null, locale);

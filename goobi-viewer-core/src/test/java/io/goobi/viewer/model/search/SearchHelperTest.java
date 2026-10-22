@@ -2397,4 +2397,28 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         result.add("FACET_TEST");
         Assertions.assertEquals(1, result.size());
     }
+
+    /**
+     * @see SearchHelper#getGroupMemberCount(String,String)
+     * @verifies return correct count
+     */
+    @Test
+    void getGroupMemberCount_shouldReturnCorrectCount() throws Exception {
+        long expected = DataManager.getInstance().getSearchIndex().getHitCount("+GROUPID_CONVOLUTE:287831965_F75a +ISWORK:true");
+        Assertions.assertTrue(expected > 0, "test index group must have members");
+        Assertions.assertEquals(expected, SearchHelper.getGroupMemberCount("GROUPID_CONVOLUTE", "287831965_F75a"));
+        Assertions.assertEquals(0, SearchHelper.getGroupMemberCount("GROUPID_CONVOLUTE", "no_such_group"));
+    }
+
+    /**
+     * @see SearchHelper#getGroupMemberCount(String,String)
+     * @verifies return zero if group id field invalid
+     */
+    @Test
+    void getGroupMemberCount_shouldReturnZeroIfGroupIdFieldInvalid() throws Exception {
+        Assertions.assertEquals(0, SearchHelper.getGroupMemberCount(null, "287831965_F75a"));
+        Assertions.assertEquals(0, SearchHelper.getGroupMemberCount("PI", "287831965_F75a"));
+        Assertions.assertEquals(0, SearchHelper.getGroupMemberCount("GROUPID_CONVOLUTE:* OR PI", "287831965_F75a"));
+        Assertions.assertEquals(0, SearchHelper.getGroupMemberCount("GROUPID_CONVOLUTE", " "));
+    }
 }
