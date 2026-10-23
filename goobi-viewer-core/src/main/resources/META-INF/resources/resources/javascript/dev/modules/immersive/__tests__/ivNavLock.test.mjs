@@ -18,6 +18,7 @@ test('busy while the task runs, released afterwards with the hooks called once',
 });
 
 test('a rejected or throwing task still releases', async () => {
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
     const lock = createNavLock(1000);
     lock.run(() => Promise.reject(new Error('x')));
     await flush();
@@ -63,5 +64,51 @@ test('the watchdog releases a task that never settles and runs onStuck; destroy 
         expect(jest.getTimerCount()).toBe(0);
     } finally {
         jest.useRealTimers();
+    }
+});
+
+test('destroy drops the release hooks and refuses new runs, so a task settling late starts nothing', async () => {
+    const lock = createNavLock(1000);
+    const hook = jest.fn();
+    lock.onRelease(hook);
+    let finish;
+    lock.run(() => new Promise((res) => (finish = res)));
+    lock.destroy();
+    expect(lock.run(() => Promise.resolve())).toBe(false);
+    finish();
+    await flush();
+    expect(hook).not.toHaveBeenCalled();
+    expect(lock.busy).toBe(false);
+    expect(lock.run(() => Promise.resolve())).toBe(false);
+});
+
+test('a throwing release hook is logged and does not block the others', async () => {
+    const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+        const lock = createNavLock(1000);
+        const second = jest.fn();
+        lock.onRelease(() => {
+            throw new Error('hook');
+        });
+        lock.onRelease(second);
+        lock.run(() => Promise.resolve());
+        await flush();
+        expect(second).toHaveBeenCalledTimes(1);
+        expect(error).toHaveBeenCalledTimes(1);
+        expect(lock.busy).toBe(false);
+    } finally {
+        error.mockRestore();
+    }
+});
+
+test('a rejected task is logged instead of swallowed', async () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+        const lock = createNavLock(1000);
+        lock.run(() => Promise.reject(new Error('x')));
+        await flush();
+        expect(warn).toHaveBeenCalledWith(expect.any(String), expect.any(Error));
+    } finally {
+        warn.mockRestore();
     }
 });

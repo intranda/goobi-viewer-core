@@ -1,5 +1,7 @@
 /** Persisted viewer preferences (localStorage) with tolerant read/write. */
 
+import { env } from './ivEnv.mjs';
+
 export const THUMB_SIZE_KEY = 'immersive-thumb-size';
 
 export const THUMB_SIZE_MAX = 2;
@@ -76,10 +78,10 @@ export function writeAnnotationsEnabled(storage, enabled) {
     } catch {}
 }
 
-/** window.localStorage, or null when the browser blocks the access (the property read itself can throw). */
+/** The browser's localStorage, or null when the browser blocks the access (the property read itself can throw). */
 export function localStore() {
     try {
-        return window.localStorage;
+        return env.localStorage;
     } catch {
         return null;
     }

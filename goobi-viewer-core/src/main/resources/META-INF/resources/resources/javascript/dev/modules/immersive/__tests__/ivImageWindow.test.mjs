@@ -78,3 +78,11 @@ describe('residentPages (current frame + adjacent frames)', () => {
         expect(residentPages(2, 40, { double: true })).toEqual([0, 1, 2, 3, 4]);
     });
 });
+
+describe('empty book', () => {
+    test('has no spread, frame or resident pages', () => {
+        expect(computeSpread(0, 0)).toEqual([]);
+        expect(framePages(0, 0)).toEqual([]);
+        expect(residentPages(0, 0)).toEqual([]);
+    });
+});

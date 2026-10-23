@@ -113,14 +113,11 @@ describe('IvViewer construction', () => {
         delete global.ImageView;
     });
 
-    test('clamps startOrder into range and emits onLoaded once the initial open settles', async () => {
+    test('clamps startOrder into range', async () => {
         const v = new IvViewer({ element: {}, services: services(5), startOrder: 99 });
         expect(v.current).toBe(4);
-        const loaded = jest.fn();
-        v.onLoaded.subscribe(loaded);
         opens.shift()();
         await flush();
-        expect(loaded).toHaveBeenCalledWith(4);
 
         const w = new IvViewer({ element: {}, services: services(5), startOrder: -2 });
         expect(w.current).toBe(0);
@@ -140,6 +137,7 @@ describe('IvViewer construction', () => {
     });
 
     test('a failed page load keeps the shown page, emits nothing and releases the lock', async () => {
+        jest.spyOn(console, 'warn').mockImplementation(() => {});
         const v = new IvViewer({ element: {}, services: services(5), startOrder: 1 });
         opens.shift()();
         await flush();
@@ -402,7 +400,7 @@ describe('IvViewer page navigation (clamping, no-ops, next/prev)', () => {
         const v = await newViewer(20, 4);
         expect(v.toggleDoublePage()).toBe(true);
         expect(v.current).toBe(computeSpread(4, 20)[0]);
-        expect(v._open).toHaveBeenCalledWith(3);
+        expect(v._open).toHaveBeenCalledWith(3, expect.any(Function));
         opens.shift()?.();
         await flush();
         expect(v.toggleDoublePage()).toBe(false);
@@ -472,7 +470,7 @@ describe('IvViewer navigation lock (double-page hang regression)', () => {
 
         expect(v._open).toHaveBeenCalledTimes(2);
         const expectedLeader = computeSpread(12, 20)[0];
-        expect(v._open).toHaveBeenLastCalledWith(expectedLeader);
+        expect(v._open).toHaveBeenLastCalledWith(expectedLeader, expect.any(Function));
         expect(v.current).toBe(expectedLeader);
     });
 
@@ -505,6 +503,29 @@ describe('IvViewer navigation lock (double-page hang regression)', () => {
         await flush();
 
         expect(v._open).toHaveBeenCalledTimes(2);
+    });
+
+    test('a failing spread open still fades the snapshot overlay out (stage not left covered)', async () => {
+        const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+        const getContext = HTMLCanvasElement.prototype.getContext;
+        HTMLCanvasElement.prototype.getContext = () => ({ drawImage() {} });
+        const host = document.createElement('div');
+        document.body.appendChild(host);
+        try {
+            const v = await newDoublePageViewer(20, { element: host });
+            v.viewer.openseadragon.drawer.canvas = document.createElement('canvas');
+            v._fadeMs = 0;
+            v._open.mockRejectedValueOnce(new Error('load failed'));
+            v.goToPage(4);
+            expect(host.querySelector('.immersive__xfade')).not.toBeNull();
+            await new Promise((r) => setTimeout(r, 50));
+            expect(host.querySelector('.immersive__xfade')).toBeNull();
+            expect(v._navigating).toBe(false);
+        } finally {
+            HTMLCanvasElement.prototype.getContext = getContext;
+            host.remove();
+            warn.mockRestore();
+        }
     });
 
     test('a queued mode reopen runs before the queued page target', async () => {
@@ -922,6 +943,7 @@ describe('IvViewer crossfade with slow tiles', () => {
     const settle = () => new Promise((resolve) => setTimeout(resolve, 50));
 
     test('a page whose tiles never paint rolls the navigation back instead of freezing', async () => {
+        jest.spyOn(console, 'warn').mockImplementation(() => {});
         const { v, osd, osdHandlers } = await slowTileViewer({ contentTimeoutMs: 20, navWatchdogMs: 5000 });
         const seen = jest.fn();
         v.onPageChange.subscribe(seen);
@@ -944,6 +966,29 @@ describe('IvViewer crossfade with slow tiles', () => {
         expect(items[0].handlers['fully-loaded-change']).toBeUndefined();
         expect(osdHandlers['tile-loaded']).toEqual([]);
         expect(osd.world.removeItem).toHaveBeenCalledWith(items[0]);
+    });
+
+    test('destroy cancels a pending content wait: timers cleared, tile handlers detached, no late page change', async () => {
+        const { v, osd, osdHandlers } = await slowTileViewer({ contentTimeoutMs: 5000, navWatchdogMs: 5000 });
+        osd.destroy = jest.fn();
+        const seen = jest.fn();
+        v.onPageChange.subscribe(seen);
+        jest.useFakeTimers();
+        try {
+            v.goToPage(1);
+            for (let i = 0; i < 5; i++) await Promise.resolve();
+            expect(osdHandlers['tile-loaded']).toHaveLength(1);
+            expect(jest.getTimerCount()).toBe(2);
+            v.destroy();
+            expect(jest.getTimerCount()).toBe(0);
+            expect(osdHandlers['tile-loaded']).toEqual([]);
+            expect(items[0].handlers['fully-loaded-change']).toBeUndefined();
+            items[0].paint();
+            for (let i = 0; i < 5; i++) await Promise.resolve();
+            expect(seen).not.toHaveBeenCalled();
+        } finally {
+            jest.useRealTimers();
+        }
     });
 
     test('a load that outlives its watchdog release never overwrites the page a newer navigation shows', async () => {
@@ -974,6 +1019,78 @@ describe('IvViewer crossfade with slow tiles', () => {
         expect(v.currentItem).toBe(items[1]);
         expect(seen).not.toHaveBeenCalled();
         expect(osd.world.removeItem).toHaveBeenCalledWith(items[0]);
+    });
+});
+
+describe('IvViewer library open settling late or failing', () => {
+    let loads;
+
+    beforeEach(() => {
+        mockImageView();
+        loads = [];
+        global.ImageView.Image.prototype.load = function () {
+            return new Promise((res) => loads.push(res));
+        };
+        jest.spyOn(IvViewer.prototype, '_prefetchAround').mockImplementation(() => {});
+        jest.spyOn(IvViewer.prototype, '_prewarmSpreads').mockImplementation(() => {});
+        jest.spyOn(IvViewer.prototype, '_refreshPreload').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+        delete global.ImageView;
+    });
+
+    test('a spread open that settles after its watchdog release neither restores its view nor emits', async () => {
+        const v = new IvViewer({ element: document.createElement('div'), services: services(20), startOrder: 0, navWatchdogMs: 20 });
+        loads.shift()();
+        await flush();
+        v.double = true;
+        v.goToPage(4);
+        await new Promise((r) => setTimeout(r, 40));
+        await flush();
+        expect(v._navigating).toBe(false);
+        v.goToPage(8);
+        loads[1]();
+        await flush();
+        expect(v.getCurrentOrder()).toBe(7);
+
+        const open = jest.fn();
+        v.onOpen.subscribe(open);
+        const change = jest.fn();
+        v.onPageChange.subscribe(change);
+        const restore = jest.spyOn(v, '_restoreView');
+        loads[0]();
+        await flush();
+        expect(open).not.toHaveBeenCalled();
+        expect(change).not.toHaveBeenCalled();
+        expect(restore).not.toHaveBeenCalled();
+        expect(v.getCurrentOrder()).toBe(7);
+    });
+
+    test('the initial open settling after destroy writes nothing and emits nothing', async () => {
+        const v = new IvViewer({ element: document.createElement('div'), services: services(3), startOrder: 0, restricted: [true] });
+        const emit = jest.spyOn(v, '_emit');
+        const restore = jest.spyOn(v, '_restoreView');
+        v.destroy();
+        loads.shift()();
+        await flush();
+        expect(emit).not.toHaveBeenCalled();
+        expect(restore).not.toHaveBeenCalled();
+        expect(v.viewer.element.querySelector('.immersive__page-denied')).toBeNull();
+    });
+
+    test('a rejected library load of an unrestricted page is logged, not swallowed', async () => {
+        const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+        global.ImageView.Image.prototype.load = () => Promise.reject(new Error('503'));
+        try {
+            const v = new IvViewer({ element: document.createElement('div'), services: services(3), startOrder: 0 });
+            await flush();
+            expect(v.getCurrentOrder()).toBe(0);
+            expect(warn).toHaveBeenCalledWith(expect.any(String), expect.any(Error));
+        } finally {
+            warn.mockRestore();
+        }
     });
 });
 

@@ -843,9 +843,10 @@
      * @param {number} order  0-based page index
      * @param {number} total  total page count
      * @param {{coverAlone?:boolean}} [opts]
-     * @returns {number[]} one or two page indices, ascending
+     * @returns {number[]} one or two page indices, ascending; empty for an empty book
      */
     function computeSpread(order, total, { coverAlone = true } = {}) {
+        if (total <= 0) return [];
         const o = Math.max(0, Math.min(order, total - 1));
         let leader;
         if (coverAlone) {
@@ -864,9 +865,10 @@
      * @param {number} order  0-based page index
      * @param {number} total  total page count
      * @param {{double?:boolean}} [opts]
-     * @returns {number[]} one or two page indices, ascending
+     * @returns {number[]} one or two page indices, ascending; empty for an empty book
      */
     function framePages(order, total, { double = false } = {}) {
+        if (total <= 0) return [];
         const o = Math.max(0, Math.min(order, total - 1));
         return double ? computeSpread(o, total) : [o];
     }
@@ -1008,6 +1010,7 @@
      */
     function createNavLock(watchdogMs) {
         let busy = false;
+        let destroyed = false;
         let watchdog = null;
         const releaseHooks = [];
         return {
@@ -1024,7 +1027,7 @@
              * @returns {boolean} whether the task was started
              */
             run(task, onStuck) {
-                if (busy) return false;
+                if (busy || destroyed) return false;
                 busy = true;
                 let released = false;
                 const release = () => {
@@ -1032,19 +1035,28 @@
                     released = true;
                     clearTimeout(watchdog);
                     busy = false;
-                    releaseHooks.forEach((hook) => hook());
+                    releaseHooks.forEach((hook) => {
+                        try {
+                            hook();
+                        } catch (e) {
+                            console.error('immersive: release hook failed', e);
+                        }
+                    });
                 };
                 watchdog = setTimeout(() => {
                     try {
                         if (onStuck) onStuck();
-                    } catch {}
+                    } catch (e) {
+                        console.error('immersive: watchdog cleanup failed', e);
+                    }
                     release();
                 }, watchdogMs);
                 try {
                     Promise.resolve(task())
-                        .catch(() => {})
+                        .catch((e) => console.warn('immersive: navigation failed', e))
                         .finally(release);
-                } catch {
+                } catch (e) {
+                    console.warn('immersive: navigation failed', e);
                     release();
                 }
                 return true;
@@ -1053,8 +1065,11 @@
             onRelease(fn) {
                 releaseHooks.push(fn);
             },
+            /** Clears the watchdog and the release hooks; a task settling afterwards starts nothing, new runs are refused. */
             destroy() {
+                destroyed = true;
                 clearTimeout(watchdog);
+                releaseHooks.length = 0;
             },
         };
     }
@@ -1117,7 +1132,8 @@
         /**
          * Draws OCR boxes as hoverable, id-tagged overlays and returns a Map id → element.
          * A region's `level` ('block' | 'line' | 'word') becomes a class modifier; pass
-         * regions block → line → word so words stack on top and win pointer hits.
+         * regions block → line → word so words stack on top and win pointer hits. Every
+         * region is drawn and cleared, even with a duplicate id; the map keeps the topmost (last) element per id.
          */
         setTextRegions(regions) {
             this.clearTextRegions();
@@ -1130,9 +1146,9 @@
                 el.className = r.level ? `immersive__text-region immersive__text-region-${r.level}` : 'immersive__text-region';
                 el.dataset.ivRegionId = r.id;
                 this._place(el, item, r.rect);
+                this._textRegions.push(el);
                 map.set(r.id, el);
             });
-            this._textRegions = Array.from(map.values());
             return map;
         }
 
@@ -1150,7 +1166,7 @@
             (regions || []).forEach((r) => {
                 if (!r.rect) return;
                 const el = document.createElement('div');
-                el.className = ['immersive__anno-region', `immersive__anno-region-${r.modifier}`, r.className || ''].filter(Boolean).join(' ');
+                el.className = ['immersive__anno-region', r.modifier ? `immersive__anno-region-${r.modifier}` : '', r.className || ''].filter(Boolean).join(' ');
                 el.dataset.ivAnnoId = r.id;
                 this._place(el, item, r.rect);
                 this._annoRegions.push(el);
@@ -1255,6 +1271,10 @@
         get viewerJS() {
             return win().viewerJS;
         },
+        /** Web Storage; the property read itself throws when the browser blocks it. */
+        get localStorage() {
+            return win().localStorage;
+        },
     };
 
     /**
@@ -1323,7 +1343,7 @@
      * Immersive image viewer engine around a single live ImageView.Image (OSD).
      * Single pages are swapped flicker-free by fading in a preloaded neighbour; double
      * pages are composed by the library and transitioned with a snapshot crossfade.
-     * Consumers subscribe to `onPageChange` / `onLoaded`.
+     * Consumers subscribe to `onPageChange` / `onOpen`.
      */
     class IvViewer {
         /**
@@ -1351,9 +1371,10 @@
             this._lock.onRelease(() => this._runQueued());
             this._contentTimeoutMs = opts.contentTimeoutMs ?? CONTENT_TIMEOUT_MS;
             this._nav = 0;
+            this._cancelContentWait = null;
+            this._destroyed = false;
             this._fadeMs = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : FADE_MS;
             this.onPageChange = new Emitter();
-            this.onLoaded = new Emitter();
             this.onOpen = new Emitter();
             this.onReset = new Emitter();
 
@@ -1405,10 +1426,7 @@
             });
 
             this._open(this.current)
-                .then(() => {
-                    this._refreshPreload();
-                    this.onLoaded.emit(this.current);
-                })
+                .then(() => this._refreshPreload())
                 .catch((e) => console.error('immersive viewer initial open failed', e));
         }
 
@@ -1470,7 +1488,7 @@
 
         /** 0-based page indices currently displayed (one page, or two in double mode). */
         getCurrentPages() {
-            return this.double ? computeSpread(this.current, this.total) : [this.current];
+            return framePages(this.current, this.total, { double: this.double });
         }
 
         /** Navigate to the page/spread containing `order` (snaps to the spread leader in double mode). */
@@ -1537,7 +1555,7 @@
 
         /** Re-opens the current position in the current mode, serialised through the nav lock. */
         _reopen() {
-            this._withNavLock(() => this._open(this.current));
+            this._withNavLock((stale) => this._open(this.current, stale));
         }
 
         zoomIn() {
@@ -1594,7 +1612,7 @@
                 const from = this.current;
                 this.current = target;
                 if (this.isPageRestricted(target)) {
-                    if (previous) this.viewer.openseadragon.world.removeItem(previous);
+                    this._drop(previous);
                     this.currentItem = null;
                     this._emit();
                     this._refreshPreload();
@@ -1616,7 +1634,7 @@
                     return;
                 }
                 await crossfade(item, previous, this._fadeMs);
-                if (previous) this.viewer.openseadragon.world.removeItem(previous);
+                this._drop(previous);
                 this.currentItem = item;
                 this._emit();
                 this._refreshPreload();
@@ -1651,6 +1669,7 @@
          * Resolves once `item` has painted its first (low-res) tile, or is already fully
          * loaded; rejects when no tile arrives within `contentTimeoutMs`. Either way the
          * tile handlers are detached, so a page that never paints leaves nothing behind.
+         * destroy() resolves a pending wait early; the navigation then sees itself stale.
          */
         _whenContent(item) {
             if (item.getFullyLoaded()) return Promise.resolve();
@@ -1664,9 +1683,11 @@
                     clearTimeout(timer);
                     osd.removeHandler('tile-loaded', onTile);
                     item.removeHandler('fully-loaded-change', onFull);
+                    this._cancelContentWait = null;
                     if (error) reject(error);
                     else resolve();
                 };
+                this._cancelContentWait = () => finish();
                 const onTile = (e) => {
                     if (e.tiledImage === item) finish();
                 };
@@ -1714,10 +1735,13 @@
             const overlay = snapshotOverlay(this.viewer.openseadragon, this.viewer.element);
             this.current = leader;
             this._withNavLock(
-                async () => {
-                    await this._open(leader);
-                    fadeOverlay(overlay, this._fadeMs);
-                    this._prewarmSpreads();
+                async (stale) => {
+                    try {
+                        await this._open(leader, stale);
+                    } finally {
+                        fadeOverlay(overlay, this._fadeMs);
+                    }
+                    if (!stale()) this._prewarmSpreads();
                 },
                 () => {
                     if (overlay) overlay.remove();
@@ -1746,14 +1770,20 @@
          * spread in double mode) and captures the single-page fit anchor. Used for the
          * initial open, mode toggles and every double-page spread change. Emits
          * `onOpen` once the library has settled, so consumers bound to the library's
-         * per-load event pipeline (image filters) can re-attach.
+         * per-load event pipeline (image filters) can re-attach. A load settling after
+         * `stale()` turned true (watchdog release, destroy) writes no state and emits nothing;
+         * a rejected load of an unrestricted page is logged.
+         *
+         * @param {number} order
+         * @param {() => boolean} [stale]
          */
-        _open(order) {
-            const pages = this.double ? computeSpread(order, this.total) : [order];
+        _open(order, stale = () => false) {
+            const pages = framePages(order, this.total, { double: this.double });
             this.viewer.config.sequence.columns = pages.length;
             const sources = pages.map((p) => toTileSource(this.services[p]));
             const kept = this._captureView();
             const settle = () => {
+                if (stale() || this._destroyed) return;
                 const world = this.viewer.openseadragon.world;
                 this.currentItem = world.getItemCount() > 0 ? world.getItemAt(0) : null;
                 if (!this.double && this.currentItem) {
@@ -1766,7 +1796,10 @@
             };
             const loaded = this.viewer.load(sources, 0);
             this._prefetchAround(pages[pages.length - 1]);
-            return loaded.then(settle, settle);
+            return loaded.then(settle, (e) => {
+                if (!pages.some((p) => this.isPageRestricted(p))) console.warn('immersive: page load failed', e);
+                settle();
+            });
         }
 
         /**
@@ -1902,8 +1935,11 @@
             };
         }
 
-        /** Releases the OpenSeadragon instance, the access overlay and all subscriptions. */
+        /** Releases the OpenSeadragon instance, the access overlay and all subscriptions; in-flight navigations turn stale. */
         destroy() {
+            this._destroyed = true;
+            this._nav++;
+            if (this._cancelContentWait) this._cancelContentWait();
             this._lock.destroy();
             this._preloaded.clear();
             this._access.remove();
@@ -1911,7 +1947,7 @@
             if (typeof this.viewer.close === 'function') this.viewer.close();
             const osd = this.viewer.openseadragon;
             if (osd && typeof osd.destroy === 'function') osd.destroy();
-            [this.onPageChange, this.onLoaded, this.onOpen, this.onReset].forEach((emitter) => emitter.clear());
+            [this.onPageChange, this.onOpen, this.onReset].forEach((emitter) => emitter.clear());
         }
     }
 
@@ -2529,7 +2565,7 @@
             },
             /** @returns {boolean} whether any handler consumed the event */
             handleEvent(event) {
-                for (const { handler } of handlers) {
+                for (const { handler } of [...handlers]) {
                     if (handler(event)) return true;
                 }
                 return false;
@@ -2575,8 +2611,9 @@
             const prev = !e.shiftKey && key === 'ArrowLeft';
             const next = !e.shiftKey && key === 'ArrowRight';
             const reset = key === '0';
-            const rotateCW = key === 'r';
-            const rotateCCW = key === 'R';
+            const rotate = typeof key === 'string' && key.toLowerCase() === 'r';
+            const rotateCW = rotate && !e.shiftKey;
+            const rotateCCW = rotate && e.shiftKey;
             if (!zoomIn && !zoomOut && !prev && !next && !reset && !rotateCW && !rotateCCW) return false;
             if (isTypingTarget(e.target)) return false;
             if (stageEl && stageEl.contains(document.activeElement)) return false;
@@ -2678,9 +2715,15 @@
                 if (typeof fn === 'function') fns.push(fn);
                 return fn;
             },
-            /** Runs every queued teardown once, newest first. */
+            /** Runs every queued teardown once, newest first; a throwing one is logged and does not stop the rest. */
             dispose() {
-                while (fns.length) fns.pop()();
+                while (fns.length) {
+                    try {
+                        fns.pop()();
+                    } catch (e) {
+                        console.error('immersive: teardown failed', e);
+                    }
+                }
             },
         };
     }
@@ -3081,7 +3124,7 @@
     function createFocusTrap(container) {
         return function trapFocus(e) {
             if (e.key !== 'Tab') return;
-            const f = Array.from(container.querySelectorAll(FOCUSABLE_SELECTOR)).filter((n) => !n.hidden && !n.disabled && n.offsetParent !== null);
+            const f = Array.from(container.querySelectorAll(FOCUSABLE_SELECTOR)).filter((n) => !n.hidden && !n.disabled && n.getClientRects().length > 0);
             if (!f.length) return;
             const first = f[0];
             const last = f[f.length - 1];
@@ -3403,10 +3446,10 @@
         } catch {}
     }
 
-    /** window.localStorage, or null when the browser blocks the access (the property read itself can throw). */
+    /** The browser's localStorage, or null when the browser blocks the access (the property read itself can throw). */
     function localStore() {
         try {
-            return window.localStorage;
+            return env.localStorage;
         } catch {
             return null;
         }
@@ -6752,13 +6795,18 @@
         let viewer = null;
         let destroyed = false;
         let stageLoaderTimer = null;
+        /** Tears down the engine and everything wired on top of it; the chrome stays. */
+        const disposeEngine = () => {
+            while (parts.length > chromeParts) parts.pop().destroy();
+            if (viewer) viewer.destroy();
+            viewer = null;
+        };
         const handle = {
             destroy() {
                 destroyed = true;
                 clearTimeout(stageLoaderTimer);
+                disposeEngine();
                 while (parts.length) parts.pop().destroy();
-                if (viewer) viewer.destroy();
-                viewer = null;
                 keys.detach();
             },
         };
@@ -6770,6 +6818,7 @@
         use(setupMetadataToggle());
         use(setupImmersivePopoverA11y());
         use(setupShortcutsModal(panels.closePanels, keys));
+        const chromeParts = parts.length;
 
         const el = immersiveRoot.querySelector('[data-immersive-image]');
         if (!el) return handle;
@@ -6794,6 +6843,7 @@
         Promise.all([loadPageServices(pi, apiBase), loadPageAccess(pi, apiBase)])
             .then(([services, restricted]) => {
                 if (destroyed) return;
+                if (!services.length) throw new Error(`immersive: record ${pi} has no pages`);
                 viewer = new IvViewer({
                     element: el,
                     services,
@@ -6812,7 +6862,7 @@
 
                 loadPageLabels(pi, apiBase, fetch, document.documentElement.lang)
                     .then((labels) => {
-                        if (!destroyed) use(setupPageDropdown(viewer, labels, keys));
+                        if (viewer) use(setupPageDropdown(viewer, labels, keys));
                     })
                     .catch((e) => console.warn('immersive page labels failed', e));
 
@@ -6825,9 +6875,11 @@
                 panels.replayOpen();
             })
             .catch((e) => {
-                hideStageLoader();
-                showStageError(el);
                 console.error('immersive viewer init failed', e);
+                hideStageLoader();
+                if (destroyed) return;
+                disposeEngine();
+                showStageError(el);
             });
         return handle;
     }

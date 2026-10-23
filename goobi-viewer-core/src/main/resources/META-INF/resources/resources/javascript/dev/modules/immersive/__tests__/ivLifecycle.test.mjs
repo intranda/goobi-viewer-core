@@ -27,3 +27,20 @@ test('add registers teardown callbacks; dispose runs them newest first and only 
 test('noop is a destroyable that does nothing', () => {
     expect(() => noop.destroy()).not.toThrow();
 });
+
+test('a throwing teardown is logged and does not stop the remaining ones', () => {
+    const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+        const bag = createDisposer();
+        const first = jest.fn();
+        bag.add(first);
+        bag.add(() => {
+            throw new Error('teardown');
+        });
+        bag.dispose();
+        expect(first).toHaveBeenCalledTimes(1);
+        expect(error).toHaveBeenCalledTimes(1);
+    } finally {
+        error.mockRestore();
+    }
+});

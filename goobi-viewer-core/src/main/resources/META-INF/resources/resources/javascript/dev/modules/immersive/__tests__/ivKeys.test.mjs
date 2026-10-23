@@ -119,6 +119,14 @@ describe('registerViewerNavKeys', () => {
         expect(viewer.rotateRight).toHaveBeenCalledTimes(2);
     });
 
+    test('Caps Lock does not flip the rotation: plain R rotates right, Shift+R left', () => {
+        expect(dispatch('R')).toBe(true);
+        expect(viewer.rotateRight).toHaveBeenCalledTimes(1);
+        expect(viewer.rotateLeft).not.toHaveBeenCalled();
+        expect(dispatch('R', { shiftKey: true })).toBe(true);
+        expect(viewer.rotateLeft).toHaveBeenCalledTimes(1);
+    });
+
     test('ignores the zoom keys when the record forbids zooming', () => {
         viewer.allowZoom = false;
         expect(dispatch('+')).toBe(false);
@@ -170,6 +178,20 @@ describe('registerViewerNavKeys', () => {
         expect(dispatch('a')).toBe(false);
         expect(dispatch('ArrowUp')).toBe(false);
         expect(dispatch('ArrowDown')).toBe(false);
+    });
+});
+
+describe('createKeyDispatcher dispatch stability', () => {
+    test('a handler that unregisters itself during dispatch does not make the next one skip', () => {
+        const keys = createKeyDispatcher();
+        const second = jest.fn(() => true);
+        const unregister = keys.register(10, () => {
+            unregister();
+            return false;
+        });
+        keys.register(20, second);
+        expect(keys.handleEvent({ key: 'x' })).toBe(true);
+        expect(second).toHaveBeenCalledTimes(1);
     });
 });
 

@@ -48,13 +48,18 @@ export function initImmersiveViewer(immersiveRoot) {
     let viewer = null;
     let destroyed = false;
     let stageLoaderTimer = null;
+    /** Tears down the engine and everything wired on top of it; the chrome stays. */
+    const disposeEngine = () => {
+        while (parts.length > chromeParts) parts.pop().destroy();
+        if (viewer) viewer.destroy();
+        viewer = null;
+    };
     const handle = {
         destroy() {
             destroyed = true;
             clearTimeout(stageLoaderTimer);
+            disposeEngine();
             while (parts.length) parts.pop().destroy();
-            if (viewer) viewer.destroy();
-            viewer = null;
             keys.detach();
         },
     };
@@ -66,6 +71,7 @@ export function initImmersiveViewer(immersiveRoot) {
     use(setupMetadataToggle());
     use(setupImmersivePopoverA11y());
     use(setupShortcutsModal(panels.closePanels, keys));
+    const chromeParts = parts.length;
 
     const el = immersiveRoot.querySelector('[data-immersive-image]');
     if (!el) return handle;
@@ -90,6 +96,7 @@ export function initImmersiveViewer(immersiveRoot) {
     Promise.all([loadPageServices(pi, apiBase), loadPageAccess(pi, apiBase)])
         .then(([services, restricted]) => {
             if (destroyed) return;
+            if (!services.length) throw new Error(`immersive: record ${pi} has no pages`);
             viewer = new IvViewer({
                 element: el,
                 services,
@@ -108,7 +115,7 @@ export function initImmersiveViewer(immersiveRoot) {
 
             loadPageLabels(pi, apiBase, fetch, document.documentElement.lang)
                 .then((labels) => {
-                    if (!destroyed) use(setupPageDropdown(viewer, labels, keys));
+                    if (viewer) use(setupPageDropdown(viewer, labels, keys));
                 })
                 .catch((e) => console.warn('immersive page labels failed', e));
 
@@ -121,9 +128,11 @@ export function initImmersiveViewer(immersiveRoot) {
             panels.replayOpen();
         })
         .catch((e) => {
-            hideStageLoader();
-            showStageError(el);
             console.error('immersive viewer init failed', e);
+            hideStageLoader();
+            if (destroyed) return;
+            disposeEngine();
+            showStageError(el);
         });
     return handle;
 }

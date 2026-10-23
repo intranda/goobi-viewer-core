@@ -105,6 +105,77 @@ describe('initImmersiveViewer engine bootstrap failures', () => {
         error.mockRestore();
     });
 
+    test('a setup step failing after the engine is built tears the engine down and shows the placeholder', async () => {
+        const manifest = { sequences: [{ canvases: [{ images: [{ resource: { service: { '@id': 'https://img.test/1' } } }] }] }] };
+        global.fetch = jest.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve(manifest) }));
+        const destroy = jest.fn();
+        global.ImageView = {
+            Image: class {
+                constructor(opts) {
+                    this.element = opts.element;
+                    this.config = { sequence: opts.sequence };
+                    // no addOnceHandler: the first wiring step after construction (onceTileLoaded) throws
+                    this.openseadragon = {
+                        addHandler() {},
+                        removeHandler() {},
+                        addOverlay() {},
+                        removeOverlay() {},
+                        destroy,
+                        world: { getItemAt: () => null, removeItem() {}, getItemCount: () => 0 },
+                        viewport: {},
+                        drawer: {},
+                    };
+                }
+                load() {
+                    return Promise.resolve();
+                }
+            },
+            Controls: { Zoom: class {}, Rotation: class {} },
+        };
+        const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+        const root = chromeMarkup({ withImage: true });
+        const mount = root.querySelector('[data-immersive-image]');
+        mount.dataset.pi = 'PI_SETUP_FAIL';
+        mount.dataset.msgError = 'Anzeige nicht ladbar';
+        const view = initImmersiveViewer(root);
+        for (let i = 0; i < 6; i++) await flush();
+        expect(destroy).toHaveBeenCalledTimes(1);
+        expect(mount.querySelector('[role="alert"]')).not.toBeNull();
+        expect(() => view.destroy()).not.toThrow();
+        expect(destroy).toHaveBeenCalledTimes(1);
+        error.mockRestore();
+    });
+
+    test('a manifest without pages shows the placeholder instead of an empty viewer', async () => {
+        global.fetch = jest.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve({ sequences: [{ canvases: [] }] }) }));
+        const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+        const root = chromeMarkup({ withImage: true });
+        const mount = root.querySelector('[data-immersive-image]');
+        mount.dataset.pi = 'PI_EMPTY';
+        mount.dataset.msgError = 'Anzeige nicht ladbar';
+        initImmersiveViewer(root);
+        for (let i = 0; i < 4; i++) await flush();
+        expect(global.ImageView.Image).not.toHaveBeenCalled();
+        expect(mount.querySelector('[role="alert"]')).not.toBeNull();
+        error.mockRestore();
+    });
+
+    test('a manifest failure arriving after destroy shows nothing', async () => {
+        let reject;
+        global.fetch = jest.fn(() => new Promise((_, rej) => (reject = rej)));
+        const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+        const root = chromeMarkup({ withImage: true });
+        const mount = root.querySelector('[data-immersive-image]');
+        mount.dataset.pi = 'PI_LATE_FAIL';
+        mount.dataset.msgError = 'Anzeige nicht ladbar';
+        const view = initImmersiveViewer(root);
+        view.destroy();
+        reject(new Error('manifest down'));
+        for (let i = 0; i < 4; i++) await flush();
+        expect(mount.querySelector('[role="alert"]')).toBeNull();
+        error.mockRestore();
+    });
+
     test('destroy clears the stage-loader timeout', () => {
         jest.useFakeTimers();
         try {

@@ -14,7 +14,7 @@ export const FOCUSABLE_SELECTOR = 'a[href],button,input,select,textarea,[tabinde
 export function createFocusTrap(container) {
     return function trapFocus(e) {
         if (e.key !== 'Tab') return;
-        const f = Array.from(container.querySelectorAll(FOCUSABLE_SELECTOR)).filter((n) => !n.hidden && !n.disabled && n.offsetParent !== null);
+        const f = Array.from(container.querySelectorAll(FOCUSABLE_SELECTOR)).filter((n) => !n.hidden && !n.disabled && n.getClientRects().length > 0);
         if (!f.length) return;
         const first = f[0];
         const last = f[f.length - 1];

@@ -56,7 +56,8 @@ export class IvOverlays {
     /**
      * Draws OCR boxes as hoverable, id-tagged overlays and returns a Map id → element.
      * A region's `level` ('block' | 'line' | 'word') becomes a class modifier; pass
-     * regions block → line → word so words stack on top and win pointer hits.
+     * regions block → line → word so words stack on top and win pointer hits. Every
+     * region is drawn and cleared, even with a duplicate id; the map keeps the topmost (last) element per id.
      */
     setTextRegions(regions) {
         this.clearTextRegions();
@@ -69,9 +70,9 @@ export class IvOverlays {
             el.className = r.level ? `immersive__text-region immersive__text-region-${r.level}` : 'immersive__text-region';
             el.dataset.ivRegionId = r.id;
             this._place(el, item, r.rect);
+            this._textRegions.push(el);
             map.set(r.id, el);
         });
-        this._textRegions = Array.from(map.values());
         return map;
     }
 
@@ -89,7 +90,7 @@ export class IvOverlays {
         (regions || []).forEach((r) => {
             if (!r.rect) return;
             const el = document.createElement('div');
-            el.className = ['immersive__anno-region', `immersive__anno-region-${r.modifier}`, r.className || ''].filter(Boolean).join(' ');
+            el.className = ['immersive__anno-region', r.modifier ? `immersive__anno-region-${r.modifier}` : '', r.className || ''].filter(Boolean).join(' ');
             el.dataset.ivAnnoId = r.id;
             this._place(el, item, r.rect);
             this._annoRegions.push(el);

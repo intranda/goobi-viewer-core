@@ -21,4 +21,8 @@ export const env = {
     get viewerJS() {
         return win().viewerJS;
     },
+    /** Web Storage; the property read itself throws when the browser blocks it. */
+    get localStorage() {
+        return win().localStorage;
+    },
 };

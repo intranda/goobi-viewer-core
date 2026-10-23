@@ -13,9 +13,10 @@
  * @param {number} order  0-based page index
  * @param {number} total  total page count
  * @param {{coverAlone?:boolean}} [opts]
- * @returns {number[]} one or two page indices, ascending
+ * @returns {number[]} one or two page indices, ascending; empty for an empty book
  */
 export function computeSpread(order, total, { coverAlone = true } = {}) {
+    if (total <= 0) return [];
     const o = Math.max(0, Math.min(order, total - 1));
     let leader;
     if (coverAlone) {
@@ -34,9 +35,10 @@ export function computeSpread(order, total, { coverAlone = true } = {}) {
  * @param {number} order  0-based page index
  * @param {number} total  total page count
  * @param {{double?:boolean}} [opts]
- * @returns {number[]} one or two page indices, ascending
+ * @returns {number[]} one or two page indices, ascending; empty for an empty book
  */
 export function framePages(order, total, { double = false } = {}) {
+    if (total <= 0) return [];
     const o = Math.max(0, Math.min(order, total - 1));
     return double ? computeSpread(o, total) : [o];
 }

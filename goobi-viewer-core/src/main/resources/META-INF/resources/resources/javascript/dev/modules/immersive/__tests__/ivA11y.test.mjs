@@ -2,18 +2,15 @@
 import { jest } from '@jest/globals';
 import { createFocusTrap } from '../shared/ivA11y.mjs';
 
-// jsdom has no layout: give every attached element an offsetParent so the trap sees it as visible.
-const offsetParent = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetParent');
+// jsdom has no layout: give every attached element a client rect so the trap sees it as visible.
+const getClientRects = HTMLElement.prototype.getClientRects;
 beforeAll(() => {
-    Object.defineProperty(HTMLElement.prototype, 'offsetParent', {
-        configurable: true,
-        get() {
-            return this.parentElement;
-        },
-    });
+    HTMLElement.prototype.getClientRects = function () {
+        return this.isConnected ? [{}] : [];
+    };
 });
 afterAll(() => {
-    Object.defineProperty(HTMLElement.prototype, 'offsetParent', offsetParent);
+    HTMLElement.prototype.getClientRects = getClientRects;
     document.body.innerHTML = '';
 });
 
@@ -54,4 +51,15 @@ test('a container without focusable elements does nothing', () => {
     const e = new KeyboardEvent('keydown', { key: 'Tab', cancelable: true });
     expect(() => trap(e)).not.toThrow();
     expect(e.defaultPrevented).toBe(false);
+});
+
+test('a fixed-position element (no offsetParent) is part of the trap', () => {
+    document.body.innerHTML = '<div id="dialog"><button id="first">a</button><button id="fixed" style="position:fixed">b</button></div>';
+    const dialog = document.getElementById('dialog');
+    dialog.addEventListener('keydown', createFocusTrap(dialog));
+    document.getElementById('fixed').focus();
+    const e = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true });
+    document.activeElement.dispatchEvent(e);
+    expect(e.defaultPrevented).toBe(true);
+    expect(document.activeElement).toBe(document.getElementById('first'));
 });

@@ -18,6 +18,10 @@ test('reads the libraries lazily from window', () => {
     delete global.viewerJS;
 });
 
+test('localStorage is read from window at access time', () => {
+    expect(env.localStorage).toBe(window.localStorage);
+});
+
 test('$ prefers window.$ and falls back to window.jQuery', () => {
     const dollar = global.$;
     const jquery = global.jQuery;

@@ -21,9 +21,15 @@ export function createDisposer() {
             if (typeof fn === 'function') fns.push(fn);
             return fn;
         },
-        /** Runs every queued teardown once, newest first. */
+        /** Runs every queued teardown once, newest first; a throwing one is logged and does not stop the rest. */
         dispose() {
-            while (fns.length) fns.pop()();
+            while (fns.length) {
+                try {
+                    fns.pop()();
+                } catch (e) {
+                    console.error('immersive: teardown failed', e);
+                }
+            }
         },
     };
 }

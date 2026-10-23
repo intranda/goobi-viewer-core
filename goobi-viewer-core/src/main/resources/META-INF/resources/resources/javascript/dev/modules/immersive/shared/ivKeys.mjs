@@ -46,7 +46,7 @@ export function createKeyDispatcher() {
         },
         /** @returns {boolean} whether any handler consumed the event */
         handleEvent(event) {
-            for (const { handler } of handlers) {
+            for (const { handler } of [...handlers]) {
                 if (handler(event)) return true;
             }
             return false;
@@ -92,8 +92,9 @@ export function registerViewerNavKeys(keys, viewer, stageEl, priority = KEY_PRIO
         const prev = !e.shiftKey && key === 'ArrowLeft';
         const next = !e.shiftKey && key === 'ArrowRight';
         const reset = key === '0';
-        const rotateCW = key === 'r';
-        const rotateCCW = key === 'R';
+        const rotate = typeof key === 'string' && key.toLowerCase() === 'r';
+        const rotateCW = rotate && !e.shiftKey;
+        const rotateCCW = rotate && e.shiftKey;
         if (!zoomIn && !zoomOut && !prev && !next && !reset && !rotateCW && !rotateCCW) return false;
         if (isTypingTarget(e.target)) return false;
         if (stageEl && stageEl.contains(document.activeElement)) return false;

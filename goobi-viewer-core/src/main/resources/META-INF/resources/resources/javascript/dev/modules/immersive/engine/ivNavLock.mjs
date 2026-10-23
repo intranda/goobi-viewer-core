@@ -6,6 +6,7 @@
  */
 export function createNavLock(watchdogMs) {
     let busy = false;
+    let destroyed = false;
     let watchdog = null;
     const releaseHooks = [];
     return {
@@ -22,7 +23,7 @@ export function createNavLock(watchdogMs) {
          * @returns {boolean} whether the task was started
          */
         run(task, onStuck) {
-            if (busy) return false;
+            if (busy || destroyed) return false;
             busy = true;
             let released = false;
             const release = () => {
@@ -30,19 +31,28 @@ export function createNavLock(watchdogMs) {
                 released = true;
                 clearTimeout(watchdog);
                 busy = false;
-                releaseHooks.forEach((hook) => hook());
+                releaseHooks.forEach((hook) => {
+                    try {
+                        hook();
+                    } catch (e) {
+                        console.error('immersive: release hook failed', e);
+                    }
+                });
             };
             watchdog = setTimeout(() => {
                 try {
                     if (onStuck) onStuck();
-                } catch {}
+                } catch (e) {
+                    console.error('immersive: watchdog cleanup failed', e);
+                }
                 release();
             }, watchdogMs);
             try {
                 Promise.resolve(task())
-                    .catch(() => {})
+                    .catch((e) => console.warn('immersive: navigation failed', e))
                     .finally(release);
-            } catch {
+            } catch (e) {
+                console.warn('immersive: navigation failed', e);
                 release();
             }
             return true;
@@ -51,8 +61,11 @@ export function createNavLock(watchdogMs) {
         onRelease(fn) {
             releaseHooks.push(fn);
         },
+        /** Clears the watchdog and the release hooks; a task settling afterwards starts nothing, new runs are refused. */
         destroy() {
+            destroyed = true;
             clearTimeout(watchdog);
+            releaseHooks.length = 0;
         },
     };
 }

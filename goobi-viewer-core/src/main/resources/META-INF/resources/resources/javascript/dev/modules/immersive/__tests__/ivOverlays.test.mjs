@@ -41,3 +41,22 @@ test('without a current item nothing is drawn', () => {
     expect(overlays.setTextRegions([{ id: 'x', rect: { x: 0, y: 0, w: 1, h: 1 } }]).size).toBe(0);
     expect(osd.addOverlay).not.toHaveBeenCalled();
 });
+
+test('duplicate region ids: every overlay is drawn and cleared, the map keeps the topmost element', () => {
+    const { osd, overlays } = setup();
+    const rect = { x: 1, y: 1, w: 1, h: 1 };
+    const map = overlays.setTextRegions([
+        { id: 'dup', rect, level: 'line' },
+        { id: 'dup', rect, level: 'word' },
+    ]);
+    expect(osd.addOverlay).toHaveBeenCalledTimes(2);
+    expect(map.get('dup').className).toBe('immersive__text-region immersive__text-region-word');
+    overlays.clearTextRegions();
+    expect(osd.removeOverlay).toHaveBeenCalledTimes(2);
+});
+
+test('an annotation region without modifier gets no undefined class suffix', () => {
+    const { overlays } = setup();
+    const anno = overlays.setAnnotationRegions([{ id: 'a', rect: { x: 1, y: 1, w: 1, h: 1 } }]);
+    expect(anno.get('a').className).toBe('immersive__anno-region');
+});

@@ -1,4 +1,4 @@
-import { computeSpread, residentPages } from './ivImageWindow.mjs';
+import { computeSpread, framePages, residentPages } from './ivImageWindow.mjs';
 import { captureView, crossfade, heightBand, restoredView, snapshotOverlay, fadeOverlay } from './ivTransitions.mjs';
 import { createNavLock } from './ivNavLock.mjs';
 import { IvOverlays } from './ivOverlays.mjs';
@@ -71,7 +71,7 @@ const CONTENT_TIMEOUT_MS = 6000;
  * Immersive image viewer engine around a single live ImageView.Image (OSD).
  * Single pages are swapped flicker-free by fading in a preloaded neighbour; double
  * pages are composed by the library and transitioned with a snapshot crossfade.
- * Consumers subscribe to `onPageChange` / `onLoaded`.
+ * Consumers subscribe to `onPageChange` / `onOpen`.
  */
 export default class IvViewer {
     /**
@@ -99,9 +99,10 @@ export default class IvViewer {
         this._lock.onRelease(() => this._runQueued());
         this._contentTimeoutMs = opts.contentTimeoutMs ?? CONTENT_TIMEOUT_MS;
         this._nav = 0;
+        this._cancelContentWait = null;
+        this._destroyed = false;
         this._fadeMs = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : FADE_MS;
         this.onPageChange = new Emitter();
-        this.onLoaded = new Emitter();
         this.onOpen = new Emitter();
         this.onReset = new Emitter();
 
@@ -153,10 +154,7 @@ export default class IvViewer {
         });
 
         this._open(this.current)
-            .then(() => {
-                this._refreshPreload();
-                this.onLoaded.emit(this.current);
-            })
+            .then(() => this._refreshPreload())
             .catch((e) => console.error('immersive viewer initial open failed', e));
     }
 
@@ -218,7 +216,7 @@ export default class IvViewer {
 
     /** 0-based page indices currently displayed (one page, or two in double mode). */
     getCurrentPages() {
-        return this.double ? computeSpread(this.current, this.total) : [this.current];
+        return framePages(this.current, this.total, { double: this.double });
     }
 
     /** Navigate to the page/spread containing `order` (snaps to the spread leader in double mode). */
@@ -285,7 +283,7 @@ export default class IvViewer {
 
     /** Re-opens the current position in the current mode, serialised through the nav lock. */
     _reopen() {
-        this._withNavLock(() => this._open(this.current));
+        this._withNavLock((stale) => this._open(this.current, stale));
     }
 
     zoomIn() {
@@ -342,7 +340,7 @@ export default class IvViewer {
             const from = this.current;
             this.current = target;
             if (this.isPageRestricted(target)) {
-                if (previous) this.viewer.openseadragon.world.removeItem(previous);
+                this._drop(previous);
                 this.currentItem = null;
                 this._emit();
                 this._refreshPreload();
@@ -364,7 +362,7 @@ export default class IvViewer {
                 return;
             }
             await crossfade(item, previous, this._fadeMs);
-            if (previous) this.viewer.openseadragon.world.removeItem(previous);
+            this._drop(previous);
             this.currentItem = item;
             this._emit();
             this._refreshPreload();
@@ -399,6 +397,7 @@ export default class IvViewer {
      * Resolves once `item` has painted its first (low-res) tile, or is already fully
      * loaded; rejects when no tile arrives within `contentTimeoutMs`. Either way the
      * tile handlers are detached, so a page that never paints leaves nothing behind.
+     * destroy() resolves a pending wait early; the navigation then sees itself stale.
      */
     _whenContent(item) {
         if (item.getFullyLoaded()) return Promise.resolve();
@@ -412,9 +411,11 @@ export default class IvViewer {
                 clearTimeout(timer);
                 osd.removeHandler('tile-loaded', onTile);
                 item.removeHandler('fully-loaded-change', onFull);
+                this._cancelContentWait = null;
                 if (error) reject(error);
                 else resolve();
             };
+            this._cancelContentWait = () => finish();
             const onTile = (e) => {
                 if (e.tiledImage === item) finish();
             };
@@ -462,10 +463,13 @@ export default class IvViewer {
         const overlay = snapshotOverlay(this.viewer.openseadragon, this.viewer.element);
         this.current = leader;
         this._withNavLock(
-            async () => {
-                await this._open(leader);
-                fadeOverlay(overlay, this._fadeMs);
-                this._prewarmSpreads();
+            async (stale) => {
+                try {
+                    await this._open(leader, stale);
+                } finally {
+                    fadeOverlay(overlay, this._fadeMs);
+                }
+                if (!stale()) this._prewarmSpreads();
             },
             () => {
                 if (overlay) overlay.remove();
@@ -494,14 +498,20 @@ export default class IvViewer {
      * spread in double mode) and captures the single-page fit anchor. Used for the
      * initial open, mode toggles and every double-page spread change. Emits
      * `onOpen` once the library has settled, so consumers bound to the library's
-     * per-load event pipeline (image filters) can re-attach.
+     * per-load event pipeline (image filters) can re-attach. A load settling after
+     * `stale()` turned true (watchdog release, destroy) writes no state and emits nothing;
+     * a rejected load of an unrestricted page is logged.
+     *
+     * @param {number} order
+     * @param {() => boolean} [stale]
      */
-    _open(order) {
-        const pages = this.double ? computeSpread(order, this.total) : [order];
+    _open(order, stale = () => false) {
+        const pages = framePages(order, this.total, { double: this.double });
         this.viewer.config.sequence.columns = pages.length;
         const sources = pages.map((p) => toTileSource(this.services[p]));
         const kept = this._captureView();
         const settle = () => {
+            if (stale() || this._destroyed) return;
             const world = this.viewer.openseadragon.world;
             this.currentItem = world.getItemCount() > 0 ? world.getItemAt(0) : null;
             if (!this.double && this.currentItem) {
@@ -514,7 +524,10 @@ export default class IvViewer {
         };
         const loaded = this.viewer.load(sources, 0);
         this._prefetchAround(pages[pages.length - 1]);
-        return loaded.then(settle, settle);
+        return loaded.then(settle, (e) => {
+            if (!pages.some((p) => this.isPageRestricted(p))) console.warn('immersive: page load failed', e);
+            settle();
+        });
     }
 
     /**
@@ -650,8 +663,11 @@ export default class IvViewer {
         };
     }
 
-    /** Releases the OpenSeadragon instance, the access overlay and all subscriptions. */
+    /** Releases the OpenSeadragon instance, the access overlay and all subscriptions; in-flight navigations turn stale. */
     destroy() {
+        this._destroyed = true;
+        this._nav++;
+        if (this._cancelContentWait) this._cancelContentWait();
         this._lock.destroy();
         this._preloaded.clear();
         this._access.remove();
@@ -659,6 +675,6 @@ export default class IvViewer {
         if (typeof this.viewer.close === 'function') this.viewer.close();
         const osd = this.viewer.openseadragon;
         if (osd && typeof osd.destroy === 'function') osd.destroy();
-        [this.onPageChange, this.onLoaded, this.onOpen, this.onReset].forEach((emitter) => emitter.clear());
+        [this.onPageChange, this.onOpen, this.onReset].forEach((emitter) => emitter.clear());
     }
 }
