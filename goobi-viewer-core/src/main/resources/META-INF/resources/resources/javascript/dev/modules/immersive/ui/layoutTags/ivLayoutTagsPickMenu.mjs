@@ -16,13 +16,14 @@ const TRIGGER_DOTS = 4;
  * @param {HTMLElement} opts.list
  * @param {HTMLElement|null} opts.dots
  * @param {HTMLElement|null} opts.text
+ * @param {HTMLElement|null} opts.summary  the trigger's description, carries the selection count
  * @param {HTMLElement|null} opts.filterWrap
  * @param {HTMLInputElement|null} opts.filterInput
  * @param {{register: Function}} opts.keys
  * @param {(key: string) => void} opts.onToggle  called with the pick item's key (a tag label or a group key)
  * @returns {{build: Function, sync: Function, close: Function, setFilterVisible: Function, destroy: Function}}
  */
-export function setupPickMenu({ state, labels, trigger, menu, list, dots, text, filterWrap, filterInput, keys, onToggle }) {
+export function setupPickMenu({ state, labels, trigger, menu, list, dots, text, summary, filterWrap, filterInput, keys, onToggle }) {
     const bag = createDisposer();
     const isOpen = () => !menu.hidden;
     const onOutside = (e) => {
@@ -112,7 +113,7 @@ export function setupPickMenu({ state, labels, trigger, menu, list, dots, text, 
         if (chosen.length === 1 || chosen.length === 2) caption = chosen.map((t) => t.name).join(', ');
         else if (chosen.length > 2) caption = formatMessage(labels.labelPickMore, chosen[0].name, chosen.length - 1);
         if (text) text.textContent = caption;
-        trigger.setAttribute('aria-label', chosen.length ? formatMessage(labels.labelPickSelected, chosen.length) : labels.labelPick || '');
+        if (summary) summary.textContent = chosen.length ? formatMessage(labels.labelPickSelected, chosen.length) : '';
         syncRows();
     };
 

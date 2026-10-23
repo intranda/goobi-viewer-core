@@ -45,7 +45,7 @@
                         min="1"
                         inputmode="numeric"
                         autocomplete="off"
-                        aria-label="#{msg.immersive__layout_tags_range_first}" />
+                        title="#{msg.immersive__layout_tags_range_first}" />
                     <label
                         class="immersive__layout-tags-range-label"
                         for="immersiveLayoutTagsTo">
@@ -59,13 +59,12 @@
                         min="1"
                         inputmode="numeric"
                         autocomplete="off"
-                        aria-label="#{msg.immersive__layout_tags_range_last}" />
+                        title="#{msg.immersive__layout_tags_range_last}" />
                     <button
                         type="button"
                         class="immersive__layout-tags-range-apply"
                         data-immersive-layout-tags="apply"
                         title="#{msg.immersive__layout_tags_range_apply}"
-                        aria-label="#{msg.immersive__layout_tags_range_apply}"
                         hidden="hidden">
                         #{msg.ok}
                     </button>
@@ -89,9 +88,9 @@
                         class="immersive__layout-tags-pick-trigger"
                         data-immersive-layout-tags="pick-trigger"
                         data-immersive-panel-focus=""
-                        aria-haspopup="true"
                         aria-expanded="false"
-                        aria-controls="immersiveLayoutTagsPickMenu">
+                        aria-controls="immersiveLayoutTagsPickMenu"
+                        aria-describedby="immersiveLayoutTagsPickState">
                         <span
                             class="immersive__layout-tags-pick-dots"
                             data-immersive-layout-tags="pick-dots"
@@ -105,6 +104,10 @@
                             icon="chevron-down"
                             svgClass="immersive__layout-tags-pick-chevron" />
                     </button>
+                    <span
+                        id="immersiveLayoutTagsPickState"
+                        data-immersive-layout-tags="pick-state"
+                        hidden="hidden" />
                     <!-- PICKER MENU -->
                     <div
                         id="immersiveLayoutTagsPickMenu"
@@ -146,7 +149,7 @@
                 <img
                     src="#{request.contextPath}/resources/images/infinity_loader.svg"
                     class="ajax-loader__animated-image"
-                    alt="" />
+                    alt="#{msg.immersive__loading}" />
             </div>
             <!-- HITS MOUNT -->
             <div

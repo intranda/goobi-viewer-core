@@ -68,6 +68,7 @@ export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
         list: pickList,
         dots: q('[data-immersive-layout-tags="pick-dots"]'),
         text: q('[data-immersive-layout-tags="pick-text"]'),
+        summary: q('[data-immersive-layout-tags="pick-state"]'),
         filterWrap,
         filterInput: filterWrap && filterWrap.querySelector('input'),
         keys,

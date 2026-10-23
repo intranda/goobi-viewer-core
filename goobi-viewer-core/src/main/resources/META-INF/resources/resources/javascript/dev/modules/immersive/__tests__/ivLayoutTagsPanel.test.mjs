@@ -82,10 +82,11 @@ function mountMarkup() {
                         <button type="button" data-immersive-layout-tags="reset" hidden>x</button>
                     </div>
                     <div class="immersive__layout-tags-pick">
-                        <button type="button" data-immersive-layout-tags="pick-trigger" aria-expanded="false">
+                        <button type="button" data-immersive-layout-tags="pick-trigger" aria-expanded="false" aria-describedby="immersiveLayoutTagsPickState">
                             <span data-immersive-layout-tags="pick-dots"></span>
                             <span data-immersive-layout-tags="pick-text">Layout-Tags wählen</span>
                         </button>
+                        <span id="immersiveLayoutTagsPickState" data-immersive-layout-tags="pick-state" hidden></span>
                         <div data-immersive-layout-tags="pick-menu" hidden>
                             <div data-immersive-layout-tags="filter" hidden><input type="text" /></div>
                             <div data-immersive-layout-tags="pick-list"></div>
@@ -192,6 +193,11 @@ describe('setupLayoutTagsPanel', () => {
         expect(page8.getAttribute('aria-label')).toBe('Unterstreichungen, Seite 8, 2 Stellen');
         expect(document.querySelector('[data-immersive-layout-tags="progress"]').textContent).toBe('5 Seiten geladen');
         expect(document.querySelector('[data-immersive-layout-tags="pick-text"]').textContent).toBe('Unterstreichungen');
+        const trigger = document.querySelector('[data-immersive-layout-tags="pick-trigger"]');
+        expect(trigger.hasAttribute('aria-label')).toBe(false);
+        expect(document.getElementById(trigger.getAttribute('aria-describedby')).textContent).toBe('Layout-Tags wählen, 1 gewählt');
+        checkbox('gr_unterstrichen').click();
+        expect(document.getElementById(trigger.getAttribute('aria-describedby')).textContent).toBe('');
     });
 
     test('a configured group is one checkbox that selects all its tags, while the list keeps one row per tag and page', async () => {

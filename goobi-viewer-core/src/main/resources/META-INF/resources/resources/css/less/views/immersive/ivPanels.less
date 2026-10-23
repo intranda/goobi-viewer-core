@@ -80,6 +80,14 @@
         &:hover::after {
             background-color: @immersive-accent;
         }
+
+        &:focus-visible {
+            .mx-immersive-focus-ring();
+
+            &::after {
+                background-color: @immersive-accent;
+            }
+        }
     }
 
     &.-panel-open &__panel-resize-handle {

@@ -198,6 +198,7 @@ describe('setupPanelResize', () => {
             handle.getBoundingClientRect = () => ({ left: 374, width: 12 });
             roCallbacks.forEach((cb) => cb());
             expect(viewer.style.getPropertyValue('--immersive-panel-width')).toBe('560px');
+            expect(handle.getAttribute('aria-valuenow')).toBe('560');
         } finally {
             delete global.ResizeObserver;
         }
@@ -223,6 +224,51 @@ describe('setupPanelResize', () => {
         handle.dispatchEvent(new MouseEvent('pointermove', { clientX: 100 }));
         expect(viewer.style.getPropertyValue('--immersive-panel-width')).toBe('240px');
         handle.dispatchEvent(new MouseEvent('pointerup', { clientX: 100 }));
+    });
+
+    test('the handle is a named, focusable separator that arrow, Home and End keys resize', () => {
+        document.body.innerHTML = `
+            <div class="immersive" data-label-panel-resize="Panelbreite ändern">
+                <div class="immersive__viewer">
+                    <aside id="immersivePanelToc" class="immersive__panel immersive__panel-left is-open"></aside>
+                    <div class="immersive__canvas"></div>
+                </div>
+            </div>`;
+        const root = document.querySelector('.immersive');
+        const viewer = root.querySelector('.immersive__viewer');
+        viewer.getBoundingClientRect = () => ({ left: 0, width: 1000 });
+        sessionStorage.setItem(WIDTH_KEY, '300');
+        setupPanelResize(root);
+        const handle = viewer.querySelector('.immersive__panel-resize-handle');
+        expect(handle.nextElementSibling.className).toBe('immersive__canvas');
+        expect(handle.getAttribute('role')).toBe('separator');
+        expect(handle.getAttribute('aria-orientation')).toBe('vertical');
+        expect(handle.hasAttribute('aria-hidden')).toBe(false);
+        expect(handle.tabIndex).toBe(0);
+        expect(handle.getAttribute('aria-label')).toBe('Panelbreite ändern');
+        expect(handle.getAttribute('aria-valuenow')).toBe('300');
+        expect(handle.getAttribute('aria-valuemin')).toBe('240');
+        expect(handle.getAttribute('aria-valuemax')).toBe('800');
+
+        const reachedDocument = jest.fn();
+        document.addEventListener('keydown', reachedDocument);
+        const press = (key, shiftKey = false) => handle.dispatchEvent(new KeyboardEvent('keydown', { key, shiftKey, bubbles: true, cancelable: true }));
+        const width = () => viewer.style.getPropertyValue('--immersive-panel-width');
+        try {
+            press('ArrowRight');
+            expect(width()).toBe('316px');
+            press('ArrowLeft', true);
+            expect(width()).toBe('252px');
+            press('End');
+            expect(width()).toBe('800px');
+            press('Home');
+            expect(width()).toBe('240px');
+            expect(handle.getAttribute('aria-valuenow')).toBe('240');
+            expect(sessionStorage.getItem(WIDTH_KEY)).toBe('240');
+            expect(reachedDocument).not.toHaveBeenCalled();
+        } finally {
+            document.removeEventListener('keydown', reachedDocument);
+        }
     });
 
     test('restores the stored width from sessionStorage, ignoring localStorage', () => {

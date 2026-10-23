@@ -2888,8 +2888,10 @@
     }
 
     /**
-     * Adds the drag handle that resizes the left panels: one shared
-     * --immersive-panel-width custom property, persisted in sessionStorage.
+     * Adds the handle that resizes the left panels: one shared
+     * --immersive-panel-width custom property, persisted in sessionStorage. The handle
+     * is a focusable separator; arrow keys step the width (Shift for larger steps),
+     * Home and End jump to the limits.
      *
      * @returns {{destroy: function():void}}
      */
@@ -2900,6 +2902,7 @@
         const RAIL_WIDTH = 40;
         const MIN_WIDTH = 240;
         const MAX_WIDTH_RATIO = 0.8;
+        const KEY_STEP = 16;
         const maxWidth = () => immersiveViewer.getBoundingClientRect().width * MAX_WIDTH_RATIO;
         const minWidth = () => {
             const open = immersiveRoot.querySelector(PANEL_OPEN_SELECTOR);
@@ -2916,8 +2919,32 @@
 
         const handle = document.createElement('div');
         handle.className = 'immersive__panel-resize-handle';
-        handle.setAttribute('aria-hidden', 'true');
-        immersiveViewer.appendChild(handle);
+        handle.setAttribute('role', 'separator');
+        handle.setAttribute('aria-orientation', 'vertical');
+        handle.tabIndex = 0;
+        const label = immersiveRoot.dataset.labelPanelResize;
+        if (label) {
+            handle.setAttribute('aria-label', label);
+            handle.setAttribute('title', label);
+        }
+        const currentWidth = () => {
+            const set = parseFloat(immersiveViewer.style.getPropertyValue('--immersive-panel-width'));
+            if (Number.isFinite(set)) return set;
+            const open = immersiveViewer.querySelector(PANEL_OPEN_SELECTOR);
+            return open ? open.getBoundingClientRect().width : minWidth();
+        };
+        const syncValue = () => {
+            handle.setAttribute('aria-valuenow', String(Math.round(currentWidth())));
+            handle.setAttribute('aria-valuemin', String(Math.round(minWidth())));
+            handle.setAttribute('aria-valuemax', String(Math.round(maxWidth())));
+        };
+        const store = (px) => {
+            try {
+                sessionStorage.setItem(WIDTH_KEY, String(Math.round(px)));
+            } catch {}
+        };
+        syncValue();
+        immersiveViewer.insertBefore(handle, immersiveViewer.querySelector(':scope > .immersive__canvas'));
         let observer = null;
         if (typeof ResizeObserver !== 'undefined') {
             observer = new ResizeObserver(() => {
@@ -2927,6 +2954,7 @@
                 const handleRect = handle.getBoundingClientRect();
                 const varWidth = handleRect.left + handleRect.width / 2 - immersiveViewer.getBoundingClientRect().left - RAIL_WIDTH;
                 if (panelWidth > varWidth + 1) applyWidth(panelWidth);
+                syncValue();
             });
             immersiveViewer.querySelectorAll('.immersive__panel-left').forEach((p) => observer.observe(p));
         }
@@ -2944,12 +2972,28 @@
                 handle.removeEventListener('pointermove', onMove);
                 handle.removeEventListener('pointerup', onUp);
                 immersiveRoot.classList.remove('-resizing');
-                try {
-                    sessionStorage.setItem(WIDTH_KEY, String(Math.round(widthAt(ev))));
-                } catch {}
+                store(widthAt(ev));
+                syncValue();
             };
             handle.addEventListener('pointermove', onMove);
             handle.addEventListener('pointerup', onUp);
+        });
+        handle.addEventListener('focus', syncValue);
+        handle.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            const step = KEY_STEP * (e.shiftKey ? 4 : 1);
+            let next;
+            if (e.key === 'ArrowRight') next = currentWidth() + step;
+            else if (e.key === 'ArrowLeft') next = currentWidth() - step;
+            else if (e.key === 'Home') next = minWidth();
+            else if (e.key === 'End') next = maxWidth();
+            else return;
+            e.preventDefault();
+            e.stopPropagation();
+            const width = clamp(next);
+            applyWidth(width);
+            store(width);
+            syncValue();
         });
         return {
             destroy() {
@@ -5240,13 +5284,14 @@
      * @param {HTMLElement} opts.list
      * @param {HTMLElement|null} opts.dots
      * @param {HTMLElement|null} opts.text
+     * @param {HTMLElement|null} opts.summary  the trigger's description, carries the selection count
      * @param {HTMLElement|null} opts.filterWrap
      * @param {HTMLInputElement|null} opts.filterInput
      * @param {{register: Function}} opts.keys
      * @param {(key: string) => void} opts.onToggle  called with the pick item's key (a tag label or a group key)
      * @returns {{build: Function, sync: Function, close: Function, setFilterVisible: Function, destroy: Function}}
      */
-    function setupPickMenu({ state, labels, trigger, menu, list, dots, text, filterWrap, filterInput, keys, onToggle }) {
+    function setupPickMenu({ state, labels, trigger, menu, list, dots, text, summary, filterWrap, filterInput, keys, onToggle }) {
         const bag = createDisposer();
         const isOpen = () => !menu.hidden;
         const onOutside = (e) => {
@@ -5336,7 +5381,7 @@
             if (chosen.length === 1 || chosen.length === 2) caption = chosen.map((t) => t.name).join(', ');
             else if (chosen.length > 2) caption = formatMessage(labels.labelPickMore, chosen[0].name, chosen.length - 1);
             if (text) text.textContent = caption;
-            trigger.setAttribute('aria-label', chosen.length ? formatMessage(labels.labelPickSelected, chosen.length) : labels.labelPick || '');
+            if (summary) summary.textContent = chosen.length ? formatMessage(labels.labelPickSelected, chosen.length) : '';
             syncRows();
         };
 
@@ -5578,6 +5623,7 @@
             list: pickList,
             dots: q('[data-immersive-layout-tags="pick-dots"]'),
             text: q('[data-immersive-layout-tags="pick-text"]'),
+            summary: q('[data-immersive-layout-tags="pick-state"]'),
             filterWrap,
             filterInput: filterWrap && filterWrap.querySelector('input'),
             keys,

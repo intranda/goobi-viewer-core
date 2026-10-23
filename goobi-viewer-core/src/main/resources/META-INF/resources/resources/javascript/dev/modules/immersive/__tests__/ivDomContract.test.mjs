@@ -62,6 +62,22 @@ test('the markup carries no data-immersive-* or data-label-* attribute the JS ne
     expect(unused).toEqual([]);
 });
 
+test('a visible label is never replaced by an aria-label (WCAG 2.5.3 label in name)', () => {
+    const labelled = new Set(matches(xhtml, /<label[^>]*\bfor="([^"]+)"/g));
+    const inputs = Array.from(xhtml.matchAll(/<(?:input|select|textarea)\b([^>]*)>/g), (m) => m[1])
+        .filter((attrs) => /\baria-label=/.test(attrs) && labelled.has((attrs.match(/\bid="([^"]+)"/) || [])[1]))
+        .map((attrs) => attrs.match(/\bid="([^"]+)"/)[1]);
+    const buttons = Array.from(xhtml.matchAll(/<button\b([^>]*)>([\s\S]*?)<\/button>/g))
+        .filter((m) => /\baria-label=/.test(m[1]) && m[2].replace(/<[^>]+>/g, '').trim())
+        .map((m) => m[2].replace(/<[^>]+>/g, '').trim());
+    expect([...inputs, ...buttons]).toEqual([]);
+});
+
+test('every loader image in a status region carries a text alternative', () => {
+    const silent = Array.from(xhtml.matchAll(/<div\b[^>]*role="status"[^>]*>\s*<img\b([^>]*)>/g), (m) => m[1]).filter((attrs) => /\balt=""/.test(attrs));
+    expect(silent).toEqual([]);
+});
+
 test('Alt+digit order equals the rail button order and the shortcuts-modal rows', () => {
     const toolbar = fs.readFileSync(path.join(RESOURCES, 'includes/immersive/iv_toolbar_left.xhtml'), 'utf8');
     const modal = fs.readFileSync(path.join(RESOURCES, 'includes/immersive/iv_shortcuts_modal.xhtml'), 'utf8');
