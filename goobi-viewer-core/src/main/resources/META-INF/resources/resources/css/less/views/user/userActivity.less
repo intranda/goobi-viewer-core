@@ -2,27 +2,104 @@
    User Activity
    style declarations for userBackendActivity.xhtml
    ==============================================================*/
-/* USER SCORE */
-.user-score {
-    margin-bottom: 15px;
-    &__table {
-        tr td:first-child {
-            width: 25%;
-        }
-        tr td:last-child {
-            width: 75%;
+.user-activity {
+    /* CARD */
+    &__card {
+        overflow: hidden;
+        background: var(--bg-surface);
+        color: var(--fg-default);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-container);
+        box-shadow: var(--shadow-surface);
+        & + & {
+            margin-top: 2rem;
         }
     }
-}
-/* USER ACTIVITY */
-.user-activity {
-    margin-bottom: 1.5rem;
-    &__icon {
-        margin-left: 0.5rem;
+
+    /* TABLE */
+    &__table {
+        width: 100%;
+        margin: 0;
+        border-collapse: collapse;
+        th,
+        td {
+            padding: 1.1rem 1rem;
+            text-align: left;
+            vertical-align: middle;
+        }
+        th:first-child,
+        td:first-child {
+            padding-left: 2rem;
+        }
+        th:last-child,
+        td:last-child {
+            padding-right: 2rem;
+        }
+        thead th {
+            color: var(--fg-secondary);
+            font-size: var(--font-size-caption);
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border-default);
+        }
+        tbody tr:nth-child(odd) {
+            background-color: rgb(from var(--fg-default) r g b / 4%);
+        }
+    }
+
+    /* SCORE */
+    &__score {
+        th {
+            color: var(--fg-secondary);
+            font-weight: 400;
+        }
+        td {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+    }
+
+    /* CELLS */
+    &__date,
+    &__type {
+        width: 1%;
+        white-space: nowrap;
+    }
+    &__table &__date {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+    }
+    &__type {
+        color: var(--fg-secondary);
+    }
+
+    /* INFO */
+    &__info {
+        display: inline-flex;
+        margin-left: 0.4rem;
+        padding: 0;
+        border: 0;
+        background: none;
+        color: inherit;
+        vertical-align: middle;
         cursor: pointer;
     }
-    .popover {
-        font-weight: normal;
+
+    /* EMPTY */
+    &__empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        padding: 3rem 2rem;
+        color: var(--fg-muted);
+        text-align: center;
+    }
+    &__empty-text {
+        margin-bottom: 0;
+        font-size: var(--font-size-body-small);
     }
 }
 
@@ -40,4 +117,20 @@
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
+    .user-activity {
+        &__table {
+            th,
+            td {
+                padding: 0.8rem 0.5rem;
+            }
+            th:first-child,
+            td:first-child {
+                padding-left: 1rem;
+            }
+            th:last-child,
+            td:last-child {
+                padding-right: 1rem;
+            }
+        }
+    }
 }
