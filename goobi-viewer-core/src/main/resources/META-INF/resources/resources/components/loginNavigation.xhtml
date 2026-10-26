@@ -79,22 +79,6 @@
                                 id="userDropdownForm"
                                 prependId="false">
                                 <ul class="login-navigation__list">
-                                    <!-- ADMINISTRATION -->
-                                    <ui:fragment rendered="#{userBean.hasAdminBackendAccess}">
-                                        <li class="login-navigation__user-dropdown-item">
-                                            <a
-                                                href="#{navigationHelper.applicationUrl}admin/"
-                                                class="login-navigation__user-dropdown-item-link">
-                                                <util:icon-text
-                                                    icon="settings-cog"
-                                                    text="#{msg.admin}"
-                                                    styleClass="login-navigation__user-dropdown-item-icon-text"
-                                                    iconSvgClass="icon"
-                                                    textClass="login-navigation__user-dropdown-item-text" />
-                                            </a>
-                                        </li>
-                                    </ui:fragment>
-
                                     <!-- DASHBOARD -->
                                     <li class="login-navigation__user-dropdown-item">
                                         <a
@@ -220,6 +204,22 @@
                                                 textClass="login-navigation__user-dropdown-item-text" />
                                         </a>
                                     </li>
+
+                                    <!-- ADMINISTRATION -->
+                                    <ui:fragment rendered="#{userBean.hasAdminBackendAccess}">
+                                        <li class="login-navigation__user-dropdown-item">
+                                            <a
+                                                href="#{navigationHelper.applicationUrl}admin/"
+                                                class="login-navigation__user-dropdown-item-link">
+                                                <util:icon-text
+                                                    icon="settings-cog"
+                                                    text="#{msg.admin}"
+                                                    styleClass="login-navigation__user-dropdown-item-icon-text"
+                                                    iconSvgClass="icon"
+                                                    textClass="login-navigation__user-dropdown-item-text" />
+                                            </a>
+                                        </li>
+                                    </ui:fragment>
 
                                     <!-- LOGOUT -->
                                     <li class="login-navigation__user-dropdown-item">
