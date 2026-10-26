@@ -5942,11 +5942,14 @@
      * @param {string} term      search term
      * @param {Function} fetchFn fetch-compatible function (injectable for tests)
      * @param {number} maxPages  safety cap for the within-paging loop
+     * @param {{annotationsOnly?: boolean}} options annotationsOnly restricts the search to the text of
+     *        handwritten annotation blocks (server-side `scope=annotations`)
      * @throws when the FIRST result page fails -- an unreachable or forbidden search endpoint must
      *         not read as "no hits"; a later page failing keeps the hits collected so far.
      */
-    async function search(pi, apiBase, term, fetchFn = fetch, maxPages = 50) {
-        const base = `${apiBase}/records/${pi}/manifest/search?q=${encodeURIComponent(term)}`;
+    async function search(pi, apiBase, term, fetchFn = fetch, maxPages = 50, options = {}) {
+        const scope = options.annotationsOnly ? '&scope=annotations' : '';
+        const base = `${apiBase}/records/${pi}/manifest/search?q=${encodeURIComponent(term)}${scope}`;
         const seen = new Set();
         const out = [];
         for (let p = 1; p <= maxPages; p++) {
@@ -5989,6 +5992,8 @@
         const resultsBox = document.getElementById('immersiveSearchResults');
         const resultsList = document.getElementById('immersiveResultsList');
         const hitCounter = document.getElementById('immersiveHitCounter');
+        // Only rendered when annotation layout tags are configured
+        const annotationsOnlyBox = document.getElementById('immersiveSearchAnnotationsOnly');
         const hitsOnOrder = (order) => searchState.hits.filter((h) => h.order === order);
 
         const renderHighlights = () => {
@@ -6057,7 +6062,8 @@
             let failed = false;
             if (term) {
                 try {
-                    hits = await search(pi, apiBase, term);
+                    // undefined keeps the default fetch function and page cap
+                    hits = await search(pi, apiBase, term, undefined, undefined, { annotationsOnly: !!(annotationsOnlyBox && annotationsOnlyBox.checked) });
                 } catch (e) {
                     console.error('immersive fulltext search failed', e);
                     failed = true;
@@ -6110,6 +6116,12 @@
                     e.stopPropagation();
                     resetSearch();
                 }
+            });
+        }
+        if (annotationsOnlyBox) {
+            // Re-run the last submitted search in the new scope; nothing to do before the first search
+            bag.listen(annotationsOnlyBox, 'change', () => {
+                if (searchState.term) runSearch(searchState.term);
             });
         }
         document.querySelectorAll('[data-immersive-hit]').forEach((btn) => {

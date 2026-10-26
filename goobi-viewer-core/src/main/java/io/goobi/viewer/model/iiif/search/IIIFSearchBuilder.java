@@ -51,6 +51,7 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.model.alto.AltoHtmlBuilder.AnnotationStyle;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -75,6 +76,9 @@ import jakarta.servlet.http.HttpServletRequest;
  */
 public class IIIFSearchBuilder {
 
+    /** Value of the <code>scope</code> parameter restricting the fulltext search to handwritten annotation blocks. */
+    public static final String SCOPE_ANNOTATIONS = "annotations";
+
     private static final String MOTIVATION_NON_PAINTING = "non-painting";
 
     private static final Logger logger = LogManager.getLogger(IIIFSearchBuilder.class);
@@ -89,6 +93,7 @@ public class IIIFSearchBuilder {
     private String user = null;
     private String date = null;
     private String min = null;
+    private String scope = null;
     private int page = 1;
     private int hitsPerPage = 20;
     private AbstractApiUrlManager urls;
@@ -218,6 +223,33 @@ public class IIIFSearchBuilder {
     }
 
     /**
+     * Getter for the field <code>scope</code>.
+     *
+     * @return the search scope; {@link #SCOPE_ANNOTATIONS} restricts the search to handwritten annotations, null searches everything
+     */
+    public String getScope() {
+        return scope;
+    }
+
+    /**
+     * Setter for the field <code>scope</code>.
+     *
+     * @param scope {@link #SCOPE_ANNOTATIONS} to search only the fulltext of handwritten annotation blocks; other values are ignored
+     * @return this IIIFSearchBuilder instance for method chaining
+     */
+    public IIIFSearchBuilder setScope(String scope) {
+        this.scope = scope;
+        return this;
+    }
+
+    /**
+     * @return true if the search is restricted to handwritten annotation blocks; false otherwise
+     */
+    boolean isAnnotationScope() {
+        return SCOPE_ANNOTATIONS.equals(scope);
+    }
+
+    /**
      * Setter for the field <code>page</code>.
      *
      * @param page the 1-based result page number; ignored if null
@@ -273,6 +305,9 @@ public class IIIFSearchBuilder {
         if (StringUtils.isNotBlank(getMin())) {
             ignored.add("min");
         }
+        if (StringUtils.isNotBlank(getScope()) && !isAnnotationScope()) {
+            ignored.add("scope");
+        }
         return ignored;
     }
 
@@ -284,6 +319,7 @@ public class IIIFSearchBuilder {
      * @return the search result
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should not return hits outside annotation blocks in annotation scope
      */
     public SearchResult build() throws PresentationException, IndexUnreachableException {
 
@@ -298,21 +334,25 @@ public class IIIFSearchBuilder {
                 mostHits = Math.max(mostHits, fulltextAnnotations.getNumHits());
                 total += fulltextAnnotations.getNumHits();
             }
-            if (motivation.isEmpty() || motivation.contains(MOTIVATION_NON_PAINTING) || motivation.contains(Motivation.DESCRIBING)) {
+            // The annotation scope is about the ALTO text of handwritten annotations only, so no UGC, metadata or comment hits
+            boolean searchNonPainting =
+                    !isAnnotationScope() && (motivation.isEmpty() || motivation.contains(MOTIVATION_NON_PAINTING)
+                            || motivation.contains(Motivation.DESCRIBING));
+            if (searchNonPainting) {
                 AnnotationResultList annotations = searchAnnotations(query, pi, getFirstHitIndex(getPage()), getHitsPerPage(), request);
                 resultList.add(annotations);
                 mostHits = Math.max(mostHits, annotations.getNumHits());
                 total += annotations.getNumHits();
 
             }
-            if (motivation.isEmpty() || motivation.contains(MOTIVATION_NON_PAINTING) || motivation.contains(Motivation.DESCRIBING)) {
+            if (searchNonPainting) {
                 AnnotationResultList metadata = searchMetadata(query, pi, getFirstHitIndex(getPage()), getHitsPerPage());
                 resultList.add(metadata);
                 mostHits = Math.max(mostHits, metadata.getNumHits());
                 total += metadata.getNumHits();
 
             }
-            if (motivation.isEmpty() || motivation.contains(MOTIVATION_NON_PAINTING) || motivation.contains(Motivation.DESCRIBING)) {
+            if (searchNonPainting) {
                 AnnotationResultList annotations = searchComments(query, pi, getFirstHitIndex(getPage()), getHitsPerPage());
                 resultList.add(annotations);
                 mostHits = Math.max(mostHits, annotations.getNumHits());
@@ -617,6 +657,17 @@ public class IIIFSearchBuilder {
     private AnnotationResultList searchFulltext(String query, String pi, int firstIndex, int numHits)
             throws PresentationException, IndexUnreachableException {
 
+        AnnotationResultList results = new AnnotationResultList();
+
+        // In annotation scope, only words in blocks tagged with a configured annotation LABEL are searched
+        Map<String, AnnotationStyle> annotationStyles = null;
+        if (isAnnotationScope()) {
+            annotationStyles = DataManager.getInstance().getConfiguration().getAltoLayoutAnnotationTags();
+            if (annotationStyles.isEmpty()) {
+                return results;
+            }
+        }
+
         //replace search wildcards with word character regex and replace whitespaces with '|' to facilitate OR search
         String queryRegex = AbstractSearchParser.getQueryRegex(query);
 
@@ -625,8 +676,6 @@ public class IIIFSearchBuilder {
         queryBuilder.append(" +DOCTYPE:PAGE");
         queryBuilder.append(" +FULLTEXTAVAILABLE:true");
         queryBuilder.append(" +FULLTEXT:").append(query);
-
-        AnnotationResultList results = new AnnotationResultList();
 
         SolrDocumentList docList = DataManager.getInstance()
                 .getSearchIndex()
@@ -638,8 +687,9 @@ public class IIIFSearchBuilder {
             converter.setPageNo(pageNo);
             try {
                 if (altoFile != null && Files.exists(altoFile)) {
-                    results.add(converter.getAnnotationsFromAlto(altoFile, queryRegex));
-                } else if (fulltextFile != null && Files.exists(fulltextFile)) {
+                    results.add(converter.getAnnotationsFromAlto(altoFile, queryRegex, annotationStyles));
+                } else if (annotationStyles == null && fulltextFile != null && Files.exists(fulltextFile)) {
+                    // Plain text has no blocks, so it cannot be searched in annotation scope
                     String text = new String(Files.readAllBytes(fulltextFile), StandardCharsets.UTF_8.name());
                     results.add(converter.getAnnotationsFromFulltext(text, pi, pageNo, queryRegex, results.getNumHits(), firstIndex, numHits));
                 }
@@ -733,6 +783,9 @@ public class IIIFSearchBuilder {
         }
         if (StringUtils.isNotBlank(getUser())) {
             path = path.query("user", getUser());
+        }
+        if (StringUtils.isNotBlank(getScope())) {
+            path = path.query("scope", getScope());
         }
         if (page != null) {
             path = path.query("page", page);

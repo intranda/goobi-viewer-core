@@ -100,11 +100,14 @@ function _parseSearchJson(text) {
  * @param {string} term      search term
  * @param {Function} fetchFn fetch-compatible function (injectable for tests)
  * @param {number} maxPages  safety cap for the within-paging loop
+ * @param {{annotationsOnly?: boolean}} options annotationsOnly restricts the search to the text of
+ *        handwritten annotation blocks (server-side `scope=annotations`)
  * @throws when the FIRST result page fails -- an unreachable or forbidden search endpoint must
  *         not read as "no hits"; a later page failing keeps the hits collected so far.
  */
-export async function search(pi, apiBase, term, fetchFn = fetch, maxPages = 50) {
-    const base = `${apiBase}/records/${pi}/manifest/search?q=${encodeURIComponent(term)}`;
+export async function search(pi, apiBase, term, fetchFn = fetch, maxPages = 50, options = {}) {
+    const scope = options.annotationsOnly ? '&scope=annotations' : '';
+    const base = `${apiBase}/records/${pi}/manifest/search?q=${encodeURIComponent(term)}${scope}`;
     const seen = new Set();
     const out = [];
     for (let p = 1; p <= maxPages; p++) {

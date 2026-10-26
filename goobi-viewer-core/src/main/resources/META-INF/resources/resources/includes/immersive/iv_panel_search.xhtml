@@ -20,6 +20,20 @@
         <ui:fragment rendered="#{displayConditions.matchPage('{contentType:[TEXT, ALTO], accessCondition: VIEW_FULLTEXT}')}">
             <!-- SEARCH FORM -->
             <widgetComponent:widget_searchInCurrentItem />
+            <!-- SEARCH SCOPE: ONLY IN ANNOTATIONS (outside the shared widget's form, so toggling does not submit it) -->
+            <ui:fragment rendered="#{configurationBean.altoLayoutAnnotationTagsConfigured}">
+                <div class="immersive__search-scope">
+                    <input
+                        type="checkbox"
+                        id="immersiveSearchAnnotationsOnly"
+                        class="immersive__search-scope-checkbox" />
+                    <label
+                        for="immersiveSearchAnnotationsOnly"
+                        class="immersive__search-scope-label">
+                        #{msg.immersive__search_only_annotations}
+                    </label>
+                </div>
+            </ui:fragment>
             <!-- RESULTS -->
             <div
                 id="immersiveSearchResults"

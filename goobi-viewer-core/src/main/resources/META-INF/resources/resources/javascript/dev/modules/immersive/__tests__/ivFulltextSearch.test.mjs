@@ -69,6 +69,23 @@ describe('search (paged fetch, injected fetchFn)', () => {
         expect(calls[0]).toContain('/records/PI1/manifest/search?q=wort');
     });
 
+    test('annotationsOnly adds scope=annotations to every page request, and only then', async () => {
+        const page1 = { within: { last: 'x?q=wort&page=2' }, resources: [{ '@id': 'a1', resource: [{ value: 'a' }], on: 'x/pages/2/canvas/' }] };
+        const page2 = { within: { last: 'x?q=wort&page=2' }, resources: [{ '@id': 'a2', resource: [{ value: 'b' }], on: 'x/pages/4/canvas/' }] };
+        const calls = [];
+        const fetchFn = (url) => {
+            calls.push(url);
+            return Promise.resolve({ ok: true, text: () => Promise.resolve(JSON.stringify(url.includes('page=2') ? page2 : page1)) });
+        };
+        await search('PI', 'http://api', 'wort', fetchFn, 2, { annotationsOnly: true });
+        expect(calls).toHaveLength(2);
+        calls.forEach((url) => expect(url).toContain('scope=annotations'));
+
+        calls.length = 0;
+        await search('PI', 'http://api', 'wort', fetchFn, 2);
+        calls.forEach((url) => expect(url).not.toContain('scope='));
+    });
+
     test('stops at within.last even when total overcounts (no page=2 fetch)', async () => {
         const page1 = { within: { total: 5, last: 'x?q=w&page=1' }, resources: [{ resource: [{ value: 'a' }], on: 'x/pages/3/canvas/#xywh=0,0,9,9' }] };
         const calls = [];

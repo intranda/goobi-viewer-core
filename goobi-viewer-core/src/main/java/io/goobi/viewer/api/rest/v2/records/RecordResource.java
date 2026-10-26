@@ -291,6 +291,8 @@ public class RecordResource {
      * @param date not supported. If this parameter is given, its name is listed in the 'ignored' property of the 'within' property of the answer
      * @param user not supported. If this parameter is given, its name is listed in the 'ignored' property of the 'within' property of the answer
      * @param page the page number for paged result sets. if this is empty, page=1 is assumed
+     * @param scope 'annotations' restricts the search to the fulltext of handwritten annotation blocks (configured annotation layout tags); other
+     *            values are listed in the 'ignored' property
      * @return a {@link de.intranda.api.iiif.search.SearchResult} containing all annotations matching the query in the 'resources' property
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -303,7 +305,8 @@ public class RecordResource {
                     + " the fulltext view permission is granted for the record, while 'non-painting' or 'describing' together search"
                     + " crowdsourcing annotations, indexed metadata and user comments; omitting the parameter searches everything. The date"
                     + " and user parameters are accepted for IIIF Search API compatibility but are not evaluated; only their names are listed"
-                    + " in the response's 'within' object under its 'ignored' property.")
+                    + " in the response's 'within' object under its 'ignored' property. scope=annotations restricts the search to the"
+                    + " fulltext of handwritten annotation blocks.")
     @ApiResponse(responseCode = "200", description = "IIIF Search result containing matching annotations", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "404", description = "Record not found")
     public SearchResult searchInManifest(
@@ -312,9 +315,16 @@ public class RecordResource {
             @QueryParam("motivation") String motivation,
             @Parameter(description = "Date filter (not supported; included in 'ignored' property if given)") @QueryParam("date") String date,
             @Parameter(description = "User filter (not supported; included in 'ignored' property if given)") @QueryParam("user") String user,
-            @Parameter(description = "Page number for paged result sets (default: 1)") @QueryParam("page") Integer page)
+            @Parameter(description = "Page number for paged result sets (default: 1)") @QueryParam("page") Integer page,
+            @Parameter(description = "'annotations' searches only the fulltext of handwritten annotation blocks")
+            @QueryParam("scope") String scope)
             throws IndexUnreachableException, PresentationException {
-        return new IIIFSearchBuilder(urls, query, pi, servletRequest).setMotivation(motivation).setDate(date).setUser(user).setPage(page).build();
+        return new IIIFSearchBuilder(urls, query, pi, servletRequest).setMotivation(motivation)
+                .setDate(date)
+                .setUser(user)
+                .setPage(page)
+                .setScope(scope)
+                .build();
     }
 
     /**

@@ -13,7 +13,8 @@ function fakeViewer() {
     };
 }
 
-function mountMarkup() {
+function mountMarkup({ scopeOption = false } = {}) {
+    const scope = scopeOption ? '<div class="immersive__search-scope"><input type="checkbox" id="immersiveSearchAnnotationsOnly" /></div>' : '';
     document.body.innerHTML = `
         <aside id="immersivePanelSearch" class="immersive__panel immersive__panel-left">
             <form>
@@ -22,6 +23,7 @@ function mountMarkup() {
                     <div class="input-group-addon"><button type="submit"></button></div>
                 </div>
             </form>
+            ${scope}
             <div id="immersiveSearchResults" data-label-empty="Keine Treffer" data-label-reset="Suche zurücksetzen" data-label-error="Suche fehlgeschlagen" hidden>
                 <span id="immersiveHitCounter"></span>
                 <button data-immersive-hit="prev"></button>
@@ -123,6 +125,33 @@ describe('setupSearchPanel', () => {
         expect(list.textContent).not.toContain('Keine Treffer');
         expect(viewer.clearHighlights).toHaveBeenCalledWith('search');
         consoleError.mockRestore();
+    });
+
+    test('toggling "only in annotations" re-runs the last search with scope=annotations', async () => {
+        global.fetch = jest.fn(async (url) => response(hitList(url.includes('scope=annotations') ? 1 : 3)));
+        const { form, input, counter } = mountMarkup({ scopeOption: true });
+        submit(form, input, 'wort');
+        await flush();
+        expect(counter.textContent).toBe('1 / 3');
+        expect(global.fetch.mock.calls[0][0]).not.toContain('scope=');
+
+        const box = document.getElementById('immersiveSearchAnnotationsOnly');
+        box.checked = true;
+        box.dispatchEvent(new Event('change'));
+        await flush();
+        expect(global.fetch.mock.calls.at(-1)[0]).toContain('q=wort');
+        expect(global.fetch.mock.calls.at(-1)[0]).toContain('scope=annotations');
+        expect(counter.textContent).toBe('1 / 1');
+    });
+
+    test('toggling "only in annotations" before any search does not search', async () => {
+        global.fetch = jest.fn(async () => response(hitList(1)));
+        mountMarkup({ scopeOption: true });
+        const box = document.getElementById('immersiveSearchAnnotationsOnly');
+        box.checked = true;
+        box.dispatchEvent(new Event('change'));
+        await flush();
+        expect(global.fetch).not.toHaveBeenCalled();
     });
 
     test('destroy detaches the form and removes the injected clear button', async () => {

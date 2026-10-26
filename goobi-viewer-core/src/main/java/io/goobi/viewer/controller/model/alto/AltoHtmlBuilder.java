@@ -215,12 +215,14 @@ public class AltoHtmlBuilder {
     }
 
     /**
-     * Shared with the JSON path ({@code AltoLayoutAnnotationBuilder}), so both stay in agreement on what counts as
-     * handwriting.
+     * Shared with the JSON path ({@code AltoLayoutAnnotationBuilder}) and the annotation-scoped IIIF search
+     * ({@code SearchResultConverter}), so all of them agree on what counts as handwriting.
      *
+     * @param block the text block to classify
+     * @param annotationStyles configured annotation tags, keyed by LABEL
      * @return the first of the block's labels present in the style mapping, or null for printed/untagged blocks
      */
-    static String handwritingLabel(TextBlock block, Map<String, AnnotationStyle> annotationStyles) {
+    public static String handwritingLabel(TextBlock block, Map<String, AnnotationStyle> annotationStyles) {
         for (String label : block.getTagLabels()) {
             if (annotationStyles.containsKey(label)) {
                 return label;

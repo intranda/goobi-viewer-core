@@ -77,4 +77,23 @@ class IIIFSearchBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
                     "Fulltext search must not return hits when VIEW_FULLTEXT is denied");
         }
     }
+
+    /**
+     * @see IIIFSearchBuilder#build()
+     * @verifies not return hits outside annotation blocks in annotation scope
+     */
+    @Test
+    void build_shouldNotReturnHitsOutsideAnnotationBlocksInAnnotationScope() throws Exception {
+        // Baseline: the record's printed text must match, otherwise the scoped assertion below would be vacuous
+        SearchResult unscoped = new IIIFSearchBuilder(urls, QUERY, PI_WITH_ALTO, null).setMotivation(Motivation.PAINTING).build();
+        Assumptions.assumeTrue(unscoped.getResources() != null && !unscoped.getResources().isEmpty(),
+                "Skipping: no fulltext search hits for " + PI_WITH_ALTO + " in the test Solr");
+
+        // The record's ALTO has no annotation-tagged blocks, so nothing may match in annotation scope
+        SearchResult scoped = new IIIFSearchBuilder(urls, QUERY, PI_WITH_ALTO, null).setScope(IIIFSearchBuilder.SCOPE_ANNOTATIONS).build();
+        Assertions.assertTrue(scoped.getResources() == null || scoped.getResources().isEmpty(),
+                "Annotation-scoped search must not return hits from printed text");
+        // Paging links must keep the scope
+        Assertions.assertTrue(String.valueOf(scoped.getWithin().getFirst()).contains("scope=" + IIIFSearchBuilder.SCOPE_ANNOTATIONS));
+    }
 }

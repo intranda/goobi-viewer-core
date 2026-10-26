@@ -28,6 +28,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_COMMENT;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
@@ -41,6 +42,7 @@ import de.intranda.api.iiif.search.SearchHit;
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.model.alto.AltoHtmlBuilder.AnnotationStyle;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.iiif.search.model.AnnotationResultList;
 import io.goobi.viewer.model.iiif.search.parser.AbstractSearchParser;
@@ -60,6 +62,12 @@ class SearchResultConverterTest extends AbstractSolrEnabledTest {
     String restUrl;
 
     Path altoFile = Paths.get("src/test/resources/data/sample_alto.xml");
+
+    /** ALTO with a printed block (gr_printed) and handwritten blocks tagged with various Grimm labels. */
+    private static final Path LAYOUT_TAG_ALTO = Paths.get("src/test/resources/data/alto_layouttags.xml");
+    private static final Map<String, AnnotationStyle> ANNOTATION_STYLES = Map.of(
+            "gr_jacob_grimm", new AnnotationStyle(null, "Jacob"),
+            "gr_jacob_oder_wilhelm_grimm", new AnnotationStyle(null, "Jacob or Wilhelm"));
 
     ApiUrls urls = new ApiUrls();
 
@@ -188,6 +196,39 @@ class SearchResultConverterTest extends AbstractSolrEnabledTest {
         String url = urls.path(ApiUrls.ANNOTATIONS, ApiUrls.ANNOTATIONS_ALTO).params(pi, pageNo, "Word_14").query("format", "oa").build();
         Assertions.assertEquals(url, hit1.getAnnotations().get(0).getId().toString());
 
+    }
+
+    /**
+     * @see SearchResultConverter#getAnnotationsFromAlto(Path, String, Map)
+     * @verifies only return hits within annotation blocks if annotation styles given
+     */
+    @Test
+    void getAnnotationsFromAlto_shouldOnlyReturnHitsWithinAnnotationBlocksIfAnnotationStylesGiven() throws Exception {
+        // "Adelung" is in block b-3 (gr_jacob_oder_wilhelm_grimm), "1590" in block b-6 (gr_jacob_grimm)
+        AnnotationResultList adelung = converter.getAnnotationsFromAlto(LAYOUT_TAG_ALTO, AbstractSearchParser.getQueryRegex("Adelung"),
+                ANNOTATION_STYLES);
+        Assertions.assertEquals(1, adelung.getHits().size());
+        Assertions.assertEquals("Adelung", adelung.getHits().get(0).getMatch());
+
+        AnnotationResultList year = converter.getAnnotationsFromAlto(LAYOUT_TAG_ALTO, AbstractSearchParser.getQueryRegex("1590"), ANNOTATION_STYLES);
+        Assertions.assertEquals(1, year.getHits().size());
+    }
+
+    /**
+     * @see SearchResultConverter#getAnnotationsFromAlto(Path, String, Map)
+     * @verifies return no hits for text outside annotation blocks if annotation styles given
+     */
+    @Test
+    void getAnnotationsFromAlto_shouldReturnNoHitsForTextOutsideAnnotationBlocksIfAnnotationStylesGiven() throws Exception {
+        // "die" only occurs in the printed block b-1
+        String printedRegex = AbstractSearchParser.getQueryRegex("die");
+        Assertions.assertFalse(converter.getAnnotationsFromAlto(LAYOUT_TAG_ALTO, printedRegex).getHits().isEmpty());
+        Assertions.assertTrue(converter.getAnnotationsFromAlto(LAYOUT_TAG_ALTO, printedRegex, ANNOTATION_STYLES).getHits().isEmpty());
+
+        // "Otnit" occurs in the printed block b-1 ("Otnit:") and in block b-2, whose label gr_wilhelm_grimm is not a configured annotation tag
+        String untaggedRegex = AbstractSearchParser.getQueryRegex("Otnit");
+        Assertions.assertEquals(2, converter.getAnnotationsFromAlto(LAYOUT_TAG_ALTO, untaggedRegex).getHits().size());
+        Assertions.assertTrue(converter.getAnnotationsFromAlto(LAYOUT_TAG_ALTO, untaggedRegex, ANNOTATION_STYLES).getHits().isEmpty());
     }
 
     /**

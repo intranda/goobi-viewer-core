@@ -109,6 +109,16 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
+     * Whether handwritten annotation blocks can be told apart from printed text, i.e. whether any {@code altoLayoutTags/annotationTag} is
+     * configured. Gates the immersive view's "only in annotations" search option.
+     *
+     * @return true if at least one annotation layout tag is configured; false otherwise
+     */
+    public boolean isAltoLayoutAnnotationTagsConfigured() {
+        return !DataManager.getInstance().getConfiguration().getAltoLayoutAnnotationTags().isEmpty();
+    }
+
+    /**
      * useTiles.
      *
      * @param pageType name of the page type to look up settings for

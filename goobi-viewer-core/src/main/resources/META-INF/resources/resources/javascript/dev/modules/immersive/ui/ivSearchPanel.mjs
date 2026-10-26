@@ -19,6 +19,8 @@ export function setupSearchPanel(viewer, pi, apiBase) {
     const resultsBox = document.getElementById('immersiveSearchResults');
     const resultsList = document.getElementById('immersiveResultsList');
     const hitCounter = document.getElementById('immersiveHitCounter');
+    // Only rendered when annotation layout tags are configured
+    const annotationsOnlyBox = document.getElementById('immersiveSearchAnnotationsOnly');
     const hitsOnOrder = (order) => searchState.hits.filter((h) => h.order === order);
 
     const renderHighlights = () => {
@@ -87,7 +89,8 @@ export function setupSearchPanel(viewer, pi, apiBase) {
         let failed = false;
         if (term) {
             try {
-                hits = await search(pi, apiBase, term);
+                // undefined keeps the default fetch function and page cap
+                hits = await search(pi, apiBase, term, undefined, undefined, { annotationsOnly: !!(annotationsOnlyBox && annotationsOnlyBox.checked) });
             } catch (e) {
                 console.error('immersive fulltext search failed', e);
                 failed = true;
@@ -140,6 +143,12 @@ export function setupSearchPanel(viewer, pi, apiBase) {
                 e.stopPropagation();
                 resetSearch();
             }
+        });
+    }
+    if (annotationsOnlyBox) {
+        // Re-run the last submitted search in the new scope; nothing to do before the first search
+        bag.listen(annotationsOnlyBox, 'change', () => {
+            if (searchState.term) runSearch(searchState.term);
         });
     }
     document.querySelectorAll('[data-immersive-hit]').forEach((btn) => {
