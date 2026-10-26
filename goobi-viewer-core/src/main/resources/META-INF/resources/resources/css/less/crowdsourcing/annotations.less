@@ -1,3 +1,8 @@
+/* ==============================================================
+   Crowdsourcing Annotations
+   style declarations for campaignAnnotations.xhtml
+   ==============================================================*/
+/* ANNOTATION BODY */
 .annotation {
     &__body {
         &__content_wrapper {
@@ -31,11 +36,8 @@
     }
 }
 
-#campaignAnnotationsTable {
-    .annotation__label {
-        word-wrap: break-word;
-        overflow: hidden;
-    }
+/* ANNOTATIONS IN DATA TABLES */
+.data-table {
     .annotation__body__authority dd {
         padding: 0;
     }
@@ -44,13 +46,13 @@
     }
 }
 
+/* CAMPAIGN ANNOTATIONS */
+.campaign-annotations .data-table__row {
+    grid-template-columns: minmax(0, 1fr) minmax(12rem, 18rem) 16rem 8rem;
+}
+
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
-    #campaignAnnotationsTable {
-        .admin__table-action-link {
-            opacity: 1;
-        }
-    }
 }
 
 /* BREAKPOINT FOR DESKTOPS */
