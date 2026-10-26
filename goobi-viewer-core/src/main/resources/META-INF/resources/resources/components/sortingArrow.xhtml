@@ -43,7 +43,7 @@
         <ui:fragment rendered="#{cc.attrs.list.sortOrder == 'ASCENDING' and cc.attrs.list.sortField == cc.attrs.filterType}">
             <div
                 role="columnheader"
-                aria-sort="descending">
+                aria-sort="ascending">
                 <button
                     class="sort admin__table-sorting"
                     jsf:action="#{cc.attrs.list.sortBy(cc.attrs.filterType, 'DESCENDING')}">
