@@ -269,6 +269,31 @@
             text-decoration: underline;
         }
     }
+
+    /* MODULE SETTINGS */
+    &__panel .crowdsourcing-notification {
+        &__wrapper {
+            > h3 {
+                margin: 0;
+                padding: 1.6rem 2rem 0;
+                color: var(--fg-heading);
+                font-size: var(--font-size-caption);
+                font-weight: 600;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+            }
+            > form {
+                padding: 1.6rem 2rem;
+            }
+        }
+        &__text {
+            margin: 0;
+            padding: 0.8rem 2rem 1.6rem;
+            color: var(--fg-secondary);
+            font-size: var(--font-size-body-small);
+            border-bottom: 1px solid var(--border-default);
+        }
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
