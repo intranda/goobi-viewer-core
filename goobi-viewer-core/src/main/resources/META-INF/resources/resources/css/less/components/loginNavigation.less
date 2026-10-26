@@ -66,6 +66,11 @@
                 &:hover {
                     background-color: var(--bg-hover);
                 }
+                &.-group-start {
+                    margin-block-start: 0.8rem;
+                    padding-block-start: 0.8rem;
+                    border-block-start: 1px solid var(--border-subtle);
+                }
             }
             &__user-dropdown-item-link {
                 display: flex;
@@ -111,73 +116,113 @@
             }
             &__bookmarks-small-list {
                 display: none;
-                padding: 0.5rem 1rem 0.5rem 1.5rem;
-                background-color: var(--bg-elevated);
+                position: relative;
+                margin: 0;
+                padding: 0;
+                list-style: none;
+                &::before {
+                    content: '';
+                    position: absolute;
+                    inset-block: 0.4rem;
+                    inset-inline-start: 2.4rem;
+                    border-inline-start: 1px solid var(--border-subtle);
+                }
             }
             &__bookmarks-entry {
                 display: flex;
-                justify-content: space-between;
-                padding: 0.3rem 0;
-                font-size: var(--font-size-body-small);
-            }
-            &__bookmarks-name {
-                flex-grow: 1;
-                a {
-                    white-space: nowrap;
-                    width: 100%;
-                    max-width: 155px;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
+                align-items: center;
+                gap: 0.4rem;
+                padding-inline-end: 1.2rem;
+                &:hover,
+                &:focus-within {
+                    background-color: var(--bg-hover);
+                    .login-navigation__bookmarks-action {
+                        width: 2rem;
+                        border-width: 1px;
+                        opacity: 1;
+                    }
                 }
             }
-            &__bookmarks-name a,
-            &__bookmarks-icon-list .fa,
-            &__bookmarks-icon-list svg,
-            &__bookmarks-icon-list {
-                color: var(--fg-default);
-                a {
-                    margin-right: 0;
+            &__bookmarks-link,
+            &__bookmarks-overview-link {
+                display: flex;
+                flex: 1 1 auto;
+                align-items: center;
+                gap: 1rem;
+                min-width: 0;
+                padding-block: 0.5rem;
+                padding-inline: 4.3rem 0.8rem;
+                font-size: var(--font-size-body-small);
+                line-height: 1;
+                text-decoration: none;
+                &:hover,
+                &:focus-visible {
+                    text-decoration: none;
+                }
+            }
+            &__bookmarks-link {
+                color: var(--fg-secondary);
+                &:hover {
                     color: var(--fg-default);
                 }
-                &:hover {
-                    color: var(--fg-link-hover);
+            }
+            &__bookmarks-action {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                flex: none;
+                width: 0;
+                height: 2rem;
+                overflow: hidden;
+                color: var(--fg-muted);
+                border: 0 solid var(--border-strong);
+                border-radius: var(--radius-container-small);
+                opacity: 0;
+                &:hover,
+                &:focus-visible {
+                    color: var(--fg-on-brand);
+                    background: var(--bg-brand);
+                    border-color: var(--bg-brand);
+                }
+                @media (hover: none) {
+                    width: 2rem;
+                    border-width: 1px;
+                    opacity: 1;
                 }
             }
-            &__bookmarks-icon-list,
-            &__bookmarks-icon-list a {
-                display: flex;
-                text-decoration: none;
-                align-items: center;
-                gap: 0.7rem;
+            &__bookmarks-action-icon {
+                width: 1.4rem;
+                height: 1.4rem;
             }
-            &__bookmarks-icon-list a {
-                transition: color 0.2s ease;
-            }
-            &__bookmarks-icon-list svg {
-                width: 1.8rem;
-                height: 1.8rem;
-                stroke: currentColor;
-                transition:
-                    stroke 0.2s ease,
-                    transform 0.2s ease;
-            }
-            &__bookmarks-icon-list a:hover svg {
-                transform: scale(1.08);
+            &__bookmarks-name {
+                flex: 1 1 auto;
+                min-width: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
             &__bookmarks-counter {
-                padding: 0 0.3rem;
-                font-size: var(--font-size-caption);
-                color: var(--fg-on-brand);
-                border-radius: 2px;
-                background-color: var(--bg-brand);
-                align-self: center;
+                flex: none;
+                min-width: 2ch;
+                margin-inline-start: 0.4rem;
+                color: var(--fg-muted);
+                font-size: var(--font-size-body-small);
+                font-variant-numeric: tabular-nums;
+                text-align: end;
             }
             &__bookmarks-overview-link {
-                margin-left: auto;
-                color: var(--fg-default);
+                padding-inline-end: 0;
+                color: var(--fg-secondary);
                 &:hover {
-                    color: var(--fg-link-hover);
+                    color: var(--fg-default);
                 }
+            }
+            &__bookmarks-overview-icon {
+                flex: none;
+                width: 1.4rem;
+                height: 1.4rem;
+                margin-inline-start: auto;
+                color: var(--fg-muted);
             }
             &__bookmarks-trigger {
                 .mx-no-style-button;
@@ -201,11 +246,8 @@
                     right: unset;
                     left: 0;
                 }
-                &__bookmarks-icon-list {
-                    a {
-                        margin-left: 0.7rem;
-                        margin-right: unset;
-                    }
+                &__bookmarks-overview-link svg {
+                    transform: scaleX(-1);
                 }
             }
         }

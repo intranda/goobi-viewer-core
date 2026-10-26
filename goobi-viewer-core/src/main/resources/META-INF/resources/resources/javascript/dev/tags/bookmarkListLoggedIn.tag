@@ -1,31 +1,34 @@
 <bookmarklistLoggedIn>
 
-<ul if="{opts.bookmarks.config.userLoggedIn}" class="{mainClass}-small-list list">
+<ul if="{opts.bookmarks.config.userLoggedIn}" id="userBookmarkListsMenu" class="{mainClass}-small-list list">
 	<li class="{mainClass}-entry" each="{bookmarkList in getBookmarkLists()}">
-		<div class="login-navigation__bookmarks-name">
-			<a href="{opts.bookmarks.getBookmarkListUrl(bookmarkList.id)}">{bookmarkList.name}</a>
-		</div>	
-		
-		<div class="login-navigation__bookmarks-icon-list icon-list">
-			<a href="{searchListUrl(bookmarkList)}"
-				data-toggle="tooltip" data-placement="top" data-original-title=""
-				title="{msg('action__search_in_bookmarks')}"> 
-				<svg class="admin-cms-media__upload-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-                    <use riot-href="{getIconHref('search')}"></use>
-                </svg>
-			</a>
-			<a href="{miradorUrl(bookmarkList)}" target="_blank" title="{msg('viewMiradorComparison')}"> 
-				<svg class="admin-cms-media__upload-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-                    <use riot-href="{getIconHref('grid-dots')}"></use>
-                </svg>
-			</a>
-			<span title="{msg('admin__crowdsourcing_campaign_statistics_numRecords')}" class="{mainClass}-counter">{bookmarkList.numItems}</span>
-		</div>
+		<a class="{mainClass}-link" href="{opts.bookmarks.getBookmarkListUrl(bookmarkList.id)}">
+			<span class="{mainClass}-name">{bookmarkList.name}</span>
+		</a>
+		<a class="{mainClass}-action" href="{searchListUrl(bookmarkList)}"
+			title="{msg('action__search_in_bookmarks')}"
+			aria-label="{msg('action__search_in_bookmarks')}: {bookmarkList.name}">
+			<svg class="icon-svg {mainClass}-action-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+				<use riot-href="{getIconHref('search')}"></use>
+			</svg>
+		</a>
+		<a class="{mainClass}-action" href="{miradorUrl(bookmarkList)}" target="_blank"
+			title="{msg('viewMiradorComparison')}"
+			aria-label="{msg('viewMiradorComparison')}: {bookmarkList.name}">
+			<svg class="icon-svg {mainClass}-action-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+				<use riot-href="{getIconHref('grid-dots')}"></use>
+			</svg>
+		</a>
+		<span class="{mainClass}-counter" title="{msg('admin__crowdsourcing_campaign_statistics_numRecords')}">
+			<span class="sr-only">{msg('admin__crowdsourcing_campaign_statistics_numRecords')}: </span>{bookmarkList.numItems}
+		</span>
 	</li>
 	<li class="{mainClass}-entry">
-		<a class="login-navigation__bookmarks-overview-link" href="{allBookmarksUrl()}"
-			data-toggle="tooltip" data-placement="top" data-original-title=""
-			title="{msg('bookmarkList_overview_all')}">{msg('bookmarkList_overview_all')}
+		<a class="{mainClass}-overview-link" href="{allBookmarksUrl()}">
+			<span class="{mainClass}-name">{msg('bookmarkList_overview_all')} ({opts.bookmarks.getBookmarkListsCount()})</span>
+			<svg class="icon-svg {mainClass}-overview-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+				<use riot-href="{getIconHref('arrow-right')}"></use>
+			</svg>
 		</a>
 	</li>
 </ul>

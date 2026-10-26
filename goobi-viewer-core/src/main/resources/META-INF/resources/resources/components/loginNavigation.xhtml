@@ -99,7 +99,9 @@
                                             <div class="login-navigation__user-dropdown-item login-navigation__bookmarks-list">
                                                 <button
                                                     type="button"
-                                                    class="login-navigation__bookmarks-trigger login-navigation__user-dropdown-item-link">
+                                                    class="login-navigation__bookmarks-trigger login-navigation__user-dropdown-item-link"
+                                                    aria-expanded="false"
+                                                    aria-controls="userBookmarkListsMenu">
                                                     <util:icon-text
                                                         icon="bookmark"
                                                         text="#{msg.bookmarks}"
@@ -192,7 +194,7 @@
                                     </ui:fragment>
 
                                     <!-- USERDATA/PROFILE SETTINGS -->
-                                    <li class="login-navigation__user-dropdown-item">
+                                    <li class="login-navigation__user-dropdown-item -group-start">
                                         <a
                                             href="#{navigationHelper.applicationUrl}user/settings/"
                                             class="login-navigation__user-dropdown-item-link">
@@ -222,7 +224,7 @@
                                     </ui:fragment>
 
                                     <!-- LOGOUT -->
-                                    <li class="login-navigation__user-dropdown-item">
+                                    <li class="login-navigation__user-dropdown-item -group-start">
                                         <h:commandLink
                                             action="#{userBean.logout}"
                                             styleClass="login-navigation__user-dropdown-item-link">

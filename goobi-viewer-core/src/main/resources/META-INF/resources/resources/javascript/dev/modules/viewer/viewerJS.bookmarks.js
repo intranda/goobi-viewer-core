@@ -100,15 +100,11 @@ var viewerJS = (function (viewer) {
                 let $span = $button.find('.bookmark-toggle');
                 if (added) {
                     $button.addClass('added');
-                    $span
-                        .tooltip('hide')
-                        .attr('data-original-title', $span.attr('data-bookmark-list-title-added'));
+                    $span.tooltip('hide').attr('data-original-title', $span.attr('data-bookmark-list-title-added'));
                     $button.attr('aria-checked', true);
                 } else {
                     $button.removeClass('added');
-                    $span
-                        .tooltip('hide')
-                        .attr('data-original-title', $span.attr('data-bookmark-list-title-add'));
+                    $span.tooltip('hide').attr('data-original-title', $span.attr('data-bookmark-list-title-add'));
                     $button.attr('aria-checked', false);
                 }
             });
@@ -211,10 +207,11 @@ var viewerJS = (function (viewer) {
             });
 
             // Trigger bookmarks dropdown in login navigation dropdown
-            $('body').on('click', '.login-navigation__bookmarks-trigger', function () {
+            $('body').on('click', '.login-navigation__bookmarks-trigger', function (event) {
                 event.preventDefault();
                 $('.login-navigation__bookmarks-small-list').slideToggle('fast');
                 $('.login-navigation__bookmarks-list').toggleClass('-opened');
+                $(this).attr('aria-expanded', $('.login-navigation__bookmarks-list').hasClass('-opened'));
             });
 
             //                $dropdown.on("click", (event) => event.stopPropagation());
