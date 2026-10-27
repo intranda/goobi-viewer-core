@@ -621,7 +621,7 @@
         position: relative;
         height: 370px;
         overflow: hidden;
-        background: var(--color-hero);
+        background: var(--bg-brand-strong);
 
         &::after {
             content: '';
@@ -644,7 +644,7 @@
             height: auto;
             min-height: 120px;
             padding-top: @archives-header-height;
-            background: linear-gradient(135deg, var(--color-hero) 0%, var(--color-hero-gradient) 100%);
+            background: linear-gradient(180deg, var(--bg-brand-strong) 0%, oklch(from var(--bg-brand-strong) min(calc(l + 0.18), 0.55) calc(c * 1.4) h) 100%);
 
             &::after {
                 display: none;
