@@ -39,6 +39,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import jakarta.inject.Inject;
@@ -433,6 +434,7 @@ public class RecordPageResource {
      * page text annotations, so clients can join both data sets by ALTO element id.
      *
      * @param pageNo page number (1-based)
+     * @param language language of the returned author names; blank falls back to English (no request locale in REST calls)
      * @return the layout annotations of the page; empty lists when the page has no ALTO, no layout tags, or fulltext
      *         access is denied
      * @throws PresentationException
@@ -449,7 +451,8 @@ public class RecordPageResource {
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
     public LayoutAnnotations getLayoutAnnotationsForPage(
             @Parameter(description = "Page number (1-based)",
-                    schema = @Schema(minimum = "1", maximum = "2147483647")) @PathParam("pageNo") Integer pageNo)
+                    schema = @Schema(minimum = "1", maximum = "2147483647")) @PathParam("pageNo") Integer pageNo,
+            @Parameter(description = "Language of the returned author names (optional)") @QueryParam("lang") String language)
             throws PresentationException, IndexUnreachableException, DAOException {
         requireValidPageNo(pageNo);
         LayoutAnnotations empty = new LayoutAnnotations();
@@ -479,7 +482,8 @@ public class RecordPageResource {
             }
             Configuration config = DataManager.getInstance().getConfiguration();
             return new AltoLayoutAnnotationBuilder(config.getAltoLayoutPrintedLabel(),
-                    ALTOTools.translateAnnotationTagNames(config.getAltoLayoutAnnotationTags(), null),
+                    ALTOTools.translateAnnotationTagNames(config.getAltoLayoutAnnotationTags(),
+                            StringUtils.isNotBlank(language) ? Locale.forLanguageTag(language) : null),
                     config.getAltoLayoutWordTagTypes(), config.getAltoLayoutWordTags()).build(alto.getOne(), alto.getTwo());
         } catch (FileNotFoundException e) {
             logger.debug("No ALTO file found for {}, page {}: {}", pi, pageNo, e.getMessage());

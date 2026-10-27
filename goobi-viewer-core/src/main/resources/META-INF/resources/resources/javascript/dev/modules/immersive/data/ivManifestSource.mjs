@@ -476,10 +476,12 @@ export function parseLayoutAnnotations(json) {
  * @param {string} apiBase
  * @param {number} order    0-based page order; the endpoint is 1-based, so order + 1
  * @param {Function} fetchFn
+ * @param {string} [lang]   UI language code for the hand names
  * @returns {Promise<{blocks:Array, words:Array, lines:Array}|null>}
  */
-export async function loadPageLayout(pi, apiBase, order, fetchFn = fetch) {
-    const res = await fetchFn(`${apiBase}/records/${pi}/pages/${order + 1}/text/layout/`);
+export async function loadPageLayout(pi, apiBase, order, fetchFn = fetch, lang = '') {
+    const query = lang ? `?lang=${encodeURIComponent(lang)}` : '';
+    const res = await fetchFn(`${apiBase}/records/${pi}/pages/${order + 1}/text/layout/${query}`);
     if (res.status === 404) return null;
     if (!res.ok) throw new Error(`Failed to load layout annotations for "${pi}" page ${order + 1}: HTTP ${res.status}`);
     return parseLayoutAnnotations(await res.json());

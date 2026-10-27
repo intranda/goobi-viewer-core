@@ -116,7 +116,7 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
         }
         let layout = null;
         try {
-            layout = await loadPageLayout(pi, apiBase, viewer.getCurrentOrder());
+            layout = await loadPageLayout(pi, apiBase, viewer.getCurrentOrder(), fetch, document.documentElement.lang);
         } catch (e) {
             console.warn('immersive layout annotations failed', e);
             layout = null;

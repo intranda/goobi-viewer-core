@@ -638,4 +638,10 @@ describe('parseLayoutAnnotations / loadPageLayout', () => {
         const broken = jest.fn(() => Promise.resolve({ ok: false, status: 503 }));
         await expect(loadPageLayout('PPN1', 'https://h/api', 2, broken)).rejects.toThrow('HTTP 503');
     });
+
+    test('passes the UI language, so the server names the hands in it', async () => {
+        const fetchFn = jest.fn(() => Promise.resolve(okResponse({ blocks: [], words: [], lines: [] })));
+        await loadPageLayout('PPN1', 'https://h/api', 2, fetchFn, 'de');
+        expect(fetchFn).toHaveBeenCalledWith('https://h/api/records/PPN1/pages/3/text/layout/?lang=de');
+    });
 });

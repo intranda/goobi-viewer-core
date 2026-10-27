@@ -94,6 +94,18 @@ test('double-page mode disables the rail button and closes an open fulltext pane
     expect(btn.getAttribute('title')).toBe('Volltext');
 });
 
+test('requests the layout annotations in the page language', async () => {
+    global.fetch = jest.fn(async () => ({ ok: true, status: 200, json: async () => ({ resources: [] }) }));
+    document.documentElement.lang = 'de';
+    const { fulltext, open } = mountMarkup();
+    open();
+    await flush();
+    await flush();
+    expect(global.fetch.mock.calls.map(([url]) => url)).toContain('/api/v1/records/PI/pages/1/text/layout/?lang=de');
+    fulltext.destroy();
+    document.documentElement.lang = '';
+});
+
 test('destroy drops an in-flight layout request instead of drawing its overlays', async () => {
     const layout = deferred();
     global.fetch = jest.fn((url) => (url.includes('/text/layout/') ? layout.promise : Promise.resolve({ ok: true, status: 200, json: async () => ({ resources: [] }) })));
