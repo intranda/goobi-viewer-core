@@ -11,7 +11,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         if(this.opts.fileTypes) {
             this.fileTypes = this.opts.fileTypes;
         } else {
-        	this.fileTypes = 'jpg, png, tif, jp2, gif, pdf, svg, ico, mp4';
+        	this.fileTypes = 'jpg, png, tif, jp2, gif, webp, pdf, svg, ico, mp4';
         }
 
         this.on('mount', function () {
@@ -801,7 +801,8 @@ riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronol
 		})
 
 		this.generateCompleteYearMap = function(datamap) {
-			let keys = Array.from(datamap.keys());
+
+			let keys = Array.from(datamap.keys()).sort((a, b) => parseInt(a) - parseInt(b));
 			let startYear = parseInt(keys[0]);
 			let endYear = parseInt(keys[keys.length-1]);
 			let yearMap = new Map();
@@ -815,8 +816,11 @@ riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronol
 		this.drawInitialRange = function() {
 			var points = this.chart.getDatasetMeta(0).data;
 			if(points && points.length){
-				let startYearIndex = this.yearList.indexOf(this.startYear);
-				let endYearIndex = this.yearList.indexOf(this.endYear);
+
+				let startYearIndex = this.yearList.findIndex(y => y >= this.startYear);
+				if(startYearIndex < 0) startYearIndex = this.yearList.length - 1;
+				let endYearIndex = this.yearList.findLastIndex(y => y <= this.endYear);
+				if(endYearIndex < 0) endYearIndex = 0;
 				let x1 = points[startYearIndex].x;
 				let x2 = points[endYearIndex].x;
 				this.drawRect(x1, x2, this.refs.draw);
@@ -3385,6 +3389,254 @@ riot.tag2('timematrix', '<div class="timematrix__subarea"><span class="timematri
 
 });
 
+riot.tag2('featuresetfilter', '<div if="{filters.length > 0}"><div each="{filter in filters}" class="{filter.styleClass}"><label>{filter.label}</label><div><input type="radio" name="options_{filter.field}" id="options_{filter.field}_all" value="" checked onclick="{resetFilter}"><label for="options_{filter.field}_all">{opts.msg.alle}</label></div><ul class="geomap__feature-options-list"><li each="{option, index in filter.options}" class="geomap__feature-options-list-entry"><input type="radio" name="options_{filter.field}" id="options_{filter.field}_{index}" riot-value="{option.name}" onclick="{setFilter}"><label for="options_{filter.field}_{index}">{option.name}</label></li></ul></div></div>', '', '', function(opts) {
+
+this.filters = [];
+
+this.on("mount", () => {
+	this.geomap = this.opts.geomap;
+	this.featureGroups = this.opts.featureGroups;
+	this.filters = this.createFilters(this.opts.filters, this.featureGroups);
+	if(this.opts.comparator) {
+		this.filters.forEach(filter => {
+			if(filter.options) {
+				filter.options.sort(this.opts.comparator.compare);
+			}
+		})
+	}
+	this.geomap.onActiveLayerChange.subscribe(groups => {
+		this.featureGroups = groups;
+		this.filters = this.createFilters(this.opts.filters, this.featureGroups);
+ 		this.update();
+	})
+	this.update();
+})
+
+this.createFilters = function(filterMap, featureGroups) {
+	let filters = [];
+	for (const entry of filterMap.entries()) {
+		let layerName = entry[0];
+		let filterConfigs = JSON.parse(entry[1]);
+		let groups = featureGroups.filter(g => g.config.identifier == layerName);
+		if(layerName && filterConfigs?.filter && filterConfigs.filter.length > 0 && groups.length > 0) {
+			filterConfigs.filter.forEach(filterConfig => {
+				let filter = {
+						field: filterConfig.value,
+						label: filterConfig.label,
+						styleClass: filterConfig.styleClass,
+						layers: groups,
+						options: this.findValues(groups, filterConfig.value).map(v => {
+							return {
+								name: v,
+								field: filterConfig.value
+							}
+						}),
+					};
+				filters.push(filter);
+			});
+		}
+	}
+	return filters.filter(filter => filter.options.length > 1);
+}.bind(this)
+
+this.getLayerName = function(layer) {
+	let name = viewerJS.iiif.getValue(layer.config.label, this.opts.defaultLocale);
+	return name;
+}.bind(this)
+
+this.getFilterName = function(filter) {
+	let name = viewerJS.iiif.getValue(filter.label, this.opts.defaultLocale);
+	return name;
+}.bind(this)
+
+this.findValues = function(featureGroups, filterField) {
+	return Array.from(new Set(this.findEntities(featureGroups, filterField)
+	.map(e => e[filterField]).map(a => a[0])
+	.map(value => viewerJS.iiif.getValue(value, this.opts.locale, this.opts.defaultLocale)).filter(e => e)));
+}.bind(this)
+
+this.findEntities = function(featureGroups, filterField) {
+	let entities = featureGroups.flatMap(group => group.markers).filter(m => m.feature.properties.entities).flatMap(m => m.feature.properties.entities).filter(e => e[filterField]);
+	return entities;
+}.bind(this)
+
+this.resetFilter = function(event) {
+	let filter = event.item.filter;
+	filter.layers.forEach(g => g.showMarkers(entity => this.isShowMarker(entity, filter, undefined)));
+}.bind(this)
+
+this.setFilter = function(event) {
+	let filter = this.getFilterForField(event.item.option.field);
+	let value = event.item.option.name;
+	filter.layers.forEach(g => g.showMarkers(entity => this.isShowMarker(entity, filter, value)));
+}.bind(this)
+
+this.isShowMarker = function(entity, filter, value) {
+	let filters = this.filters.filter(f => f.layers.filter(g => filter.layers.includes(g)).length > 0);
+
+	filter.selectedValue = value;
+	let match = filters.map(filter => {
+		if(filter.selectedValue) {
+			let show = entity[filter.field] != undefined && entity[filter.field].map(v => viewerJS.iiif.getValue(v, this.opts.locale, this.opts.defaultLocale)).includes(filter.selectedValue);
+			return show;
+		} else {
+			return true;
+		}
+	})
+	.every(match => match);
+	return match;
+}.bind(this)
+
+this.getFilterForField = function(field) {
+	return this.filters.find(f => f.field == field);
+}.bind(this)
+
+});
+riot.tag2('featuresetselector', '<div class="tab" if="{featureGroups.length > 1}"><button each="{featureGroup, index in featureGroups}" class="tablinks {isActive(featureGroup) ? \'-active\':\'\'}" onclick="{setFeatureGroup}">{getLabel(featureGroup)}</button></div>', '', '', function(opts) {
+
+this.featureGroups = [];
+
+this.on("mount", () => {
+	this.featureGroups = opts.featureGroups;
+	this.geomap = opts.geomap;
+	this.update();
+})
+
+this.setFeatureGroup = function(event) {
+	let featureGroup = event.item.featureGroup;
+	this.geomap.setActiveLayers([featureGroup]);
+}.bind(this)
+
+this.getLabel = function(featureGroup) {
+	return viewerJS.iiif.getValue(featureGroup.config.label, this.opts.locale, this.opts.defaultLocale);
+}.bind(this)
+
+this.isActive = function(featureGroup) {
+	return featureGroup.active;
+}.bind(this)
+
+});
+riot.tag2('geojsonfeaturelist', '<div class="custom-map__sidebar-inner-wrapper"><div class="custom-map__sidebar-inner-top"><h4 class="custom-map__sidebar-inner-heading"><rawhtml content="{getListLabel()}"></rawhtml></h4><input if="{getVisibleEntities().length > 0}" class="custom-map__sidebar-inner-search-input" type="text" ref="search" oninput="{filterList}"></input></div><div class="custom-map__sidebar-inner-bottom"><ul if="{getVisibleEntities().length > 0}" class="custom-map__inner-wrapper-list"><li class="custom-map__inner-wrapper-list-entry" each="{entity in getVisibleEntities()}"><a href="{getLink(entity)}"><rawhtml content="{getEntityLabel(entity)}"></rawhtml></a></li></ul></div></div>', '', '', function(opts) {
+
+this.entities = [];
+this.filteredEntities = undefined;
+
+this.on("update", () => {
+	if(this.opts.onUpdate) {
+		this.opts.onUpdate(this);
+	}
+});
+
+this.on("updated", () => {
+	if(this.opts.onUpdated) {
+		this.opts.onUpdated(this);
+	}
+});
+
+this.on("mount", () => {
+	this.opts.featureGroups.forEach(group => {
+		group.onFeatureClick.subscribe(f => {
+			this.title = f.properties?.title;
+			this.setEntities(f.properties?.entities?.filter(e => e.visible !== false).filter(e => this.getEntityLabel(e)?.length > 0));
+			if(this.opts.onFeatureClick) {
+				this.opts.onFeatureClick(this);
+			}
+		});
+	})
+	this.opts.geomap.onMapClick.subscribe(e => this.hide());
+	this.hide();
+})
+
+this.setEntities = function(entities) {
+	this.entities = [];
+	this.filteredEntities = undefined;
+	if(this.refs["search"]) {
+		this.refs["search"].value = "";
+	}
+	if(entities?.length || this.opts.showAlways) {
+		this.entities = entities;
+		this.show();
+		this.update();
+	}
+}.bind(this)
+
+this.getVisibleEntities = function() {
+	if(!this.entities) {
+		return [];
+	} else if(this.filteredEntities === undefined) {
+		return this.entities;
+	} else {
+		return this.filteredEntities;
+	}
+}.bind(this)
+
+this.filterList = function(e) {
+	let filter = e.target.value;
+	if(filter) {
+		this.filteredEntities = this.entities.filter(e => this.getLabel(e).toLowerCase().includes(filter.toLowerCase() ));
+	} else {
+		this.filteredEntities = undefined;
+	}
+}.bind(this)
+
+this.getEntityLabel = function(entity) {
+	if(entity) {
+		return this.getLabel(entity);
+	}
+}.bind(this)
+
+this.getListLabel = function() {
+	if(this.title) {
+		let label = viewerJS.iiif.getValue(this.title, this.opts.locale, this.opts.defaulLocale);
+		return label;
+	}
+}.bind(this)
+
+this.getLink = function(entity) {
+	if(entity) {
+		if(entity.link) {
+			return entity.link;
+		} else {
+			let labels = this.opts.entityLinkFormat;
+			label = labels.map(format => {
+				let groups = [...format.matchAll(/\${(.*?)}/g)];
+				let l = "";
+				groups.forEach(group => {
+					if(group.length > 1) {
+						let value = entity[group[1]]?.map(s => viewerJS.iiif.getValue(s, this.opts.locale, this.opts.defaultLocale)).join(", ");
+						if(value) {
+							l += format.replaceAll(group[0], value ? value : "");
+						}
+					}
+				})
+				return l;
+			}).join("");
+			return label;
+
+		}
+	}
+}.bind(this)
+
+this.getLabel = function(entity) {
+
+	if(entity.title) {
+		let label = viewerJS.iiif.getValue(entity.title, this.opts.locale, this.opts.defaulLocale);
+		return label;
+	} else {
+		return "";
+	}
+
+}.bind(this)
+
+this.hide = function() {
+	this.root.style.display = "none";
+}.bind(this)
+
+this.show = function() {
+	this.root.style.display = "block";
+}.bind(this)
+
+});
 riot.tag2('annotationbody', '<plaintextresource if="{isPlaintext()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></plaintextResource><htmltextresource if="{isHtml()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></htmltextResource><geomapresource if="{isGeoJson()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" mapboxtoken="{this.opts.mapboxtoken}" initialview="{this.opts.geomap.initialView}"></geoMapResource><authorityresource if="{isAuthorityResource()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" currentlang="{this.opts.currentlang}" resturl="{this.opts.resturl}"></authorityResource><datasetresource if="{isDatasetResource()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" currentlang="{this.opts.currentlang}" resturl="{this.opts.resturl}"></datasetResource>', '', '', function(opts) {
 
 this.on("mount", () => {
@@ -4912,254 +5164,6 @@ riot.tag2('richtextquestion', '<div if="{this.showInstructions()}" class="annota
 });
 
 
-riot.tag2('featuresetfilter', '<div if="{filters.length > 0}"><div each="{filter in filters}" class="{filter.styleClass}"><label>{filter.label}</label><div><input type="radio" name="options_{filter.field}" id="options_{filter.field}_all" value="" checked onclick="{resetFilter}"><label for="options_{filter.field}_all">{opts.msg.alle}</label></div><ul class="geomap__feature-options-list"><li each="{option, index in filter.options}" class="geomap__feature-options-list-entry"><input type="radio" name="options_{filter.field}" id="options_{filter.field}_{index}" riot-value="{option.name}" onclick="{setFilter}"><label for="options_{filter.field}_{index}">{option.name}</label></li></ul></div></div>', '', '', function(opts) {
-
-this.filters = [];
-
-this.on("mount", () => {
-	this.geomap = this.opts.geomap;
-	this.featureGroups = this.opts.featureGroups;
-	this.filters = this.createFilters(this.opts.filters, this.featureGroups);
-	if(this.opts.comparator) {
-		this.filters.forEach(filter => {
-			if(filter.options) {
-				filter.options.sort(this.opts.comparator.compare);
-			}
-		})
-	}
-	this.geomap.onActiveLayerChange.subscribe(groups => {
-		this.featureGroups = groups;
-		this.filters = this.createFilters(this.opts.filters, this.featureGroups);
- 		this.update();
-	})
-	this.update();
-})
-
-this.createFilters = function(filterMap, featureGroups) {
-	let filters = [];
-	for (const entry of filterMap.entries()) {
-		let layerName = entry[0];
-		let filterConfigs = JSON.parse(entry[1]);
-		let groups = featureGroups.filter(g => g.config.identifier == layerName);
-		if(layerName && filterConfigs?.filter && filterConfigs.filter.length > 0 && groups.length > 0) {
-			filterConfigs.filter.forEach(filterConfig => {
-				let filter = {
-						field: filterConfig.value,
-						label: filterConfig.label,
-						styleClass: filterConfig.styleClass,
-						layers: groups,
-						options: this.findValues(groups, filterConfig.value).map(v => {
-							return {
-								name: v,
-								field: filterConfig.value
-							}
-						}),
-					};
-				filters.push(filter);
-			});
-		}
-	}
-	return filters.filter(filter => filter.options.length > 1);
-}.bind(this)
-
-this.getLayerName = function(layer) {
-	let name = viewerJS.iiif.getValue(layer.config.label, this.opts.defaultLocale);
-	return name;
-}.bind(this)
-
-this.getFilterName = function(filter) {
-	let name = viewerJS.iiif.getValue(filter.label, this.opts.defaultLocale);
-	return name;
-}.bind(this)
-
-this.findValues = function(featureGroups, filterField) {
-	return Array.from(new Set(this.findEntities(featureGroups, filterField)
-	.map(e => e[filterField]).map(a => a[0])
-	.map(value => viewerJS.iiif.getValue(value, this.opts.locale, this.opts.defaultLocale)).filter(e => e)));
-}.bind(this)
-
-this.findEntities = function(featureGroups, filterField) {
-	let entities = featureGroups.flatMap(group => group.markers).filter(m => m.feature.properties.entities).flatMap(m => m.feature.properties.entities).filter(e => e[filterField]);
-	return entities;
-}.bind(this)
-
-this.resetFilter = function(event) {
-	let filter = event.item.filter;
-	filter.layers.forEach(g => g.showMarkers(entity => this.isShowMarker(entity, filter, undefined)));
-}.bind(this)
-
-this.setFilter = function(event) {
-	let filter = this.getFilterForField(event.item.option.field);
-	let value = event.item.option.name;
-	filter.layers.forEach(g => g.showMarkers(entity => this.isShowMarker(entity, filter, value)));
-}.bind(this)
-
-this.isShowMarker = function(entity, filter, value) {
-	let filters = this.filters.filter(f => f.layers.filter(g => filter.layers.includes(g)).length > 0);
-
-	filter.selectedValue = value;
-	let match = filters.map(filter => {
-		if(filter.selectedValue) {
-			let show = entity[filter.field] != undefined && entity[filter.field].map(v => viewerJS.iiif.getValue(v, this.opts.locale, this.opts.defaultLocale)).includes(filter.selectedValue);
-			return show;
-		} else {
-			return true;
-		}
-	})
-	.every(match => match);
-	return match;
-}.bind(this)
-
-this.getFilterForField = function(field) {
-	return this.filters.find(f => f.field == field);
-}.bind(this)
-
-});
-riot.tag2('featuresetselector', '<div class="tab" if="{featureGroups.length > 1}"><button each="{featureGroup, index in featureGroups}" class="tablinks {isActive(featureGroup) ? \'-active\':\'\'}" onclick="{setFeatureGroup}">{getLabel(featureGroup)}</button></div>', '', '', function(opts) {
-
-this.featureGroups = [];
-
-this.on("mount", () => {
-	this.featureGroups = opts.featureGroups;
-	this.geomap = opts.geomap;
-	this.update();
-})
-
-this.setFeatureGroup = function(event) {
-	let featureGroup = event.item.featureGroup;
-	this.geomap.setActiveLayers([featureGroup]);
-}.bind(this)
-
-this.getLabel = function(featureGroup) {
-	return viewerJS.iiif.getValue(featureGroup.config.label, this.opts.locale, this.opts.defaultLocale);
-}.bind(this)
-
-this.isActive = function(featureGroup) {
-	return featureGroup.active;
-}.bind(this)
-
-});
-riot.tag2('geojsonfeaturelist', '<div class="custom-map__sidebar-inner-wrapper"><div class="custom-map__sidebar-inner-top"><h4 class="custom-map__sidebar-inner-heading"><rawhtml content="{getListLabel()}"></rawhtml></h4><input if="{getVisibleEntities().length > 0}" class="custom-map__sidebar-inner-search-input" type="text" ref="search" oninput="{filterList}"></input></div><div class="custom-map__sidebar-inner-bottom"><ul if="{getVisibleEntities().length > 0}" class="custom-map__inner-wrapper-list"><li class="custom-map__inner-wrapper-list-entry" each="{entity in getVisibleEntities()}"><a href="{getLink(entity)}"><rawhtml content="{getEntityLabel(entity)}"></rawhtml></a></li></ul></div></div>', '', '', function(opts) {
-
-this.entities = [];
-this.filteredEntities = undefined;
-
-this.on("update", () => {
-	if(this.opts.onUpdate) {
-		this.opts.onUpdate(this);
-	}
-});
-
-this.on("updated", () => {
-	if(this.opts.onUpdated) {
-		this.opts.onUpdated(this);
-	}
-});
-
-this.on("mount", () => {
-	this.opts.featureGroups.forEach(group => {
-		group.onFeatureClick.subscribe(f => {
-			this.title = f.properties?.title;
-			this.setEntities(f.properties?.entities?.filter(e => e.visible !== false).filter(e => this.getEntityLabel(e)?.length > 0));
-			if(this.opts.onFeatureClick) {
-				this.opts.onFeatureClick(this);
-			}
-		});
-	})
-	this.opts.geomap.onMapClick.subscribe(e => this.hide());
-	this.hide();
-})
-
-this.setEntities = function(entities) {
-	this.entities = [];
-	this.filteredEntities = undefined;
-	if(this.refs["search"]) {
-		this.refs["search"].value = "";
-	}
-	if(entities?.length || this.opts.showAlways) {
-		this.entities = entities;
-		this.show();
-		this.update();
-	}
-}.bind(this)
-
-this.getVisibleEntities = function() {
-	if(!this.entities) {
-		return [];
-	} else if(this.filteredEntities === undefined) {
-		return this.entities;
-	} else {
-		return this.filteredEntities;
-	}
-}.bind(this)
-
-this.filterList = function(e) {
-	let filter = e.target.value;
-	if(filter) {
-		this.filteredEntities = this.entities.filter(e => this.getLabel(e).toLowerCase().includes(filter.toLowerCase() ));
-	} else {
-		this.filteredEntities = undefined;
-	}
-}.bind(this)
-
-this.getEntityLabel = function(entity) {
-	if(entity) {
-		return this.getLabel(entity);
-	}
-}.bind(this)
-
-this.getListLabel = function() {
-	if(this.title) {
-		let label = viewerJS.iiif.getValue(this.title, this.opts.locale, this.opts.defaulLocale);
-		return label;
-	}
-}.bind(this)
-
-this.getLink = function(entity) {
-	if(entity) {
-		if(entity.link) {
-			return entity.link;
-		} else {
-			let labels = this.opts.entityLinkFormat;
-			label = labels.map(format => {
-				let groups = [...format.matchAll(/\${(.*?)}/g)];
-				let l = "";
-				groups.forEach(group => {
-					if(group.length > 1) {
-						let value = entity[group[1]]?.map(s => viewerJS.iiif.getValue(s, this.opts.locale, this.opts.defaultLocale)).join(", ");
-						if(value) {
-							l += format.replaceAll(group[0], value ? value : "");
-						}
-					}
-				})
-				return l;
-			}).join("");
-			return label;
-
-		}
-	}
-}.bind(this)
-
-this.getLabel = function(entity) {
-
-	if(entity.title) {
-		let label = viewerJS.iiif.getValue(entity.title, this.opts.locale, this.opts.defaulLocale);
-		return label;
-	} else {
-		return "";
-	}
-
-}.bind(this)
-
-this.hide = function() {
-	this.root.style.display = "none";
-}.bind(this)
-
-this.show = function() {
-	this.root.style.display = "block";
-}.bind(this)
-
-});
 riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__link" href="{this.opts.link}" target="{this.opts.link_target}" rel="noopener"><div class="swiper-heading slider-{this.opts.stylename}__header">{this.opts.label}</div><img class="swiper-image slider-{this.opts.stylename}__image" riot-src="{this.opts.image}" alt="{this.opts.alttext}"><p class="swiper-description slider-{this.opts.stylename}__description" ref="description"></p></a>', '', '', function(opts) {
 		this.on("mount", () => {
 			if(this.refs.description) {

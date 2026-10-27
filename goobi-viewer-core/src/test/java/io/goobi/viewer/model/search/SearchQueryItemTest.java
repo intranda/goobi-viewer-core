@@ -536,4 +536,44 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
         Assertions.assertTrue(query.contains(SolrConstants.CALENDAR_DAY + ":[18780111 TO 18781231]"),
                 "Expected normalized date range in query: " + query);
     }
+
+    /**
+     * @see SearchQueryItem#isRangeQuery()
+     * @verifies return true for CALENDAR_DAY field with both values set
+     */
+    @Test
+    void isRangeQuery_shouldReturnTrueForCALENDAR_DAYFieldWithBothValuesSet() {
+        SearchQueryItem item = new SearchQueryItem();
+        item.setField(SolrConstants.CALENDAR_DAY);
+        item.setValue("01.01.1995");
+        item.setValue2("31.12.1995");
+        Assertions.assertTrue(item.isRangeQuery());
+    }
+
+    /**
+     * @see SearchQueryItem#isRangeQuery()
+     * @verifies return false if value2 blank
+     */
+    @Test
+    void isRangeQuery_shouldReturnFalseIfValue2Blank() {
+        SearchQueryItem item = new SearchQueryItem();
+        item.setField(SolrConstants.CALENDAR_DAY);
+        item.setValue("01.01.1995");
+        Assertions.assertFalse(item.isRangeQuery());
+        item.setValue2(" ");
+        Assertions.assertFalse(item.isRangeQuery());
+    }
+
+    /**
+     * @see SearchQueryItem#isRangeQuery()
+     * @verifies return false if field not range datepicker or CALENDAR_DAY
+     */
+    @Test
+    void isRangeQuery_shouldReturnFalseIfFieldNotRangeDatepickerOrCALENDAR_DAY() {
+        SearchQueryItem item = new SearchQueryItem();
+        item.setField("MD_TITLE");
+        item.setValue("foo");
+        item.setValue2("bar");
+        Assertions.assertFalse(item.isRangeQuery());
+    }
 }

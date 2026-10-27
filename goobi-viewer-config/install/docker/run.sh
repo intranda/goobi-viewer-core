@@ -7,7 +7,7 @@ groupmod -o -g "${VIEWER_GID}" ${USER}
 usermod -o -u "${VIEWER_UID}" ${USER}
 
 # generate ssh key for theme pulling if not present
-if [ ! -f "${CATALINA_HOME}/.ssh/id_ed2551" ]; then
+if [ ! -f "${CATALINA_HOME}/.ssh/id_ed25519" ]; then
   mkdir -p -m 700 "${CATALINA_HOME}/.ssh"
   ssh-keygen -t ed25519 -N "" -f "${CATALINA_HOME}/.ssh/id_ed25519" -q
 fi

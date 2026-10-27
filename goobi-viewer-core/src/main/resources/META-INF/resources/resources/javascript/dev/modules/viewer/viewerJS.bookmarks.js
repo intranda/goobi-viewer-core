@@ -93,11 +93,9 @@ var viewerJS = (function (viewer) {
 
                 let added = this.contained(pi, page, logid);
                 if (_debug) console.log('set added to ' + added + ' for ', pi, page);
-                // Use a specific selector to avoid accidentally initializing Bootstrap
-                // tooltips (with default hover trigger) on hidden child spans like
-                // .bookmark-toggle__icon--filled, which would cause Bootstrap 4 to
-                // throw "Please use show on visible elements" when _enter fires.
-                let $span = $button.find('.bookmark-toggle');
+                // The tooltip (data-toggle="tooltip") lives on the button itself, so the
+                // title must be updated there and not on a child span.
+                let $span = $button;
                 if (added) {
                     $button.addClass('added');
                     $span.tooltip('hide').attr('data-original-title', $span.attr('data-bookmark-list-title-added'));
@@ -305,8 +303,10 @@ var viewerJS = (function (viewer) {
         },
         prepareBookmarksPopup: function () {
             // render bookmarks popup
+            // Only remove the click handler: a bare .off() would also strip the
+            // tooltip mouseenter/focus handlers registered by initBsFeatures().
             $('[data-bookmark-list-type="add"]')
-                .off()
+                .off('click')
                 .on(
                     'click',
                     function (event) {

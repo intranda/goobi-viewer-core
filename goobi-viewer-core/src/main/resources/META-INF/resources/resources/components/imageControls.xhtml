@@ -459,12 +459,13 @@
                                 data-pi="#{activeDocumentBean.viewManager.pi}"
                                 data-page="#{activeDocumentBean.viewManager.currentImageOrder}"
                                 role="switch"
-                                aria-label="#{msg.bookmarkList_addToBookmarkList}">
-                                <span
-                                    data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}"
-                                    data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}"
-                                    data-toggle="tooltip"
-                                    data-placement="#{cc.attrs.tooltipPlacement}">
+                                aria-label="#{msg.bookmarkList_addToBookmarkList}"
+                                title="#{msg.bookmarkList_addToBookmarkList}"
+                                data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}"
+                                data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}"
+                                data-toggle="tooltip"
+                                data-placement="#{cc.attrs.tooltipPlacement}">
+                                <span>
                                     <util:icon
                                         icon="bookmark"
                                         svgClass="icon icons-tabler-outline"
