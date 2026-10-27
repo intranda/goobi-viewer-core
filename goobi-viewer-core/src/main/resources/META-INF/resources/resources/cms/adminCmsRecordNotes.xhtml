@@ -79,11 +79,25 @@
                                         class="col-12 d-flex"
                                         role="presentation">
                                         <div class="admin__record-notes-table-img align-self-center">
-                                            <ui:fragment rendered="#{note.isSingleRecordNote()}">
+                                            <ui:fragment rendered="#{note.isSingleRecordNote() and !cmsRecordNotesBean.isArchiveNote(note)}">
                                                 <img
                                                     alt="#{note.recordPi}"
                                                     title="#{note.recordPi}"
                                                     src="#{cmsRecordNotesBean.getThumbnailUrl(note, 160, 160)}" />
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{cmsRecordNotesBean.isArchiveNote(note) and not empty cmsRecordNotesBean.getArchiveImageUrl(note)}">
+                                                <img
+                                                    alt="#{note.recordPi}"
+                                                    title="#{note.recordPi}"
+                                                    src="#{cmsRecordNotesBean.getArchiveImageUrl(note)}" />
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{cmsRecordNotesBean.isArchiveNote(note) and empty cmsRecordNotesBean.getArchiveImageUrl(note)}">
+                                                <div class="admin__record-notes-solr-query-img">
+                                                    <util:icon
+                                                        icon="archive"
+                                                        svgClass="icon icon-xxxxl"
+                                                        aria-hidden="true" />
+                                                </div>
                                             </ui:fragment>
                                             <ui:fragment rendered="#{note.isMultiRecordNote()}">
                                                 <div class="admin__record-notes-solr-query-img">

@@ -23,6 +23,7 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -41,6 +42,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.model.archives.ArchiveResource;
 import io.goobi.viewer.model.cms.recordnotes.CMSMultiRecordNote;
 import io.goobi.viewer.model.cms.recordnotes.CMSRecordNote;
 import io.goobi.viewer.model.cms.recordnotes.CMSSingleRecordNote;
@@ -340,6 +342,14 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     
     public void setCurrentNoteType(String currentNoteType) {
         this.currentNoteType = currentNoteType;
+    }
+
+    /**
+     * @return Archives that can be selected for a note
+     * @should offer the archives of the archive manager for selection
+     */
+    public List<ArchiveResource> getArchives() {
+        return DataManager.getInstance().getArchiveManager().getDatabases();
     }
 
     public boolean isMultiRecordNote() {

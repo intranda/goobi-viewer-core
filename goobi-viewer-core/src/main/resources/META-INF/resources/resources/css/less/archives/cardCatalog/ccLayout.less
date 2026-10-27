@@ -1,0 +1,165 @@
+/* ==============================================================
+   Card Catalog: Layout
+   style declarations for archiveCardCatalogView.xhtml (wrapper, sidebars, content area, fullscreen, shared states)
+   ==============================================================*/
+
+.archives-cardcatalog {
+    &__wrapper {
+        display: flex;
+        gap: var(--page-gutter);
+        min-height: 400px;
+        padding: 20px var(--page-gutter);
+        overflow: hidden;
+        color: var(--fg-default);
+        background: var(--bg-page);
+        scrollbar-color: var(--bg-brand) transparent;
+    }
+
+    &__wrapper ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    &__wrapper ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &__wrapper ::-webkit-scrollbar-thumb {
+        background: var(--bg-brand);
+        background-clip: padding-box;
+        border: 2px solid transparent;
+        border-radius: 5px;
+    }
+
+    &__wrapper--fullscreen {
+        position: fixed;
+        inset: 0;
+        z-index: 100000;
+        width: 100vw;
+        height: 100vh !important;
+    }
+
+    &__wrapper:fullscreen #widgetArchivesInteractions {
+        display: none;
+    }
+
+    &__wrapper--fullscreen #widgetArchivesInteractions {
+        display: none;
+    }
+
+    &__sidebar {
+        display: flex;
+        flex: 0 0 clamp(280px, 22vw, 400px);
+        flex-direction: column;
+        height: 100%;
+        min-width: 0;
+        overflow: hidden;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius-container);
+    }
+
+    &__sidebar-body {
+        container: archives-cardcatalog-sidebar / inline-size;
+        flex: 1 1 auto;
+        min-width: 0;
+        min-height: 0;
+        padding: 16px;
+        overflow-y: auto;
+        overflow-anchor: none;
+        overscroll-behavior: contain;
+    }
+
+    &__content {
+        container: archives-cardcatalog-content / inline-size;
+        flex: 1 1 auto;
+        min-width: 0;
+        height: 100%;
+        overflow-y: auto;
+        overflow-anchor: none;
+        overscroll-behavior: contain;
+    }
+
+    &__content:has(.archives-cardcatalog__overview) {
+        padding-inline-end: 8px;
+        scrollbar-gutter: stable;
+    }
+
+    &__content-body {
+        height: 100%;
+    }
+
+    &__no-image {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 110px;
+        color: var(--fg-secondary);
+        font-size: var(--font-size-caption);
+        background: var(--bg-subtle);
+        border-radius: var(--radius-container-small);
+    }
+
+    &__hint,
+    &__error {
+        padding: 32px;
+        color: var(--fg-secondary);
+        text-align: center;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius-container-small);
+    }
+
+    &__loader {
+        min-height: 120px;
+        background: url('../../images/infinity_loader.svg') no-repeat center center;
+        background-size: 80px;
+    }
+
+    &__wrapper button:focus-visible {
+        .mx-focus-visible();
+    }
+}
+
+@media screen and (max-width: @mediumBreakpoint) {
+    .archives-cardcatalog {
+        &__wrapper {
+            flex-direction: column;
+            height: auto !important;
+            overflow: visible;
+        }
+
+        &__wrapper:fullscreen {
+            overflow-y: auto;
+        }
+
+        &__wrapper--fullscreen {
+            height: 100vh !important;
+            overflow-y: auto;
+        }
+
+        &__sidebar {
+            flex-basis: auto;
+            height: auto;
+            max-height: 220px;
+        }
+
+        &__sidebar--right {
+            max-height: none;
+        }
+
+        &__content {
+            height: auto;
+            overflow-y: visible;
+        }
+
+        &__content:has(.archives-cardcatalog__overview) {
+            padding-inline-end: 0;
+            scrollbar-gutter: auto;
+        }
+
+        &__content-body {
+            height: auto;
+        }
+    }
+}

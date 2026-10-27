@@ -149,6 +149,29 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
     }
 
     /**
+     * @verifies resolve the archive without loading its tree when it is shown as catalog
+     * @see ArchiveManager#loadArchiveForEntry(String)
+     */
+    @Test
+    void loadArchiveForEntry_shouldResolveTheArchiveWithoutLoadingItsTreeWhenItIsShownAsCatalog() throws Exception {
+        String entryId = "A91x36057394742965620181205135958381";
+        var doc = DataManager.getInstance()
+                .getSearchIndex()
+                .getFirstDoc("+EAD_NODE_ID:\"" + entryId + "\" +DOCTYPE:ARCHIVE", List.of("PI_TOPSTRUCT"));
+        String pi = String.valueOf(doc.getFirstValue("PI_TOPSTRUCT"));
+        possibleDatabases.add(new ArchiveResource("catalog", pi, ZonedDateTime.now().format(ArchiveResource.DATE_TIME_FORMATTER), "10"));
+        ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser));
+        Mockito.doReturn(true).when(archiveManager).isCatalogView(Mockito.any());
+
+        assertEquals(pi, archiveManager.loadArchiveForEntry(entryId).getResourceId());
+        Mockito.verify(archiveManager, Mockito.never()).loadDatabase(Mockito.any(), Mockito.any());
+
+        Mockito.doReturn(false).when(archiveManager).isCatalogView(Mockito.any());
+        assertEquals(pi, archiveManager.loadArchiveForEntry(entryId).getResourceId());
+        Mockito.verify(archiveManager, Mockito.times(1)).loadDatabase(Mockito.any(), Mockito.any());
+    }
+
+    /**
      * @verifies add new archive
      */
     @Test

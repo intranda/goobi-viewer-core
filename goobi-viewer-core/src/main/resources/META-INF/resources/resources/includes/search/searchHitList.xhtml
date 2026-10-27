@@ -168,7 +168,7 @@
                                             title="#{hit.altLabel}">
                                             <util:icon-text
                                                 icon="archive"
-                                                text="#{msg.archives__open_in_archive_view}"
+                                                text="#{hit.altUrlCatalogType != null ? msg[hit.altUrlCatalogType.openLabelKey] : msg.archives__open_in_archive_view}"
                                                 textPosition="left" />
                                         </a>
                                     </ui:fragment>

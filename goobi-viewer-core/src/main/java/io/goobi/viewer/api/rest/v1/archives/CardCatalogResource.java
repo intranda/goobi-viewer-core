@@ -1,0 +1,364 @@
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+package io.goobi.viewer.api.rest.v1.archives;
+
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ARCHIVES_CARDCATALOG;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ARCHIVES_CARDCATALOG_BOUNDARIES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ARCHIVES_CARDCATALOG_DRAWER_REGISTER;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ARCHIVES_CARDCATALOG_ENTRIES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ARCHIVES_CARDCATALOG_LOOKUP;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
+import io.goobi.viewer.api.rest.bindings.AccessRightsBinding;
+import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.filters.FilterTools;
+import io.goobi.viewer.api.rest.model.archives.CardCatalogEntryLocation;
+import io.goobi.viewer.api.rest.model.archives.CardCatalogInfo;
+import io.goobi.viewer.api.rest.model.archives.CardCatalogRegister;
+import io.goobi.viewer.api.rest.model.archives.CardCatalogSection;
+import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.faces.validators.PIValidator;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.archives.CardCatalogDrawer;
+import io.goobi.viewer.model.archives.CardCatalogEntry;
+import io.goobi.viewer.model.archives.CardCatalogIndex;
+import io.goobi.viewer.model.archives.CardCatalogManager;
+import io.goobi.viewer.model.archives.CardCatalogRegisterRange;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.ForbiddenException;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+
+/**
+ * REST resource for the card catalog view of an archive: positional navigation over the cards of a digitized card catalog (drawers, zoom boundaries,
+ * dense card ranges, computed from-to register). The endpoints are independent of whether the archive is flagged as a card catalog; the flag only
+ * controls which view the archive page renders.
+ */
+@Path(ARCHIVES_CARDCATALOG)
+@ViewerRestServiceBinding
+@AccessRightsBinding({ IPrivilegeHolder.PRIV_ARCHIVE_DISPLAY_NODE })
+@CORSBinding
+public class CardCatalogResource {
+
+    private static final Logger logger = LogManager.getLogger(CardCatalogResource.class);
+
+    private static final int THUMBNAIL_SIZE = 400;
+    private static final int IMAGE_SIZE = 1200;
+    private static final String CACHE_CONTROL = "private, no-store";
+
+    @Context
+    private HttpServletResponse servletResponse;
+
+    private final String pi;
+
+    public CardCatalogResource(@Context HttpServletRequest request,
+            @Parameter(description = "Persistent identifier of the archive resource") @PathParam("pi") String pi) {
+        if (!PIValidator.validatePi(pi)) {
+            throw new BadRequestException("Invalid archive identifier: " + pi);
+        }
+        this.pi = pi;
+        request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
+    }
+
+    /**
+     * Structure and navigation configuration of the catalog. The advertised page size and full-view threshold never exceed
+     * {@link CardCatalogManager#MAX_ENTRIES_PER_REQUEST}, the hard cap of the entries endpoint; a larger page size would make paging clients skip the
+     * silently dropped tail of each page.
+     *
+     * @return card catalog info with drawers and navigation configuration
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    @GET
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "archives" }, summary = "Get card catalog structure and configuration for an archive",
+            description = "Lists the drawers with their card counts and the navigation settings for the client. The mode is 'register' while the"
+                    + " total card count stays within the register threshold and 'letters' above it. A catalog with access-restricted"
+                    + " descendants is refused as a whole, since omitting single cards would shift every position.")
+    @ApiResponse(responseCode = "200", description = "Card catalog info with drawers and navigation configuration", useReturnTypeSchema = true)
+    @ApiResponse(responseCode = "403", description = "Unknown or inaccessible archive, or restricted descendants")
+    @ApiResponse(responseCode = "404", description = "No card catalog indexed for an accessible archive")
+    public CardCatalogInfo getInfo() throws PresentationException, IndexUnreachableException {
+        CardCatalogIndex index = getIndex();
+        Configuration config = DataManager.getInstance().getConfiguration();
+
+        CardCatalogInfo ret = new CardCatalogInfo();
+        ret.setPi(index.getPi());
+        ret.setLabel(index.getLabel());
+        ret.setTotalEntries(index.getTotalEntries());
+        ret.setDateIndexed(index.getDateIndexed());
+        ret.setMode(index.getTotalEntries() > config.getCardCatalogRegisterThreshold() ? CardCatalogInfo.MODE_LETTERS
+                : CardCatalogInfo.MODE_REGISTER);
+        ret.getConfig().setZoomFactor(CardCatalogManager.normalizeZoomFactor(config.getCardCatalogZoomFactor()));
+        ret.getConfig().setListPageSize(Math.max(1, Math.min(config.getCardCatalogListPageSize(), CardCatalogManager.MAX_ENTRIES_PER_REQUEST)));
+        ret.getConfig().setFullViewThreshold(Math.max(2,
+                Math.min(config.getCardCatalogFullViewThreshold(), CardCatalogManager.MAX_ENTRIES_PER_REQUEST)));
+        ret.getConfig().setRegisterThreshold(config.getCardCatalogRegisterThreshold());
+        for (CardCatalogDrawer drawer : index.getDrawers()) {
+            ret.getDrawers().add(new CardCatalogInfo.Drawer(drawer.getId(), drawer.getLabel(), drawer.getEntryCount()));
+        }
+
+        setCacheHeaders();
+        return ret;
+    }
+
+    @GET
+    @Path(ARCHIVES_CARDCATALOG_BOUNDARIES)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "archives" },
+            summary = "Get the boundary cards of one zoom step, evenly distributed over a position interval of a drawer",
+            description = "Picks cards at evenly spaced positions between from and to, the number of steps following the configured zoom"
+                    + " factor. Positions are 1-based within the drawer; omitted bounds default to the whole drawer.")
+    @ApiResponse(responseCode = "200", description = "Boundary cards with positions, labels and image URLs", useReturnTypeSchema = true)
+    @ApiResponse(responseCode = "403", description = "Unknown or inaccessible archive, or restricted descendants")
+    @ApiResponse(responseCode = "404", description = "No card catalog indexed for an accessible archive, or unknown drawer")
+    public CardCatalogSection getBoundaries(
+            @Parameter(description = "EAD node ID of the drawer") @PathParam("drawerId") String drawerId,
+            @Parameter(description = "1-based start position within the drawer; defaults to 1") @QueryParam("from") Integer from,
+            @Parameter(description = "1-based end position within the drawer; defaults to the drawer size") @QueryParam("to") Integer to)
+            throws PresentationException, IndexUnreachableException {
+        CardCatalogIndex index = getIndex();
+        CardCatalogDrawer drawer = getDrawer(index, drawerId);
+        CardCatalogManager manager = DataManager.getInstance().getCardCatalogManager();
+
+        List<Integer> positions = manager.getBoundaryPositions(drawer, from, to);
+
+        CardCatalogSection ret = new CardCatalogSection();
+        ret.setDrawerId(drawer.getId());
+        ret.setEntryCount(drawer.getEntryCount());
+        if (!positions.isEmpty()) {
+            ret.setFrom(positions.get(0));
+            ret.setTo(positions.get(positions.size() - 1));
+        }
+        List<CardCatalogEntry> entries = manager.getEntriesAtPositions(drawer, positions);
+        for (int i = 0; i < positions.size(); i++) {
+            ret.getItems().add(createItem(entries.get(i), positions.get(i)));
+        }
+
+        setCacheHeaders();
+        return ret;
+    }
+
+    @GET
+    @Path(ARCHIVES_CARDCATALOG_ENTRIES)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "archives" }, summary = "Get a dense card range of a drawer for the full view",
+            description = "Returns every card between the 1-based positions from and to, clamped to the drawer size. At most 100 cards are"
+                    + " returned per request; the response states the range actually delivered so clients can page on.")
+    @ApiResponse(responseCode = "200", description = "Cards of the requested position range", useReturnTypeSchema = true)
+    @ApiResponse(responseCode = "403", description = "Unknown or inaccessible archive, or restricted descendants")
+    @ApiResponse(responseCode = "404", description = "No card catalog indexed for an accessible archive, or unknown drawer")
+    public CardCatalogSection getEntries(
+            @Parameter(description = "EAD node ID of the drawer") @PathParam("drawerId") String drawerId,
+            @Parameter(description = "1-based start position within the drawer; defaults to 1") @QueryParam("from") Integer from,
+            @Parameter(description = "1-based end position within the drawer; capped to 100 cards per request") @QueryParam("to") Integer to)
+            throws PresentationException, IndexUnreachableException {
+        CardCatalogIndex index = getIndex();
+        CardCatalogDrawer drawer = getDrawer(index, drawerId);
+        CardCatalogManager manager = DataManager.getInstance().getCardCatalogManager();
+
+        int n = drawer.getEntryCount();
+        CardCatalogSection ret = new CardCatalogSection();
+        ret.setDrawerId(drawer.getId());
+        ret.setEntryCount(n);
+        if (n > 0) {
+            int fromPos = Math.max(1, Math.min(from != null ? from : 1, n));
+            int toPos = Math.max(fromPos, Math.min(to != null ? to : fromPos + CardCatalogManager.MAX_ENTRIES_PER_REQUEST - 1, n));
+            toPos = Math.min(toPos, fromPos + CardCatalogManager.MAX_ENTRIES_PER_REQUEST - 1);
+            ret.setFrom(fromPos);
+            ret.setTo(toPos);
+            List<CardCatalogEntry> entries = manager.getEntryRange(drawer, fromPos, toPos);
+            for (int i = 0; i < entries.size(); i++) {
+                ret.getItems().add(createItem(entries.get(i), fromPos + i));
+            }
+            addBackSides(manager, ret.getItems());
+        }
+
+        setCacheHeaders();
+        return ret;
+    }
+
+    @GET
+    @Path(ARCHIVES_CARDCATALOG_DRAWER_REGISTER)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "archives" }, summary = "Get the computed from-to register for one card catalog drawer",
+            description = "Splits the drawer into consecutive ranges labelled with their first and last card. When the catalog exceeds the"
+                    + " configured register threshold, no register is computed and the response reports available=false.")
+    @ApiResponse(responseCode = "200", description = "One drawer's register ranges, or available=false above the threshold",
+            useReturnTypeSchema = true)
+    @ApiResponse(responseCode = "403", description = "Unknown or inaccessible archive, or restricted descendants")
+    @ApiResponse(responseCode = "404", description = "No card catalog indexed for an accessible archive, or unknown drawer")
+    public CardCatalogRegister getDrawerRegister(
+            @Parameter(description = "EAD node ID of the drawer") @PathParam("drawerId") String drawerId)
+            throws PresentationException, IndexUnreachableException {
+        CardCatalogIndex index = getIndex();
+        CardCatalogDrawer drawer = getDrawer(index, drawerId);
+        CardCatalogRegister ret = new CardCatalogRegister();
+        DataManager.getInstance().getCardCatalogManager().getDrawerRegister(index, drawer).ifPresent(ranges -> {
+            ret.setAvailable(true);
+            ret.getDrawers().add(createRegisterDrawer(drawer, ranges));
+        });
+        setCacheHeaders();
+        return ret;
+    }
+
+    private static CardCatalogRegister.RegisterDrawer createRegisterDrawer(CardCatalogDrawer source, List<CardCatalogRegisterRange> ranges) {
+        CardCatalogRegister.RegisterDrawer drawer = new CardCatalogRegister.RegisterDrawer();
+        drawer.setId(source.getId());
+        drawer.setLabel(source.getLabel());
+        drawer.setEntryCount(source.getEntryCount());
+        for (CardCatalogRegisterRange range : ranges) {
+            drawer.getRanges().add(new CardCatalogRegister.Range(range.getFrom(), range.getTo(), range.getFromLabel(), range.getToLabel()));
+        }
+        return drawer;
+    }
+
+    @GET
+    @Path(ARCHIVES_CARDCATALOG_LOOKUP)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "archives" }, summary = "Locate a card within the catalog by its EAD node ID (drawer and position)",
+            description = "Resolves a deep link to a single card: returns the drawer containing the given EAD node and the card's 1-based"
+                    + " position within it, which the client then opens in the full view.")
+    @ApiResponse(responseCode = "200", description = "Drawer id and 1-based position of the card", useReturnTypeSchema = true)
+    @ApiResponse(responseCode = "403", description = "Unknown or inaccessible archive, or restricted descendants")
+    @ApiResponse(responseCode = "404", description = "No card catalog indexed for an accessible archive, or unknown entry")
+    public CardCatalogEntryLocation lookupEntry(
+            @Parameter(description = "EAD node ID of the card to locate") @QueryParam("entryId") String entryId)
+            throws PresentationException, IndexUnreachableException {
+        CardCatalogIndex index = getIndex();
+        setCacheHeaders();
+        return DataManager.getInstance()
+                .getCardCatalogManager()
+                .findEntryPosition(index, entryId)
+                .map(location -> new CardCatalogEntryLocation(entryId, location.getLeft().getId(), location.getRight()))
+                .orElseThrow(() -> new NotFoundException("No card found with entry id: " + entryId));
+    }
+
+    private CardCatalogIndex getIndex() throws PresentationException, IndexUnreachableException {
+        CardCatalogIndex index = DataManager.getInstance()
+                .getCardCatalogManager()
+                .getCatalog(pi)
+                .orElseThrow(() -> new NotFoundException("No indexed archive found with identifier: " + pi));
+        return requirePublicDescendants(index);
+    }
+
+    /**
+     * A positional catalog cannot omit individual protected nodes without changing every range,
+     * boundary and deep link. Until the API supports permission-specific positions, a catalog
+     * with protected descendants is unavailable as a whole.
+     */
+    static CardCatalogIndex requirePublicDescendants(CardCatalogIndex index) {
+        if (index.hasRestrictedDescendants()) {
+            throw new ForbiddenException("Card catalog contains restricted archive nodes: " + index.getPi());
+        }
+        return index;
+    }
+
+    private static CardCatalogDrawer getDrawer(CardCatalogIndex index, String drawerId) {
+        return index.getDrawer(drawerId)
+                .orElseThrow(() -> new NotFoundException("No drawer found with id: " + drawerId));
+    }
+
+    private CardCatalogSection.CardItem createItem(CardCatalogEntry entry, int position) {
+        CardCatalogSection.CardItem item = new CardCatalogSection.CardItem();
+        item.setPosition(position);
+        item.setEntryId(entry.getId());
+        item.setLabel(entry.getLabel());
+        item.setRecordPi(entry.getRecordPi());
+        item.setHasImage(entry.isHasImage());
+        if (entry.isHasImage() && entry.getRecordPi() != null) {
+            try {
+                item.setThumbnailUrl(BeanUtils.getImageDeliveryBean()
+                        .getThumbs()
+                        .getThumbnailUrl(entry.getRecordPi(), THUMBNAIL_SIZE,
+                                THUMBNAIL_SIZE));
+                item.setImageUrl(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(entry.getRecordPi(), IMAGE_SIZE, IMAGE_SIZE));
+            } catch (IndexUnreachableException | PresentationException | ViewerConfigurationException e) {
+                logger.warn("Could not build image URL for record '{}': {}", entry.getRecordPi(), e.getMessage());
+            }
+        }
+        return item;
+    }
+
+    private static void addBackSides(CardCatalogManager manager, List<CardCatalogSection.CardItem> items)
+            throws PresentationException, IndexUnreachableException {
+        List<String> recordPis = items.stream()
+                .filter(item -> item.isHasImage() && item.getImageUrl() != null)
+                .map(CardCatalogSection.CardItem::getRecordPi)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+        Map<String, String> backSides = manager.getBackSideFiles(recordPis);
+        if (backSides.isEmpty()) {
+            return;
+        }
+        IIIFUrlHandler iiif;
+        try {
+            iiif = BeanUtils.getImageDeliveryBean().getIiif();
+        } catch (ViewerConfigurationException e) {
+            logger.warn("Could not build back image URLs: {}", e.getMessage());
+            return;
+        }
+        if (iiif == null) {
+            return;
+        }
+        for (CardCatalogSection.CardItem item : items) {
+            String file = backSides.get(item.getRecordPi());
+            if (file != null) {
+                item.setBackThumbnailUrl(
+                        iiif.getIIIFImageUrl(file, item.getRecordPi(), "full", "!" + THUMBNAIL_SIZE + "," + THUMBNAIL_SIZE, "0", "default", "jpg"));
+                item.setBackImageUrl(
+                        iiif.getIIIFImageUrl(file, item.getRecordPi(), "full", "!" + IMAGE_SIZE + "," + IMAGE_SIZE, "0", "default", "jpg"));
+            }
+        }
+    }
+
+    private void setCacheHeaders() {
+        if (servletResponse != null) {
+            servletResponse.setHeader("Cache-Control", CACHE_CONTROL);
+        }
+    }
+}

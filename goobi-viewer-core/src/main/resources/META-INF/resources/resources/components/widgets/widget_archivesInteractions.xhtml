@@ -50,6 +50,22 @@
                                 </li>
                             </h:panelGroup>
 
+                            <!-- RECORD NOTES -->
+                            <h:panelGroup rendered="#{userBean.admin}">
+                                <li>
+                                    <a href="#{request.contextPath}/admin/cms/recordnotes/new/?pi=#{archiveBean.currentArchive.resourceId}">#{msg.cms__record_notes__add_note}</a>
+                                </li>
+                                <ui:repeat
+                                    var="note"
+                                    value="#{cmsRecordNotesBean.getNotesForRecord(archiveBean.currentResource)}">
+                                    <li>
+                                        <a href="#{request.contextPath}/admin/cms/recordnotes/edit/#{note.id}">
+                                            #{msg.cms__record_notes_edit__title}: #{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}
+                                        </a>
+                                    </li>
+                                </ui:repeat>
+                            </h:panelGroup>
+
                             <!-- DELETE ARCHIVE -->
                             <h:panelGroup rendered="#{userBean.admin}">
                                 <li>

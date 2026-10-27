@@ -6,6 +6,7 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
@@ -34,9 +35,22 @@
                     <div class="admin__content-inner-content">
                         <div class="admin__content-wrapper">
                             <div class="admin__content-main">
+                                <!-- NO ARCHIVE SELECTED -->
+                                <h:panelGroup
+                                    layout="block"
+                                    rendered="#{empty cmsArchivesBean.selectedArchiveWrapper.archiveConfig}">
+                                    <p class="admin__info-text">#{msg.admin__cms_archives_not_selected}</p>
+                                    <a
+                                        class="btn btn--default"
+                                        href="#{navigationHelper.getPageUrl('adminCmsArchives')}">
+                                        #{msg.admin__cms_archives}
+                                    </a>
+                                </h:panelGroup>
+
                                 <h:form
                                     id="cmsEditArchiveConfigForm"
-                                    prependId="false">
+                                    prependId="false"
+                                    rendered="#{not empty cmsArchivesBean.selectedArchiveWrapper.archiveConfig}">
                                     <!-- TITLE -->
                                     <h2 class="admin__cms-archive-edit__section-title">#{msg.title}</h2>
                                     <div class="admin__cms-archive-edit__translation-box">
@@ -261,6 +275,28 @@
                                                 </div>
                                             </h:panelGroup>
                                         </h:panelGroup>
+                                    </div>
+
+                                    <!-- CATALOG VIEW -->
+                                    <h2 class="admin__cms-archive-edit__section-title">#{msg.admin__cms_archives_card_catalog}</h2>
+                                    <div class="admin__cms-archive-edit__card-catalog-block admin__default-block">
+                                        <viewerForms:booleanSelectField
+                                            label="#{msg.active}"
+                                            value="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.cardCatalog}"
+                                            toggleTarget="#catalogTypeWrapper"
+                                            helpText="#{msg.admin__cms_archives_card_catalog_help}" />
+
+                                        <!-- CATALOG TYPE -->
+                                        <div
+                                            id="catalogTypeWrapper"
+                                            class="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.cardCatalog ? '' : 'hide'}">
+                                            <viewerForms:singleSelectField
+                                                label="#{msg.type}"
+                                                value="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.catalogType}"
+                                                selectValues="#{cmsArchivesBean.catalogTypes}"
+                                                itemLabel="#{msg[var.labelKey]}"
+                                                helpText="#{msg.admin__cms_archives_catalog_type_help}" />
+                                        </div>
                                     </div>
 
                                     <!-- SAVE/CANCEL BUTTONS -->

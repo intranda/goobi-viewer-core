@@ -22,7 +22,10 @@
 package io.goobi.viewer.model.archives;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -100,5 +103,253 @@ class ArchiveTreeTest extends AbstractTest {
         // Calling again should return same result (buildTree already ran, treeBuilt flag is true)
         List<ArchiveEntry> result2 = tree.getTreeViewForGroup(ArchiveTree.DEFAULT_GROUP);
         Assertions.assertEquals(result.size(), result2.size());
+    }
+
+    /**
+     * Parser stub that provides not yet loaded child nodes from a map instead of Solr.
+     */
+    private static class StubParser extends ArchiveParser {
+
+        private static final long serialVersionUID = 1L;
+
+        /** Children to add on loadChildren(), keyed by parent ID. */
+        private final Map<String, List<ArchiveEntry>> childrenToLoad = new HashMap<>();
+        private final List<String> searchValues = new ArrayList<>();
+        private boolean searchIncomplete = false;
+
+        @Override
+        public List<ArchiveResource> getPossibleDatabases() {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public ArchiveEntry loadDatabase(ArchiveResource database, int lazyLoadingThreshold) {
+            return null;
+        }
+
+        @Override
+        public String getUrl() {
+            return "stub";
+        }
+
+        @Override
+        public UnparsedNodeSearchResult searchInUnparsedNodes(ArchiveEntry node, String searchValue) {
+            searchValues.add(searchValue);
+            return new UnparsedNodeSearchResult(false, searchIncomplete);
+        }
+
+        @Override
+        public boolean loadChildren(ArchiveEntry entry) {
+            List<ArchiveEntry> children = childrenToLoad.remove(entry.getId());
+            if (children == null || entry.isChildrenLoaded()) {
+                return false;
+            }
+            for (ArchiveEntry child : children) {
+                entry.addSubEntry(child);
+            }
+            entry.setChildrenLoaded(true);
+            return true;
+        }
+
+        @Override
+        public ArchiveEntry loadEntryPath(ArchiveEntry root, String nodeId) {
+            // Load one level at a time until the requested node is found
+            for (ArchiveEntry entry : root.getAsFlatList(true)) {
+                if (nodeId.equals(entry.getId())) {
+                    return entry;
+                }
+                if (loadChildren(entry)) {
+                    return loadEntryPath(root, nodeId);
+                }
+            }
+            return null;
+        }
+    }
+
+    /**
+     * @param id Entry ID
+     * @param hierarchy Hierarchy level
+     * @return New {@link ArchiveEntry}
+     */
+    private static ArchiveEntry createEntry(String id, int hierarchy) {
+        ArchiveEntry entry = new ArchiveEntry(0, hierarchy, null);
+        entry.setId(id);
+        entry.setLabel("Label " + id);
+        return entry;
+    }
+
+    /**
+     * Creates root -> folder, where the folder has one child that is not yet loaded.
+     *
+     * @param parser Parser that provides the folder's child
+     * @return Root entry
+     */
+    private static ArchiveEntry createPartiallyLoadedTree(StubParser parser) {
+        ArchiveEntry root = createEntry("root", 0);
+        root.setChildrenLoaded(true);
+        ArchiveEntry folder = createEntry("folder", 1);
+        folder.setChildrenFound(true);
+        root.addSubEntry(folder);
+        parser.childrenToLoad.put("folder", new ArrayList<>(List.of(createEntry("file", 2))));
+        return root;
+    }
+
+    /**
+     * @see ArchiveTree#isChildrenInView(ArchiveEntry)
+     * @verifies return false if children were added after generation
+     */
+    @Test
+    void isChildrenInView_shouldReturnFalseIfChildrenWereAddedAfterGeneration() {
+        ArchiveEntry root = createEntry("root", 0);
+        ArchiveEntry folder = createEntry("folder", 1);
+        root.addSubEntry(folder);
+        ArchiveTree tree = new ArchiveTree();
+        tree.generate(root);
+        Assertions.assertTrue(tree.isChildrenInView(root));
+        Assertions.assertFalse(tree.isChildrenInView(folder));
+
+        folder.addSubEntry(createEntry("file", 2));
+        Assertions.assertFalse(tree.isChildrenInView(folder));
+    }
+
+    /**
+     * @see ArchiveTree#isChildrenInView(ArchiveEntry)
+     * @verifies return true after regeneration
+     */
+    @Test
+    void isChildrenInView_shouldReturnTrueAfterRegeneration() {
+        ArchiveEntry root = createEntry("root", 0);
+        ArchiveEntry folder = createEntry("folder", 1);
+        root.addSubEntry(folder);
+        ArchiveTree tree = new ArchiveTree();
+        tree.generate(root);
+        folder.addSubEntry(createEntry("file", 2));
+
+        tree.generate(root);
+        Assertions.assertTrue(tree.isChildrenInView(folder));
+        Assertions.assertEquals(3, tree.getFlatView().size());
+    }
+
+    /**
+     * @see ArchiveTree#getEntryById(String)
+     * @verifies load path to entry not yet loaded
+     */
+    @Test
+    void getEntryById_shouldLoadPathToEntryNotYetLoaded() {
+        StubParser parser = new StubParser();
+        ArchiveTree tree = new ArchiveTree();
+        tree.setEadParser(parser);
+        tree.update(createPartiallyLoadedTree(parser));
+        Assertions.assertFalse(tree.isTreeFullyLoaded());
+        Assertions.assertEquals(2, tree.getFlatView().size());
+
+        ArchiveEntry entry = tree.getEntryById("file");
+        Assertions.assertNotNull(entry);
+        Assertions.assertEquals("file", entry.getId());
+        Assertions.assertEquals("folder", entry.getParentNode().getId());
+        // Entry list has been regenerated
+        Assertions.assertEquals(3, tree.getFlatView().size());
+        Assertions.assertNull(tree.getEntryById("notfound"));
+    }
+
+    /**
+     * @see ArchiveTree#search(String)
+     * @verifies search in not loaded nodes if tree not fully loaded
+     */
+    @Test
+    void search_shouldSearchInNotLoadedNodesIfTreeNotFullyLoaded() {
+        StubParser parser = new StubParser();
+        ArchiveTree tree = new ArchiveTree();
+        tree.setEadParser(parser);
+        tree.update(createPartiallyLoadedTree(parser));
+        Assertions.assertFalse(tree.isTreeFullyLoaded());
+
+        tree.search("foo");
+        Assertions.assertEquals(List.of("foo"), parser.searchValues);
+    }
+
+    /**
+     * @see ArchiveTree#search(String)
+     * @verifies flag search results incomplete if parser reports incomplete search
+     */
+    @Test
+    void search_shouldFlagSearchResultsIncompleteIfParserReportsIncompleteSearch() {
+        StubParser parser = new StubParser();
+        parser.searchIncomplete = true;
+        ArchiveTree tree = new ArchiveTree();
+        tree.setEadParser(parser);
+        tree.update(createPartiallyLoadedTree(parser));
+
+        tree.search("foo");
+        Assertions.assertTrue(tree.isSearchResultsIncomplete());
+
+        parser.searchIncomplete = false;
+        tree.search("bar");
+        Assertions.assertFalse(tree.isSearchResultsIncomplete());
+    }
+
+    /**
+     * @see ArchiveTree#search(String)
+     * @verifies not search in index if tree fully loaded
+     */
+    @Test
+    void search_shouldNotSearchInIndexIfTreeFullyLoaded() {
+        StubParser parser = new StubParser();
+        ArchiveEntry root = createEntry("root", 0);
+        root.addSubEntry(createEntry("folder", 1));
+        root.setChildrenLoaded(true);
+        ArchiveTree tree = new ArchiveTree();
+        tree.setEadParser(parser);
+        tree.update(root);
+        Assertions.assertTrue(tree.isTreeFullyLoaded());
+
+        tree.search("folder");
+        Assertions.assertTrue(parser.searchValues.isEmpty());
+        Assertions.assertTrue(tree.getEntryById("folder").isSearchHit());
+    }
+
+    /**
+     * @see ArchiveTree#expandEntry(ArchiveEntry)
+     * @verifies add loaded children to entry list
+     */
+    @Test
+    void expandEntry_shouldAddLoadedChildrenToEntryList() {
+        StubParser parser = new StubParser();
+        ArchiveTree tree = new ArchiveTree();
+        tree.setEadParser(parser);
+        ArchiveEntry root = createPartiallyLoadedTree(parser);
+        tree.update(root);
+        ArchiveEntry folder = root.getSubEntryList().get(0);
+
+        tree.expandEntry(folder);
+        Assertions.assertTrue(folder.isChildrenLoaded());
+        Assertions.assertEquals(3, tree.getFlatView().size());
+        Assertions.assertTrue(tree.isEntryVisible(folder.getSubEntryList().get(0)));
+    }
+
+    /**
+     * @see ArchiveTree#expandEntry(ArchiveEntry)
+     * @verifies add children loaded via another tree to entry list
+     */
+    @Test
+    void expandEntry_shouldAddChildrenLoadedViaAnotherTreeToEntryList() {
+        StubParser parser = new StubParser();
+        ArchiveTree globalTree = new ArchiveTree();
+        globalTree.setEadParser(parser);
+        ArchiveEntry root = createPartiallyLoadedTree(parser);
+        globalTree.update(root);
+        // Session copies share the nodes of the original tree
+        ArchiveTree sessionTree1 = new ArchiveTree(globalTree);
+        ArchiveTree sessionTree2 = new ArchiveTree(globalTree);
+        ArchiveEntry folder = root.getSubEntryList().get(0);
+
+        sessionTree1.expandEntry(folder);
+        Assertions.assertEquals(3, sessionTree1.getFlatView().size());
+        Assertions.assertEquals(2, sessionTree2.getFlatView().size());
+
+        // Children are already loaded, but not yet part of the second tree's entry list
+        sessionTree2.expandEntry(folder);
+        Assertions.assertEquals(3, sessionTree2.getFlatView().size());
+        Assertions.assertTrue(sessionTree2.isEntryVisible(folder.getSubEntryList().get(0)));
     }
 }

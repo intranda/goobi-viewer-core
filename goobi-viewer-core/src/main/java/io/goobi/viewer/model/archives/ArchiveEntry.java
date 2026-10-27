@@ -52,7 +52,8 @@ public class ArchiveEntry implements Serializable {
     // parent node
     private ArchiveEntry parentNode;
     // list contains all child elements
-    private List<ArchiveEntry> subEntryList = new ArrayList<>();
+    // volatile: on-demand loading publishes the complete child list of nodes that may be shared between sessions in one step
+    private volatile List<ArchiveEntry> subEntryList = new ArrayList<>();
 
     // order number of the current element within the current hierarchy
     private Integer orderNumber;
@@ -89,7 +90,7 @@ public class ArchiveEntry implements Serializable {
 
     private boolean childrenFound = false;
 
-    private boolean childrenLoaded = false;
+    private volatile boolean childrenLoaded = false;
 
     /**
      *

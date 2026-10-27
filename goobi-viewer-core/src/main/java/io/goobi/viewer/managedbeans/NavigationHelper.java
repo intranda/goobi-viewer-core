@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TimeZone;
@@ -2041,12 +2042,21 @@ public class NavigationHelper implements Serializable {
      * @return JSON with translations for the given message keys
      */
     public String getTranslationsAsJson(List<String> keys) {
-        JSONObject json = new JSONObject();
+        return new JSONObject(getTranslations(keys)).toString();
+    }
+
+    /**
+     * Translations of the given keys for the current locale, keyed by message key.
+     *
+     * @param keys message keys to translate
+     * @return key to translation map in key order
+     */
+    public Map<String, String> getTranslations(List<String> keys) {
+        Map<String, String> ret = new LinkedHashMap<>();
         for (String key : keys) {
-            String translation = ViewerResourceBundle.getTranslation(key, locale);
-            json.put(key, translation);
+            ret.put(key, ViewerResourceBundle.getTranslation(key, locale));
         }
-        return json.toString();
+        return ret;
     }
 
     public List<Integer> getRange(long from, long to) {

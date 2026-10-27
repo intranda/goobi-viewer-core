@@ -52,6 +52,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.Table;
@@ -62,7 +63,7 @@ import jakarta.persistence.Table;
  * timestamps for scheduling and tracking asynchronous background jobs.
  */
 @Entity
-@Table(name = "mq_messages")
+@Table(name = "mq_messages", indexes = { @Index(name = "idx_mq_messages_last_update_time", columnList = "last_update_time") })
 @JsonInclude(Include.NON_EMPTY)
 public class ViewerMessage {
 
