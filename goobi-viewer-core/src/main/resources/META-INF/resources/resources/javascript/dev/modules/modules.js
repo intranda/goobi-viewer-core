@@ -5866,9 +5866,12 @@
      * Parses a IIIF Content Search `sc:AnnotationList` into hits. Pages are 1-based
      * (as in the `on` URL `/pages/{n}/canvas`); the caller converts to the 0-based
      * IvViewer order. `before`/`match`/`after` come from the `hits` block and are
-     * undefined when no context is provided.
+     * undefined when no context is provided. `layoutTag`/`styleClass` are the viewer's
+     * extension properties on hits within handwritten annotation blocks (LABEL and
+     * configured style class); undefined for hits in the printed text.
      *
-     * @returns {{id:string, page:number, rect:{x,y,w,h}|null, snippet:string, before?:string, match?:string, after?:string}[]}
+     * @returns {{id:string, page:number, rect:{x,y,w,h}|null, snippet:string, before?:string, match?:string, after?:string,
+     *            layoutTag?:string, styleClass?:string}[]}
      */
     function parseSearchHits(annotationList) {
         if (!annotationList || !Array.isArray(annotationList.resources)) return [];
@@ -5889,6 +5892,8 @@
                 before: ctx.before,
                 match: ctx.match,
                 after: ctx.after,
+                layoutTag: typeof res.layoutTag === 'string' ? res.layoutTag : undefined,
+                styleClass: typeof res.styleClass === 'string' ? res.styleClass : undefined,
             });
         }
         return hits;
@@ -5995,13 +6000,15 @@
         // Only rendered when annotation layout tags are configured
         const annotationsOnlyBox = document.getElementById('immersiveSearchAnnotationsOnly');
         const hitsOnOrder = (order) => searchState.hits.filter((h) => h.order === order);
+        // Hits in handwritten annotation blocks take the colour of their configured layout tag
+        const hitClassName = (h) => (h.layoutTag ? ['-annotation', h.styleClass].filter(Boolean).join(' ') : '');
 
         const renderHighlights = () => {
             const activeHit = searchState.hits[searchState.activeIndex];
             const rects = viewer.getCurrentPages().flatMap((o) =>
                 hitsOnOrder(o)
                     .filter((h) => h.rect)
-                    .map((h) => ({ ...h.rect, order: o, active: h === activeHit }))
+                    .map((h) => ({ ...h.rect, order: o, active: h === activeHit, className: hitClassName(h) }))
             );
             viewer.setHighlights(rects, 'search');
         };

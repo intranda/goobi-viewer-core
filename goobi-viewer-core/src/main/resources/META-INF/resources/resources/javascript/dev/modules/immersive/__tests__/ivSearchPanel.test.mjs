@@ -84,6 +84,23 @@ describe('setupSearchPanel', () => {
         expect(viewer.setHighlights).toHaveBeenLastCalledWith([expect.objectContaining({ x: 1, y: 2, w: 3, h: 4, order: 0, active: true })], 'search');
     });
 
+    test('highlights hits in annotation blocks with their style class, printed hits without', async () => {
+        global.fetch = jest.fn(async () =>
+            response({
+                resources: [
+                    { '@id': 'a0', on: '/records/PI/pages/1/canvas#xywh=1,2,3,4', resource: { value: 'x' }, layoutTag: 'gr_jacob_grimm', styleClass: 'alto-tag-color-1' },
+                    { '@id': 'a1', on: '/records/PI/pages/1/canvas#xywh=5,6,7,8', resource: { value: 'x' }, layoutTag: 'gr_unstyled' },
+                    { '@id': 'a2', on: '/records/PI/pages/1/canvas#xywh=9,9,9,9', resource: { value: 'x' } },
+                ],
+            })
+        );
+        const { viewer, form, input } = mountMarkup();
+        submit(form, input, 'wort');
+        await flush();
+        const rects = viewer.setHighlights.mock.calls.at(-1)[0];
+        expect(rects.map((r) => r.className)).toEqual(['-annotation alto-tag-color-1', '-annotation', '']);
+    });
+
     test('a slow older search never overwrites a newer one', async () => {
         const first = deferred();
         const second = deferred();

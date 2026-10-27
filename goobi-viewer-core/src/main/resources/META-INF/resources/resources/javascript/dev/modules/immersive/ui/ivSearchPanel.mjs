@@ -22,13 +22,15 @@ export function setupSearchPanel(viewer, pi, apiBase) {
     // Only rendered when annotation layout tags are configured
     const annotationsOnlyBox = document.getElementById('immersiveSearchAnnotationsOnly');
     const hitsOnOrder = (order) => searchState.hits.filter((h) => h.order === order);
+    // Hits in handwritten annotation blocks take the colour of their configured layout tag
+    const hitClassName = (h) => (h.layoutTag ? ['-annotation', h.styleClass].filter(Boolean).join(' ') : '');
 
     const renderHighlights = () => {
         const activeHit = searchState.hits[searchState.activeIndex];
         const rects = viewer.getCurrentPages().flatMap((o) =>
             hitsOnOrder(o)
                 .filter((h) => h.rect)
-                .map((h) => ({ ...h.rect, order: o, active: h === activeHit }))
+                .map((h) => ({ ...h.rect, order: o, active: h === activeHit, className: hitClassName(h) }))
         );
         viewer.setHighlights(rects, 'search');
     };

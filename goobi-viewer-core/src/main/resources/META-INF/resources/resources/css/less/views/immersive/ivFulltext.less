@@ -61,6 +61,11 @@
             background-color: var(--alto-tag-fill, var(--alto-type-fill, @immersive-highlight-bg));
         }
 
+        /* SEARCH HIT IN A HANDWRITTEN ANNOTATION: colour from its tag's style class, dashed so it also differs without colour */
+        &.-annotation {
+            border-style: dashed;
+        }
+
         /* DRAWN STROKE */
         &.-stroke {
             min-height: @immersive-stroke-min-height;

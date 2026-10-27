@@ -659,14 +659,12 @@ public class IIIFSearchBuilder {
 
         AnnotationResultList results = new AnnotationResultList();
 
-        // In annotation scope, only words in blocks tagged with a configured annotation LABEL are searched
-        Map<String, AnnotationStyle> annotationStyles = null;
-        if (isAnnotationScope()) {
-            annotationStyles = DataManager.getInstance().getConfiguration().getAltoLayoutAnnotationTags();
-            if (annotationStyles.isEmpty()) {
-                return results;
-            }
+        // Hits in blocks tagged with a configured annotation LABEL are marked as such; in annotation scope, only those blocks are searched
+        Map<String, AnnotationStyle> annotationStyles = DataManager.getInstance().getConfiguration().getAltoLayoutAnnotationTags();
+        if (isAnnotationScope() && annotationStyles.isEmpty()) {
+            return results;
         }
+        converter.setAnnotationStyles(annotationStyles);
 
         //replace search wildcards with word character regex and replace whitespaces with '|' to facilitate OR search
         String queryRegex = AbstractSearchParser.getQueryRegex(query);
@@ -687,8 +685,8 @@ public class IIIFSearchBuilder {
             converter.setPageNo(pageNo);
             try {
                 if (altoFile != null && Files.exists(altoFile)) {
-                    results.add(converter.getAnnotationsFromAlto(altoFile, queryRegex, annotationStyles));
-                } else if (annotationStyles == null && fulltextFile != null && Files.exists(fulltextFile)) {
+                    results.add(converter.getAnnotationsFromAlto(altoFile, queryRegex, isAnnotationScope()));
+                } else if (!isAnnotationScope() && fulltextFile != null && Files.exists(fulltextFile)) {
                     // Plain text has no blocks, so it cannot be searched in annotation scope
                     String text = new String(Files.readAllBytes(fulltextFile), StandardCharsets.UTF_8.name());
                     results.add(converter.getAnnotationsFromFulltext(text, pi, pageNo, queryRegex, results.getNumHits(), firstIndex, numHits));

@@ -24,9 +24,12 @@ function _contextByAnnotation(annotationList) {
  * Parses a IIIF Content Search `sc:AnnotationList` into hits. Pages are 1-based
  * (as in the `on` URL `/pages/{n}/canvas`); the caller converts to the 0-based
  * IvViewer order. `before`/`match`/`after` come from the `hits` block and are
- * undefined when no context is provided.
+ * undefined when no context is provided. `layoutTag`/`styleClass` are the viewer's
+ * extension properties on hits within handwritten annotation blocks (LABEL and
+ * configured style class); undefined for hits in the printed text.
  *
- * @returns {{id:string, page:number, rect:{x,y,w,h}|null, snippet:string, before?:string, match?:string, after?:string}[]}
+ * @returns {{id:string, page:number, rect:{x,y,w,h}|null, snippet:string, before?:string, match?:string, after?:string,
+ *            layoutTag?:string, styleClass?:string}[]}
  */
 export function parseSearchHits(annotationList) {
     if (!annotationList || !Array.isArray(annotationList.resources)) return [];
@@ -47,6 +50,8 @@ export function parseSearchHits(annotationList) {
             before: ctx.before,
             match: ctx.match,
             after: ctx.after,
+            layoutTag: typeof res.layoutTag === 'string' ? res.layoutTag : undefined,
+            styleClass: typeof res.styleClass === 'string' ? res.styleClass : undefined,
         });
     }
     return hits;

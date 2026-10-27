@@ -38,6 +38,17 @@ describe('parseSearchHits', () => {
         };
         expect(parseSearchHits(withContext)[0]).toMatchObject({ match: 'Ring', before: 'a', after: 'b' });
     });
+    test('passes through layoutTag and styleClass of hits in annotation blocks', () => {
+        const list = {
+            resources: [
+                { '@id': 'a', resource: { value: 'Adelung' }, on: 'x/pages/2/canvas/#xywh=1,2,3,4', layoutTag: 'gr_jacob_grimm', styleClass: 'alto-tag-color-1' },
+                { '@id': 'b', resource: { value: 'die' }, on: 'x/pages/2/canvas/#xywh=5,6,7,8' },
+            ],
+        };
+        const [anno, printed] = parseSearchHits(list);
+        expect([anno.layoutTag, anno.styleClass]).toEqual(['gr_jacob_grimm', 'alto-tag-color-1']);
+        expect([printed.layoutTag, printed.styleClass]).toEqual([undefined, undefined]);
+    });
     test('resolves page and rect from `on` given as an object with @id', () => {
         const list = { resources: [{ resource: { value: 'x' }, on: { '@id': 'http://x/records/AC1/pages/9/canvas/#xywh=1,2,3,4' } }] };
         expect(parseSearchHits(list)).toEqual([{ page: 9, rect: { x: 1, y: 2, w: 3, h: 4 }, snippet: 'x' }]);

@@ -81,6 +81,7 @@ import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.AbstractBuilder;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.OpenAnnotationBuilder;
 import io.goobi.viewer.model.iiif.search.model.AnnotationResultList;
+import io.goobi.viewer.model.iiif.search.model.LayoutTagAnnotation;
 import io.goobi.viewer.model.iiif.search.model.SearchTermList;
 import io.goobi.viewer.model.iiif.search.parser.AbstractSearchParser;
 import io.goobi.viewer.model.iiif.search.parser.AltoSearchParser;
@@ -107,6 +108,7 @@ public class SearchResultConverter {
     private String pi;
     private Integer pageNo;
     private AbstractApiUrlManager urls;
+    private Map<String, AnnotationStyle> annotationStyles = Collections.emptyMap();
 
     /**
      * Creates a new converter; parameters are used to construct urls or result resources.
@@ -159,6 +161,16 @@ public class SearchResultConverter {
      */
     public Integer getPageNo() {
         return pageNo;
+    }
+
+    /**
+     * Setter for the field <code>annotationStyles</code>.
+     *
+     * @param annotationStyles configured annotation tags, keyed by LABEL; ALTO hits in blocks tagged with one of them are delivered as
+     *            {@link LayoutTagAnnotation}s and are the only hits of an annotations-only search. Null is treated as empty
+     */
+    public void setAnnotationStyles(Map<String, AnnotationStyle> annotationStyles) {
+        this.annotationStyles = annotationStyles == null ? Collections.emptyMap() : annotationStyles;
     }
 
     /**
@@ -314,33 +326,36 @@ public class SearchResultConverter {
      * @should return non null result
      */
     public AnnotationResultList getAnnotationsFromAlto(Path path, String query) throws IOException, JDOMException {
-        return getAnnotationsFromAlto(path, query, null);
+        return getAnnotationsFromAlto(path, query, false);
     }
 
     /**
      * Creates annotations for all matches of the given query within the given alto file, optionally restricted to the handwritten annotation blocks.
+     * Hits within annotation blocks (see {@link #setAnnotationStyles(Map)}) are delivered as {@link LayoutTagAnnotation}s carrying the block's
+     * LABEL and style class, so clients can tell them apart from hits in the printed text.
      *
      * @param path path to the ALTO XML file
      * @param query a regex; each match of the query within the alto document creates a {@link de.intranda.api.iiif.search.SearchHit} with one or more
      *            annotations referencing alto word or line elements
-     * @param annotationStyles if not null, only text in blocks tagged with one of these annotation LABELs is searched (see
-     *            {@link AltoHtmlBuilder#handwritingLabel(TextBlock, Map)}); null searches the whole page
+     * @param annotationsOnly if true, only text in blocks tagged with one of the configured annotation LABELs is searched (see
+     *            {@link AltoHtmlBuilder#handwritingLabel(TextBlock, Map)}); false searches the whole page
      * @return A result list containing hits for each mach of the query and annotations containing the hits
      * @throws JDOMException
      * @throws IOException
-     * @should only return hits within annotation blocks if annotation styles given
-     * @should return no hits for text outside annotation blocks if annotation styles given
+     * @should only return hits within annotation blocks if annotations only
+     * @should return no hits for text outside annotation blocks if annotations only
+     * @should tag hits within annotation blocks with label and style class
+     * @should not tag hits in printed text
      */
-    public AnnotationResultList getAnnotationsFromAlto(Path path, String query, Map<String, AnnotationStyle> annotationStyles)
-            throws IOException, JDOMException {
+    public AnnotationResultList getAnnotationsFromAlto(Path path, String query, boolean annotationsOnly) throws IOException, JDOMException {
         AnnotationResultList results = new AnnotationResultList();
         AltoSearchParser parser = new AltoSearchParser();
         AltoDocument doc = AltoDocument.getDocumentFromFile(path.toFile());
         List<Word> words = parser.getWords(doc);
         if (!words.isEmpty()) {
-            if (annotationStyles != null) {
+            if (annotationsOnly) {
                 // Filter before matching, so phrases cannot span from an annotation into the printed text
-                words = words.stream().filter(w -> isInAnnotationBlock(w.getParent(), annotationStyles)).toList();
+                words = words.stream().filter(w -> annotationLabel(w.getParent()) != null).toList();
             }
             List<List<Word>> matches = parser.findWordMatches(words, query);
             for (List<Word> wordsHit : matches) {
@@ -349,8 +364,8 @@ public class SearchResultConverter {
             }
         } else {
             List<Line> lines = parser.getLines(doc);
-            if (annotationStyles != null) {
-                lines = lines.stream().filter(l -> isInAnnotationBlock(l, annotationStyles)).toList();
+            if (annotationsOnly) {
+                lines = lines.stream().filter(l -> annotationLabel(l) != null).toList();
             }
             if (!lines.isEmpty()) {
                 Map<Range<Integer>, List<Line>> hits = parser.findLineMatches(lines, query);
@@ -366,15 +381,13 @@ public class SearchResultConverter {
 
     /**
      * @param line ALTO line; may be null
-     * @param annotationStyles configured annotation tags, keyed by LABEL
-     * @return true if the line belongs to a text block tagged as a handwritten annotation; false otherwise
+     * @return the configured annotation LABEL of the text block containing the line; null for printed/untagged text
      */
-    private static boolean isInAnnotationBlock(Line line, Map<String, AnnotationStyle> annotationStyles) {
-        if (line == null) {
-            return false;
+    private String annotationLabel(Line line) {
+        if (line == null || line.getParent() == null) {
+            return null;
         }
-        TextBlock block = line.getParent();
-        return block != null && AltoHtmlBuilder.handwritingLabel(block, annotationStyles) != null;
+        return AltoHtmlBuilder.handwritingLabel(line.getParent(), annotationStyles);
     }
 
     /**
@@ -453,7 +466,7 @@ public class SearchResultConverter {
      */
     public SearchHit convertAltoToHit(List<Word> altoElements) {
         SearchHit hit = new SearchHit();
-        hit.setAnnotations(new ArrayList<>(altoElements.stream().map(this::createAnnotation).toList()));
+        hit.setAnnotations(new ArrayList<>(altoElements.stream().map(w -> createAnnotation(w, w.getParent())).toList()));
         hit.setMatch(altoElements.stream().map(Word::getSubsContent).collect(Collectors.joining(" ")));
 
         if (!altoElements.isEmpty()) {
@@ -499,7 +512,7 @@ public class SearchResultConverter {
             selector.setSuffix(after);
         }
         hit.setSelectors(Collections.singletonList(selector));
-        hit.setAnnotations(new ArrayList<>(containingLines.stream().map(this::createAnnotation).toList()));
+        hit.setAnnotations(new ArrayList<>(containingLines.stream().map(l -> createAnnotation(l, l)).toList()));
         return hit;
     }
 
@@ -583,10 +596,18 @@ public class SearchResultConverter {
      * Create an annotation from an ALTO element.
      *
      * @param altoElement The alto xml element
-     * @return An annotation representing the element
+     * @param line The line containing the element (or the element itself, if it is a line); decides whether it is part of an annotation block
+     * @return An annotation representing the element; a {@link LayoutTagAnnotation} if the element lies within an annotation block
      */
-    private IAnnotation createAnnotation(GeometricData altoElement) {
-        return altoBuilder.createAnnotation(altoElement, getPi(), getPageNo(), createSimpleCanvasResource(getPi(), getPageNo()), true);
+    private IAnnotation createAnnotation(GeometricData altoElement, Line line) {
+        AbstractAnnotation anno =
+                altoBuilder.createAnnotation(altoElement, getPi(), getPageNo(), createSimpleCanvasResource(getPi(), getPageNo()), true);
+        String label = annotationLabel(line);
+        if (label == null) {
+            return anno;
+        }
+        AnnotationStyle style = annotationStyles.get(label);
+        return new LayoutTagAnnotation(anno, label, style != null ? style.styleClass() : null);
     }
 
     /**

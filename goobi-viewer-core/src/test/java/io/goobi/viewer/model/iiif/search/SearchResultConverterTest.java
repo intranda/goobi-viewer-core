@@ -37,6 +37,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import de.intranda.api.annotation.oa.TextQuoteSelector;
 import de.intranda.api.iiif.search.SearchHit;
 import io.goobi.viewer.AbstractSolrEnabledTest;
@@ -45,6 +47,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.model.alto.AltoHtmlBuilder.AnnotationStyle;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.iiif.search.model.AnnotationResultList;
+import io.goobi.viewer.model.iiif.search.model.LayoutTagAnnotation;
 import io.goobi.viewer.model.iiif.search.parser.AbstractSearchParser;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -199,36 +202,72 @@ class SearchResultConverterTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SearchResultConverter#getAnnotationsFromAlto(Path, String, Map)
-     * @verifies only return hits within annotation blocks if annotation styles given
+     * @see SearchResultConverter#getAnnotationsFromAlto(Path, String, boolean)
+     * @verifies only return hits within annotation blocks if annotations only
      */
     @Test
-    void getAnnotationsFromAlto_shouldOnlyReturnHitsWithinAnnotationBlocksIfAnnotationStylesGiven() throws Exception {
+    void getAnnotationsFromAlto_shouldOnlyReturnHitsWithinAnnotationBlocksIfAnnotationsOnly() throws Exception {
+        converter.setAnnotationStyles(ANNOTATION_STYLES);
         // "Adelung" is in block b-3 (gr_jacob_oder_wilhelm_grimm), "1590" in block b-6 (gr_jacob_grimm)
-        AnnotationResultList adelung = converter.getAnnotationsFromAlto(LAYOUT_TAG_ALTO, AbstractSearchParser.getQueryRegex("Adelung"),
-                ANNOTATION_STYLES);
+        AnnotationResultList adelung = converter.getAnnotationsFromAlto(LAYOUT_TAG_ALTO, AbstractSearchParser.getQueryRegex("Adelung"), true);
         Assertions.assertEquals(1, adelung.getHits().size());
         Assertions.assertEquals("Adelung", adelung.getHits().get(0).getMatch());
 
-        AnnotationResultList year = converter.getAnnotationsFromAlto(LAYOUT_TAG_ALTO, AbstractSearchParser.getQueryRegex("1590"), ANNOTATION_STYLES);
+        AnnotationResultList year = converter.getAnnotationsFromAlto(LAYOUT_TAG_ALTO, AbstractSearchParser.getQueryRegex("1590"), true);
         Assertions.assertEquals(1, year.getHits().size());
     }
 
     /**
-     * @see SearchResultConverter#getAnnotationsFromAlto(Path, String, Map)
-     * @verifies return no hits for text outside annotation blocks if annotation styles given
+     * @see SearchResultConverter#getAnnotationsFromAlto(Path, String, boolean)
+     * @verifies return no hits for text outside annotation blocks if annotations only
      */
     @Test
-    void getAnnotationsFromAlto_shouldReturnNoHitsForTextOutsideAnnotationBlocksIfAnnotationStylesGiven() throws Exception {
+    void getAnnotationsFromAlto_shouldReturnNoHitsForTextOutsideAnnotationBlocksIfAnnotationsOnly() throws Exception {
+        converter.setAnnotationStyles(ANNOTATION_STYLES);
         // "die" only occurs in the printed block b-1
         String printedRegex = AbstractSearchParser.getQueryRegex("die");
         Assertions.assertFalse(converter.getAnnotationsFromAlto(LAYOUT_TAG_ALTO, printedRegex).getHits().isEmpty());
-        Assertions.assertTrue(converter.getAnnotationsFromAlto(LAYOUT_TAG_ALTO, printedRegex, ANNOTATION_STYLES).getHits().isEmpty());
+        Assertions.assertTrue(converter.getAnnotationsFromAlto(LAYOUT_TAG_ALTO, printedRegex, true).getHits().isEmpty());
 
         // "Otnit" occurs in the printed block b-1 ("Otnit:") and in block b-2, whose label gr_wilhelm_grimm is not a configured annotation tag
         String untaggedRegex = AbstractSearchParser.getQueryRegex("Otnit");
         Assertions.assertEquals(2, converter.getAnnotationsFromAlto(LAYOUT_TAG_ALTO, untaggedRegex).getHits().size());
-        Assertions.assertTrue(converter.getAnnotationsFromAlto(LAYOUT_TAG_ALTO, untaggedRegex, ANNOTATION_STYLES).getHits().isEmpty());
+        Assertions.assertTrue(converter.getAnnotationsFromAlto(LAYOUT_TAG_ALTO, untaggedRegex, true).getHits().isEmpty());
+    }
+
+    /**
+     * @see SearchResultConverter#getAnnotationsFromAlto(Path, String, boolean)
+     * @verifies tag hits within annotation blocks with label and style class
+     */
+    @Test
+    void getAnnotationsFromAlto_shouldTagHitsWithinAnnotationBlocksWithLabelAndStyleClass() throws Exception {
+        converter.setAnnotationStyles(Map.of("gr_jacob_grimm", new AnnotationStyle("alto-tag-color-1", "Jacob")));
+        // "1590" is in block b-6 (gr_jacob_grimm); the unrestricted search must still mark it as an annotation hit
+        AnnotationResultList results = converter.getAnnotationsFromAlto(LAYOUT_TAG_ALTO, AbstractSearchParser.getQueryRegex("1590"), false);
+        Assertions.assertEquals(1, results.getAnnotations().size());
+        LayoutTagAnnotation anno = Assertions.assertInstanceOf(LayoutTagAnnotation.class, results.getAnnotations().get(0));
+        Assertions.assertEquals("gr_jacob_grimm", anno.getLayoutTag());
+        Assertions.assertEquals("alto-tag-color-1", anno.getStyleClass());
+
+        // The extension properties are part of the serialized annotation, next to the regular ones
+        String json = new ObjectMapper().writeValueAsString(results.getAnnotations());
+        Assertions.assertTrue(json.contains("\"layoutTag\":\"gr_jacob_grimm\""), json);
+        Assertions.assertTrue(json.contains("\"styleClass\":\"alto-tag-color-1\""), json);
+        Assertions.assertTrue(json.contains("\"on\":"), json);
+    }
+
+    /**
+     * @see SearchResultConverter#getAnnotationsFromAlto(Path, String, boolean)
+     * @verifies not tag hits in printed text
+     */
+    @Test
+    void getAnnotationsFromAlto_shouldNotTagHitsInPrintedText() throws Exception {
+        converter.setAnnotationStyles(ANNOTATION_STYLES);
+        // "die" only occurs in the printed block b-1
+        AnnotationResultList results = converter.getAnnotationsFromAlto(LAYOUT_TAG_ALTO, AbstractSearchParser.getQueryRegex("die"), false);
+        Assertions.assertFalse(results.getAnnotations().isEmpty());
+        results.getAnnotations().forEach(a -> Assertions.assertFalse(a instanceof LayoutTagAnnotation, a.getId().toString()));
+        Assertions.assertFalse(new ObjectMapper().writeValueAsString(results.getAnnotations()).contains("layoutTag"));
     }
 
     /**
