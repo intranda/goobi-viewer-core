@@ -94,7 +94,7 @@
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
     .search-standard {
-        &__input-slim {
+        &__input-slim:not(.-with-filters) {
             flex-wrap: wrap;
             .search-standard__filter-select,
             .search-standard__input-autocomplete,

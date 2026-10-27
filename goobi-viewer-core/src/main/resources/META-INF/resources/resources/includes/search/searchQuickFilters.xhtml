@@ -191,29 +191,29 @@
                     #{msg['search__quick_filter__reset']}
                 </a>
             </div>
-        </div>
 
-        <!-- STATUS BAR -->
-        <div
-            class="search-quick-filters__status-bar -inner"
-            data-quickfilter-status="true"
-            data-quickfilter-status-label-singular="#{msg['search__quick_filter__active_filter_singular']}"
-            data-quickfilter-status-label-plural="#{msg['search__quick_filter__active_filter_plural']}"
-            style="display:none;">
+            <!-- STATUS BAR -->
             <div
-                class="search-quick-filters__status-info"
-                data-quickfilter-status-tooltip="true"
-                tabindex="0">
-                <util:icon icon="adjustments-horizontal" />
-                <span data-quickfilter-status-text="true" />
+                class="search-quick-filters__status-bar -inner"
+                data-quickfilter-status="true"
+                data-quickfilter-status-label-singular="#{msg['search__quick_filter__active_filter_singular']}"
+                data-quickfilter-status-label-plural="#{msg['search__quick_filter__active_filter_plural']}"
+                style="display:none;">
+                <div
+                    class="search-quick-filters__status-info"
+                    data-quickfilter-status-tooltip="true"
+                    tabindex="0">
+                    <util:icon icon="adjustments-horizontal" />
+                    <span data-quickfilter-status-text="true" />
+                </div>
+                <a
+                    href="#"
+                    class="search-quick-filters__status-reset"
+                    data-quickfilter-status-reset="true">
+                    <util:icon icon="x" />
+                    #{msg['search__quick_filter__reset']}
+                </a>
             </div>
-            <a
-                href="#"
-                class="search-quick-filters__status-reset"
-                data-quickfilter-status-reset="true">
-                <util:icon icon="x" />
-                #{msg['search__quick_filter__reset']}
-            </a>
         </div>
     </div>
 </ui:composition>
