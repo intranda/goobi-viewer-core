@@ -20,20 +20,6 @@
         <ui:fragment rendered="#{displayConditions.matchPage('{contentType:[TEXT, ALTO], accessCondition: VIEW_FULLTEXT}')}">
             <!-- SEARCH FORM -->
             <widgetComponent:widget_searchInCurrentItem />
-            <!-- SEARCH SCOPE: ONLY IN ANNOTATIONS (outside the shared widget's form, so toggling does not submit it) -->
-            <ui:fragment rendered="#{configurationBean.altoLayoutAnnotationTagsConfigured}">
-                <div class="immersive__search-scope">
-                    <input
-                        type="checkbox"
-                        id="immersiveSearchAnnotationsOnly"
-                        class="immersive__search-scope-checkbox" />
-                    <label
-                        for="immersiveSearchAnnotationsOnly"
-                        class="immersive__search-scope-label">
-                        #{msg.immersive__search_only_annotations}
-                    </label>
-                </div>
-            </ui:fragment>
             <!-- RESULTS -->
             <div
                 id="immersiveSearchResults"
@@ -41,9 +27,36 @@
                 data-label-empty="#{msg.hitsZero}"
                 data-label-error="#{msg.immersive__search_error}"
                 data-label-reset="#{msg.searchList_resetCurrentSearch}"
+                data-label-annotation="#{msg.annotation}"
                 hidden="hidden">
                 <!-- HIT COUNT + HIT NAVIGATION -->
                 <div class="immersive__results-head">
+                    <!-- HIT FILTER -->
+                    <ui:fragment rendered="#{configurationBean.altoLayoutAnnotationTagsConfigured}">
+                        <div
+                            id="immersiveHitFilter"
+                            class="immersive__results-filter"
+                            role="group"
+                            aria-label="#{msg.search__quick_filter__toggle}"
+                            hidden="hidden">
+                            <button
+                                type="button"
+                                class="immersive__results-filter-btn -active"
+                                data-immersive-hit-filter="all"
+                                aria-pressed="true">
+                                #{msg.search__quick_filter__all}
+                                <span class="immersive__results-filter-count" />
+                            </button>
+                            <button
+                                type="button"
+                                class="immersive__results-filter-btn"
+                                data-immersive-hit-filter="annotations"
+                                aria-pressed="false">
+                                #{msg.annotations}
+                                <span class="immersive__results-filter-count" />
+                            </button>
+                        </div>
+                    </ui:fragment>
                     <span
                         class="immersive__results-count"
                         id="immersiveHitCounter"

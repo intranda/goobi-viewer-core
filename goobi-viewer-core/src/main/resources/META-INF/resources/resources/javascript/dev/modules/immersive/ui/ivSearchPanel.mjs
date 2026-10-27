@@ -1,6 +1,8 @@
 /** Search panel wiring: in-work IIIF content search with hit list and highlights. */
 
 import { search, nextIndex, prevIndex } from '../data/ivFulltextSearch.mjs';
+import { loadLayoutTagIndex } from '../data/ivLayoutTags.mjs';
+import { styleClassTokens } from '../shared/ivDom.mjs';
 import { createDisposer } from '../shared/ivLifecycle.mjs';
 
 /**
@@ -14,30 +16,73 @@ import { createDisposer } from '../shared/ivLifecycle.mjs';
  */
 export function setupSearchPanel(viewer, pi, apiBase) {
     const bag = createDisposer();
-    const searchState = { hits: [], activeIndex: -1, term: '', failed: false };
+    const searchState = { allHits: [], hits: [], activeIndex: -1, term: '', failed: false, tagNames: null, filter: 'all' };
     let searchReq = 0;
     const resultsBox = document.getElementById('immersiveSearchResults');
     const resultsList = document.getElementById('immersiveResultsList');
     const hitCounter = document.getElementById('immersiveHitCounter');
-    // Only rendered when annotation layout tags are configured
-    const annotationsOnlyBox = document.getElementById('immersiveSearchAnnotationsOnly');
+    const filterBox = document.getElementById('immersiveHitFilter');
+    const filterBtns = filterBox ? Array.from(filterBox.querySelectorAll('[data-immersive-hit-filter]')) : [];
     const hitsOnOrder = (order) => searchState.hits.filter((h) => h.order === order);
-    // Hits in handwritten annotation blocks take the colour of their configured layout tag
-    const hitClassName = (h) => (h.layoutTag ? ['-annotation', h.styleClass].filter(Boolean).join(' ') : '');
+    const annotationHits = () => searchState.allHits.filter((h) => h.layoutTag);
+    const filteredHits = () => (searchState.filter === 'annotations' ? annotationHits() : searchState.allHits);
+
+    const loadTagNames = () =>
+        loadLayoutTagIndex(pi, apiBase, fetch, document.documentElement.lang)
+            .then((index) => new Map(index.tags.map((t) => [t.label, t.name])))
+            .catch(() => null);
+
+    const tagLine = (h) => {
+        const tag = document.createElement('span');
+        tag.className = 'immersive__results-tag';
+        const tokens = styleClassTokens(h.styleClass);
+        if (tokens.length) {
+            const dot = document.createElement('span');
+            dot.className = 'immersive__layout-tags-dot';
+            dot.classList.add(...tokens);
+            dot.setAttribute('aria-hidden', 'true');
+            tag.append(dot);
+        }
+        const label = resultsBox.dataset.labelAnnotation || '';
+        const name = searchState.tagNames && searchState.tagNames.get(h.layoutTag);
+        if (name && label) {
+            const prefix = document.createElement('span');
+            prefix.className = 'sr-only';
+            prefix.textContent = `${label} `;
+            tag.append(prefix);
+        }
+        tag.append(document.createTextNode(name || label || h.layoutTag));
+        return tag;
+    };
 
     const renderHighlights = () => {
         const activeHit = searchState.hits[searchState.activeIndex];
         const rects = viewer.getCurrentPages().flatMap((o) =>
             hitsOnOrder(o)
                 .filter((h) => h.rect)
-                .map((h) => ({ ...h.rect, order: o, active: h === activeHit, className: hitClassName(h) }))
+                .map((h) => ({ ...h.rect, order: o, active: h === activeHit }))
         );
         viewer.setHighlights(rects, 'search');
+    };
+
+    const renderFilter = () => {
+        if (!filterBox) return;
+        const annotationCount = annotationHits().length;
+        filterBox.hidden = !annotationCount;
+        filterBtns.forEach((btn) => {
+            const value = btn.dataset.immersiveHitFilter;
+            const on = value === searchState.filter;
+            btn.classList.toggle('-active', on);
+            btn.setAttribute('aria-pressed', String(on));
+            const count = btn.querySelector('.immersive__results-filter-count');
+            if (count) count.textContent = String(value === 'annotations' ? annotationCount : searchState.allHits.length);
+        });
     };
 
     const renderResults = () => {
         if (!resultsBox || !resultsList) return;
         resultsBox.hidden = !searchState.term;
+        renderFilter();
         const emptyLabel = (searchState.failed ? resultsBox.dataset.labelError : resultsBox.dataset.labelEmpty) || '';
         if (hitCounter) {
             hitCounter.textContent = searchState.hits.length ? `${searchState.activeIndex + 1} / ${searchState.hits.length}` : (searchState.term && emptyLabel) || '';
@@ -58,9 +103,11 @@ export function setupSearchPanel(viewer, pi, apiBase) {
             const page = document.createElement('span');
             page.className = 'immersive__results-page';
             page.textContent = h.page;
+            const body = document.createElement('span');
+            body.className = 'immersive__results-body';
             const snippet = document.createElement('span');
             snippet.className = 'immersive__results-snippet';
-            if (h.before || h.after) {
+            if (h.before || h.match || h.after) {
                 const mark = document.createElement('mark');
                 mark.className = 'immersive__results-match';
                 mark.textContent = h.match || h.snippet || '';
@@ -68,7 +115,9 @@ export function setupSearchPanel(viewer, pi, apiBase) {
             } else {
                 snippet.textContent = h.snippet || '';
             }
-            btn.append(page, snippet);
+            body.append(snippet);
+            if (h.layoutTag) body.append(tagLine(h));
+            btn.append(page, body);
             btn.addEventListener('click', () => goToHit(i));
             li.append(btn);
             resultsList.appendChild(li);
@@ -84,28 +133,51 @@ export function setupSearchPanel(viewer, pi, apiBase) {
         renderResults();
     };
 
+    const showFirstHit = () => {
+        searchState.activeIndex = searchState.hits.length ? 0 : -1;
+        renderResults();
+        if (searchState.activeIndex >= 0) goToHit(0);
+        else viewer.clearHighlights('search');
+    };
+
+    const setFilter = (filter) => {
+        if (filter === searchState.filter) return;
+        const activeHit = searchState.hits[searchState.activeIndex];
+        searchState.filter = filter;
+        searchState.hits = filteredHits();
+        const kept = searchState.hits.indexOf(activeHit);
+        if (kept < 0) {
+            showFirstHit();
+            return;
+        }
+        searchState.activeIndex = kept;
+        renderResults();
+        renderHighlights();
+    };
+
     /** Only the latest submitted search may render; a slower older response is dropped. */
     const runSearch = async (term) => {
         const req = ++searchReq;
         let hits = [];
         let failed = false;
+        let tagNames = null;
         if (term) {
             try {
-                // undefined keeps the default fetch function and page cap
-                hits = await search(pi, apiBase, term, undefined, undefined, { annotationsOnly: !!(annotationsOnlyBox && annotationsOnlyBox.checked) });
+                hits = await search(pi, apiBase, term);
             } catch (e) {
                 console.error('immersive fulltext search failed', e);
                 failed = true;
             }
+            if (hits.some((h) => h.layoutTag)) tagNames = await loadTagNames();
         }
         if (req !== searchReq) return;
         searchState.term = term;
-        searchState.hits = hits;
+        searchState.allHits = hits;
+        searchState.filter = 'all';
+        searchState.hits = filteredHits();
         searchState.failed = failed;
-        searchState.activeIndex = hits.length ? 0 : -1;
-        renderResults();
-        if (searchState.activeIndex >= 0) goToHit(0);
-        else viewer.clearHighlights('search');
+        searchState.tagNames = tagNames;
+        showFirstHit();
     };
 
     bag.add(viewer.onPageChange.subscribe(renderHighlights));
@@ -147,12 +219,9 @@ export function setupSearchPanel(viewer, pi, apiBase) {
             }
         });
     }
-    if (annotationsOnlyBox) {
-        // Re-run the last submitted search in the new scope; nothing to do before the first search
-        bag.listen(annotationsOnlyBox, 'change', () => {
-            if (searchState.term) runSearch(searchState.term);
-        });
-    }
+    filterBtns.forEach((btn) => {
+        bag.listen(btn, 'click', () => setFilter(btn.dataset.immersiveHitFilter));
+    });
     document.querySelectorAll('[data-immersive-hit]').forEach((btn) => {
         bag.listen(btn, 'click', () => {
             const n = searchState.hits.length;
