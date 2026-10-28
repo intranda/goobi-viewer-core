@@ -67,6 +67,7 @@ import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.RequiredPrivileges;
+import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import jakarta.ws.rs.BadRequestException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -182,7 +183,8 @@ public class RecordsFilesImageResource extends ImageResource {
         logger.trace("getPdf: {}/{}", pi, filename);
         filename = FilenameUtils.getBaseName(filename);
         filename = pi + "_" + filename + ".pdf";
-        response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");
+        response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, ClientApplicationManager.isClientApplicationRequest(request)
+                ? NetTools.HTTP_HEADER_VALUE_INLINE : NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");
 
         if (context.getProperty("param:metsSource") != null) {
             try {

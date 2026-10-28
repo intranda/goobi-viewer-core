@@ -192,6 +192,24 @@ public class ClientApplicationManager {
     }
 
     /**
+     * Checks whether the given request was made by a client application, either because it carries the client identifier header or because a
+     * client is registered in its session. The registration status of the client is not considered.
+     *
+     * @param request HTTP servlet request to check; may be null
+     * @return true if the request was made by a client application; false otherwise
+     * @should return false when request is null
+     * @should return true when client identifier header is present
+     * @should return true when client is registered in session
+     * @should return false for regular request
+     */
+    public static boolean isClientApplicationRequest(HttpServletRequest request) {
+        if (request == null) {
+            return false;
+        }
+        return StringUtils.isNotBlank(getClientIdentifier(request)) || getClientFromRequest(request).isPresent();
+    }
+
+    /**
      * Creates a new {@link ClientApplication} with the given identifier and IP of the given request and store it in the database.
      * 
      * @param clientIdentifier the identifier transmitted by the client

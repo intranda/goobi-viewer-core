@@ -48,6 +48,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.model.job.download.PdfDownloadJob;
+import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.solr.SolrConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -84,6 +85,7 @@ public class ViewerSectionPDFResource {
     private final boolean usePdfSource;
     private String filename;
 
+    private final HttpServletRequest request;
     private final HttpServletResponse response;
 
     /**
@@ -109,6 +111,7 @@ public class ViewerSectionPDFResource {
         // value; illegal URI characters would cause a ContentLibException (HTTP 500).
         this.pi = pi;
         this.divId = divId;
+        this.request = request;
         this.response = response;
         this.usePdfSource = Optional.ofNullable(usePdfSource).orElse(ContentServerConfiguration.getInstance().getUsePdf());
         String custom = StringTools.formatPdfDownloadFilename(
@@ -147,7 +150,8 @@ public class ViewerSectionPDFResource {
         PdfDownloadJob job = new PdfDownloadJob(message);
 
         response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION,
-                NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + StringTools.sanitizeFilenameToAscii(job.getDownloadFilename()) + "\"");
+                ClientApplicationManager.isClientApplicationRequest(request) ? NetTools.HTTP_HEADER_VALUE_INLINE
+                        : NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + StringTools.sanitizeFilenameToAscii(job.getDownloadFilename()) + "\"");
 
         return out -> {
             try {
