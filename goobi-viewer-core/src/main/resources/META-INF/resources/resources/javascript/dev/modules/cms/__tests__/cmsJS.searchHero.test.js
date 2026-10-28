@@ -1,4 +1,4 @@
-const searchHero = require('../viewerJS.searchHero.js');
+const searchHero = require('../cmsJS.searchHero.js');
 const API = '/viewer/api/v1/';
 const QUERIES = ['DC:maps', 'DC:books', 'DC:prints'];
 const failedImages = new Set();

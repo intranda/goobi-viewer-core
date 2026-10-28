@@ -2,9 +2,9 @@
  * Loads the three query-driven CMS hero images and changes one work at a time.
  * The surrounding search, links and collection facts are rendered by JSF.
  *
- * @module viewerJS.searchHero
+ * @module cmsJS.searchHero
  */
-var viewerJS = (function (viewer) {
+var cmsJS = (function (cms) {
     'use strict';
 
     var _module = {};
@@ -330,10 +330,10 @@ var viewerJS = (function (viewer) {
         _heroes = [];
     };
 
-    viewer.searchHero = _module;
-    return viewer;
-})(viewerJS || {});
+    cms.searchHero = _module;
+    return cms;
+})(cmsJS || {});
 
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = viewerJS.searchHero;
+    module.exports = cmsJS.searchHero;
 }
