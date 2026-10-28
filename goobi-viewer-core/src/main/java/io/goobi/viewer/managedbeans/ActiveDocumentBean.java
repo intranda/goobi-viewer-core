@@ -103,6 +103,7 @@ import io.goobi.viewer.model.search.SearchHit;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.statistics.usage.RequestType;
 import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.toc.TOCElement;
@@ -2427,7 +2428,9 @@ public class ActiveDocumentBean implements Serializable {
             // We want to get rid of them, else it may collide.
             ec.responseReset();
             ec.setResponseContentType("application/pdf");
-            ec.setResponseHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + fileName + "\"");
+            ec.setResponseHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION,
+                    ClientApplicationManager.isClientApplicationRequest((HttpServletRequest) ec.getRequest()) ? NetTools.HTTP_HEADER_VALUE_INLINE
+                            : NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + fileName + "\"");
             OutputStream os = ec.getResponseOutputStream();
             TocWriter writer = new TocWriter("", fileNameRaw);
             writer.createPdfDocument(os, getToc().getTocElements());

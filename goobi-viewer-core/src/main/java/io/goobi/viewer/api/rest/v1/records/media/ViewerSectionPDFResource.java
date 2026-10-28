@@ -37,7 +37,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.faces.validators.PIValidator;
-import jakarta.ws.rs.BadRequestException;
+import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -45,6 +45,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -63,6 +64,9 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
 
     private final String divId;
     private String filename;
+
+    private final HttpServletRequest request;
+    private final HttpServletResponse response;
 
     /**
      * @param context JAX-RS container request context
@@ -86,6 +90,8 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
         // value; illegal URI characters would cause a ContentLibException (HTTP 500).
         super(context, request, response, "pdf", requireValidPi(pi) + ".xml", cacheManager);
         this.divId = divId;
+        this.request = request;
+        this.response = response;
         String custom = StringTools.formatPdfDownloadFilename(
                 DataManager.getInstance().getConfiguration().getDownloadFilenamePattern(), pi, divId);
         this.filename = custom != null ? custom : pi + "_" + divId + ".pdf";
@@ -106,7 +112,9 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
     @ApiResponse(responseCode = "404", description = "Record or section not found")
     @ApiResponse(responseCode = "500", description = "PDF generation error")
     public StreamingOutput getPdf() throws ContentLibException {
-        response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");
+        response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION,
+                ClientApplicationManager.isClientApplicationRequest(request) ? NetTools.HTTP_HEADER_VALUE_INLINE
+                        : NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + StringTools.sanitizeFilenameToAscii(filename) + "\"");
         return super.getPdf(divId);
     }
 
@@ -132,10 +140,11 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
     }
 
     /**
-     * Validates the PI and returns it unchanged. Throws {@link BadRequestException} (HTTP 400)
-     * if the PI contains characters that are illegal in java.net.URI paths or Solr queries.
+     * Validates the PI and returns it unchanged. Throws {@link BadRequestException} (HTTP 400) if the PI contains characters that are illegal in
+     * java.net.URI paths or Solr queries.
      *
-     * <p>Declared static so it can be invoked inside the super() constructor call.
+     * <p>
+     * Declared static so it can be invoked inside the super() constructor call.
      *
      * @param pi persistent identifier to validate
      * @return the unchanged pi if valid

@@ -67,12 +67,13 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
-import jakarta.ws.rs.BadRequestException;
+import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -172,7 +173,8 @@ public class RecordsFilesImageResource extends ImageResource {
         logger.trace("getPdf: {}/{}", pi, filename);
         filename = FilenameUtils.getBaseName(filename);
         filename = pi + "_" + filename + ".pdf";
-        response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");
+        response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, ClientApplicationManager.isClientApplicationRequest(request)
+                ? NetTools.HTTP_HEADER_VALUE_INLINE : NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");
 
         if (context.getProperty("param:metsSource") != null) {
             try {
@@ -259,10 +261,11 @@ public class RecordsFilesImageResource extends ImageResource {
     }
 
     /**
-     * Validates the PI and returns it unchanged. Throws {@link BadRequestException} (HTTP 400)
-     * if the PI contains characters that are illegal in java.net.URI paths or Solr queries.
+     * Validates the PI and returns it unchanged. Throws {@link BadRequestException} (HTTP 400) if the PI contains characters that are illegal in
+     * java.net.URI paths or Solr queries.
      *
-     * <p>Declared static so it can be invoked inside the super() constructor call.
+     * <p>
+     * Declared static so it can be invoked inside the super() constructor call.
      *
      * @param pi persistent identifier to validate
      * @return the unchanged pi if valid

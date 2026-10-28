@@ -45,8 +45,8 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.faces.validators.PIValidator;
+import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.solr.SolrConstants;
-import jakarta.ws.rs.BadRequestException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -54,6 +54,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -77,6 +78,9 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
     private String filename;
     private final String pi;
 
+    private final HttpServletRequest request;
+    private final HttpServletResponse response;
+
     public ViewerRecordPDFResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Context AbstractApiUrlManager urls,
@@ -89,6 +93,8 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
         // super-constructor call to be the first statement.
         super(context, request, response, "pdf", requireValidPi(pi) + ".xml", cacheManager);
         this.pi = pi;
+        this.request = request;
+        this.response = response;
         String custom = StringTools.formatPdfDownloadFilename(
                 DataManager.getInstance().getConfiguration().getDownloadFilenamePattern(), pi, null);
         this.filename = custom != null ? custom : pi + ".pdf";
@@ -109,8 +115,11 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
     @ApiResponse(responseCode = "500", description = "PDF generation error")
     public StreamingOutput getPdf() throws ContentLibException {
         logger.trace("getPdf: {}", filename);
-        response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");
+        response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION,
+                ClientApplicationManager.isClientApplicationRequest(request) ? NetTools.HTTP_HEADER_VALUE_INLINE
+                        : NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + StringTools.sanitizeFilenameToAscii(filename) + "\"");
         return super.getPdf();
+
     }
 
     @Override
@@ -132,7 +141,8 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
         info.setTitle(pi);
         try {
             String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi + " +" + SolrConstants.DOCTYPE + ":PAGE";
-            List<SolrDocument> pageDocs = DataManager.getInstance().getSearchIndex()
+            List<SolrDocument> pageDocs = DataManager.getInstance()
+                    .getSearchIndex()
                     .getDocs(query, List.of(SolrConstants.MDNUM_FILESIZE));
             long totalBytes = 0;
             if (pageDocs != null) {
@@ -170,10 +180,11 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
     }
 
     /**
-     * Validates the PI and returns it unchanged. Throws {@link BadRequestException} (HTTP 400)
-     * if the PI contains characters that are illegal in java.net.URI paths or Solr queries.
+     * Validates the PI and returns it unchanged. Throws {@link BadRequestException} (HTTP 400) if the PI contains characters that are illegal in
+     * java.net.URI paths or Solr queries.
      *
-     * <p>Declared static so it can be invoked inside the super() constructor call.
+     * <p>
+     * Declared static so it can be invoked inside the super() constructor call.
      *
      * @param pi persistent identifier to validate
      * @return the unchanged pi if valid
