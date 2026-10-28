@@ -52,4 +52,15 @@
             </h:outputLink>
         </figure>
     </ui:fragment>
+
+    <!-- PLACEHOLDER: NO IMAGE EXISTS (ACCESS DENIED IS HANDLED ABOVE VIA data-viewer-access-denied-url) -->
+    <ui:fragment rendered="#{!browseElement.showThumbnail}">
+        <figure class="search-list__hit-thumbnail search-list__hit-thumbnail--placeholder">
+            <h:outputLink
+                value="#{navigationHelper.applicationUrl}#{browseElement.url}"
+                title="#{browseElement.label}"
+                tabindex="-1"
+                aria-hidden="true" />
+        </figure>
+    </ui:fragment>
 </ui:composition>

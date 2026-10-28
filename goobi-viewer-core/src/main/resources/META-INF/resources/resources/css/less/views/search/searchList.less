@@ -365,6 +365,20 @@
         display: flex;
         gap: 2px;
     }
+    /* PLACEHOLDER GRID PATTERN: SQUARE CELLS WITH A SMALL GAP, SHOWN WHEN A HIT HAS NO IMAGE AT ALL */
+    /* THE REPEATED CLASSES RAISE THE SPECIFICITY ABOVE THE BACKGROUND DECLARATIONS OF THE VIEW-SPECIFIC THUMBNAIL RULES */
+    &__hits &__hit &__hit-thumbnail&__hit-thumbnail--placeholder {
+        --_cell: 24px;
+        --_gap: 3px;
+        --_step: calc(var(--_cell) + var(--_gap));
+        background-color: var(--bg-subtle);
+        background-image:
+            linear-gradient(to right, var(--bg-surface) var(--_gap), transparent var(--_gap)),
+            linear-gradient(to bottom, var(--bg-surface) var(--_gap), transparent var(--_gap)) !important; // JS sets an inline background-image: none
+        background-size: var(--_step) var(--_step);
+        background-repeat: repeat;
+        background-position: center;
+    }
     &__hit-info-wrapper {
         position: relative;
     }
