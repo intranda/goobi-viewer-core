@@ -107,34 +107,43 @@
                 padding-top: 20px;
             }
         }
+        /* LANGUAGE LIST, same look as the user dropdown next to it */
         .change-local {
-            background: var(--bg-inverse);
-            color: var(--fg-on-inverse);
             display: none;
             position: absolute;
             top: 3.2rem;
             left: 0;
-            padding-top: 0.1rem;
+            min-width: 16rem;
+            padding: 0.35rem 0;
+            font-size: var(--font-size-body-small);
+            background: var(--bg-elevated);
+            color: var(--fg-default);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-container-small);
+            box-shadow: var(--shadow-elevated);
             z-index: 2000;
-            box-shadow: none;
+            ul {
+                .mx-list-reset;
+            }
             li {
                 display: list-item;
                 float: none;
                 margin: 0;
-                margin-bottom: 0.1rem;
             }
-            a {
-                padding: 0.3rem 1.4rem;
+            button {
+                width: 100%;
+                padding: 0.7rem 1.5rem;
+                color: inherit;
+                text-align: start;
                 &:hover,
                 &:active,
-                &:focus {
-                    background-color: var(--bg-inverse-hover);
-                    color: var(--fg-on-inverse);
+                &:focus-visible {
+                    background-color: var(--bg-hover);
                     text-decoration: none;
                 }
                 &.activeLang {
-                    background-color: var(--bg-inverse-hover);
-                    color: var(--fg-on-inverse);
+                    background-color: var(--bg-selected);
+                    color: var(--fg-selected);
                 }
             }
         }
