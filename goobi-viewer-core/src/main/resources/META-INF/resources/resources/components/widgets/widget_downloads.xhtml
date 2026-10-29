@@ -127,10 +127,10 @@
                             </a>
                         </ui:repeat>
                     </ui:fragment>
-                    <!-- SINGLE LANGUAGE -->
+                    <!-- SINGLE LANGUAGE (generated from full-text, so only if the record has any) -->
                     <ui:fragment
                         visibility-class="widget-element"
-                        rendered="#{displayConditions.matchRecord('{contentType:![TEI], pageType:[viewFulltext, viewFullscreen], accessCondition:VIEW_FULLTEXT}')}">
+                        rendered="#{activeDocumentBean.viewManager.topStructElement.fulltextAvailable and displayConditions.matchRecord('{contentType:![TEI], pageType:[viewFulltext, viewFullscreen], accessCondition:VIEW_FULLTEXT}')}">
                         <a
                             href="#{activeDocumentBean.viewManager.teiUrlForAllPages}"
                             id="teiWork"
