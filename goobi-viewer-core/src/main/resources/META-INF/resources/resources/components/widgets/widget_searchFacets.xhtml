@@ -34,7 +34,7 @@
                 <ui:fragment rendered="#{cc.attrs.mode eq 'combined'}">
                     <div class="combined-facets__head">
                         <h2 class="combined-facets__title">#{msg.search__combined_facets__title}</h2>
-                        <h:form rendered="#{not empty searchBean.facets.activeFacets or searchBean.explicitSearchPerformed}">
+                        <h:form styleClass="widget__form-wrapper" rendered="#{not empty searchBean.facets.activeFacets or searchBean.explicitSearchPerformed}">
                             <h:commandLink
                                 styleClass="combined-facets__reset"
                                 action="#{searchBean.resetAllActiveFiltersAction}"

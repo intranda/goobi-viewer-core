@@ -18,6 +18,7 @@
         </item>
         <item id="heading">
             <label>cms_component__search_hero__heading</label>
+            <description>cms_component__search_hero__heading__desc</description>
             <className>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</className>
             <jsfComponent>
                 <library>cms/components/backend/content</library>
@@ -58,22 +59,7 @@
         </item>
         <item id="sourceQuery">
             <label>cms_component__search_hero__source_query</label>
-            <className>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</className>
-            <jsfComponent>
-                <library>cms/components/backend/content</library>
-                <name>text</name>
-            </jsfComponent>
-        </item>
-        <item id="sourceQueryTop">
-            <label>cms_component__search_hero__source_query_top</label>
-            <className>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</className>
-            <jsfComponent>
-                <library>cms/components/backend/content</library>
-                <name>text</name>
-            </jsfComponent>
-        </item>
-        <item id="sourceQueryBottom">
-            <label>cms_component__search_hero__source_query_bottom</label>
+            <description>cms_component__search_hero__source_query__desc</description>
             <className>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</className>
             <jsfComponent>
                 <library>cms/components/backend/content</library>

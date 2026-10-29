@@ -52,9 +52,9 @@ public class SearchHeroBean implements Serializable {
     private static final Logger logger = LogManager.getLogger(SearchHeroBean.class);
 
     private static final List<Slot> SLOTS = List.of(
-            new Slot("a", "sourceQuery", 1200),
-            new Slot("b", "sourceQueryTop", 900),
-            new Slot("c", "sourceQueryBottom", 900));
+            new Slot("a", 1200),
+            new Slot("b", 900),
+            new Slot("c", 900));
 
     @Inject
     private CollectionBrowseBean collectionBrowseBean;
@@ -150,21 +150,15 @@ public class SearchHeroBean implements Serializable {
         private static final long serialVersionUID = 1L;
 
         private final String area;
-        private final String queryField;
         private final int imageSize;
 
-        private Slot(String area, String queryField, int imageSize) {
+        private Slot(String area, int imageSize) {
             this.area = area;
-            this.queryField = queryField;
             this.imageSize = imageSize;
         }
 
         public String getArea() {
             return area;
-        }
-
-        public String getQueryField() {
-            return queryField;
         }
 
         public int getImageSize() {

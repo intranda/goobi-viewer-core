@@ -392,6 +392,7 @@
                         visibility-class="widget-element"
                         rendered="#{configurationBean.docHierarchyPdfEnabled and displayConditions.matchRecord('{tocSize: 2}')}">
                         <h:form
+                            styleClass="widget__form-wrapper"
                             class="d-inline-flex"
                             id="titleBodyForm"
                             prependId="false">
@@ -686,7 +687,7 @@
                             jsf:id="pdfRangeDownloads"
                             visibility-class="widget-element"
                             class="widget-downloads__page-range-downloads-inner">
-                            <h:form id="pdfPageRangeDownloadForm">
+                            <h:form styleClass="widget__form-wrapper" id="pdfPageRangeDownloadForm">
                                 <div class="widget-downloads__page-range-downloads-inputs-wrapper">
                                     <div class="widget-downloads__page-range-downloads-inputs-wrapper-inner">
                                         <!-- FROM -->
@@ -772,7 +773,7 @@
                     <div
                         id="widgetAdditionalFiles"
                         class="widget-downloads__additional-files-wrapper">
-                        <h:form id="widgetAdditionalFilesForm">
+                        <h:form styleClass="widget__form-wrapper" id="widgetAdditionalFilesForm">
                             <h3
                                 id="additionFilesTitle"
                                 class="widget-downloads__subtitle widget__badge-container-heading">

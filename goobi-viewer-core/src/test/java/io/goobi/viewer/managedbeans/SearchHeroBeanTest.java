@@ -114,8 +114,6 @@ class SearchHeroBeanTest {
         List<SearchHeroBean.Slot> slots = bean.getSlots();
 
         assertEquals(List.of("a", "b", "c"), slots.stream().map(SearchHeroBean.Slot::getArea).toList());
-        assertEquals(List.of("sourceQuery", "sourceQueryTop", "sourceQueryBottom"),
-                slots.stream().map(SearchHeroBean.Slot::getQueryField).toList());
         assertEquals(List.of(1200, 900, 900), slots.stream().map(SearchHeroBean.Slot::getImageSize).toList());
         assertThrows(UnsupportedOperationException.class, slots::clear);
     }

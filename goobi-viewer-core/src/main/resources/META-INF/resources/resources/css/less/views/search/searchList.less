@@ -355,10 +355,12 @@
     }
 
     /* BROWSE ELEMENT (browseElement.xhtml) */
+    /* THE TOKENS ARE DECLARED IN misc/tokens.less AND SET BY THE THEME */
     &__hit-inner-structure {
         display: grid;
-        grid-template-columns: 220px 1fr;
-        gap: 20px;
+        grid-template-columns: var(--search-list-hit-thumbnail-width) minmax(0, 1fr);
+        align-items: var(--search-list-hit-align-items);
+        gap: var(--search-list-hit-row-gap) var(--search-list-hit-column-gap);
     }
     &__hit-thumb-wrapper {
         position: relative;
@@ -432,8 +434,8 @@
         right: 0;
         top: -25px;
         display: flex;
-        flex-direction: column;
-        gap: 3px;
+        flex-direction: var(--search-list-hit-options-direction);
+        gap: var(--search-list-hit-options-gap);
         align-items: flex-start;
         justify-content: flex-start;
         margin-top: 0;
@@ -533,27 +535,29 @@
     /* THUMBNAIL (browseElementThumbnail.xhtml) */
     &__hit-thumbnail {
         width: 100%;
+        aspect-ratio: var(--search-list-hit-thumbnail-ratio);
         margin-bottom: 0;
         display: flex;
         justify-content: flex-end;
+        /* MULTIVOLUME LINKS (.stackedThumbEffect) ALREADY FILL THE SLOT */
+        a:not(.stackedThumbEffect) {
+            width: var(--search-list-hit-thumbnail-fill);
+            height: var(--search-list-hit-thumbnail-fill);
+        }
         img {
             display: inline;
             padding: 0;
             margin: 0;
-            width: auto;
+            width: var(--search-list-hit-thumbnail-fill);
+            height: var(--search-list-hit-thumbnail-fill);
             max-width: 100%;
-            max-height: 250px;
+            max-height: var(--search-list-hit-thumbnail-image-max-height);
+            object-fit: var(--search-list-hit-thumbnail-image-fit);
+            object-position: var(--search-list-hit-thumbnail-image-position);
             line-height: normal;
             border: 2px solid var(--bg-surface);
             border-radius: 0;
             box-shadow: 2px 2px 5px rgb(from var(--shadow-color) r g b / 30%);
-        }
-        [data-bookmark-list-type='add'] {
-            position: absolute;
-            top: 8px;
-            right: 5px;
-            color: var(--fg-brand);
-            background-image: none;
         }
     }
 
@@ -682,12 +686,6 @@
 
 /* RTL */
 @{RTL} .search-list {
-    &__hit-thumbnail {
-        [data-bookmark-list-type='add'] {
-            right: unset;
-            left: 5px;
-        }
-    }
     &__rss {
         padding-right: 5px;
         border-left: none;
@@ -706,6 +704,25 @@
     &__hitcount {
         padding-right: 0px;
         padding-left: 5px;
+    }
+}
+
+/* POINTER DEVICES: THE TOOLS APPEAR ON HOVER OR KEYBOARD FOCUS, TOUCH KEEPS THEM VISIBLE */
+@media (min-width: (@smallBreakpoint + 1)) and (hover: hover) and (pointer: fine) and (~'not (any-pointer: coarse)') {
+    .search-list {
+        &__hit-options-wrapper > * {
+            opacity: 0;
+            transition: var(--search-list-hit-options-transition);
+        }
+        &__hit:hover &__hit-options-wrapper > *,
+        &__hit:focus-within &__hit-options-wrapper > * {
+            opacity: 1;
+        }
+        /* A BOOKMARKED RECORD KEEPS ITS MARK VISIBLE */
+        &__hit-options-button-bookmark.added,
+        &__hit-options-button-bookmark[aria-checked='true'] {
+            opacity: 1;
+        }
     }
 }
 
@@ -743,10 +760,14 @@
             top: unset;
             right: unset;
         }
-        /* RAISED SPECIFICITY TO WIN OVER THE UNCONDITIONAL ROW RULE */
         &__hits:not(.grid):not(.list-view) &__hit-inner-structure &__hit-thumbnail {
             width: auto;
             justify-content: flex-start;
+        }
+        /* STACKED HIT: THE THEME OPTS IN WITH THE TABLET TOKENS, THE DEFAULTS KEEP THE TWO COLUMNS */
+        &__hit-inner-structure:has(.search-list__hit-thumbnail) {
+            grid-template-columns: var(--search-list-hit-columns-tablet);
+            row-gap: var(--search-list-hit-row-gap-tablet);
         }
     }
 }
@@ -754,8 +775,10 @@
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
     .search-list {
-        &__hit-inner-structure {
-            grid-template-columns: 1fr;
+        /* THE SECOND SELECTOR KEEPS THE RULE ABOVE THE TABLET RULE */
+        &__hit-inner-structure,
+        &__hit-inner-structure:has(.search-list__hit-thumbnail) {
+            grid-template-columns: minmax(0, 1fr);
         }
     }
 }

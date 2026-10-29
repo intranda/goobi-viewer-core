@@ -30,8 +30,22 @@
         </h:form>
         <script>
             function switchTheme(colors) {
+                // Disable all transitions while the color mode class changes, so that
+                // every element switches at once instead of fading at different speeds.
+                var style = document.createElement('style');
+                style.textContent = '*, *::before, *::after { transition: none !important; }';
+                document.head.appendChild(style);
+
                 $('html').removeClass('color-theme-light color-theme-dark');
                 $('html').addClass(colors);
+
+                // Force a style recalculation while transitions are still disabled
+                void document.documentElement.offsetHeight;
+                requestAnimationFrame(function () {
+                    requestAnimationFrame(function () {
+                        style.remove();
+                    });
+                });
             }
 
             $('##{cc.attrs.clientId}\\:darkModeSwitch').on('click', function () {

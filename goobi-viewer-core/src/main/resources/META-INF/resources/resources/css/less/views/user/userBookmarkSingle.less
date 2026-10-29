@@ -57,30 +57,7 @@
         font-style: italic;
     }
 
-    /* ENTRIES */
-    &__entries {
-        --_entry-thumb-width: 19rem;
-        --_entry-thumb-ratio: 4 / 5;
-        --_entry-gap: 2.8rem;
-
-        .search-list__hit-inner-structure {
-            display: grid;
-            grid-template-columns: var(--_entry-thumb-width) minmax(0, 1fr);
-            align-items: start;
-            gap: 0 var(--_entry-gap);
-        }
-        .search-list__hit-thumbnail {
-            width: 100%;
-            aspect-ratio: var(--_entry-thumb-ratio);
-            img {
-                width: 100%;
-                height: 100%;
-                max-height: none;
-                object-fit: cover;
-                object-position: center top;
-            }
-        }
-    }
+    /* ENTRIES: GRID AND THUMBNAIL SLOT COME FROM THE SEARCH LIST HIT ROW (searchList.less), THE THEME SETS THE TOKENS */
     &__entry {
         margin-bottom: 2rem;
         padding: 2rem;
@@ -121,6 +98,10 @@
         &__head-row {
             flex-direction: column;
             align-items: stretch;
+        }
+        /* THE THUMBNAIL FOLLOWS THE SINGLE COLUMN LIKE IN THE SEARCH LIST */
+        &__entries .search-list__hit-thumbnail {
+            width: auto;
         }
     }
 }

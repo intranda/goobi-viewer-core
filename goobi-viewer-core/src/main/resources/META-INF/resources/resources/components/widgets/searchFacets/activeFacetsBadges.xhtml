@@ -29,7 +29,7 @@
             <ui:fragment rendered="#{cc.attrs.mode ne 'combined'}">
                 <div class="widget__topbar widget-active-facets__topbar">
                     <h2 class="widget__title widget-active-facets__title">#{msg.search__active_facets__title}</h2>
-                    <h:form>
+                    <h:form styleClass="widget__form-wrapper">
                         <h:commandLink
                             styleClass="widget-active-facets__reset"
                             action="#{searchBean.resetAllActiveFiltersAction}"
@@ -52,7 +52,7 @@
                     </h:form>
                 </div>
             </ui:fragment>
-            <h:form styleClass="#{cc.attrs.mode eq 'combined' ? '' : 'widget__body widget-active-facets__body'}">
+            <h:form styleClass="#{cc.attrs.mode eq 'combined' ? 'widget__form-wrapper' : 'widget__form-wrapper widget__body widget-active-facets__body'}">
                 <ul class="active-facets-badges__list">
                     <c:if test="#{searchBean.explicitSearchPerformed}">
                         <li class="active-facets-badges__list-item">

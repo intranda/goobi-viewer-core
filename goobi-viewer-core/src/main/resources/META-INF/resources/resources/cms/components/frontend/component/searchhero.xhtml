@@ -18,6 +18,9 @@
             <c:set
                 var="heroMapUrl"
                 value="#{cc.attrs.component.getContentData('mapUrl')}" />
+            <c:set
+                var="heroQuery"
+                value="#{cc.attrs.component.getContentData('sourceQuery')}" />
             <div
                 data-search-hero="true"
                 data-search-hero-api="#{request.contextPath}/api/v1/"
@@ -78,7 +81,7 @@
                         </ui:fragment>
                     </div>
 
-                    <!-- ONE SOLR QUERY PER FRAME -->
+                    <!-- ALL FRAMES DRAW FROM THE SAME SOLR QUERY -->
                     <div class="cms-search-hero__gallery">
                         <div
                             class="cms-search-hero__case"
@@ -91,7 +94,7 @@
                                     class="cms-search-hero__tile"
                                     data-search-hero-slot="true"
                                     data-search-hero-area="#{slot.area}"
-                                    data-search-hero-query="#{cc.attrs.component.getContentData(slot.queryField)}"
+                                    data-search-hero-query="#{heroQuery}"
                                     data-search-hero-size="#{slot.imageSize}"
                                     aria-hidden="true"
                                     tabindex="-1">
