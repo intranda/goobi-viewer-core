@@ -1,58 +1,66 @@
 /* ==============================================================
    Error Page
    style declarations for error.xhtml (application errors)
+   Colours: fixed --color-error-* palette entries (see error.less), identical in every theme.
    ==============================================================*/
 /* ERROR CARD */
 .view-error-card {
-    border: 1px solid var(--border-default);
+    border: 1px solid var(--color-error-line);
     border-radius: 3px;
-    background: var(--bg-surface);
-    color: var(--fg-default);
+    background-color: var(--color-error-card);
+    color: var(--color-error-ink);
+    color-scheme: light;
     padding: 2rem;
     /* VARIANTS */
     &--warning {
-        border-top: 5px solid var(--bg-highlight);
+        border-top: 5px solid var(--color-error-warning);
     }
     &--danger {
-        border-top: 5px solid var(--border-danger);
+        border-top: 5px solid var(--color-error-danger);
     }
     /* CONTENT */
     &__title {
         font-size: var(--font-size-heading-small);
         font-weight: 700;
-        color: var(--fg-default);
+        color: var(--color-error-ink);
         margin: 0 0 1rem;
         line-height: 1.2;
     }
     &__message {
         font-size: var(--font-size-body-small);
-        color: var(--fg-muted);
+        color: var(--color-error-ink-muted);
         line-height: 1.7;
         margin: 0;
         a {
-            color: var(--fg-link-subtle);
+            color: var(--color-error-link);
+            text-decoration: underline;
+            &:hover,
+            &:focus,
+            &:active {
+                color: var(--color-error-link-strong);
+            }
         }
     }
     &__divider {
         border: none;
-        border-top: 1px solid var(--border-default);
+        border-top: 1px solid var(--color-error-line);
         margin: 2rem 0;
     }
     &__details-label {
         font-size: var(--font-size-caption);
         font-weight: 600;
-        color: var(--fg-muted);
+        color: var(--color-error-ink-muted);
         text-transform: uppercase;
         letter-spacing: 0.06em;
         margin-bottom: 0.8rem;
     }
     &__details-block {
-        background: var(--bg-page);
-        border: 1px solid var(--border-default);
+        background-color: var(--color-error-well);
+        border: 1px solid var(--color-error-line);
         padding: 1rem 1.2rem;
         font-family: monospace;
         font-size: var(--font-size-caption);
-        color: var(--fg-default);
+        color: var(--color-error-ink);
         line-height: 1.8;
         margin: 0;
         dt {

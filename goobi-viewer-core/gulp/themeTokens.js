@@ -457,6 +457,9 @@ const RENAMED_TOKENS = new Map([
     ['--toc-page-border', null],
     ['--toc-page-link-fg-hover', null],
     ['--toc-page-toggle-icon', null],
+    ['--color-warning-surface-dark', null],
+    ['--fg-on-accent', null],
+    ['--fg-on-highlight', null],
 ]);
 const renameHint = (name) => (RENAMED_TOKENS.has(name) ? (RENAMED_TOKENS.get(name) ? `renamed — now ${RENAMED_TOKENS.get(name)}` : 'removed — delete the read') : null);
 const THEME_BUCKETS = ['light', 'dark', 'base', 'palette', 'root'];

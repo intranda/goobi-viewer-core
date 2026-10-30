@@ -3,7 +3,7 @@
    ==============================================================*/
 
 /* CLEARFLOATS */
-.mx-clearfloats {
+.mx-clearfloats() {
     &:before,
     &:after {
         content: ' ';
@@ -37,21 +37,21 @@
     }
 }
 /* HIDDEN */
-.mx-visible {
+.mx-visible() {
     display: block !important;
     visibility: visible !important;
 }
 /* HIDDEN */
-.mx-hidden {
+.mx-hidden() {
     display: none !important;
     visibility: hidden !important;
 }
 /* HIDDEN - NOT OVERRIDEN WITH IMPORTANT */
-.mx-hidden-soft {
+.mx-hidden-soft() {
     display: none!;
 }
 /* VISUALLY HIDDEN */
-.mx-v-hidden {
+.mx-v-hidden() {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -66,12 +66,12 @@
     grid-gap: @gap;
 }
 /* LIST RESET */
-.mx-list-reset {
+.mx-list-reset() {
     margin: 0;
     padding: 0;
     list-style: none;
 }
-.mx-no-style-button {
+.mx-no-style-button() {
     background: transparent;
     box-shadow: 0px 0px 0px transparent;
     border: 0px solid transparent;
@@ -95,14 +95,14 @@
 // against every background the ring might appear on. The inner light ring covers dark
 // backgrounds, the outer brand-colored ring (box-shadow, doesn't affect layout) covers
 // light backgrounds - together they guarantee >=3:1 against any background.
-.mx-focus-visible {
+.mx-focus-visible() {
     outline: 2px solid var(--outline-focus-inner);
     outline-offset: -2px;
     box-shadow: 0 0 0 4px var(--outline-focus);
     z-index: 9999;
 }
 
-.mx-sr-only {
+.mx-sr-only() {
     position: absolute;
     width: 1px;
     height: 1px;

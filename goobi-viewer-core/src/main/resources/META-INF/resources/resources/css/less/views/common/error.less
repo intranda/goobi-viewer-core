@@ -4,10 +4,15 @@
    ==============================================================*/
 /* ERROR */
 
-/* FORCE LIGHT BACKGROUND ON ERROR PAGES */
+/* ONE FIXED LIGHT LOOK
+   The colours come from the --color-error-* palette entries, not from the theme roles, so the
+   page looks the same in every theme and in dark mode. A theme overrides them explicitly. */
+html:has(.view-error-page),
+body#viewer:has(.view-error-page),
 body:has(.view-error-page) {
-    background-color: var(--bg-surface);
-    color: var(--fg-default);
+    color-scheme: light;
+    background-color: var(--color-error-page);
+    color: var(--color-error-ink);
 }
 
 /* PAGE WRAPPER */
@@ -16,11 +21,88 @@ body:has(.view-error-page) {
     width: 100%;
     display: flex;
     flex-direction: column;
+    color-scheme: light;
+    background-color: var(--color-error-page);
+    color: var(--color-error-ink);
+}
+
+/* BUTTONS, SHARED BY THE HTTP ERROR PAGES AND THE ERROR CARD
+   The double class selector wins over the generic theme rules of .btn.btn--full and
+   .btn.btn--default, which also style the hover, active and focus states.
+   The keyboard focus ring is left to the theme on purpose (accessibility). */
+.view-error__actions,
+.view-error-card__actions {
+    .btn {
+        border-width: 1px;
+        border-style: solid;
+        text-transform: none;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .btn.btn--full {
+        color: var(--color-on-error-button);
+        background-color: var(--color-error-button);
+        border-color: var(--color-error-button);
+        box-shadow: 0 2px 8px rgb(from var(--color-error-button) r g b / 25%);
+
+        &:focus {
+            color: var(--color-on-error-button);
+            background-color: var(--color-error-button);
+            border-color: var(--color-error-button);
+        }
+
+        &:hover {
+            color: var(--color-on-error-button);
+            background-color: var(--color-error-button-strong);
+            border-color: var(--color-error-button-strong);
+            box-shadow: 0 4px 12px rgb(from var(--color-error-button) r g b / 30%);
+            transform: translateY(-1px);
+        }
+
+        &:active {
+            color: var(--color-on-error-button);
+            background-color: var(--color-error-button-deep);
+            border-color: var(--color-error-button-deep);
+            box-shadow: 0 1px 4px rgb(from var(--color-error-button) r g b / 30%);
+            transform: translateY(0);
+        }
+    }
+
+    .btn.btn--default {
+        color: var(--color-error-ink-soft);
+        background-color: var(--color-error-card);
+        border-color: var(--color-error-line-strong);
+        box-shadow: 0 1px 3px rgb(from var(--color-error-ink) r g b / 5%);
+
+        &:focus {
+            color: var(--color-error-ink-soft);
+            background-color: var(--color-error-card);
+            border-color: var(--color-error-line-strong);
+        }
+
+        &:hover {
+            color: var(--color-error-ink);
+            background-color: var(--color-error-card);
+            border-color: var(--color-error-line-strong);
+            box-shadow: 0 2px 6px rgb(from var(--color-error-ink) r g b / 8%);
+            transform: translateY(-1px);
+        }
+
+        &:active {
+            color: var(--color-error-ink);
+            background-color: var(--color-error-well-strong);
+            border-color: var(--color-error-ink-soft);
+            box-shadow: 0 1px 2px rgb(from var(--color-error-ink) r g b / 6%);
+            transform: translateY(0);
+        }
+    }
 }
 
 .view-error {
-    background: var(--bg-surface);
-    color: var(--fg-default);
+    background-color: transparent;
+    color: var(--color-error-ink);
     max-width: 620px;
     margin: 0 auto;
     padding: 0 2rem 6rem;
@@ -42,7 +124,7 @@ body:has(.view-error-page) {
 
     &__headline {
         font-size: var(--font-size-heading-medium);
-        color: var(--fg-default);
+        color: var(--color-error-ink);
         margin-top: -1.6rem;
         margin-bottom: 1.2rem;
         position: relative;
@@ -53,23 +135,34 @@ body:has(.view-error-page) {
 
     &__code {
         font-weight: 800;
-        color: var(--fg-link);
+        color: var(--color-error-link);
         letter-spacing: -0.05em;
     }
 
     &__title {
         font-weight: 300;
-        color: var(--fg-secondary);
+        color: var(--color-error-ink-soft);
         letter-spacing: -0.02em;
     }
 
     &__message {
         font-size: var(--font-size-body);
-        color: var(--fg-muted);
+        color: var(--color-error-ink-muted);
         line-height: 1.7;
         margin: 0 auto 2.4rem;
         max-width: 400px;
         letter-spacing: 0.005em;
+
+        a {
+            color: var(--color-error-link);
+            text-decoration: underline;
+
+            &:hover,
+            &:focus,
+            &:active {
+                color: var(--color-error-link-strong);
+            }
+        }
     }
 
     &__actions {
@@ -86,66 +179,6 @@ body:has(.view-error-page) {
             font-size: var(--font-size-body-small);
             font-weight: 600;
             letter-spacing: 0.02em;
-            transition: all 0.2s ease;
-            cursor: pointer;
-
-            &:focus {
-                background-color: inherit;
-            }
-        }
-
-        .btn--full {
-            background-color: var(--bg-brand);
-            border-color: var(--bg-brand);
-            box-shadow: 0 2px 8px rgb(from var(--fg-brand) r g b / 25%);
-
-            &:hover {
-                background-color: var(--bg-brand-hover);
-                border-color: var(--bg-brand-hover);
-                box-shadow: 0 4px 12px rgb(from var(--fg-brand) r g b / 30%);
-                transform: translateY(-1px);
-            }
-
-            &:active {
-                background-color: var(--bg-brand-strong);
-                border-color: var(--bg-brand-strong);
-                box-shadow: 0 1px 4px rgb(from var(--fg-brand) r g b / 30%);
-                transform: translateY(0);
-            }
-
-            &:focus {
-                background-color: var(--bg-brand);
-                border-color: var(--bg-brand);
-            }
-        }
-
-        .btn--default {
-            color: var(--fg-secondary);
-            background-color: var(--bg-surface);
-            border-color: var(--border-strong);
-            box-shadow: 0 1px 3px rgb(from var(--shadow-color) r g b / 5%);
-
-            &:hover {
-                color: var(--fg-default);
-                border-color: var(--border-strong);
-                background-color: var(--bg-surface);
-                box-shadow: 0 2px 6px rgb(from var(--shadow-color) r g b / 8%);
-                transform: translateY(-1px);
-            }
-
-            &:active {
-                color: var(--fg-default);
-                border-color: var(--border-contrast);
-                background-color: var(--bg-subtle);
-                box-shadow: 0 1px 2px rgb(from var(--shadow-color) r g b / 6%);
-                transform: translateY(0);
-            }
-
-            &:focus {
-                color: var(--fg-secondary);
-                background-color: var(--bg-surface);
-                border-color: var(--border-strong);
-            }
         }
     }
 }

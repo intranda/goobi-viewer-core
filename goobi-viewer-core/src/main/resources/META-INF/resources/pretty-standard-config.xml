@@ -181,10 +181,6 @@
 		<pattern value="/userAccountRetrieve/" />
 		<view-id value="/userAccountRetrieve.xhtml" />
 	</url-mapping>
-	<url-mapping id="userAccountCreate">
-		<pattern value="/userAccountCreate/" />
-		<view-id value="/userAccountCreate.xhtml" />
-	</url-mapping>
 
 	<!-- SEARCH -->
 	<url-mapping id="search">

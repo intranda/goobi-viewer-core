@@ -48,7 +48,7 @@ const TOKEN_SELECTORS = new Set([...ROOT_SELECTORS, '@media (prefers-color-schem
 // Backend trees keep their static colours by decision (the admin never follows a theme).
 const STATIC_COLOUR_TREES = /^(?:admin\/|cms\/views\/|cms\/includes\/mediaSelect\.less$|crowdsourcing\/admin\/)/;
 // Trees that never render on an admin page; everything else is admin-relevant for sentence 6.
-const FRONTEND_ONLY = /^(?:views\/|archives\/|cms\/(?:templates|contentComponents|components|tags)\/|crowdsourcing\/(?!admin\/)|widgets\/(?!widgets\.less$))/;
+const FRONTEND_ONLY = /^(?:views\/|archives\/|cms\/(?:templates|components|tags)\/|crowdsourcing\/(?!admin\/)|widgets\/(?!widgets\.less$))/;
 const adminRelevant = (file) => !FRONTEND_ONLY.test(file) && file !== PALETTE_FILE && file !== TOKENS_FILE;
 // A theme keeps its token layer in these files; literals belong in its palette mixins.
 const THEME_LAYER = /^(?:misc\/(?:mixins|palette|tokens|variables)\.less$|subthemes\/[^/]+\/subThemeConstructor\.less$)/;
