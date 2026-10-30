@@ -195,7 +195,6 @@
     &__hit-export-dropdown-toggle {
         align-items: center;
         display: flex;
-        flex-direction: column;
         gap: 2px;
     }
 
@@ -251,7 +250,7 @@
         /* MIN-WIDTH KEEPS SUB-HIT CONTENT INSIDE THE CONTAINER */
         min-width: 0;
         position: relative;
-        padding: 15px;
+        padding: 20px 15px;
         border: 1px solid var(--border-strong);
         background-color: var(--bg-subtle);
         color: var(--fg-default);
@@ -357,6 +356,7 @@
     /* BROWSE ELEMENT (browseElement.xhtml) */
     /* THE TOKENS ARE DECLARED IN misc/tokens.less AND SET BY THE THEME */
     &__hit-inner-structure {
+        position: relative;
         display: grid;
         grid-template-columns: var(--search-list-hit-thumbnail-width) minmax(0, 1fr);
         align-items: var(--search-list-hit-align-items);
@@ -368,8 +368,9 @@
         gap: 2px;
     }
     /* PLACEHOLDER GRID PATTERN: SQUARE CELLS WITH A SMALL GAP, SHOWN WHEN A HIT HAS NO IMAGE AT ALL */
+    /* ONLY FOR THE DETAIL AND GRID VIEW, THE LIST VIEW KEEPS ITS PLAIN THUMBNAIL */
     /* THE REPEATED CLASSES RAISE THE SPECIFICITY ABOVE THE BACKGROUND DECLARATIONS OF THE VIEW-SPECIFIC THUMBNAIL RULES */
-    &__hits &__hit &__hit-thumbnail&__hit-thumbnail--placeholder {
+    &__hits:not(.list-view) &__hit &__hit-thumbnail&__hit-thumbnail--placeholder {
         --_cell: 24px;
         --_gap: 3px;
         --_step: calc(var(--_cell) + var(--_gap));
@@ -381,9 +382,6 @@
         background-repeat: repeat;
         background-position: center;
         min-height: 170px;
-    }
-    &__hit-info-wrapper {
-        position: relative;
     }
     &__hit-top-wrapper {
         display: flex;
@@ -432,9 +430,8 @@
     &__hit-options-wrapper {
         position: absolute;
         right: 0;
-        top: -25px;
+        top: -30px;
         display: flex;
-        flex-direction: var(--search-list-hit-options-direction);
         gap: var(--search-list-hit-options-gap);
         align-items: flex-start;
         justify-content: flex-start;
@@ -442,9 +439,6 @@
         &.-noThumbnail {
             margin-left: auto;
             flex-direction: row;
-            .search-list__hit-export-dropdown-toggle {
-                flex-direction: row;
-            }
         }
         .bookmark-popup {
             opacity: 1;
@@ -452,6 +446,7 @@
     }
     &__hit-options-button {
         display: inline-flex;
+        min-height: var(--search-list-hit-options-button-min-height);
         padding: 4px;
         background: rgb(from var(--bg-subtle) r g b / 90%);
     }
@@ -538,7 +533,6 @@
         aspect-ratio: var(--search-list-hit-thumbnail-ratio);
         margin-bottom: 0;
         display: flex;
-        justify-content: flex-end;
         /* MULTIVOLUME LINKS (.stackedThumbEffect) ALREADY FILL THE SLOT */
         a:not(.stackedThumbEffect) {
             width: var(--search-list-hit-thumbnail-fill);
