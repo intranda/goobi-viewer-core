@@ -1,7 +1,9 @@
 /**
  * One fixture per sentence of gulp/tokenCheck/, the report format, and one run against the
  * real LESS tree so `npm test` (and with it the Maven build) fails on a core finding.
+ * The terminal report is compared as plain text, so colours stay off whatever the terminal says.
  */
+process.env.NO_COLOR = '1';
 const path = require('path');
 const { checkTree, runTokenCheck, formatReport, themeSteps, stepFiles, parseLess, readLessTree, MODULE_ROOT, LESS_ROOT } = require('..');
 const { RENAMED_TOKENS, successorAdvice } = require('../renames');
