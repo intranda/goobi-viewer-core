@@ -2,17 +2,13 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-    xmlns:templateComponent="http://xmlns.jcp.org/jsf/composite/themes/zlb/components">
-    <!-- interface options -->
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    <!-- INTERFACE -->
     <composite:interface />
 
-    <!-- component content -->
+    <!-- CONTENT -->
     <composite:implementation>
         <h:panelGroup
             layout="block"
@@ -30,24 +26,21 @@
                     class="widget-copyright__container #{activeDocumentBean.viewManager.copyrightIndicatorStatusName == 'OPEN' ? '-green' : ''} #{activeDocumentBean.viewManager.copyrightIndicatorStatusName == 'PARTIAL' ? '-yellow' : ''} #{activeDocumentBean.viewManager.copyrightIndicatorStatusName == 'LOCKED' ? '-red' : ''}">
                     <div class="widget-copyright__lock">
                         <div class="widget-copyright__dot">
-                            <!-- PSEUDO FA ELEMENT GETS REPLACED DEPENDING ON GREEN/YELLOW/RED STATE -->
+                            <!-- STATUS ICON, REPLACED BY STATE -->
                             <span
                                 class="widget-copyright__status-icon"
                                 aria-hidden="true" />
                         </div>
                     </div>
-
                     <div class="widget-copyright__icons">
-                        <!-- BACKGROUND COLOR DEPENDING ON STATE - GREEN, YELLOW, RED -->
-
+                        <!-- STATE COLOR, GREEN, YELLOW OR RED -->
                         <ui:fragment rendered="#{empty activeDocumentBean.viewManager.copyrightIndicatorLicense.icons}">
                             <ui:include src="#{navigationHelper.getResource('images/licence/unclear.svg')}" />
                         </ui:fragment>
-
                         <c:forEach
                             var="icon"
                             items="#{activeDocumentBean.viewManager.copyrightIndicatorLicense.icons}">
-                            <!-- Guard against empty icon values to prevent FacesFileNotFoundException -->
+                            <!-- SKIP EMPTY ICONS (FACESFILENOTFOUNDEXCEPTION) -->
                             <c:if test="#{not empty icon}">
                                 <ui:include src="#{navigationHelper.getResource('images/licence/'.concat(icon))}" />
                             </c:if>
@@ -74,7 +67,6 @@
                                         <br />
                                     </c:forEach>
                                 </div>
-
                                 <div class="widget-copyright__copyright">
                                     <h3>#{msg.copyright_indicator__copyright_licence}</h3>
                                     <h:outputText
@@ -100,7 +92,6 @@
                                         <br />
                                     </c:forEach>
                                 </div>
-
                                 <div class="widget-copyright__copyright">
                                     <h3>#{msg.copyright_indicator__copyright_licence}</h3>
                                     <h:outputText
@@ -112,7 +103,8 @@
                     </ui:fragment>
                 </div>
             </div>
-            <!-- SCRIPT TO ENABLE TOGGLE/SHOW DETAIL INFORMATION -->
+
+            <!-- DETAIL TOGGLE SCRIPT -->
             <script>
                 $(document).ready(function () {
                     $('[data-target="triggerCopyrightInfo"]').click(function () {

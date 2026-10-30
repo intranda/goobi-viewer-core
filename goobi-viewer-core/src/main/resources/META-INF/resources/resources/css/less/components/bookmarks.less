@@ -2,34 +2,14 @@
    Bookmarks
    style declarations for all bookmark actions
    ==============================================================*/
-/* BOOKMARK NAVIGATION */
-/* BLOCK */
+/* BOOKMARK TOGGLE */
 .bookmark-toggle {
     display: inline-flex;
-    //    align-items: center;
-    //    justify-content: center;
-    //    line-height: 1;
 
     &__button {
         position: relative;
         align-items: center;
         justify-content: center;
-    }
-
-    &__icon {
-        //        display: inline-flex;
-        //        align-items: center;
-        //        justify-content: center;
-        //        width: 1.55rem;
-        //        height: 1.55rem;
-
-        svg {
-            //            width: 100% !important;
-            //            height: 100% !important;
-            //            stroke: currentColor;
-            //
-            //            fill: transparent;
-        }
     }
 
     &__icon--filled {
@@ -63,18 +43,19 @@
     }
 }
 
+/* BOOKMARK NAVIGATION */
 .bookmark-navigation {
-    /* ELEMENT */
+    /* DROPDOWN WRAPPER */
     &__dropdown-wrapper {
         position: relative;
     }
-    /* TOOGLE DROPDOWN */
+    /* TOGGLE */
     &__counter {
         padding: 0 3px;
-        font-size: @fontSmall;
-        color: @white;
+        font-size: var(--font-size-caption);
+        color: var(--fg-on-brand);
         border-radius: 2px;
-        background-color: @blue;
+        background-color: var(--bg-brand);
     }
     &__string {
         margin-right: 5px;
@@ -86,9 +67,10 @@
         top: 100%;
         right: 0;
         width: 275px;
-        border: 1px solid @middlegray;
+        border: 1px solid var(--border-strong);
         border-radius: 0.85rem;
-        background-color: @white;
+        background-color: var(--bg-elevated);
+        color: var(--fg-default);
         overflow: hidden;
         z-index: 999;
     }
@@ -98,7 +80,7 @@
         overflow-y: auto;
         li {
             padding: 2px 5px;
-            border-bottom: 1px solid @middlegray;
+            border-bottom: 1px solid var(--border-strong);
             &:last-child {
                 border-bottom: none;
             }
@@ -113,26 +95,19 @@
         h3 {
             margin: 0;
             padding: 5px;
-            font-size: @fontMedium;
+            font-size: var(--font-size-body-small);
             overflow: hidden;
             max-height: 250px;
         }
-    }
-    &__dropdown-title {
-        display: block;
-        width: 100%;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        font-weight: 400;
     }
     &__dropdown-list-counter {
         display: inline-block;
         float: right;
         padding: 0 3px;
-        font-size: @fontSmall;
-        color: @white;
+        font-size: var(--font-size-caption);
+        color: var(--fg-on-brand);
         border-radius: 2px;
-        background-color: @blue;
+        background-color: var(--bg-brand);
     }
     &__dropdown-list-image {
         height: 75px;
@@ -152,20 +127,14 @@
         a {
             text-decoration: none;
         }
-        border-top: 1px solid @middlegray;
-    }
-    &__dropdown-list-single-entry {
-    }
-    &__dropdown-list-title {
-    }
-    &__dropdown-list-remove {
+        border-top: 1px solid var(--border-strong);
     }
     &__dropdown-list-reset,
     &__dropdown-list-send,
     &__dropdown-list-search,
     &__dropdown-list-mirador {
-        font-size: @fontMedium;
-        border-bottom: 1px solid @middlegray;
+        font-size: var(--font-size-body-small);
+        border-bottom: 1px solid var(--border-strong);
         a,
         button {
             display: flex;
@@ -174,8 +143,13 @@
             width: 100%;
             padding: 10px;
         }
+        /* BUTTON (.btn) SETS ITS OWN FONT SIZE, SO ALIGN IT WITH THE LINKS */
+        button {
+            font-size: inherit;
+            line-height: inherit;
+        }
     }
-    /* COLOR OF ALL LINKS/BUTTONS IN LOGGED OUT BOOKMARK LIST */
+    /* DROPDOWN LINKS */
     &__dropdown-list-single-entry,
     &__dropdown-list-title,
     &__dropdown-list-remove,
@@ -187,52 +161,29 @@
         a,
         span,
         h3 {
-            color: @blue;
+            color: var(--fg-link-subtle);
             &:hover,
             &:focus,
             &:active {
-                color: @blue;
+                color: var(--fg-link-subtle);
             }
         }
-    }
-    &__dropdown-list-reset {
-        button {
-            span {
-            }
-            .fa {
-            }
-        }
-    }
-    &__dropdown-list-send,
-    &__dropdown-list-mirador {
-        a {
-            span {
-            }
-            .fa {
-            }
-        }
-    }
-    &__dropdown-list-send {
     }
     &__dropdown-list-mirador {
         border: none;
     }
 }
 
-/* POPUPS */
-/* BLOCK */
+/* POPUP */
 .bookmark-popup {
     position: absolute;
     width: 280px;
     height: 350px;
-    border: 1px solid @middlegray;
-    background-color: @white;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--border-strong);
+    background-color: var(--bg-elevated);
+    color: var(--fg-default);
+    box-shadow: 0px 2px 5px rgb(from var(--shadow-color) r g b / 15%);
     z-index: 99999;
-    &.top {
-    }
-    &.right {
-    }
     &.bottom {
         &:before {
             content: '';
@@ -245,12 +196,10 @@
             margin-left: -6px;
             border-width: 6px;
             border-style: solid;
-            border-color: transparent transparent @middlegray transparent;
+            border-color: transparent transparent var(--border-strong) transparent;
         }
     }
-    &.left {
-    }
-    /* ELEMENT */
+    /* SECTIONS */
     &__header,
     &__body,
     &__radio-buttons,
@@ -268,13 +217,23 @@
         top: 50px;
         height: 30px;
         padding: 0 10px;
-        border-bottom: 1px solid @middlegray;
+        border-bottom: 1px solid var(--border-strong);
     }
     &__radio-buttons {
         top: 0;
         height: 50px;
         padding: 0 10px;
-        border-bottom: 1px solid @middlegray;
+        border-bottom: 1px solid var(--border-strong);
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        label {
+            display: flex;
+        }
+        input {
+            vertical-align: sub;
+            margin-right: 10px;
+        }
     }
     &__body {
         top: 80px;
@@ -291,20 +250,20 @@
         background-repeat: no-repeat;
         background-position: center center;
         background-size: 25%;
-        background-color: @white;
+        background-color: var(--bg-elevated);
         z-index: 100000;
     }
     &__body-list {
         li {
             padding: 2px 5px;
-            border-bottom: 1px solid @middlegray;
+            border-bottom: 1px solid var(--border-strong);
             .empty {
                 padding: 5px;
             }
         }
         button {
             text-align: left;
-            color: black;
+            color: var(--fg-default);
             width: 100%;
             padding: 5px;
             text-overflow: ellipsis;
@@ -319,17 +278,17 @@
             span {
                 display: inline-block;
                 padding: 0 3px;
-                font-size: @fontSmall;
-                color: @white;
+                font-size: var(--font-size-caption);
+                color: var(--fg-on-brand);
                 border-radius: 2px;
-                background-color: @blue;
+                background-color: var(--bg-brand);
                 margin-left: auto;
             }
         }
         .bookmark-popup__check-icon {
             width: 1em;
             height: 1em;
-            color: green;
+            color: var(--fg-success);
             stroke: currentColor;
         }
         .bookmark-popup__action-icon {
@@ -338,23 +297,11 @@
             stroke: currentColor;
         }
     }
-    &__radio-buttons {
-        display: flex;
-        align-items: center;
-        justify-content: space-around;
-        label {
-            display: flex;
-        }
-        input {
-            vertical-align: sub;
-            margin-right: 10px;
-        }
-    }
     &__footer {
         bottom: 0;
         height: 40px;
         padding: 0 10px;
-        border-top: 1px solid @middlegray;
+        border-top: 1px solid var(--border-strong);
         .row {
             width: 100%;
         }
@@ -363,8 +310,8 @@
             height: 38px;
             margin: 1px 0;
             border: none;
-            background: @white;
-            color: #222;
+            background: var(--bg-elevated);
+            color: var(--fg-default);
         }
         button {
             padding: 0;
@@ -381,13 +328,12 @@
                 margin-left: 5px;
                 width: 15px;
                 height: 15px;
-                stroke: #222;
+                stroke: var(--fg-default);
             }
         }
     }
-    &__list {
-    }
 }
+
 /* ACTION BUTTONS */
 [data-bookmark-list-type='dropdown'],
 [data-bookmark-list-type='get'],
@@ -399,31 +345,12 @@
     background-repeat: no-repeat;
     background-position: center center;
 }
-[data-bookmark-list-type='counter'] {
-}
 [data-bookmark-list-type='dropdown'] {
     display: none;
     align-items: center;
 }
-[data-bookmark-list-type='get'] {
-}
-[data-bookmark-list-type='add'] {
-    &.white {
-        //		background-image: url("@{images}/icons/icon-bs-herz-weiss_thin.svg");
-    }
-    &.added {
-        //		background-image: url("@{images}/icons/icon-bs-herz-blau.svg");
-        &.white {
-            //			background-image: url("@{images}/icons/icon-bs-herz-weiss.svg");
-        }
-    }
-}
-[data-bookmark-list-type='delete'] {
-}
 [data-bookmark-list-type='link'] {
     background-image: url('@{images}/icons/icon-bs-link.svg');
-}
-[data-bookmark-list-type='reset'] {
 }
 
 @{RTL} {

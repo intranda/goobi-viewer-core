@@ -15,12 +15,19 @@
             bottom: 35px;
             z-index: 401;
             padding: 1rem;
-            background: rgba(0, 0, 0, 0.75);
+            border-radius: var(--radius-container);
+            background: rgb(from var(--bg-scrim) r g b / 75%);
         }
         &__submit-search {
         }
         &__reset-search {
             margin-right: 0.5rem;
+            /* opaque states, the tinted default would let the scrim show through */
+            &:hover,
+            &:focus,
+            &:active {
+                background-color: var(--bg-selected);
+            }
         }
     }
     .geo-map {
@@ -64,7 +71,7 @@
             max-width: 200px;
         }
         .mapboxgl-ctrl-geocoder {
-            font-size: 1.4rem;
+            font-size: var(--font-size-body-small);
             min-width: 140px;
         }
     }

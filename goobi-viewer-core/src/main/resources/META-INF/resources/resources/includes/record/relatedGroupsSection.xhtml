@@ -1,9 +1,7 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
     <ui:param
         name="expanded"
         value="#{configurationBean.isSidebarWidgetForViewExpanded(navigationHelper.currentView, 'related-groups')}" />
@@ -13,19 +11,19 @@
             name="anchorReady"
             value="#{activeDocumentBean.viewManager.topStructElement.anchorChild and not empty activeDocumentBean.viewManager.anchorPi and not empty activeDocumentBean.viewManager.anchorStructElement}" />
         <div class="related-groups-section">
-            <!-- Heading: "Diese Publikation ist Teil des Gesamtwerks [Anchor Name]" - requires full anchor info -->
+            <!-- ANCHOR HEADING -->
             <h:panelGroup rendered="#{anchorReady}">
                 <h2 class="related-groups-section__heading">
                     <span>#{msg.recordGroupMemberships_partOf} #{activeDocumentBean.viewManager.anchorStructElement.label}</span>
                 </h2>
             </h:panelGroup>
 
-            <!-- Fallback heading: anchor info incomplete OR plain group membership -->
+            <!-- FALLBACK HEADING -->
             <h:panelGroup rendered="#{!anchorReady}">
                 <h2 class="related-groups-section__heading">#{msg.recordGroupMemberships}</h2>
             </h:panelGroup>
 
-            <!-- Card grid -->
+            <!-- CARD GRID -->
             <div class="related-groups-section__grid">
                 <ui:repeat
                     var="detail"
@@ -58,7 +56,7 @@
                     </a>
                 </ui:repeat>
 
-                <!-- "Zum Gesamtwerk" button - only when full anchor info is available -->
+                <!-- ANCHOR BUTTON -->
                 <h:panelGroup
                     rendered="#{anchorReady}"
                     styleClass="related-groups-section__view-all-wrapper"

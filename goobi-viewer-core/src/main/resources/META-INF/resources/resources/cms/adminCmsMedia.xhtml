@@ -2,11 +2,8 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:cmsComponent="http://xmlns.jcp.org/jsf/composite/cms/components"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <!-- METADATA -->
     <ui:define name="metadata">
@@ -28,17 +25,13 @@
             <ui:fragment rendered="#{userBean.user.cmsAdmin}">
                 <!-- MEDIA ITEM OVERLAY -->
                 <div class="admin-cms-media__overlay" />
-
                 <div class="admin__title-bar">
                     <h1 class="admin__title">#{msg.cms_overviewMedia}</h1>
                 </div>
-
                 <viewerComponent:adminBreadcrumbs />
-
                 <div class="admin__content-inner-content">
                     <!-- UPLOAD -->
                     <adminMediaUpload />
-
                     <h:form
                         id="adminCmsMediaFilesForm"
                         prependId="false">
@@ -73,35 +66,36 @@
             </ui:fragment>
         </div>
 
+        <!-- MEDIA SCRIPT -->
         <script type="text/javascript">
             var adminMediaConfig = {
-    postUrl: '#{navigationHelper.applicationUrl}api/v1/cms/media/files/',
-    fileTypes: '#{cmsMediaBean.getAllTypes()}',
-    fileTypeValidator: /#{cmsMediaBean.getMediaFilter().replace('(?i)', '')}/i,
-    msg: {
-        buttonUpload: '#{msg.button__upload}',
-        uploadText: '#{msg.admin__media_upload_text}',
-        allowedFileTypes: '#{msg.admin__media_upload_filetypes}',
-        mediaUploading: '#{msg.admin__media_upload_uploading}',
-        mediaFinished: '#{msg.admin__media_upload_finished}',
-        mediaError: '#{msg.admin__media_upload_error}',
-        bulkDeleteConfirm: '#{msg.admin__media_bulk_delete_confirm}',
-        overwriteFileConfirm: '#{msg.admin__media_overwrite_file_confirm}',
-        overwriteFileRefused: '#{msg.admin__media_overwrite_file_refused}',
-        button__overwrite: '#{msg.button__overwrite}',
-    },
-    onUploadComplete: function () {
-        $('#reloadButton').click();
-    },
-};
+                postUrl: '#{navigationHelper.applicationUrl}api/v1/cms/media/files/',
+                fileTypes: '#{cmsMediaBean.getAllTypes()}',
+                fileTypeValidator: /#{cmsMediaBean.getMediaFilter().replace('(?i)', '')}/i,
+                msg: {
+                    buttonUpload: '#{msg.button__upload}',
+                    uploadText: '#{msg.admin__media_upload_text}',
+                    allowedFileTypes: '#{msg.admin__media_upload_filetypes}',
+                    mediaUploading: '#{msg.admin__media_upload_uploading}',
+                    mediaFinished: '#{msg.admin__media_upload_finished}',
+                    mediaError: '#{msg.admin__media_upload_error}',
+                    bulkDeleteConfirm: '#{msg.admin__media_bulk_delete_confirm}',
+                    overwriteFileConfirm: '#{msg.admin__media_overwrite_file_confirm}',
+                    overwriteFileRefused: '#{msg.admin__media_overwrite_file_refused}',
+                    button__overwrite: '#{msg.button__overwrite}',
+                },
+                onUploadComplete: function () {
+                    $('#reloadButton').click();
+                },
+            };
 
-viewerJS.clipboard.init('[data-copy]');
-cmsJS.media.init(adminMediaConfig);
-riot.mount('adminMediaUpload', adminMediaConfig);
+            viewerJS.clipboard.init('[data-copy]');
+            cmsJS.media.init(adminMediaConfig);
+            riot.mount('adminMediaUpload', adminMediaConfig);
 
-function reload(data) {
-    cmsJS.media.onReload(data);
-}
+            function reload(data) {
+                cmsJS.media.onReload(data);
+            }
         </script>
     </ui:define>
 </ui:composition>

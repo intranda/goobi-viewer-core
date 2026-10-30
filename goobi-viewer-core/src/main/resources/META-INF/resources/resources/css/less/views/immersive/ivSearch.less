@@ -4,6 +4,7 @@
    ==============================================================*/
 
 .immersive {
+    /* SEARCH FIELD */
     &__panel .widget-search-in-current-item {
         .form-group {
             margin: 0;
@@ -13,13 +14,13 @@
             display: flex;
             align-items: stretch;
             overflow: hidden;
-            border: 1px solid @immersive-divider;
-            border-radius: @immersive-radius-lg;
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-container);
             background: transparent;
             transition: border-color @immersive-transition;
 
             &:focus-within {
-                border-color: @immersive-accent;
+                border-color: var(--border-brand);
             }
         }
 
@@ -31,18 +32,18 @@
             border: 0;
             background: transparent;
             box-shadow: none;
-            color: @immersive-chrome-fg;
-            font-size: @fontNormal;
+            color: var(--fg-default);
+            font-size: var(--font-size-body);
 
             &::placeholder {
-                color: @immersive-chrome-fg;
+                color: var(--fg-default);
                 opacity: 0.75;
             }
 
             &:focus {
                 box-shadow: none;
                 background: transparent;
-                color: @immersive-chrome-fg;
+                color: var(--fg-default);
             }
 
             &:focus-visible {
@@ -58,8 +59,8 @@
             padding: 0 0 2px;
             border: 0;
             background: transparent;
-            color: @immersive-chrome-fg;
-            font-size: 2rem;
+            color: var(--fg-default);
+            font-size: 2rem; // Fixed icon/marker geometry; independent of text scale.
             line-height: 1;
             opacity: 0.75;
             cursor: pointer;
@@ -73,7 +74,7 @@
 
             &:hover {
                 opacity: 1;
-                color: @immersive-accent;
+                color: var(--fg-brand);
             }
         }
 
@@ -93,13 +94,13 @@
             border: 0;
             border-radius: 0;
             background: transparent;
-            color: @immersive-chrome-fg;
+            color: var(--fg-default);
             cursor: pointer;
             transition: color @immersive-transition;
 
             &:hover,
             &:focus {
-                color: @immersive-accent;
+                color: var(--fg-brand);
                 background-color: transparent;
             }
 
@@ -112,11 +113,12 @@
         }
     }
 
+    /* RESULTS */
     &__results {
         margin-top: 14px;
         padding-top: 14px;
-        border-top: 1px solid @immersive-divider;
-        color: @immersive-chrome-fg;
+        border-top: 1px solid var(--border-default);
+        color: var(--fg-default);
     }
 
     &__results-head {
@@ -127,7 +129,7 @@
     }
 
     &__results-count {
-        font-size: @fontSmall;
+        font-size: var(--font-size-caption);
         font-weight: 600;
         letter-spacing: 0.04em;
         font-variant-numeric: tabular-nums;
@@ -146,7 +148,7 @@
             background-color @immersive-transition;
 
         &:hover {
-            color: @immersive-accent;
+            color: var(--fg-brand);
         }
     }
 
@@ -164,7 +166,7 @@
         list-style: none;
     }
 
-    /* Hits are <button>s (keyboard access): reset the UA button styles. */
+    /* HIT BUTTON RESET */
     &__results-item {
         display: flex;
         gap: 10px;
@@ -172,7 +174,7 @@
         padding: 9px 10px;
         border: 0;
         border-left: 2px solid transparent;
-        border-radius: @immersive-radius-lg;
+        border-radius: var(--radius-container);
         background: transparent;
         color: inherit;
         font: inherit;
@@ -184,20 +186,20 @@
 
         &:hover,
         &:active {
-            background-color: @immersive-chrome-hover-bg;
+            background-color: var(--bg-control);
             color: inherit;
         }
 
         &.-active {
-            background-color: @immersive-chrome-hover-bg;
-            border-left-color: @immersive-accent;
+            background-color: var(--bg-control);
+            border-left-color: var(--border-brand);
         }
     }
 
     &__results-page {
         flex-shrink: 0;
         min-width: 1.7em;
-        color: @immersive-accent;
+        color: var(--fg-brand);
         font-weight: 700;
         font-variant-numeric: tabular-nums;
         line-height: 1.45;
@@ -210,13 +212,13 @@
 
     &__results-match {
         background: transparent;
-        color: @immersive-accent;
+        color: var(--fg-brand);
         font-weight: 600;
     }
 
     &__results-empty {
         padding: 12px 10px;
-        color: @immersive-chrome-fg;
+        color: var(--fg-default);
         opacity: 0.75;
     }
 }

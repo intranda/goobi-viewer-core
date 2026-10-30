@@ -1,10 +1,8 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <!-- INTERFACE -->
@@ -29,8 +27,6 @@
                 rendered="#{activeDocumentBean.viewManager != null and activeDocumentBean.viewManager.currentPage != null}">
                 <!-- ACTIONS -->
                 <div class="image-controls__actions">
-                    <!-- USE OF CUSTOM ICONS FOR IMAGE CONTROLS
-                Place the new icons with identical names in the images/icons/ template folder for example: reference/images/icons/icon_ic-first-page.svg */ -->
                     <!-- START -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount ge 2}">
                         <ul
@@ -61,6 +57,7 @@
                                         styleClass="image-controls__icon"
                                         svgClass="image-controls__icon-svg" />
                                 </yield>
+
                                 <!-- NEXT PAGE ICON INCLUDE -->
                                 <yield to="next-page">
                                     <util:icon
@@ -71,44 +68,43 @@
                             </div>
                         </ul>
 
+                        <!-- IMAGE CONTROLS SCRIPT -->
                         <script>
-                            $(document).ready( () => {
-
-                            					riot.mount("#imageNavigation", "imagepaginator", {
-                            						navigationMode: "#{activeDocumentBean.viewManager.pageNavigation.name().toLowerCase()}",
-                            						rtl: #{activeDocumentBean.viewManager.topStructElement.rtl},
-                            						enablePageNavigation: #{!(navigationHelper.currentPage == 'fulltext' and
+                            $(document).ready(() => {
+                                riot.mount('#imageNavigation', 'imagepaginator', {
+                                    navigationMode: "#{activeDocumentBean.viewManager.pageNavigation.name().toLowerCase()}",
+                                    rtl: #{activeDocumentBean.viewManager.topStructElement.rtl},
+                                    enablePageNavigation: #{!(navigationHelper.currentPage == 'fulltext' and
                             activeDocumentBean.viewManager.belowFulltextThreshold)},
-                            						showDropdown: #{activeDocumentBean.viewManager.imagesCount ge
+                                    showDropdown: #{activeDocumentBean.viewManager.imagesCount ge
                             configurationBean.pageSelectDropdownDisplayMinPages},
-                            						currentPageNumber: "#{activeDocumentBean.imageToShow}",
-                            						mimeTypes: #{activeDocumentBean.viewManager.mimeTypesForLoadedPagesAsJson},
-                            						firstPageNumber: #{activeDocumentBean.viewManager.firstPageOrder},
-                            						lastPageNumber: #{activeDocumentBean.viewManager.lastPageOrder},
-                            						numPages: #{activeDocumentBean.viewManager.imagesCount},
-                            						pageList: #{activeDocumentBean.viewManager.dropdownPagesAsJson},
-                            						tooltipPlacement: "top",
-                            						navigationSteps: #{configurationBean.pageBrowseEnabled ? configurationBean.pageBrowseSteps : '[1]' },
-                            						pageUrlTemplate : (page) => `#{request.contextPath}/#{navigationHelper.currentPageType.name}/#{activeDocumentBean.viewManager.pi}/\${page}/#topDocAnchor`,
-                            						update: typeof imageOrderChanged !== 'undefined' ? imageOrderChanged : undefined,
-                            						onUpdate: (pageNumber) => changeImageOrder.next(pageNumber),
-                            						msg: {
-                            							aria_label__nav_image_controls: "#{msg.aria_label__nav_image_controls}",
-                            							firstImage: "#{msg.firstImage}",
-                            							lastImage: "#{msg.lastImage}",
-                            							stepBack: "#{msg.stepBack}",
-                            							stepForward: "#{msg.stepForward}",
-                            							aria_label__select_page: "#{msg.aria_label__select_page}"
-                            						},
-                            	icons: {
-                            		first: "#{request.contextPath}/resources/icons/outline/chevrons-left.svg#icon",
-                            		last: "#{request.contextPath}/resources/icons/outline/chevrons-right.svg#icon",
-                            		prev: "#{request.contextPath}/resources/icons/outline/chevron-left.svg#icon",
-                            		next: "#{request.contextPath}/resources/icons/outline/chevron-right.svg#icon"
-                            	}
-                            })
-
-                            				});
+                                    currentPageNumber: "#{activeDocumentBean.imageToShow}",
+                                    mimeTypes: #{activeDocumentBean.viewManager.mimeTypesForLoadedPagesAsJson},
+                                    firstPageNumber: #{activeDocumentBean.viewManager.firstPageOrder},
+                                    lastPageNumber: #{activeDocumentBean.viewManager.lastPageOrder},
+                                    numPages: #{activeDocumentBean.viewManager.imagesCount},
+                                    pageList: #{activeDocumentBean.viewManager.dropdownPagesAsJson},
+                                    tooltipPlacement: 'top',
+                                    navigationSteps: #{configurationBean.pageBrowseEnabled ? configurationBean.pageBrowseSteps : '[1]' },
+                                    pageUrlTemplate: (page) => `#{request.contextPath}/#{navigationHelper.currentPageType.name}/#{activeDocumentBean.viewManager.pi}/\${page}/#topDocAnchor`,
+                                    update: typeof imageOrderChanged !== 'undefined' ? imageOrderChanged : undefined,
+                                    onUpdate: (pageNumber) => changeImageOrder.next(pageNumber),
+                                    msg: {
+                                        aria_label__nav_image_controls: "#{msg.aria_label__nav_image_controls}",
+                                        firstImage: "#{msg.firstImage}",
+                                        lastImage: "#{msg.lastImage}",
+                                        stepBack: "#{msg.stepBack}",
+                                        stepForward: "#{msg.stepForward}",
+                                        aria_label__select_page: "#{msg.aria_label__select_page}",
+                                    },
+                                    icons: {
+                                        first: "#{request.contextPath}/resources/icons/outline/chevrons-left.svg#icon",
+                                        last: "#{request.contextPath}/resources/icons/outline/chevrons-right.svg#icon",
+                                        prev: "#{request.contextPath}/resources/icons/outline/chevron-left.svg#icon",
+                                        next: "#{request.contextPath}/resources/icons/outline/chevron-right.svg#icon",
+                                    },
+                                });
+                            });
                         </script>
                     </ui:fragment>
                     <ul
@@ -160,6 +156,7 @@
                                         value="#{msg.singlePageView}" />
                                 </h:commandLink>
                             </li>
+
                             <!-- TOGGLE RECTO/VERSO -->
                             <li class="image-controls__action switch-pages">
                                 <h:commandLink
@@ -213,6 +210,7 @@
                                     <span class="labeltext">#{msg.rotateRight}</span>
                                 </button>
                             </li>
+
                             <!-- RESET -->
                             <li class="image-controls__action reset">
                                 <button
@@ -230,6 +228,7 @@
                                     <span class="labeltext">#{msg.resetImage}</span>
                                 </button>
                             </li>
+
                             <!-- DOWNLOAD CANVAS -->
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}">
                                 <li class="image-controls__action download-canvas-content">
@@ -249,6 +248,7 @@
                                     </button>
                                 </li>
                             </ui:fragment>
+
                             <!-- FULLSCREEN -->
                             <ui:fragment rendered="#{navigationHelper.currentPage != 'fullscreen'}">
                                 <li class="image-controls__action enter-fullscreen">
@@ -277,8 +277,8 @@
                                     </h:outputLink>
                                 </li>
                             </ui:fragment>
+
                             <!-- ZOOMSLIDER -->
-                            <!-- TODO: rendered Anweisung, wenn pageBrowse in der config aktiv -->
                             <ui:fragment
                                 rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.allowsImageView and activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom}">
                                 <li class="image-controls__action zoom-slider-wrapper">
@@ -293,9 +293,6 @@
                                         class="slider zoom-slider"
                                         aria-label="#{msg.aria_label__zoom_slider}" />
                                 </li>
-                                <!--                                 <li> -->
-                                <!--                                 	<input type="number" class="zoom-slider-label"/>% -->
-                                <!--                                 </li> -->
                             </ui:fragment>
                         </ui:fragment>
                         <ui:fragment rendered="#{navigationHelper.currentPage == 'fulltext'}">
@@ -380,7 +377,6 @@
                             </li>
                         </ui:repeat>
                     </ui:fragment>
-
                     <ui:fragment rendered="#{navigationHelper.currentPage != 'fulltext'}">
                         <!-- FULLTEXT -->
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and activeDocumentBean.viewManager.currentPage.fulltextAvailable}">
@@ -435,6 +431,7 @@
                                     class="btn btn--icon image-controls__image-filter-button"
                                     disabled="disabled"
                                     data-popover-element="#imageFilterPopover"
+                                    data-popover-class="popover--tool"
                                     data-popover-placement="bottom"
                                     data-popover-dismiss="click-outside"
                                     data-container="#imageFiltering"
@@ -462,12 +459,13 @@
                                 data-pi="#{activeDocumentBean.viewManager.pi}"
                                 data-page="#{activeDocumentBean.viewManager.currentImageOrder}"
                                 role="switch"
-                                aria-label="#{msg.bookmarkList_addToBookmarkList}">
-                                <span
-                                    data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}"
-                                    data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}"
-                                    data-toggle="tooltip"
-                                    data-placement="#{cc.attrs.tooltipPlacement}">
+                                aria-label="#{msg.bookmarkList_addToBookmarkList}"
+                                title="#{msg.bookmarkList_addToBookmarkList}"
+                                data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}"
+                                data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}"
+                                data-toggle="tooltip"
+                                data-placement="#{cc.attrs.tooltipPlacement}">
+                                <span>
                                     <util:icon
                                         icon="bookmark"
                                         svgClass="icon icons-tabler-outline"

@@ -3,32 +3,24 @@
    style declarations for cms_template_03_newsdetail.xhtml
    ==============================================================*/
 /* NEWS DETAIL */
-/* BLOCK */
 .tpl-news-detail {
-    /* ELEMENT */
     &__date,
     &__content {
         margin-bottom: 20px;
-    }
-    &__date {
-    }
-    &__content {
     }
     &__image {
         figcaption {
             padding: 5px 0;
             font-style: italic;
-            font-size: @fontMedium;
-            color: @middlegray;
+            font-size: var(--font-size-body-small);
+            color: var(--fg-muted);
         }
-    }
-    &__text {
     }
     /* SOLR-QUERY */
     .solr-query-collection {
         margin-top: 20px;
         padding-top: 20px;
-        border-top: 1px solid @middlegray;
+        border-top: 1px solid var(--border-strong);
     }
 }
 

@@ -3,10 +3,8 @@
    style declarations for searchList.xhtml
    ==============================================================*/
 /* SEARCH LIST GRID */
-/* BLOCK */
 
 .search-list {
-    /* ELEMENT */
     /* HITS */
     &__hits {
         &.grid {
@@ -14,17 +12,31 @@
                 &__hit-result-group-heading {
                     margin: 5px 0px;
                 }
+                /* TILE: IMAGE BAND ABOVE, TITLE BELOW, THE EXTRA HEIGHT FALLS BELOW THE TITLE */
                 &__hit-inner-structure {
                     display: flex;
-                    flex-direction: column-reverse;
+                    flex: 1 1 auto;
+                    flex-direction: column;
+                    justify-content: flex-start;
+                    align-items: stretch;
                     gap: 0;
+                }
+                &__hit-header {
+                    display: flex;
+                    flex: 1 1 auto;
+                    flex-direction: column;
                 }
                 &__hit-info-wrapper {
                     padding: 1rem;
                 }
                 &__hit-options-wrapper {
-                    display: none;
+                    top: 5px;
+                    right: 5px;
                 }
+            }
+            /* WITHOUT A PREVIEW THE TITLE CENTRES */
+            .search-list__hit:not(:has(.search-list__hit-thumbnail)) .search-list__hit-inner-structure {
+                justify-content: center;
             }
             .search-list__hits-list {
                 > h2.search-list__hit-result-group-heading:nth-child(n + 2) {
@@ -33,14 +45,15 @@
             }
             .search-list__hits-list-items {
                 display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
-                grid-gap: 10px;
-                // grid-auto-rows: minmax(300px, auto);
-                // grid-auto-flow: dense;
+                grid-template-columns: repeat(auto-fill, minmax(var(--search-list-grid-column-min), 1fr));
+                gap: var(--search-list-grid-gap);
             }
             .search-list__hit {
+                display: flex;
+                flex-direction: column;
                 margin: 0;
                 padding: 0;
+                overflow: hidden;
                 .row,
                 [class*='col-'] {
                     float: none;
@@ -65,19 +78,16 @@
             .search-list__hit-archive-link {
                 display: none;
             }
-            .search-list__thumb-bookmark-wrapper {
-                right: 10px;
-                top: 5px;
-            }
             .search-list__hit-thumbnail {
+                aspect-ratio: var(--search-list-grid-thumbnail-ratio);
                 min-height: 175px;
                 background-repeat: no-repeat;
                 background-position: center top;
                 background-size: cover;
-                flex: 0 0 100%;
+                flex: 0 0 auto;
                 a {
                     display: block;
-                    height: 175px;
+                    height: var(--search-list-grid-thumbnail-link-height);
                 }
             }
             .search-list__hit-title {
@@ -104,13 +114,19 @@
                 overflow: hidden;
                 line-height: 1.45;
             }
+            .search-list__hit-title-text {
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 3;
+                overflow: hidden;
+            }
             .search-list__hit-thumbnail img,
             .search-list__hit-metadata-first,
             .search-list__hit-docstruct,
             .search-list__hit-content {
-                .mx-hidden;
+                .mx-hidden();
             }
-            // EXTRA METADATA LIST FOR GRID STYLING
+            /* EXTRA METADATA LIST FOR GRID */
             .search-list__hit-info-wrapper.-extraMetadataForGrid {
                 display: block !important;
                 visibility: visible !important;
@@ -123,31 +139,11 @@
                     .search-list__hit-text-label {
                         display: none;
                     }
-                    .search-list__hit-text {
-                        //						font-size: 13px;
-                        //						display: flex;
-                        //						flex-direction: column;
-                        .search-list__hit-text-value {
-                            max-width: 100%;
-                            width: 100%;
-                        }
-                    }
                 }
-            }
-            a[data-toggle='hit-content'],
-            button[data-toggle='hit-content'] {
-                //		display: none;
             }
         }
     }
 }
-@{RTL} {
-    .search-list__thumb-bookmark-wrapper {
-        right: unset;
-        left: 20px;
-    }
-}
-
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
 }

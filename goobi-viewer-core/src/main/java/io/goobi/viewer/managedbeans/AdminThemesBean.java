@@ -243,6 +243,44 @@ public class AdminThemesBean implements Serializable {
                 .orElse(getFullUrl(defaultUrl));
     }
 
+    /**
+     * Logo for the dark color mode; falls back to the regular logo.
+     */
+    public String getDarkLogo(String defaultUrl) throws DAOException {
+        return Optional.ofNullable(getCurrentTheme())
+                .map(t -> t.getDarkLogo())
+                .filter(l -> l.hasMediaItem())
+                .map(l -> l.getMediaItem().getIconURI().toString())
+                .orElse(getLogo(defaultUrl));
+    }
+
+    public String getDarkLogo(String defaultUrl, int width, int height) throws DAOException {
+        return Optional.ofNullable(getCurrentTheme())
+                .map(t -> t.getDarkLogo())
+                .filter(l -> l.hasMediaItem())
+                .map(l -> l.getMediaItem().getIconURI(width, height).toString())
+                .orElse(getLogo(defaultUrl, width, height));
+    }
+
+    /**
+     * Fullscreen logo for the dark color mode; falls back to the regular fullscreen logo.
+     */
+    public String getDarkFullscreenLogo(String defaultUrl) throws DAOException {
+        return Optional.ofNullable(getCurrentTheme())
+                .map(t -> t.getDarkFullscreenLogo())
+                .filter(l -> l.hasMediaItem())
+                .map(l -> l.getMediaItem().getIconURI().toString())
+                .orElse(getFullscreenLogo(defaultUrl));
+    }
+
+    public String getDarkFullscreenLogo(String defaultUrl, int width, int height) throws DAOException {
+        return Optional.ofNullable(getCurrentTheme())
+                .map(t -> t.getDarkFullscreenLogo())
+                .filter(l -> l.hasMediaItem())
+                .map(l -> l.getMediaItem().getIconURI(width, height).toString())
+                .orElse(getFullscreenLogo(defaultUrl, width, height));
+    }
+
     public String getThemeLabel() throws DAOException {
         return getThemeLabel("");
     }

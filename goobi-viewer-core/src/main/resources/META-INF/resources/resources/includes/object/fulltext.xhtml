@@ -1,21 +1,14 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
     <!-- VIEW TEXT -->
     <div
         id="fulltext-box"
         class="view-fulltext__box">
         <ui:fragment rendered="#{activeDocumentBean.viewManager.getFulltextMimeType(navigationHelper.localeString) == 'text/plain'}">
             <pre>
-                <!-- Single page mode -->
+                <!-- SINGLE PAGE -->
                 <ui:fragment rendered="#{!activeDocumentBean.viewManager.doublePageMode}">
                     <h:outputText
                         rendered="#{activeDocumentBean.viewManager.currentPage.fullText != null}"
@@ -25,9 +18,9 @@
                         value="#{msg.noFulltextAvailable}"
                         rendered="#{activeDocumentBean.viewManager.currentPage.fullText == null}" />
                 </ui:fragment>
-                <!-- Double page mode -->
+                <!-- DOUBLE PAGE -->
                 <ui:fragment rendered="#{activeDocumentBean.viewManager.doublePageMode}">
-                    <!-- Left page text -->
+                    <!-- LEFT PAGE -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.currentLeftPage != null}">
                         <h:outputText
                             rendered="#{activeDocumentBean.viewManager.currentLeftPage.fullText != null}"
@@ -37,12 +30,11 @@
                             value="#{msg.noFulltextAvailable}"
                             rendered="#{activeDocumentBean.viewManager.currentLeftPage.fullText == null}" />
                     </ui:fragment>
-                    <!-- Separator -->
-                    <ui:fragment
-                        rendered="#{activeDocumentBean.viewManager.currentLeftPage != null and activeDocumentBean.viewManager.currentRightPage != null}">
+                    <!-- SEPARATOR -->
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.currentLeftPage != null and activeDocumentBean.viewManager.currentRightPage != null}">
                         <hr />
                     </ui:fragment>
-                    <!-- Right page text -->
+                    <!-- RIGHT PAGE -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.currentRightPage != null}">
                         <h:outputText
                             rendered="#{activeDocumentBean.viewManager.currentRightPage.fullText != null}"
@@ -58,16 +50,16 @@
 
         <ui:fragment rendered="#{activeDocumentBean.viewManager.getFulltextMimeType(navigationHelper.localeString) != 'text/plain'}">
             <div class="view-fulltext__content">
-                <!-- TEI files -->
+                <!-- TEI -->
                 <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextFromTEI}">
                     <h:outputText
                         escape="false"
                         value="#{textBean.getTeiText(activeDocumentBean.viewManager.topStructElement, activeDocumentBean.selectedRecordLanguage)}" />
                 </ui:fragment>
 
-                <!-- Non-TEI -->
+                <!-- NON-TEI -->
                 <ui:fragment rendered="#{!activeDocumentBean.viewManager.fulltextFromTEI}">
-                    <!-- Single page mode -->
+                    <!-- SINGLE PAGE -->
                     <ui:fragment rendered="#{!activeDocumentBean.viewManager.doublePageMode}">
                         <h:outputText
                             rendered="#{activeDocumentBean.viewManager.currentPage.fullText != null}"
@@ -77,9 +69,9 @@
                             value="#{msg.noFulltextAvailable}"
                             rendered="#{activeDocumentBean.viewManager.currentPage.fullText == null}" />
                     </ui:fragment>
-                    <!-- Double page mode -->
+                    <!-- DOUBLE PAGE -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.doublePageMode}">
-                        <!-- Left page text -->
+                        <!-- LEFT PAGE -->
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.currentLeftPage != null}">
                             <h:outputText
                                 rendered="#{activeDocumentBean.viewManager.currentLeftPage.fullText != null}"
@@ -89,12 +81,11 @@
                                 value="#{msg.noFulltextAvailable}"
                                 rendered="#{activeDocumentBean.viewManager.currentLeftPage.fullText == null}" />
                         </ui:fragment>
-                        <!-- Separator -->
-                        <ui:fragment
-                            rendered="#{activeDocumentBean.viewManager.currentLeftPage != null and activeDocumentBean.viewManager.currentRightPage != null}">
+                        <!-- SEPARATOR -->
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.currentLeftPage != null and activeDocumentBean.viewManager.currentRightPage != null}">
                             <hr />
                         </ui:fragment>
-                        <!-- Right page text -->
+                        <!-- RIGHT PAGE -->
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.currentRightPage != null}">
                             <h:outputText
                                 rendered="#{activeDocumentBean.viewManager.currentRightPage.fullText != null}"

@@ -5,11 +5,7 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
@@ -29,9 +25,7 @@
                         <h1 class="admin__title">#{msg.admin__dashboard}</h1>
                     </div>
 
-                    <!-- NO BREADCRUMB FOR ADMIN BACKEND START PAGE -->
-                    <!--                     <viewerComponent:adminBreadcrumbs /> -->
-
+                    <!-- NO BREADCRUMB ON THE ADMIN START PAGE -->
                     <div class="admin__content-inner-content">
                         <div class="admin__entry-list -w33">
                             <!-- WELCOME -->
@@ -76,7 +70,6 @@
                                         </div>
                                     </div>
                                 </div>
-
                                 <p>
                                     <h:outputText
                                         value="#{msg.admin__dashboard_support}"
@@ -113,6 +106,7 @@
                                                 <span>#{msg.cms_pageMetadata_lastEdited}</span>
                                             </div>
                                         </div>
+
                                         <!-- INDIVIDUAL ENTRIES -->
                                         <ui:repeat
                                             var="page"
@@ -129,6 +123,7 @@
                                                             value="#{page.title}"
                                                             escape="true" />
                                                     </span>
+
                                                     <!-- ACTIONS -->
                                                     <div>
                                                         <!-- SHOW -->
@@ -140,6 +135,7 @@
                                                             aria-label="#{msg.show}: #{page.title}">
                                                             #{msg.show}
                                                         </a>
+
                                                         <!-- EDIT -->
                                                         <a
                                                             href="#{navigationHelper.applicationUrl}admin/cms/pages/edit/#{page.id}/"
@@ -178,8 +174,7 @@
                             </ui:fragment>
 
                             <!-- LICENSES -->
-                            <ui:fragment
-                                rendered="#{userBean.admin and searchBean.solrIndexReachable and not empty adminLicenseBean.notConfiguredAccessConditions}">
+                            <ui:fragment rendered="#{userBean.admin and searchBean.solrIndexReachable and not empty adminLicenseBean.notConfiguredAccessConditions}">
                                 <h:form
                                     prependId="false"
                                     styleClass="admin__boxed-entry -no-actions -w33 -danger">
@@ -221,7 +216,6 @@
                                         <h2 class="col-9">#{msg.admin__dashboard_access_ticket_requests_title}</h2>
                                         <p class="col-12">#{msg.admin__dashboard_access_ticket_requests_desc}:</p>
                                     </div>
-
                                     <div class="row">
                                         <div class="col-12">
                                             <!-- LIMIT TICKETS TO A MAXIMUM OF X IN DASHBOARD -->
@@ -247,7 +241,6 @@
                                                             <div class="admin__tickets-dashboard-row-value">#{msg[ticket.type]}</div>
                                                             <div class="admin__tickets-dashboard-row-key">#{msg.email}:</div>
                                                             <div class="admin__tickets-dashboard-row-value">#{ticket.email}</div>
-
                                                             <ui:fragment rendered="#{ticket.requestMessage != null}">
                                                                 <div class="admin__tickets-dashboard-row-key">#{msg.message}:</div>
                                                                 <div class="admin__tickets-dashboard-row-value">
@@ -257,9 +250,6 @@
                                                                 </div>
                                                             </ui:fragment>
                                                         </div>
-                                                        <!-- 								                            <div class="col-3 d-flex justify-content-end"> -->
-                                                        <!-- 								                            	<span>#{msg.admin__dashboard_download_ticket_requests_configure}</span> -->
-                                                        <!-- 								                            </div> -->
                                                     </a>
                                                 </ui:fragment>
                                             </ui:repeat>
@@ -333,7 +323,6 @@
                                                     <div class="row">
                                                         <div class="col-12">#{msg.admin__translations_not_translated}:</div>
                                                     </div>
-
                                                     <ui:repeat
                                                         var="group"
                                                         value="#{adminBean.configuredTranslationGroups}">
@@ -401,16 +390,12 @@
                                 <dl class="row">
                                     <dt class="col-sm-5 mb-3">#{msg.admin__dashboard_versions_core}:</dt>
                                     <dd class="col-sm-7 mb-3">#{msg[statisticsBean.coreVersion]}</dd>
-
                                     <dt class="col-sm-5 mb-3">#{msg.admin__dashboard_versions_theme}:</dt>
                                     <dd class="col-sm-7 mb-3">#{navigationHelper.theme}</dd>
-
                                     <dt class="col-sm-5 mb-3">#{msg.admin__dashboard_versions_connector}:</dt>
                                     <dd class="col-sm-7 mb-3">#{msg[statisticsBean.connectorVersion]}</dd>
-
                                     <dt class="col-sm-5 mb-3">#{msg.admin__dashboard_versions_indexer}:</dt>
                                     <dd class="col-sm-7 mb-3">#{msg[statisticsBean.indexerVersion]}</dd>
-
                                     <dt class="col-sm-5 mb-3">#{msg.admin__dashboard_versions_contentserver}:</dt>
                                     <dd class="col-sm-7 mb-3">#{msg[statisticsBean.contentServerVersion]}</dd>
                                 </dl>
@@ -482,7 +467,6 @@
                                                 </div>
                                             </a>
                                         </ui:fragment>
-
                                         <ui:fragment rendered="#{userBean.admin and quartzBean.paused}">
                                             <a
                                                 href="#{request.contextPath}/admin/tasks"

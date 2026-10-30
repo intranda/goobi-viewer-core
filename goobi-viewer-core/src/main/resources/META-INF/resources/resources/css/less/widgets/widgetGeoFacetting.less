@@ -11,33 +11,30 @@
     z-index: 2;
     position: relative;
 
+    /* ACTIONS */
     &__actions {
         display: flex;
         margin-left: auto;
         align-items: center;
-
-        .btn {
-        }
     }
 
+    /* ACTIONS */
     &__action-overlay {
         position: absolute;
         width: 100%;
         height: 45px;
         bottom: 0;
         left: 0;
-        background: rgba(0, 0, 0, 0);
+        background: transparent;
         transition: background 0.2s ease;
         z-index: 1001;
         cursor: pointer;
         .widget-geofacetting__action-expand {
-            // Do not apply button styles in webkit browsers
-            // (this element has a type="button" attribute,
-            // which makes webkit style it as a button, if not unset)
+            /* NO WEBKIT BUTTON STYLES ON THE TYPE=BUTTON ELEMENT */
             -webkit-appearance: unset;
-            color: @white;
+            color: var(--fg-on-inverse);
             &:hover {
-                color: @white;
+                color: var(--fg-on-inverse);
             }
         }
     }
@@ -65,7 +62,7 @@
     }
 
     &__action-expand-hint {
-        font-size: 1.5rem;
+        font-size: var(--font-size-body);
     }
 
     &__action-toggle-markers {
@@ -73,12 +70,12 @@
         padding: 0;
         border: none;
         background: none;
-        color: @white;
+        color: var(--fg-on-inverse);
         &:hover,
         &:focus,
         &:active,
         &:active:focus {
-            color: @white;
+            color: var(--fg-on-inverse);
         }
     }
 
@@ -86,10 +83,10 @@
         display: none;
         color: inherit;
         margin-left: 0.8rem;
-        font-size: 1.7rem;
+        font-size: 1.7rem; // Fixed icon/marker geometry; independent of text scale.
         border: none;
         background: none;
-        color: @white;
+        color: var(--fg-on-inverse);
         &.active {
             display: block;
         }
@@ -99,10 +96,11 @@
             text-decoration: none;
             color: inherit;
             background: none;
-            color: @white;
+            color: var(--fg-on-inverse);
         }
     }
 
+    /* BODY */
     &__body {
         padding: 1.5rem;
         position: relative;
@@ -111,19 +109,16 @@
                 opacity: 1;
             }
             .widget-geofacetting__action-overlay {
-                background: rgba(0, 0, 0, 0.75);
+                background: rgb(from var(--bg-scrim) r g b / 75%);
             }
         }
     }
 
+    /* OVERLAY */
     &__overlay {
         display: none;
         width: 100%;
         height: 100%;
-        &__geo-map {
-            width: 100%;
-            height: 100%;
-        }
         .ajax_loader {
             display: none;
             img {
@@ -132,6 +127,7 @@
         }
     }
 
+    /* LOADER */
     &__loader-wrapper {
         display: block;
         position: relative;
@@ -146,6 +142,7 @@
         transform: translate(-50%, -50%);
     }
 
+    /* GEO MAP */
     .geo-map {
         min-height: 350px;
         .mapboxgl-popup-content {
@@ -161,10 +158,6 @@
             }
         }
         .leaflet-control-container {
-            .leaflet-top {
-                a {
-                }
-            }
             .leaflet-bottom {
                 a {
                     display: inline;
@@ -173,116 +166,63 @@
         }
     }
 
+    /* OVERLAY */
     &__overlay-buttons-wrapper {
         position: absolute;
         right: 15px;
         bottom: 35px;
         z-index: 401;
         padding: 2rem;
-        background: rgba(0, 0, 0, 0.75);
+        background: rgb(from var(--bg-scrim) r g b / 75%);
     }
 
     &__overlay-reset-search {
         margin-right: 0.5rem;
     }
 
-    &__overlay-submit-search {
-    }
-
-    /* CMS BACKEND WIDGET */
     h4 {
         margin-bottom: 5px;
     }
-
-    &__input {
-        .mx-clearfloats;
-        margin-bottom: 20px;
-        .row {
-            margin: 0;
-        }
-        .col-5,
-        .col-6,
-        .col-10 {
-            margin-bottom: 5px;
-            padding-right: 5px;
-            padding-left: 0;
-        }
-        textarea {
-            resize: vertical;
-        }
-    }
-
-    &__input-spacer {
-        margin: 10px 0;
-        width: 100%;
-        height: 1px;
-        background-color: @middlegray;
-    }
-
-    &__action {
-        position: relative;
-        z-index: 10;
-        .col-2 {
-            margin: -32px 0 0 -6px;
-            padding: 0 0 21px 0;
-            text-align: right;
-            border-bottom: 1px solid @middlegray;
-        }
-        a {
-            &:hover,
-            &:focus,
-            &:active {
-                text-decoration: none;
-            }
-        }
-    }
-
-    &__overlay-check {
-        .mx-clearfloats;
-        float: left;
-        width: 100%;
-        .checkbox {
-            margin: 0;
-        }
-    }
 }
 
-// TOGGLE FOR MARKERS ON FULLSCREEN VIEW FOR GEO MAP FACETTING
+/* MARKER TOGGLE ON THE FULLSCREEN MAP */
 .geo-map__toggle-markers {
     display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 4px;
     padding: 0;
-    border: 2px solid rgba(0, 0, 0, 0.2);
+    border: 2px solid rgb(from var(--border-contrast) r g b / 20%);
     .fa-map-marker {
-        color: #464646;
+        color: var(--fg-secondary);
         width: 30px;
         height: 30px;
         line-height: 30px;
-        background-color: #fff;
-        font-size: 1.8rem;
+        background-color: var(--bg-surface);
+        font-size: 1.8rem; // Fixed icon/marker geometry; independent of text scale.
     }
     &:hover,
     &:focus,
     &:active,
     &:active:focus {
         .fa-map-marker {
-            background-color: #f4f4f4;
-            color: #464646;
+            background-color: var(--bg-subtle);
+            color: var(--fg-secondary);
         }
     }
     &:focus {
         .fa-map-marker {
-            background-color: #fff;
-            color: #464646;
+            background-color: var(--bg-surface);
+            color: var(--fg-secondary);
         }
     }
 }
 
+/* GEOMAP */
 .overlay__geomap {
     width: 100%;
     height: 100%;
+    /* GEO MAP */
     .geo-map {
         width: 100%;
         height: 100%;
@@ -296,19 +236,16 @@
             bottom: 40px;
             z-index: 401;
         }
-        &__reset-search {
-            margin-right: 0.5rem;
-        }
-        &__submit-search {
-        }
     }
 
+    /* GEOCODER */
     .geocoder {
         position: absolute;
         right: 30px;
         top: 30px;
         z-index: 401;
     }
+    /* GEOCODER INPUT */
     .mapboxgl-ctrl-geocoder--input {
         &:focus {
             outline: none;
@@ -316,6 +253,7 @@
     }
 }
 
+/* RTL */
 @{RTL} {
     .widget-geofacetting {
         &__actions {
@@ -345,7 +283,7 @@
             opacity: 1;
         }
         &__action-overlay {
-            background: rgba(0, 0, 0, 0.75);
+            background: rgb(from var(--bg-scrim) r g b / 75%);
         }
     }
     .overlay__geomap {
@@ -357,7 +295,7 @@
             }
         }
         .mapboxgl-ctrl-geocoder--input {
-            font-size: 1.2rem;
+            font-size: var(--font-size-caption);
         }
     }
 }

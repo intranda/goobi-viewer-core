@@ -1,158 +1,82 @@
 /* ==============================================================
    User view Bookmark
-   style declarations for userBackendViewBookshelf.xhtml
+   style declarations for userBackendViewBookmarkList.xhtml
    ==============================================================*/
 /* USER VIEW BOOKMARK */
-/* BLOCK */
 .view-bookmark {
-    /* ELEMENT */
-    h1 {
+    /* HEAD */
+    &__head {
+        margin-bottom: 2.4rem;
+        padding-bottom: 1.6rem;
+        border-bottom: 1px solid var(--border-default);
     }
-    h2 {
+    &__head-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem 2rem;
+        h1 {
+            margin-bottom: 0;
+        }
     }
-    p {
-        font-size: @fontSmall;
-        font-style: italic;
+    &__actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.4rem 1.6rem;
     }
     &__action {
-        text-align: right;
-        a {
-            display: inline-block;
-            width: 28px;
-            height: 28px;
-            line-height: 26px;
+        display: inline-flex;
+        align-items: center;
+        padding: 0.4rem 0;
+        color: var(--fg-secondary);
+        font-size: var(--font-size-body-small);
+        &:hover,
+        &:focus-visible {
+            color: var(--fg-default);
+            text-decoration: none;
+            span {
+                text-decoration: underline;
+            }
         }
-    }
-    &__item {
-        height: 300px;
-        margin-bottom: 30px;
-        border: 1px solid @middlegray;
-        transition: all 0.3s ease-in;
-        &-action {
-            display: none;
-        }
-        &:hover {
-            background-color: @lightgray;
-            .view-bookmark__item-action {
-                display: block;
+        &.-danger {
+            color: var(--fg-danger);
+            &:hover,
+            &:focus-visible {
+                color: var(--fg-danger);
             }
         }
     }
-    &__item-image,
-    &__item-info,
-    &__item-action {
-        float: left;
-        width: 50%;
+    &__intro {
+        max-width: 65ch;
+        margin-top: 0.8rem;
+        margin-bottom: 0;
+        color: var(--fg-secondary);
+        font-size: var(--font-size-body-small);
+        font-style: italic;
     }
-    &__item-image {
-        height: 300px;
-        background-repeat: no-repeat;
-        background-position: center center;
-        background-size: cover;
-        a {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-    }
-    &__item-info {
-        height: 250px;
-        padding: 15px 15px 0 15px;
-        overflow-y: auto;
-        position: relative;
-        h3 {
-            text-overflow: ellipsis;
-            overflow: hidden;
-        }
-        a {
-            width: 100%;
-            height: 100%;
-            display: block;
-            position: absolute;
-            top: 0;
-            right: 0;
-        }
-        textarea {
-            width: 100%;
-            height: 150px;
-            resize: none;
-            border: none;
-            background-color: transparent;
-        }
-    }
-    &__item-action {
-        height: 50px;
-        padding: 15px;
-        text-align: right;
-        a {
-            display: inline-block;
-            height: 16px;
-        }
-        [data-bookmark-list-type='delete'] {
-            background-size: 70%;
-        }
-    }
-    &__single-entry {
-        background: @white;
+
+    /* ENTRIES: GRID AND THUMBNAIL SLOT COME FROM THE SEARCH LIST HIT ROW (searchList.less), THE THEME SETS THE TOKENS */
+    &__entry {
         margin-bottom: 2rem;
         padding: 2rem;
-        border: 1px solid #ccc;
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-container);
+        box-shadow: var(--shadow-surface);
     }
-}
 
-#viewBookmark {
-    h1 {
+    /* EMPTY STATE */
+    &__empty {
+        padding: 2.4rem 0;
+        border-top: 1px solid var(--border-subtle);
+        color: var(--fg-muted);
     }
-    h2 {
-    }
-    #single_bookshelf_data_table {
-        thead {
-            tr {
-                th {
-                    &:nth-child(1) {
-                    }
-                    &:nth-child(2) {
-                    }
-                    &:nth-child(3) {
-                    }
-                    &:nth-child(4) {
-                    }
-                }
-            }
-        }
-        tbody {
-            tr {
-                td {
-                    a {
-                        img {
-                        }
-                    }
-                }
-            }
-        }
-    }
-    #viewBookshelfControlsForm {
-        text-align: right;
-        .btn {
-            margin: 1.3125rem 0;
-        }
-    }
-}
-
-.btn.delete {
-    color: @btnCleanDelete;
-    &:hover,
-    &:active,
-    &:focus {
-        color: @btnDanger;
-    }
-}
-
-@{RTL} {
-    .view-bookmark {
-        &__action {
-            text-align: left;
-        }
+    &__empty-text {
+        margin-bottom: 0;
+        font-size: var(--font-size-body-small);
     }
 }
 
@@ -170,4 +94,14 @@
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
+    .view-bookmark {
+        &__head-row {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        /* THE THUMBNAIL FOLLOWS THE SINGLE COLUMN LIKE IN THE SEARCH LIST */
+        &__entries .search-list__hit-thumbnail {
+            width: auto;
+        }
+    }
 }

@@ -1,29 +1,22 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
     <timematrix />
 
+    <!-- TIMEMATRIX CONFIG -->
     <script>
         riot.mount('timematrix', {
-         		msg: #{navigationHelper.getTranslationsAsJson(
-         		        ["hitsZero", "timematrix__timePeriod", "aria_label__timeline_period_start", "timematrix__maxResults",
-         		    	"aria_label__timeline_period_end", "aria_label__timeline_hits", "timematrix__calculate"])},
-              	minYear: #{configurationBean.getTimeMatrixStartYear(subtheme)},
-              	maxYear: #{configurationBean.getTimeMatrixEndYear(subtheme)},
-              	contextPath: "#{request.contextPath}/",
-              	maxHits: #{configurationBean.timeMatrixHits},
-              	loading: $('.timematrix__loader'),
-              	subtheme: "#{subtheme}",
-              	thumbnailSize: "500,600",
-              	language: "#{navigationHelper.localeString}"
-            });
+            msg: #{navigationHelper.getTranslationsAsJson(
+                ["hitsZero", "timematrix__timePeriod", "aria_label__timeline_period_start", "timematrix__maxResults",
+                "aria_label__timeline_period_end", "aria_label__timeline_hits", "timematrix__calculate"])},
+            minYear: #{configurationBean.getTimeMatrixStartYear(subtheme)},
+            maxYear: #{configurationBean.getTimeMatrixEndYear(subtheme)},
+            contextPath: "#{request.contextPath}/",
+            maxHits: #{configurationBean.timeMatrixHits},
+            loading: $('.timematrix__loader'),
+            subtheme: "#{subtheme}",
+            thumbnailSize: '500,600',
+            language: "#{navigationHelper.localeString}",
+        });
     </script>
 </ui:composition>

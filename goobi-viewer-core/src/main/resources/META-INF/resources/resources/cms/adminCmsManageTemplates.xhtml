@@ -4,7 +4,6 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
@@ -22,9 +21,7 @@
                 id="cmsSelectTemplate"
                 class="cms-select-template">
                 <h1 class="admin__content-inner-title">#{msg.admin__cms_templates_manage_label}</h1>
-
                 <viewerComponent:adminBreadcrumbs />
-
                 <div class="admin__content-inner-content">
                     <div
                         id="cmsSelectTemplateWrapper"
@@ -69,6 +66,7 @@
                                                             <f:ajax render="templateLists" />
                                                         </h:commandLink>
                                                     </div>
+
                                                     <!-- THEME TEMPLATE MARKER -->
                                                     <ui:fragment rendered="#{template.themeTemplate}">
                                                         <div class="cms-select-template__theme-template-marker">#{msg.cms_themeTemplate}</div>
@@ -78,7 +76,6 @@
                                         </div>
                                     </div>
                                 </ui:repeat>
-
                                 <h2>#{msg.admin__cms_template_invisible}</h2>
                                 <ui:repeat
                                     value="#{cmsBean.getTemplates(false)}"
@@ -115,6 +112,7 @@
                                                             <f:ajax render="templateLists" />
                                                         </h:commandLink>
                                                     </div>
+
                                                     <!-- THEME TEMPLATE MARKER -->
                                                     <ui:fragment rendered="#{template.themeTemplate}">
                                                         <div class="cms-select-template__theme-template-marker">#{msg.cms_themeTemplate}</div>
@@ -125,7 +123,6 @@
                                     </div>
                                 </ui:repeat>
                             </h:panelGroup>
-
                             <div class="admin__final-actions">
                                 <h:commandLink
                                     action="pretty:adminCmsSelectTemplate"

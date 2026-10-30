@@ -317,4 +317,33 @@ class NetToolsTest extends AbstractTest {
                 NetTools.buildImplicitAllowlist()
                         .contains("localhost"));
     }
+    /**
+     * @see NetTools#buildAttachmentContentDisposition(String)
+     * @verifies quote file name
+     */
+    @Test
+    void buildAttachmentContentDisposition_shouldQuoteFileName() {
+        Assertions.assertEquals("attachment; filename=\"my file.pdf\"; filename*=UTF-8''my%20file.pdf",
+                NetTools.buildAttachmentContentDisposition("my file.pdf"));
+    }
+
+    /**
+     * @see NetTools#buildAttachmentContentDisposition(String)
+     * @verifies escape quotes and backslashes in file name
+     */
+    @Test
+    void buildAttachmentContentDisposition_shouldEscapeQuotesAndBackslashesInFileName() {
+        Assertions.assertEquals("attachment; filename=\"a\\\"b\\\\c\"; filename*=UTF-8''a%22b%5Cc",
+                NetTools.buildAttachmentContentDisposition("a\"b\\c"));
+    }
+
+    /**
+     * @see NetTools#buildAttachmentContentDisposition(String)
+     * @verifies percent encode file name in extended parameter
+     */
+    @Test
+    void buildAttachmentContentDisposition_shouldPercentEncodeFileNameInExtendedParameter() {
+        Assertions.assertEquals("attachment; filename=\"Größe*.pdf\"; filename*=UTF-8''Gr%C3%B6%C3%9Fe%2A.pdf",
+                NetTools.buildAttachmentContentDisposition("Größe*.pdf"));
+    }
 }

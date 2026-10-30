@@ -4,13 +4,8 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <!-- CHANGE RECORD LOCALE -->
     <viewerComponent:changeRecordLocale />
 
@@ -18,12 +13,13 @@
     <div
         id="metadataElementWrapper"
         class="metadata">
-        <!-- force reload if current metadata elements here and use this value for the entire request -->
+        <!-- FORCED RELOAD, KEPT FOR THE REQUEST -->
         <c:set
             scope="request"
             var="metadataElementList"
             value="#{metadataBean.getMetadataElementList(metadataViewIndex, true)}" />
 
+        <!-- TITLE -->
         <div class="metadata__title-wrapper">
             <div
                 id="title"
@@ -31,7 +27,6 @@
                 <!-- TITLE HEADER -->
                 <div class="title__header">
                     <h1 class="h2">
-                        <!-- FA* is this still needed? What is the purpose? -->
                         <!-- PAGE TYPE -->
                         <span class="title__header-page-type">
                             <h:outputText
@@ -40,7 +35,7 @@
                             :
                         </span>
 
-                        <!-- NAME OF THE RECORD -->
+                        <!-- RECORD TITLE -->
                         <span class="title__header-label">#{activeDocumentBean.titleBarLabel}</span>
 
                         <!-- ADD TO BOOKMARK -->
@@ -51,12 +46,13 @@
                                 aria-label="#{msg.bookmarkList_addToBookmarkList}"
                                 data-bookmark-list-type="add"
                                 data-pi="#{activeDocumentBean.viewManager.pi}"
-                                data-page="#{activeDocumentBean.viewManager.currentImageOrder}">
-                                <span
-                                    class="bookmark-toggle"
-                                    data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}"
-                                    data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}"
-                                    data-toggle="tooltip">
+                                data-page="#{activeDocumentBean.viewManager.currentImageOrder}"
+                                title="#{msg.bookmarkList_addToBookmarkList}"
+                                data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}"
+                                data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}"
+                                data-toggle="tooltip"
+                                data-placement="top">
+                                <span class="bookmark-toggle">
                                     <util:icon
                                         icon="bookmark"
                                         svgClass="icon icon-lg"
@@ -70,6 +66,7 @@
                             </button>
                         </ui:fragment>
 
+                        <!-- COPYRIGHT INDICATOR -->
                         <ui:fragment rendered="#{configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
                             <viewerComponent:copyrightIndicator />
                         </ui:fragment>
@@ -85,6 +82,7 @@
             <div class="clearfix" />
         </h:panelGroup>
 
+        <!-- METADATA ELEMENTS -->
         <c:forEach
             items="#{metadataElementList}"
             var="metadataElement"
@@ -107,7 +105,6 @@
                             value="#{msg[event.label]}"
                             escape="false" />
                     </h3>
-
                     <c:forEach
                         items="#{event.metadata}"
                         var="metadata">
@@ -122,7 +119,7 @@
 
                                     <!-- STANDARD STRUCTURE FOR METADATA -->
                                     <ui:fragment>
-                                        <!-- grouped="true" -->
+                                        <!-- GROUPED VALUES -->
                                         <ui:fragment rendered="#{metadata.group}">
                                             <c:forEach
                                                 items="#{metadata.values}"
@@ -143,7 +140,7 @@
                                             </c:forEach>
                                         </ui:fragment>
 
-                                        <!-- grouped="false" -->
+                                        <!-- UNGROUPED VALUES -->
                                         <ui:fragment rendered="#{!metadata.group}">
                                             <c:forEach
                                                 items="#{metadata.values}"
@@ -158,44 +155,6 @@
                                             </c:forEach>
                                         </ui:fragment>
                                     </ui:fragment>
-
-                                    <!-- STRUCTURE FOR METADATA VALUES IN ONE LINE -->
-                                    <!-- 								<ui:fragment> -->
-
-                                    <!-- grouped="true" -->
-                                    <!-- 										<ui:fragment rendered="#{metadata.group}"> -->
-                                    <!-- 											<dd> -->
-                                    <!-- 												<c:forEach items="#{metadata.values}" var="val"> -->
-                                    <!-- 													<h:outputFormat value="#{msg[val.masterValue]}" -->
-                                    <!-- 														escape="false"> -->
-                                    <!-- 														<c:forEach begin="0" end="#{metadata.paramCount - 0}" -->
-                                    <!-- 															var="ind"> -->
-                                    <!-- 															<f:param value="#{val.getParamLabelWithColon(ind)}" /> -->
-                                    <!-- 															<f:param value="#{val.getDisplayParamValue(ind)}" /> -->
-                                    <!-- 														</c:forEach> -->
-                                    <!-- 													</h:outputFormat> -->
-                                    <!-- 													<h:outputText value="delimiter" escape="false" /> -->
-                                    <!-- 												</c:forEach> -->
-                                    <!-- 											</dd> -->
-                                    <!-- 										</ui:fragment> -->
-
-                                    <!-- grouped="false" -->
-                                    <!-- 	                                <ui:fragment rendered="#{!metadata.group}"> -->
-                                    <!-- 	                                    <dd> -->
-                                    <!-- 		                                    <c:forEach items="#{metadata.values}" var="val"> -->
-                                    <!-- 		                                            <span class="metadata__element-value"> -->
-                                    <!-- 		                                                <h:outputFormat value="#{msg[val.masterValue]}" escape="false"> -->
-                                    <!-- 		                                                    <c:forEach begin="0" end="#{metadata.paramCount - 0}" var="ind"> -->
-                                    <!-- 		                                                        <f:param value="#{val.getDisplayParamValue(ind)}" /> -->
-                                    <!-- 		                                                    </c:forEach> -->
-                                    <!-- 		                                                </h:outputFormat> -->
-                                    <!-- 		                                                <h:outputText value="delimiter" escape="false" /> -->
-                                    <!-- 		                                            </span> -->
-                                    <!-- 		                                    </c:forEach> -->
-                                    <!-- 	                                    </dd> -->
-                                    <!-- 	                                </ui:fragment> -->
-
-                                    <!--                                 </ui:fragment> -->
                                 </dl>
                             </div>
                         </ui:fragment>
@@ -204,6 +163,5 @@
             </div>
         </c:forEach>
     </div>
-
     <div class="clearfix" />
 </ui:composition>

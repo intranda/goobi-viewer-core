@@ -212,6 +212,10 @@ public class CmsArchivesBean implements Serializable {
         this.imageModeHeader = imageModeHeader;
     }
 
+    public List<CMSArchiveConfig.CatalogType> getCatalogTypes() {
+        return List.of(CMSArchiveConfig.CatalogType.values());
+    }
+
     /**
      * Sets the value of <code>imageMode</code> depending on the properties of <code>currentCollection</code>.
      *

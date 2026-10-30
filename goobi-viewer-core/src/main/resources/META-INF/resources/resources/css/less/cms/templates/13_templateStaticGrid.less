@@ -3,13 +3,7 @@
    style declarations for cms_template_13_staticGrid.xhtml
    ==============================================================*/
 /* TPL STATIC GRID */
-/* BLOCK */
 .tpl-static-grid {
-    h1 {
-    }
-    /* ELEMENT */
-    &__text {
-    }
     &__grid {
         display: grid;
         grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -37,8 +31,9 @@
 .grid-tile {
     padding: 3px;
     padding-top: 0;
-    border: 1px solid @middlegray;
-    background-color: @white;
+    border: 1px solid var(--border-strong);
+    background-color: var(--bg-surface);
+    color: var(--fg-default);
     &:hover {
         text-decoration: none;
     }
@@ -57,7 +52,7 @@
     }
     &__text {
         margin: 0;
-        font-size: @fontNormal;
+        font-size: var(--font-size-body);
         line-height: 21px;
         font-weight: 600;
     }
@@ -73,31 +68,31 @@
     max-width: 100%;
     min-height: 278px;
     padding: 30px 25px;
-    background-color: @lightgray;
+    background-color: var(--bg-subtle);
+    color: var(--fg-default);
     text-align: center;
     text-decoration: none;
     overflow: hidden;
     &:hover,
     &:focus-visible {
         text-decoration: none;
-        background-color: @middlegray;
+        background-color: var(--bg-selected);
+        color: var(--fg-selected);
     }
-
     &__image {
         max-width: 100%;
         object-fit: contain;
     }
     &__text {
-        font-size: @fontNormal;
+        font-size: var(--font-size-body);
         font-weight: 600;
         line-height: 26px;
-        color: @black;
+        color: var(--fg-default);
         word-break: break-all;
     }
 }
 
 /* MODIFICATION */
-
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
     .tpl-static-grid {

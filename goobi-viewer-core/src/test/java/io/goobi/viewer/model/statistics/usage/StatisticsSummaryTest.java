@@ -5,8 +5,11 @@ import java.time.temporal.ChronoUnit;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mockito.Mockito;
 
+@Execution(ExecutionMode.CONCURRENT)
 class StatisticsSummaryTest {
 
     /**

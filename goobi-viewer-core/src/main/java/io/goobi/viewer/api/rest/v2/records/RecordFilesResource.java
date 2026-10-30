@@ -255,7 +255,7 @@ public class RecordFilesResource {
 
         String mimeType = "appplication/octet-stream";
         try {
-            mimeType = new MediaResourceHelper(config).setContentHeaders(servletResponse, sanitizedFileName, path);
+            mimeType = new MediaResourceHelper(config).setContentHeaders(servletRequest, servletResponse, sanitizedFileName, path, false);
         } catch (IOException e) {
             logger.error("Failed to probe file content type");
         }

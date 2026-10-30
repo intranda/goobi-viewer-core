@@ -7,6 +7,7 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+    xmlns:util="http://goobi.io/util"
     template="/resources/themes/#{navigationHelper.theme}/template.html">
     <composite:interface />
 
@@ -17,7 +18,10 @@
                 listener="#{navigationHelper.setCurrentPage('annotations', false, true)}" />
             <f:event
                 type="preRenderView"
-                listener="#{navigationHelper.addStaticLinkToBreadcrumb('annotations',1)}" />
+                listener="#{navigationHelper.addStaticLinkToBreadcrumb('campaigns', 'campaigns', 1)}" />
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.addStaticLinkToBreadcrumb('annotations', 2)}" />
         </f:metadata>
     </ui:define>
 
@@ -30,168 +34,141 @@
     <ui:define name="content">
         <div
             id="myActivity"
-            class="page-wrapp">
-            <h:panelGroup>
-                <h1>#{msg.annotations}</h1>
-
-                <div id="campaignAnnotations">
-                    <h:form
-                        id="campaignAnnotationsSongs"
-                        prependId="false">
-                        <div>
-                            <div class="admin__table-tools flex-wrap">
-                                <!-- PAGINATOR -->
-                                <div class="admin__table-paginator">
-                                    <viewerComponent:dataTablePaginator tableValues="#{annotationBean.lazyModelAnnotations}" />
-                                </div>
-                                <!-- FILTER -->
-                                <div class="admin__table-filter mb-3 mb-sm-0">
-                                    <!-- TODO: ADD FILTER FOR targetPI, TOO -->
-                                    <viewerComponent:dataTableColumnFilter
-                                        key="admin__crowsourcing_annotations_search"
-                                        filter="#{annotationBean.lazyModelAnnotations.getFilter('targetPI_body')}" />
-                                </div>
-                            </div>
-
-                            <!-- ALL ANNOTATIONS TABLE -->
-                            <div
-                                id="campaignAnnotationsTable"
-                                class="admin__table-content"
-                                role="grid"
-                                aria-label="#{msg.annotations}: #{msg.aria_label__table__actions}">
-                                <!-- TITLE ROW -->
-                                <div
-                                    class="row no-gutters admin__table-title"
-                                    role="row">
-                                    <!-- ANNOTATION COL -->
-                                    <div class="col-12 col-lg-6 d-flex">
-                                        <viewerComponent:sortingArrow
-                                            filterType="targetPI"
-                                            colHeading="#{msg.admin__crowdsourcing_annotation}"
-                                            list="#{annotationBean.lazyModelAnnotations}" />
-                                    </div>
-
-                                    <!-- CONTRIBUTOR COL -->
-                                    <div class="col-3 d-none d-lg-flex">
-                                        <viewerComponent:sortingArrow
-                                            filterType="creatorId"
-                                            colHeading="#{msg.user}"
-                                            list="#{annotationBean.lazyModelAnnotations}" />
-                                    </div>
-
-                                    <!-- DATE COL -->
-                                    <div class="col-2 d-none d-lg-flex">
-                                        <viewerComponent:sortingArrow
-                                            filterType="dateCreated"
-                                            colHeading="#{msg.date}"
-                                            list="#{annotationBean.lazyModelAnnotations}" />
-                                    </div>
-
-                                    <!-- REVIEW STATE COL -->
-                                    <div
-                                        class="col-1 d-none d-lg-flex"
-                                        style="justify-content: center"
-                                        role="columnheader">
-                                        <span class="admin__sorting-table-heading">#{msg.label__crowdsourcing_review}</span>
-                                    </div>
-                                </div>
-
-                                <!-- INDIVIDUAL ANNOTATION ROWS -->
-                                <ui:repeat
-                                    var="annotation"
-                                    value="#{annotationBean.lazyModelAnnotations.paginatorList}">
-                                    <div
-                                        class="row no-gutters admin__table-entry"
-                                        role="row">
-                                        <!-- ANNOTATION CONTENT -->
-                                        <div
-                                            class="col-12 col-lg-6 d-flex"
-                                            style="flex-direction: column"
-                                            role="gridcell">
-                                            <div class="annotation__label">
-                                                <a href="#{navigationHelper.objectUrl}#{annotation.targetLink}">
-                                                    #{annotation.targetPI}
-                                                    <h:outputText
-                                                        rendered="#{annotation.targetPageOrder != null}"
-                                                        value=", #{msg.page} #{annotation.targetPageOrder}" />
-                                                </a>
-                                            </div>
-                                            <div
-                                                id="annotation_body_#{annotation.id}"
-                                                class="annotation__body__content_wrapper">
-                                                #{contentBean.cleanUpValue(annotation.body.toString())}
-                                            </div>
-                                            <annotationBody
-                                                annotationid="#{annotation.id}"
-                                                contentid="annotation_body_#{annotation.id}" />
-                                            <div>
-                                                <!-- TODO INLINE CSS -->
-                                                <a
-                                                    href="#{navigationHelper.objectUrl}#{annotation.targetLink}"
-                                                    class="admin__table-action-link"
-                                                    style="padding-right: 1.4rem"
-                                                    target="_blank"
-                                                    aria-label="#{msg.admin__crowdsourcing_annotation} #{msg.show} (#{annotation.targetPI})">
-                                                    #{msg.show}
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <!-- CAMPAIGN -->
-                                        <div
-                                            class="col-3 d-none d-lg-flex"
-                                            role="gridcell">
-                                            <h:outputText>#{annotation.creator.displayName}</h:outputText>
-                                            <h:outputText rendered="#{annotation.reviewer != null}">
-                                                <br />
-                                                #{annotation.reviewer.displayName}
-                                            </h:outputText>
-                                        </div>
-                                        <!-- DATE -->
-                                        <div
-                                            class="col-2 d-none d-lg-flex"
-                                            role="gridcell">
-                                            <h:outputText value="#{annotation.dateCreated}">
-                                                <f:converter converterId="localDateTimeConverter" />
-                                                <f:attribute
-                                                    name="pattern"
-                                                    value="#{navigationHelper.dateTimePattern}" />
-                                            </h:outputText>
-                                        </div>
-                                        <!-- REVIEW STATE -->
-                                        <div
-                                            class="col-1 d-none d-lg-flex"
-                                            style="justify-content: center"
-                                            role="gridcell">
-                                            <ui:fragment rendered="#{annotation.publicationStatus == 'PUBLISHED'}">
-                                                <span class="sr-only">#{msg.yes}</span>
-                                                <i
-                                                    class="fa fa-check"
-                                                    aria-hidden="true" />
-                                            </ui:fragment>
-                                            <ui:fragment rendered="#{annotation.publicationStatus != 'PUBLISHED'}">
-                                                <span class="sr-only">#{msg.no}</span>
-                                            </ui:fragment>
-                                        </div>
-                                    </div>
-                                </ui:repeat>
+            class="campaign-annotations">
+            <h1>#{msg.annotations}</h1>
+            <div id="campaignAnnotations">
+                <h:form
+                    id="campaignAnnotationsSongs"
+                    prependId="false">
+                    <!-- ANNOTATIONS -->
+                    <div class="data-table">
+                        <!-- TOOLBAR -->
+                        <div class="data-table__toolbar">
+                            <div class="data-table__filter">
+                                <viewerComponent:dataTableColumnFilter
+                                    key="admin__crowsourcing_annotations_search"
+                                    filter="#{annotationBean.lazyModelAnnotations.getFilter('targetPI_body')}" />
                             </div>
                         </div>
-                        <script>
-                            $(document).ready(() => {
-                                                  riot.mount( "annotationBody", {
-                                                      currentlang: "#{navigationHelper.localeString}",
-                                                      resturl: "#{configurationBean.restApiUrlV1}",
-                                                      geomap : {
-                                                          initialView : {
-                                                              zoom: #{configurationBean.geomapAnnotationZoom},
-                                                          },
-                                                      }
-                                                  } );
-                            })
-                        </script>
-                    </h:form>
-                </div>
-            </h:panelGroup>
+
+                        <!-- TABLE -->
+                        <div
+                            id="campaignAnnotationsTable"
+                            class="data-table__table"
+                            role="table"
+                            aria-label="#{msg.annotations}: #{msg.aria_label__table__actions}">
+                            <!-- HEADER ROW -->
+                            <div
+                                class="data-table__row -head"
+                                role="row">
+                                <viewerComponent:sortingArrow
+                                    filterType="targetPI"
+                                    colHeading="#{msg.admin__crowdsourcing_annotation}"
+                                    list="#{annotationBean.lazyModelAnnotations}" />
+                                <viewerComponent:sortingArrow
+                                    filterType="creatorId"
+                                    colHeading="#{msg.user}"
+                                    list="#{annotationBean.lazyModelAnnotations}" />
+                                <viewerComponent:sortingArrow
+                                    filterType="dateCreated"
+                                    colHeading="#{msg.date}"
+                                    list="#{annotationBean.lazyModelAnnotations}" />
+                                <div
+                                    class="data-table__status"
+                                    role="columnheader">
+                                    #{msg.label__crowdsourcing_review}
+                                </div>
+                            </div>
+
+                            <!-- ROWS -->
+                            <ui:repeat
+                                var="annotation"
+                                value="#{annotationBean.lazyModelAnnotations.paginatorList}">
+                                <div
+                                    class="data-table__row"
+                                    role="row">
+                                    <!-- ANNOTATION -->
+                                    <div
+                                        class="data-table__cell -main"
+                                        role="cell">
+                                        <div
+                                            id="annotation_body_#{annotation.id}"
+                                            class="annotation__body__content_wrapper">
+                                            #{contentBean.cleanUpValue(annotation.body.toString())}
+                                        </div>
+                                        <annotationBody
+                                            annotationid="#{annotation.id}"
+                                            contentid="annotation_body_#{annotation.id}" />
+                                        <a
+                                            href="#{navigationHelper.objectUrl}#{annotation.targetLink}"
+                                            class="data-table__meta">
+                                            #{annotation.targetPI}
+                                            <h:outputText
+                                                rendered="#{annotation.targetPageOrder != null}"
+                                                value=" · #{msg.page} #{annotation.targetPageOrder}" />
+                                        </a>
+                                    </div>
+
+                                    <!-- USER -->
+                                    <div
+                                        class="data-table__cell"
+                                        role="cell">
+                                        <h:outputText value="#{annotation.creator.displayName}" />
+                                        <h:panelGroup
+                                            layout="block"
+                                            styleClass="data-table__meta"
+                                            rendered="#{annotation.reviewer != null}">
+                                            #{msg.label__crowdsourcing_review}: #{annotation.reviewer.displayName}
+                                        </h:panelGroup>
+                                    </div>
+
+                                    <!-- DATE -->
+                                    <div
+                                        class="data-table__cell -date"
+                                        role="cell">
+                                        <h:outputText value="#{annotation.dateCreated}">
+                                            <f:converter converterId="localDateTimeConverter" />
+                                            <f:attribute
+                                                name="pattern"
+                                                value="#{navigationHelper.dateTimePattern}" />
+                                        </h:outputText>
+                                    </div>
+
+                                    <!-- REVIEW STATE -->
+                                    <div
+                                        class="data-table__status #{annotation.publicationStatus == 'PUBLISHED' ? '-success' : '-muted'}"
+                                        role="cell"
+                                        title="#{msg.label__crowdsourcing_review}: #{annotation.publicationStatus == 'PUBLISHED' ? msg.yes : msg.no}">
+                                        <span class="sr-only">#{annotation.publicationStatus == 'PUBLISHED' ? msg.yes : msg.no}</span>
+                                        <util:icon icon="#{annotation.publicationStatus == 'PUBLISHED' ? 'circle-check' : 'clock'}" />
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </div>
+
+                        <!-- NO ANNOTATIONS -->
+                        <ui:fragment rendered="#{annotationBean.lazyModelAnnotations.sizeOfDataList eq 0}">
+                            <p class="data-table__empty">#{msg.hitsZero}</p>
+                        </ui:fragment>
+
+                        <!-- FOOTER -->
+                        <viewerComponent:dataTableFooter tableValues="#{annotationBean.lazyModelAnnotations}" />
+                    </div>
+                    <script>
+                        $(document).ready(() => {
+                            riot.mount('annotationBody', {
+                                currentlang: "#{navigationHelper.localeString}",
+                                resturl: "#{configurationBean.restApiUrlV1}",
+                                geomap: {
+                                    initialView: {
+                                        zoom: #{configurationBean.geomapAnnotationZoom},
+                                    },
+                                },
+                            });
+                        });
+                    </script>
+                </h:form>
+            </div>
         </div>
     </ui:define>
 

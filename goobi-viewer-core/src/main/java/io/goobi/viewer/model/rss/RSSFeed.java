@@ -87,7 +87,7 @@ public final class RSSFeed {
     private static final String[] FIELDS = { SolrConstants.ACCESSCONDITION, SolrConstants.DATECREATED, SolrConstants.FILENAME, SolrConstants.FULLTEXT,
             SolrConstants.IDDOC, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.IDDOC_PARENT,
             SolrConstants.PI_PARENT, SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LOGID, SolrConstants.MIMETYPE,
-            SolrConstants.NUMVOLUMES, SolrConstants.PERSON_ONEFIELD, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.PLACEPUBLISH,
+            SolrConstants.PERSON_ONEFIELD, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.PLACEPUBLISH,
             SolrConstants.PUBLISHER, SolrConstants.THUMBNAIL, SolrConstants.THUMBPAGENO, SolrConstants.URN, SolrConstants.YEARPUBLISH,
             "MD_SHELFMARK" };
 

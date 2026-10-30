@@ -82,6 +82,20 @@ public class UrlRedirectFilter implements Filter {
                 return;
             }
 
+            // Permanently redirect explicit calls of index.(x)html to the root url, so that the configured CMS start page is shown
+            // and search engines only index a single start page url
+            if (isIndexFileRequest(httpRequest)) {
+                String target = httpRequest.getContextPath() + "/";
+                if (StringUtils.isNotEmpty(httpRequest.getQueryString())) {
+                    target += "?" + httpRequest.getQueryString();
+                }
+                logger.debug("Redirecting {} to {}", httpRequest.getRequestURI(), target);
+                HttpServletResponse httpResponse = (HttpServletResponse) response;
+                httpResponse.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+                httpResponse.setHeader("Location", target);
+                return;
+            }
+
             Optional<ViewerPath> currentPath = ViewerPathBuilder.createPath(httpRequest);
             if (currentPath.isPresent()) {
                 // logger.trace("currentPath: {}", currentPath.get());
@@ -111,6 +125,25 @@ public class UrlRedirectFilter implements Filter {
         }
 
         chain.doFilter(request, response);
+    }
+
+    /**
+     * Checks whether the originally requested url (not an internal forward or welcome-file resolution) points directly at the start page file.
+     *
+     * @param httpRequest HTTP servlet request to check
+     * @return true if the request is a GET/HEAD call whose request uri is {@code <contextPath>/index.html} or {@code <contextPath>/index.xhtml}
+     */
+    static boolean isIndexFileRequest(HttpServletRequest httpRequest) {
+        String method = httpRequest.getMethod();
+        if (!"GET".equalsIgnoreCase(method) && !"HEAD".equalsIgnoreCase(method)) {
+            return false;
+        }
+        String uri = httpRequest.getRequestURI();
+        String contextPath = httpRequest.getContextPath();
+        if (uri == null || contextPath == null) {
+            return false;
+        }
+        return uri.equals(contextPath + "/index.xhtml") || uri.equals(contextPath + "/index.html");
     }
 
     /**

@@ -3,14 +3,10 @@
    style declarations for cms_template_12_singleCollection.xhtml
    ==============================================================*/
 /* TPL SINGLE COLLECTION */
-/* BLOCK */
 .tpl-single-collection {
     img {
         max-width: 100%;
     }
-    h1 {
-    }
-    /* ELEMENT */
     &__image {
         position: relative;
         max-height: 400px;
@@ -25,20 +21,20 @@
             left: 0;
             margin: 0;
             padding: 1.5rem;
-            background-color: rgba(255, 255, 255, 0.75);
+            background-color: rgb(from var(--bg-surface) r g b / 75%);
         }
     }
     &__description {
         margin-bottom: 2rem;
         padding: 1.5rem;
-        color: @white;
-        background-color: @gray;
+        color: var(--fg-on-inverse);
+        background-color: var(--bg-inverse);
         a {
-            color: @blue;
+            color: var(--fg-on-inverse);
             &:hover,
             &:active,
             &:focus {
-                color: @blue;
+                color: var(--fg-on-inverse);
             }
         }
     }
@@ -49,55 +45,17 @@
             position: relative;
             right: 0;
             z-index: 20;
-            a,
-            button {
-                &:hover,
-                &:focus,
-                &:active,
-                &.active {
-                }
-            }
-            form {
-            }
-        }
-        &__hitcount,
-        &__rss,
-        &__save-search,
-        &__excel-export,
-        &__views {
-        }
-        &__hitcount {
-            // .mx-hidden;
         }
         &__rss {
             border: none;
         }
         &__save-search {
-            .mx-hidden;
-        }
-        &__excel-export {
-            a {
-            }
-            .excel-export-loader {
-                img {
-                }
-            }
-        }
-        &__views {
-            button {
-            }
-            [data-view='search-list-default'] {
-            }
-            [data-view='search-list-grid'] {
-            }
-            [data-view='search-list-list'] {
-            }
+            .mx-hidden();
         }
     }
 }
 
 /* MODIFICATION */
-
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
 }

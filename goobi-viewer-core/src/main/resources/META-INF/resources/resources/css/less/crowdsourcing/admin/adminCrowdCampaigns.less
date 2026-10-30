@@ -4,7 +4,6 @@
             margin-left: 25px;
         }
     }
-
     table {
         tr {
             &:hover {
@@ -18,41 +17,20 @@
             }
         }
     }
+}
 
-    .admin__content-inner-content__above {
-        display: flex;
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {
+}
 
-        nav {
-            margin-left: auto;
-        }
-    }
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
-    .column_statistics {
-        width: 550px;
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+}
 
-        .campaign-statistics {
-            &__text {
-                padding: 5px;
-                dl {
-                    dt {
-                        &:after {
-                        }
-                    }
-                    dd {
-                    }
-                }
-            }
-
-            &__bar {
-                progressBar {
-                }
-                .goobi-progress-bar-wrapper {
-                    .goobi-progress-bar {
-                        &__bar {
-                        }
-                    }
-                }
-            }
-        }
-    }
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
 }

@@ -99,6 +99,7 @@ class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest {
         if (lt != null && !DataManager.getInstance().getDao().deleteLicenseType(lt)) {
             logger.error("LicenseType could not be cleaned up from DB.");
         }
+        DataManager.getInstance().setClientManager(null);
         super.tearDown();
     }
 

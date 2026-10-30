@@ -58,6 +58,7 @@ import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.EpubDownloadJob;
 import io.goobi.viewer.model.job.download.PdfDownloadJob;
+import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.statistics.usage.RequestType;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
@@ -276,8 +277,9 @@ public class DownloadBean implements Serializable {
         ec.responseReset();
         ec.setResponseContentType(job.getMimeType());
         ec.setResponseHeader("Content-Length", String.valueOf(Files.size(file)));
+        boolean inline = job instanceof PdfDownloadJob && ClientApplicationManager.isClientApplicationRequest((HttpServletRequest) ec.getRequest());
         ec.setResponseHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION,
-                NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + job.getDownloadFilename() + "\"");
+                inline ? NetTools.HTTP_HEADER_VALUE_INLINE : NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + job.getDownloadFilename() + "\"");
         OutputStream os = ec.getResponseOutputStream();
         try (FileInputStream fis = new FileInputStream(file.toFile())) {
             byte[] buffer = new byte[1024];

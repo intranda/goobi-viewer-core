@@ -3,27 +3,15 @@
    style declarations for sidebar widgets
    ==============================================================*/
 /* WIDGETS */
-/* BLOcK */
 .widget {
     margin-bottom: 20px;
     width: 100%;
-    //    .icon-wrapper svg {
-    //        color: @widget-icon-color-body;
-    //    }
-
-    //    &__topbar .icon-wrapper svg,
-    //    .input-group-addon .icon-wrapper svg {
-    //        color: @widget-icon-color-topbar;
-    //    }
-    //
-    //    [class*='__collapse'] .icon-wrapper svg {
-    //        color: @widget-icon-color-expand;
-    //    }
-
+    /* BADGE ICONS */
     .badge .icon-wrapper svg,
     .icon-wrapper.icon-badge svg {
         color: currentColor;
     }
+    /* TOPBAR */
     &__topbar {
         display: flex;
         justify-content: space-between;
@@ -34,7 +22,7 @@
             cursor: pointer;
             pointer-events: all;
             .widget__topbar-icon-collapsible {
-                font-size: @fontNormal;
+                font-size: var(--font-size-body);
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
@@ -51,14 +39,18 @@
         display: none;
     }
     &__topbar-icon-svg {
-        color: @widget-icon-color-topbar;
+        color: var(--fg-brand);
     }
+    /* TITLE */
     &__title {
+        font-size: var(--font-size-heading-small);
+        line-height: var(--line-height-heading);
         margin-top: 0;
         margin-bottom: 0;
         display: flex;
     }
 
+    /* BODY */
     &__body {
         padding: 1.2rem 1.5rem;
         word-break: break-word;
@@ -67,7 +59,6 @@
         }
         a {
             display: block;
-            // padding: 0.5rem 0;
             overflow: hidden;
             text-overflow: ellipsis;
         }
@@ -100,9 +91,10 @@
         }
     }
     &__body-icon-svg {
-        color: @widget-icon-color-body;
+        color: var(--fg-default);
     }
 
+    /* DESCRIPTION TEXT */
     &__description-text {
         margin-bottom: 10px;
 
@@ -111,6 +103,7 @@
         }
     }
 
+    /* BADGE CONTAINER */
     &__badge-container {
         margin-bottom: 18px;
         display: flex;
@@ -131,17 +124,17 @@
             height: 25px;
         }
         .badge-dark {
-            color: white;
+            color: var(--fg-on-inverse);
             &:hover,
             &:active,
             &:focus {
-                background: #5e5e5e;
-                color: white;
+                background: var(--bg-inverse-hover);
+                color: var(--fg-on-inverse);
             }
         }
     }
 
-    .widget-usage__page-download-pdf,
+    /* PDF BADGES */
     .widget-downloads__page-download-pdf,
     .widget-downloads__work-download-pdf {
         line-height: 1;
@@ -159,26 +152,26 @@
         }
     }
 
+    /* BADGE CONTAINER HEADING */
     &__badge-container-heading {
         margin-bottom: 0px;
         flex: 0 0 100%;
         max-width: 100%;
-        font-size: 1.8rem;
+        font-size: var(--font-size-heading-small);
     }
 }
 
 .widget-admin {
-    background-color: @adminBackend-bg;
-    color: @white;
+    background-color: var(--bg-inverse);
+    color: var(--fg-on-inverse);
 
-    &__topbar {
-    }
-
+    /* TITLE */
     &__title {
         padding: 0.7rem 1.5rem;
         margin-bottom: 1rem;
     }
 
+    /* BODY */
     &__body {
         padding: 1rem 1.5rem;
 

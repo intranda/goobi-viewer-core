@@ -27,8 +27,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import io.goobi.viewer.controller.DateTools;
 
+@Execution(ExecutionMode.CONCURRENT)
 class UserTokenTest {
 
     /**

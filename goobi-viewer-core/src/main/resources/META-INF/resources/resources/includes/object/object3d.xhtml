@@ -1,16 +1,8 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
-    <!-- IMAGE CONTAINER -->
-
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <!-- PRELOADER STYLES -->
     <style>
         #preloader {
             display: flex;
@@ -31,6 +23,7 @@
         }
     </style>
 
+    <!-- 3D CONTAINER -->
     <div
         id="objectContainer"
         class="view-object__object-3d -setBorderTop">
@@ -62,6 +55,7 @@
                     src="#{request.contextPath}/resources/images/infinity_loader.svg" />
             </div>
         </div>
+
         <!-- ACCESS DENIED DESCRIPTION TEXT -->
         <h:panelGroup
             styleClass="view-object__access-denied-text"
@@ -77,7 +71,7 @@
         id="imageContainerMobile"
         class="view-object__image-mobile" />
 
-    <!-- 3D-Models -->
+    <!-- 3D MODELS -->
     <script
         type="text/javascript"
         src="#{request.contextPath}/resources/javascript/libs/three/three.min.js" />
@@ -115,106 +109,108 @@
         type="text/javascript"
         src="#{request.contextPath}/resources/javascript/dist/objectView.min.js" />
 
+    <!-- 3D VIEWER SCRIPT -->
     <script type="text/javascript">
-        	//<![CDATA[
-         	var worldElement = $( "#world" );
-             var objectVisible = $( "#objectContainer" ).is( ":visible" );
-             var access = #{activeDocumentBean.viewManager.currentPage.accessPermission3DObject};
-             var accessDeniedMessage = $( "<div />" ).addClass( "view-object__access-denied" ).html( '#{msg.noImage_accessDenied}' );
+        //<![CDATA[
+        var worldElement = $('#world');
+        var objectVisible = $('#objectContainer').is(':visible');
+        var access = #{activeDocumentBean.viewManager.currentPage.accessPermission3DObject};
+        var accessDeniedMessage = $('<div />').addClass('view-object__access-denied').html('#{msg.noImage_accessDenied}');
 
-             var worldConfig = {
-        		controls: {
-        		    xAxis: {
-        		        rotateLeft: '.image-rotate_left',
-        		        rotateRight: '.image-rotate_right'
-        		    },
-        		   yAxis: {
-        		        rotateLeft: '.image-controls__action.rotate-left',
-        		        rotateRight: '.image-controls__action.rotate-right'
-        		    },
-        		   zAxis: {
-        		        rotateLeft: '#rotate-left-z',
-        		        rotateRight: '#rotate-right-z'
-        		    },
-        		    position: {
-        		    	reset: '.image-reset'
-        		    },
-        		    zoom: {
-        		        resetZoom: '#reset#zoom'
-        		    }
-        		},
-          		container: {
-          			id: "world"
-          		},
-          		resourcesPath: "#{request.contextPath}/resources/javascript/libs/"
+        var worldConfig = {
+            controls: {
+                xAxis: {
+                    rotateLeft: '.image-rotate_left',
+                    rotateRight: '.image-rotate_right',
+                },
+                yAxis: {
+                    rotateLeft: '.image-controls__action.rotate-left',
+                    rotateRight: '.image-controls__action.rotate-right',
+                },
+                zAxis: {
+                    rotateLeft: '#rotate-left-z',
+                    rotateRight: '#rotate-right-z',
+                },
+                position: {
+                    reset: '.image-reset',
+                },
+                zoom: {
+                    resetZoom: '#reset#zoom',
+                },
+            },
+            container: {
+                id: 'world',
+            },
+            resourcesPath: "#{request.contextPath}/resources/javascript/libs/",
         };
 
-            	// desktop object view
-            	if ( access && objectVisible ) {
-        	var world = WorldGenerator.create(worldConfig);
-        	fetch("#{activeDocumentBean.viewManager.currentObjectUrl}/info.json")
-        	.then(resp => resp.json())
-        	.then(json => {
-        		console.log("object details: ", json);
-        		let modelSize = json.resourceSizes[json.uri];
-        		if(modelSize) {
-        			$("#objectSize").text((modelSize / 1000 / 1000).toFixed(2) + " MB")
-        		} else {
-        			// if object size unknown change all text
-        			const unknownSizeMsgKey = '#{msg.object_3d__before_load_unknown_size}';
-        		 	$("#beforeLoad").text(unknownSizeMsgKey);
-        		}
-             		world.loadingMonitor.subscribe(e => {
-              			console.log("load progress ", e);
-             			let loaded = e.loaded;
-             			let total = json.resourceSizes[e.url];
-             			let finished = total - loaded  <= 0;
-             			console.log("loaded ", loaded, " of ", total);
-             			$("#loadingProgress").attr("max", total).attr("title", e.url).val(loaded);
-             			if(total && finished) {
-             				$('#loadingProgress').hide();
-                  		$('#objectLoader').show();
-             			}
-             		});
-        	})
-             } else if ( objectVisible ) {
-                 worldElement.append( accessDeniedMessage );
-            	}
+        if (access && objectVisible) {
+            var world = WorldGenerator.create(worldConfig);
+            fetch("#{activeDocumentBean.viewManager.currentObjectUrl}/info.json")
+                .then((resp) => resp.json())
+                .then((json) => {
+                    console.log('object details: ', json);
+                    let modelSize = json.resourceSizes[json.uri];
+                    if (modelSize) {
+                        $('#objectSize').text((modelSize / 1000 / 1000).toFixed(2) + ' MB');
+                    } else {
+                        const unknownSizeMsgKey = '#{msg.object_3d__before_load_unknown_size}';
+                        $('#beforeLoad').text(unknownSizeMsgKey);
+                    }
+                    world.loadingMonitor.subscribe((e) => {
+                        console.log('load progress ', e);
+                        let loaded = e.loaded;
+                        let total = json.resourceSizes[e.url];
+                        let finished = total - loaded <= 0;
+                        console.log('loaded ', loaded, ' of ', total);
+                        $('#loadingProgress').attr('max', total).attr('title', e.url).val(loaded);
+                        if (total && finished) {
+                            $('#loadingProgress').hide();
+                            $('#objectLoader').show();
+                        }
+                    });
+                });
+        } else if (objectVisible) {
+            worldElement.append(accessDeniedMessage);
+        }
 
-            	function loadObject() {
-            		$("#startLoadButton").hide();
-            		$("#loadingProgress").show();
-            		const params = {
-         		 url: "#{activeDocumentBean.viewManager.currentObjectUrl}/info.json",
-        		 position: { x:0, y:0, z:-0 },
-        		 rotation:  { x:0, y:0, z:0 },
-        		 size:  10,
-        		 material: {
-        				color: 0x44bb33
-        			},
-        		focus: true,
-        	 }
-            		console.log("loading object with params ", params);
-        	world.loadObject(params).then(function(object) {
-               	 $('#preloader').fadeOut(2000);
-               	 $("#world canvas").show();
-        	 	world.render();
-        	 }).catch(function(error) {
-        	    $('#preloader').fadeOut(2000);
-        		 console.error("failed to load: ", error);
-        	 })
-            	}
+        function loadObject() {
+            $('#startLoadButton').hide();
+            $('#loadingProgress').show();
+            const params = {
+                url: "#{activeDocumentBean.viewManager.currentObjectUrl}/info.json",
+                position: { x: 0, y: 0, z: -0 },
+                rotation: { x: 0, y: 0, z: 0 },
+                size: 10,
+                material: {
+                    color: 0x44bb33,
+                },
+                focus: true,
+            };
+            console.log('loading object with params ', params);
+            world
+                .loadObject(params)
+                .then(function (object) {
+                    $('#preloader').fadeOut(2000);
+                    $('#world canvas').show();
+                    world.render();
+                })
+                .catch(function (error) {
+                    $('#preloader').fadeOut(2000);
+                    console.error('failed to load: ', error);
+                });
+        }
 
-             function freeJSResources(data) {
-              if(!data || data.status == 'begin') {
-               if(viewImage) {
-                   viewImage.close();
-               }
-               if(world) {
-                   world.dispose();
-               }
-              }
-          }
-           	//]]>
+        function freeJSResources(data) {
+            if (!data || data.status == 'begin') {
+                if (viewImage) {
+                    viewImage.close();
+                }
+                if (world) {
+                    world.dispose();
+                }
+            }
+        }
+        //]]>
     </script>
 </ui:composition>

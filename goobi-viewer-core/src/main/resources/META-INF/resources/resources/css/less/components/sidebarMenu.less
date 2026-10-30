@@ -7,11 +7,11 @@
     button,
     a {
         display: block;
-        color: @lowerblack;
+        color: var(--fg-secondary);
         &:hover,
         &:focus,
         &:active {
-            color: @lowerblack;
+            color: var(--fg-secondary);
         }
     }
     button {
@@ -28,19 +28,8 @@
             border-top: 4px solid\9;
             border-right: 4px solid transparent;
             border-left: 4px solid transparent;
-            vertical-align: middle;
             display: inline-block;
         }
-    }
-    ul {
-    }
-    li {
-    }
-    a {
-    }
-    span {
-    }
-    &__submenu-container {
     }
     &__submenu-button {
         &.-active {
@@ -48,16 +37,10 @@
         }
     }
     &__submenu {
-        font-size: 1.4rem;
+        font-size: var(--font-size-body-small);
         display: none;
-        ul {
-        }
-        li {
-        }
         a {
             padding-left: 1.5rem;
-        }
-        span {
         }
     }
 }

@@ -23,16 +23,20 @@ package io.goobi.viewer.model.metadata;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
+import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
 
@@ -104,5 +108,57 @@ class MetadataToolsTest extends AbstractSolrEnabledTest {
             Assertions.assertEquals("METADATA", doc.getFieldValue(SolrConstants.DOCTYPE));
             Assertions.assertEquals(iddocKleiuniv, String.valueOf(doc.getFieldValue(SolrConstants.IDDOC_OWNER)));
         }
+    }
+
+    /**
+     * @see MetadataTools#generateRIS(String, Map, Long)
+     * @verifies ignore stored NUMVOLUMES field
+     */
+    @Test
+    void generateRIS_shouldIgnoreStoredNUMVOLUMESField() throws Exception {
+        Map<String, List<String>> fields = new HashMap<>();
+        fields.put(SolrConstants.TITLE, Collections.singletonList("Some title"));
+        fields.put(SolrConstants.NUMVOLUMES, Collections.singletonList("99"));
+
+        String ris = MetadataTools.generateRIS("periodical", fields, null);
+        Assertions.assertNotNull(ris);
+        Assertions.assertTrue(ris.contains("TI  - Some title\r\n"));
+        Assertions.assertFalse(ris.contains("NV  - "));
+    }
+
+    /**
+     * @see MetadataTools#generateRIS(String, Map, Long)
+     * @verifies add NV entry for given volume count
+     */
+    @Test
+    void generateRIS_shouldAddNVEntryForGivenVolumeCount() throws Exception {
+        Map<String, List<String>> fields = new HashMap<>();
+        fields.put(SolrConstants.NUMVOLUMES, Collections.singletonList("99"));
+
+        String ris = MetadataTools.generateRIS("periodical", fields, 5L);
+        Assertions.assertNotNull(ris);
+        Assertions.assertTrue(ris.endsWith("NV  - 5\r\nER  - \r\n"));
+        Assertions.assertFalse(ris.contains("NV  - 99"));
+    }
+
+    /**
+     * @see MetadataTools#generateRIS(StructElement)
+     * @verifies use live volume count for anchors
+     */
+    @Test
+    void generateRIS_shouldUseLiveVolumeCountForAnchors() throws Exception {
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":306653648", null);
+        Assertions.assertNotNull(doc);
+        StructElement anchor = new StructElement((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
+        Assertions.assertTrue(anchor.isAnchor());
+
+        long liveCount = DataManager.getInstance()
+                .getSearchIndex()
+                .getHitCount(SolrConstants.PI_PARENT + ":\"306653648\" AND " + SolrConstants.ISWORK + ":true");
+        Assertions.assertTrue(liveCount > 0, "test index anchor must have at least one volume");
+
+        String ris = MetadataTools.generateRIS(anchor);
+        Assertions.assertNotNull(ris);
+        Assertions.assertTrue(ris.contains("NV  - " + liveCount + "\r\n"));
     }
 }

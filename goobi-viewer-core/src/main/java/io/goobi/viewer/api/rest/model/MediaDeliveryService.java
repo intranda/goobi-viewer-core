@@ -43,6 +43,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 
 /**
  * Service class that handles HTTP file delivery with support for byte-range requests, conditional caching headers (ETag, If-Modified-Since), and
@@ -131,12 +133,17 @@ public class MediaDeliveryService {
             String accept = request.getHeader("Accept");
             disposition = accept != null && accepts(accept, contentType) ? "inline" : "attachment";
         }
+        // Client applications get a plain inline disposition without file name for PDFs, see NetTools#HTTP_HEADER_VALUE_INLINE
+        boolean plainInline = "application/pdf".equals(mimeType) && ClientApplicationManager.isClientApplicationRequest(request);
+        if (plainInline) {
+            disposition = NetTools.HTTP_HEADER_VALUE_INLINE;
+        }
         if (acceptsGzip) {
             response.setHeader("Content-Encoding", "gzip");
         }
 
         // Initialize response.
-        initResponse(response, fileName, lastModified, eTag, disposition);
+        initResponse(response, plainInline ? null : fileName, lastModified, eTag, disposition);
 
         // Send requested file (part(s)) to client ------------------------------------------------
 
@@ -217,7 +224,7 @@ public class MediaDeliveryService {
      * payload is streamed.
      *
      * @param response HTTP response to initialize with caching and content headers
-     * @param fileName name of the file being served, used in Content-Disposition header
+     * @param fileName name of the file being served, used in Content-Disposition header; if null, no file name is added
      * @param lastModified last-modified timestamp of the file in milliseconds
      * @param eTag unique entity tag string for cache validation
      * @param disposition content disposition value, either "inline" or "attachment"
@@ -238,7 +245,7 @@ public class MediaDeliveryService {
         // wrapper chain when the response is already committed. Neither call can recover a
         // response that has already been committed further up the filter chain, so the pragmatic
         // fix is to drop both and let the container manage buffering.
-        response.setHeader("Content-Disposition", disposition + ";filename=\"" + fileName + "\"");
+        response.setHeader("Content-Disposition", fileName == null ? disposition : disposition + ";filename=\"" + fileName + "\"");
         response.setHeader("Accept-Ranges", "bytes");
         response.setHeader("ETag", eTag);
         response.setDateHeader("Last-Modified", lastModified);

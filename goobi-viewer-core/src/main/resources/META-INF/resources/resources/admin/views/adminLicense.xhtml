@@ -7,7 +7,6 @@
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
@@ -37,9 +36,7 @@
                                     rendered="#{adminLicenseBean.currentLicenseType.id != null}" />
                             </h1>
                         </div>
-
                         <viewerComponent:adminBreadcrumbs />
-
                         <div class="admin__content-inner-content">
                             <h2>#{msg.general}</h2>
                             <div class="admin__default-block">
@@ -72,7 +69,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <h2>#{msg.admin__license_placeholders}</h2>
                             <h:panelGroup
                                 layout="block"
@@ -82,16 +78,11 @@
                                         object="#{adminLicenseBean.currentLicenseType}"
                                         render="placeholderGroup" />
                                 </div>
-
                                 <div class="admin__default-block">
                                     <ui:param
                                         name="language"
                                         value="de" />
                                     <div id="nameLanguage-#{adminLicenseBean.currentLicenseType.selectedLocale}">
-                                        <!--                                 <div class="form-group form-row"> -->
-                                        <!--                                     #{msg.admin__license_placeholder_image_desc} -->
-                                        <!--                                 </div> -->
-
                                         <!-- IMAGE SELECTION -->
                                         <div class="form-group form-row">
                                             <h:panelGroup
@@ -122,7 +113,6 @@
                                                         </h:selectOneRadio>
                                                     </div>
                                                 </div>
-
                                                 <h:panelGroup
                                                     layout="block"
                                                     styleClass="admin__cms-edit-collection-wrapper-choose-image"
@@ -135,7 +125,6 @@
                                                             src="#{request.contextPath}#{navigationHelper.getResource('images/access_denied.png')}" />
                                                     </div>
                                                 </h:panelGroup>
-
                                                 <h:panelGroup
                                                     layout="block"
                                                     styleClass="admin__cms-edit-collection-wrapper-choose-image"
@@ -346,7 +335,6 @@
                                             </div>
                                         </div>
                                     </div>
-
                                     <div
                                         class="#{!adminLicenseBean.currentLicenseType.redirect ? '-licenceHidden' : ''}"
                                         data-target-redirect="input">
@@ -355,8 +343,6 @@
                                                 <label for="placeholderDesc">#{msg.admin__highlights__target_type_url}:</label>
                                             </div>
                                             <div class="col-9 admin__form-input cms-module__option-control mt-2 mb-3">
-                                                <!-- VALIDATOR HAS TO BE REWORKED/EXTENDED TO CHECK FOR VALID URL PATTERNS -->
-
                                                 <h:message
                                                     for="redirectUrl"
                                                     errorClass="-validation-message -danger" />
@@ -377,14 +363,12 @@
                                                     validator="URISyntaxValidator"
                                                     validator_requireAbsoluteURI="true"
                                                     validator_active="#{adminLicenseBean.currentLicenseType.redirect}">
-                                                    <!-- 												<f:ajax event="valueChange" render="urlInputGroup"/> -->
-                                                    <!-- required="#{adminLicenseBean.currentLicenseType.redirect}" -->
+                                                    <!-- NO CHILDREN -->
                                                 </h:inputText>
                                             </div>
                                         </div>
                                     </div>
                                 </h:panelGroup>
-
                                 <h:panelGroup id="functionsGroup">
                                     <div
                                         class="admin__license-functions #{adminLicenseBean.currentLicenseType.redirect or adminLicenseBean.currentLicenseType.openAccess ? '-licenceHidden' : ''}"
@@ -415,7 +399,8 @@
                                                                 jsf:action="#{adminLicenseBean.currentLicenseType.removePrivilege(priv)}"
                                                                 title="#{msg.remove}">
                                                                 <span>#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</span>
-                                                                <!-- remove button -->
+
+                                                                <!-- REMOVE BUTTON -->
                                                                 <util:icon icon="trash" />
                                                             </button>
                                                         </c:otherwise>
@@ -431,7 +416,6 @@
                                                     <util:icon icon="help" />
                                                 </button>
                                             </div>
-
                                             <div class="col-2" />
                                             <div class="col-10 pb-1">#{msg.admin__license_functions_available}</div>
                                             <div class="col-2" />
@@ -444,7 +428,7 @@
                                                         jsf:action="#{adminLicenseBean.currentLicenseType.addPrivilege(priv)}"
                                                         title="#{msg.add}">
                                                         #{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}
-                                                        <!-- add button -->
+                                                        <!-- ADD BUTTON -->
                                                         <util:icon icon="plus" />
                                                     </button>
                                                 </c:forEach>
@@ -459,24 +443,13 @@
                                         </div>
 
                                         <!-- CONCURRENT VIEWS LIMIT -->
-                                        <ui:fragment
-                                            rendered="#{adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name) > 0}">
+                                        <ui:fragment rendered="#{adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name) > 0}">
                                             <div class="form-group form-row mb-3">
                                                 <div class="col-2" />
                                                 <h:panelGroup
                                                     id="pdf_concurrent_views_limit_info_box"
                                                     layout="block"
                                                     styleClass="col-9">
-                                                    <!-- No records found -->
-                                                    <!--                                             <ui:fragment -->
-                                                    <!--                                                 rendered="#{adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name) == 0}"> -->
-                                                    <!--                                                     <div class="admin__default-block mb-0 -info-box"> -->
-                                                    <!--                                                         <h:outputFormat value="#{msg.admin__license_concurrent_views_limit_record_count_nok}" escape="false"> -->
-                                                    <!--                                                             <f:param value="#{adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name)}" /> -->
-                                                    <!--                                                         </h:outputFormat> -->
-                                                    <!--                                                     </div> -->
-                                                    <!--                                             </ui:fragment> -->
-                                                    <!-- Yes, records found -->
                                                     <ui:fragment
                                                         rendered="#{adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name) > 0}">
                                                         <div class="admin__default-block mb-0 -success-box">
@@ -523,8 +496,7 @@
                                         </ui:fragment>
 
                                         <!-- PDF DOWNLOAD QUOTA -->
-                                        <ui:fragment
-                                            rendered="#{adminLicenseBean.getPdfQuotaRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name) > 0}">
+                                        <ui:fragment rendered="#{adminLicenseBean.getPdfQuotaRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name) > 0}">
                                             <div class="form-group form-row mb-3">
                                                 <div class="col-2" />
                                                 <h:panelGroup
@@ -543,7 +515,6 @@
                                                             </h:outputFormat>
                                                         </div>
                                                     </ui:fragment>
-
                                                     <ui:fragment
                                                         rendered="#{adminLicenseBean.currentLicenseType.hasPrivilegeCopy('DOWNLOAD_PDF') or adminLicenseBean.currentLicenseType.hasPrivilegeCopy('DOWNLOAD_PAGE_PDF')}">
                                                         <div class="admin__default-block mb-0 -success-box">
@@ -596,7 +567,6 @@
 
                             <!-- OVERRIDING LICENSES -->
                             <h2>#{msg.admin__license_overriding__overridden_licenses}</h2>
-
                             <div class="admin__default-block">
                                 <div class="form-group form-row">#{msg.admin__license_overriding__help}</div>
                                 <div class="form-group form-row">
@@ -621,7 +591,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="admin__final-actions">
                                 <h:commandLink
                                     action="pretty:adminLicenses"
@@ -636,8 +605,8 @@
                             </div>
                         </div>
 
+                        <!-- LICENCE TOGGLE INIT -->
                         <script>adminJS.licenceToggle.init();</script>
-
                         <h:panelGroup id="mediaSelectPanel">
                             <ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
                                 <div class="admin-cms-media-select-overlay">

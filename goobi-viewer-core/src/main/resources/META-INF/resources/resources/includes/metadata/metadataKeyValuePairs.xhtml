@@ -4,17 +4,10 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
     <ui:param
         name="metadata"
         value="#{metadata}" />
-
     <c:forEach
         items="#{metadata.values}"
         var="val">
@@ -25,11 +18,10 @@
                         value="#{msg[val.label]}"
                         escape="false" />
                 </h3>
-
                 <div class="metadata__element-wrapper">
                     <div class="metadata__element-level-#{metadata.indentation}">
                         <dl class="dl-horizontal metadata__element-dl metadata__key-value-pairs-list">
-                            <!-- Metadata value -->
+                            <!-- METADATA VALUE -->
                             <c:forEach
                                 begin="0"
                                 end="#{metadata.paramCount - 0}"
@@ -60,7 +52,7 @@
                 </div>
             </div>
 
-            <!-- Nested child metadata -->
+            <!-- CHILD METADATA -->
             <c:forEach
                 var="child"
                 items="#{val.childMetadata}">

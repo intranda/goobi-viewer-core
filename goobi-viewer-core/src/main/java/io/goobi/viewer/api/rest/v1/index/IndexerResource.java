@@ -23,6 +23,8 @@ package io.goobi.viewer.api.rest.v1.index;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEXER;
 
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -99,25 +101,7 @@ public class IndexerResource {
             DataManager.getInstance().setIndexerVersion(new ObjectMapper().writeValueAsString(params));
             DataManager.getInstance().setHotfolderFileCount(params.getHotfolderFileCount());
             if (params.getRecordIdentifiers() != null && !params.getRecordIdentifiers().isEmpty()) {
-                StringBuilder sb = new StringBuilder();
-                for (String pi : params.getRecordIdentifiers()) {
-                    logger.trace("Received PI: {}", pi);
-                    sb.append(pi).append(" ");
-                }
-                String identifierString = sb.toString().trim();
-                try {
-                    if (RefreshArchiveTreeHandler.hasArchiveAssociatedRecords(identifierString)) {
-                        ViewerMessage message =
-                                new ViewerMessage(TaskType.REFRESH_ARCHIVE_TREE.name());
-                        message.getProperties().put(
-                                RefreshArchiveTreeHandler.PARAMETER_IDENTIFIERS,
-                                identifierString);
-                        mqm.addToQueue(message);
-                    }
-                } catch (PresentationException | IndexUnreachableException e) {
-                    logger.warn("Could not check for archive-associated records: {}",
-                            e.getMessage());
-                }
+                queueArchiveTreeRefresh(params.getRecordIdentifiers());
             }
             AdminBean ab = BeanUtils.getAdminBean();
             if (ab != null) {
@@ -130,6 +114,41 @@ public class IndexerResource {
         } catch (JsonProcessingException e) {
             logger.error(e.getMessage());
             throw new IllegalRequestException("Cannot parse request body to json ", e);
+        }
+    }
+
+    /**
+     * Makes sure the archive trees associated with the given (re)indexed records are refreshed. The indexer calls this once per indexed record,
+     * so while a refresh task is queued and has not started yet, the identifiers are only added to it instead of checking the index and
+     * queueing another task for every record.
+     *
+     * @param identifiers Identifiers of (re)indexed records
+     * @throws MessageQueueException
+     */
+    void queueArchiveTreeRefresh(List<String> identifiers) throws MessageQueueException {
+        String identifierString = String.join(" ", identifiers).trim();
+        logger.trace("Received PI(s): {}", identifierString);
+        try {
+            if (!RefreshArchiveTreeHandler.isRefreshQueued() && !RefreshArchiveTreeHandler.hasArchiveAssociatedRecords(identifierString)) {
+                return;
+            }
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.warn("Could not check for archive-associated records: {}", e.getMessage());
+            return;
+        }
+        if (!RefreshArchiveTreeHandler.addPendingIdentifiers(identifiers)) {
+            // A queued refresh task will also handle these identifiers
+            return;
+        }
+        boolean queued = false;
+        try {
+            mqm.addToQueue(new ViewerMessage(TaskType.REFRESH_ARCHIVE_TREE.name()));
+            queued = true;
+        } finally {
+            if (!queued) {
+                // Allow the next request to queue a task
+                RefreshArchiveTreeHandler.resetRefreshQueued();
+            }
         }
     }
 }

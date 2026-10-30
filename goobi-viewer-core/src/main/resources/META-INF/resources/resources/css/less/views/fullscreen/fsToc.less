@@ -9,7 +9,7 @@
             background-color: transparent;
             h2,
             .h2 {
-                .mx-hidden;
+                .mx-hidden();
             }
         }
         &__topbar {
@@ -19,18 +19,15 @@
         &__title-expand {
             a,
             button {
-                color: @black;
+                color: var(--fg-default);
                 &:hover,
                 &:active,
                 &:focus {
-                    color: @black;
+                    color: var(--fg-default);
                     text-decoration: none;
-                }
-                &:first-child {
                 }
             }
         }
-        /* ELEMENTS */
         &__elements {
             max-height: inherit;
             border: 0;
@@ -42,38 +39,6 @@
         }
         &__element {
             margin-bottom: 6px;
-            &:hover {
-            }
-            &.parent {
-            }
-            &.child {
-            }
-            &.active {
-            }
-        }
-        &__element-expand {
-        }
-        &__element-link {
-            &.has-pagenumber {
-            }
-            &.non-tree-view {
-                &.has-pagenumber {
-                }
-            }
-            &.active {
-                a {
-                }
-            }
-        }
-        &__element-pagenumber {
-        }
-        /* LOADING */
-        &__loader,
-        &__overlay {
-        }
-        &__loader {
-        }
-        &__overlay {
         }
     }
 }

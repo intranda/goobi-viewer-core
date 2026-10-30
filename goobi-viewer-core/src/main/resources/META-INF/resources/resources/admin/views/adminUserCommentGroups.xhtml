@@ -5,8 +5,6 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
@@ -27,6 +25,7 @@
                         class="admin__title-bar">
                         <!-- TITLE -->
                         <h1 class="admin__title">#{msg.admin__comment_groups_title}</h1>
+
                         <!-- CREATE NEW COMMENT GROUP -->
                         <ui:fragment rendered="#{userBean.admin}">
                             <a
@@ -36,9 +35,7 @@
                             </a>
                         </ui:fragment>
                     </div>
-
                     <viewerComponent:adminBreadcrumbs />
-
                     <div class="admin__content-inner-content">
                         <!-- INFO TEXT -->
                         <div class="admin__info-text">
@@ -68,7 +65,6 @@
                                 </div>
                             </h:form>
                         </div>
-
                         <div
                             id="userCommentGroups"
                             class="admin__comments-functionality-wrapper -toggle-comments-functions">
@@ -148,6 +144,7 @@
             </div>
         </h:panelGroup>
 
+        <!-- DATA TABLE AND NO ENTRIES SCRIPT -->
         <script type="text/javascript">
             $(document).ready(function () {
                 var dataTableConfig = {
@@ -161,12 +158,8 @@
                 viewerJS.dataTable.init(dataTableConfig);
             });
 
-            // Create no entries found message
             if ($('.admin__table-entry').length == 0) {
-                $('.admin__table-content').append('
-            <br />
-            <p>#{msg.hitsZero}</p>
-            ');
+                $('.admin__table-content').append(document.createElement('br'), $(document.createElement('p')).text(#{navigationHelper.getTranslationsAsJson(['hitsZero'])}.hitsZero));
             }
         </script>
     </ui:define>

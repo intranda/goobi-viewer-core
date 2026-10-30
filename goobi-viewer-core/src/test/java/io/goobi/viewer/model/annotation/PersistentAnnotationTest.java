@@ -27,6 +27,7 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -221,7 +222,7 @@ class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         Assertions.assertEquals(webAnno.getTarget(), fromDAOWebAnno.getTarget());
         Assertions.assertEquals(webAnno, fromDAOWebAnno);
 
-        LocalDateTime changed = DateTools.now();
+        LocalDateTime changed = DateTools.now().truncatedTo(ChronoUnit.MILLIS);
         fromDAO.setDateModified(changed);
         Assertions.assertNotNull(DataManager.getInstance().getDao().updateAnnotation(fromDAO));
 

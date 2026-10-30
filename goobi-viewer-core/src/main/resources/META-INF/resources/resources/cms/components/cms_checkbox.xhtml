@@ -2,9 +2,6 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:t="http://myfaces.apache.org/tomahawk"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <composite:interface>
@@ -33,7 +30,6 @@
                     id="input"
                     value="#{cc.attrs.field}"
                     onclick="#{cc.attrs.onclick}" />
-
                 <span class="cms-module__option-control-helptext">#{cc.attrs.help}</span>
             </div>
             <div class="cms-module__option-help">

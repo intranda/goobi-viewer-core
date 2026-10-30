@@ -3,17 +3,9 @@
    style declarations for sitemap.xhtml
    ==============================================================*/
 /* SITEMAP */
-/* BLOCK */
 .view-sitemap {
-    /* ELEMENT */
-    &__heading {
-    }
-
     &__nav {
         margin-bottom: 30px;
-
-        &-heading {
-        }
     }
 
     &__list {
@@ -21,22 +13,15 @@
         margin: 0;
         padding-left: 0;
 
-        /* indent nested levels relative to their own parent list so the indentation
-           compounds automatically with depth, without hardcoding a level count */
+        /* NESTED LEVELS */
         .view-sitemap__list {
             padding-left: 15px;
 
-            /* mark submenu entries (depth 2+) as such, since the indentation alone can be subtle */
+            /* SUBMENU MARKER */
             .view-sitemap__list-link::before {
                 content: '- ';
             }
         }
-    }
-
-    &__list-item {
-    }
-
-    &__list-link {
     }
 }
 

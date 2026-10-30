@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<component>
+    <jsfComponent>
+        <library>cms/components/frontend/component</library>
+        <name>discoverypaths</name>
+    </jsfComponent>
+    <label>cms_component__discovery_paths__label</label>
+    <description>cms_component__discovery_paths__desc</description>
+    <type>layout</type>
+
+    <content>
+        <item id="eyebrow">
+            <label>cms_component__discovery_paths__eyebrow</label>
+            <className>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</className>
+            <jsfComponent>
+                <library>cms/components/backend/content</library>
+                <name>text</name>
+            </jsfComponent>
+        </item>
+        <item id="heading">
+            <label>cms_component__discovery_paths__heading</label>
+            <className>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</className>
+            <jsfComponent>
+                <library>cms/components/backend/content</library>
+                <name>text</name>
+            </jsfComponent>
+        </item>
+        <item id="introduction">
+            <label>cms_component__discovery_paths__introduction</label>
+            <className>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</className>
+            <jsfComponent>
+                <library>cms/components/backend/content</library>
+                <name>text</name>
+            </jsfComponent>
+        </item>
+        <item id="title1">
+            <label>cms_component__discovery_paths__title1</label>
+            <className>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</className>
+            <jsfComponent>
+                <library>cms/components/backend/content</library>
+                <name>text</name>
+            </jsfComponent>
+        </item>
+        <item id="description1">
+            <label>cms_component__discovery_paths__description1</label>
+            <className>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</className>
+            <jsfComponent>
+                <library>cms/components/backend/content</library>
+                <name>text</name>
+            </jsfComponent>
+        </item>
+        <item id="link1">
+            <label>cms_component__discovery_paths__link1</label>
+            <className>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</className>
+            <jsfComponent>
+                <library>cms/components/backend/content</library>
+                <name>text</name>
+            </jsfComponent>
+        </item>
+        <item id="title2">
+            <label>cms_component__discovery_paths__title2</label>
+            <className>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</className>
+            <jsfComponent>
+                <library>cms/components/backend/content</library>
+                <name>text</name>
+            </jsfComponent>
+        </item>
+        <item id="description2">
+            <label>cms_component__discovery_paths__description2</label>
+            <className>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</className>
+            <jsfComponent>
+                <library>cms/components/backend/content</library>
+                <name>text</name>
+            </jsfComponent>
+        </item>
+        <item id="link2">
+            <label>cms_component__discovery_paths__link2</label>
+            <className>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</className>
+            <jsfComponent>
+                <library>cms/components/backend/content</library>
+                <name>text</name>
+            </jsfComponent>
+        </item>
+        <item id="title3">
+            <label>cms_component__discovery_paths__title3</label>
+            <className>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</className>
+            <jsfComponent>
+                <library>cms/components/backend/content</library>
+                <name>text</name>
+            </jsfComponent>
+        </item>
+        <item id="description3">
+            <label>cms_component__discovery_paths__description3</label>
+            <className>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</className>
+            <jsfComponent>
+                <library>cms/components/backend/content</library>
+                <name>text</name>
+            </jsfComponent>
+        </item>
+        <item id="link3">
+            <label>cms_component__discovery_paths__link3</label>
+            <className>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</className>
+            <jsfComponent>
+                <library>cms/components/backend/content</library>
+                <name>text</name>
+            </jsfComponent>
+        </item>
+    </content>
+
+    <attribute
+        name="hideOnScreenSizes"
+        type="toggle">
+        <value label="Hide on desktop">hideDesktop</value>
+        <value label="Hide on mobile">hideMobile</value>
+    </attribute>
+</component>

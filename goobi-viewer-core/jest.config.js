@@ -108,7 +108,7 @@ module.exports = {
             displayName: 'build-assets',
             testEnvironment: 'node',
             rootDir: repoRoot,
-            testMatch: ['<rootDir>/goobi-viewer-core/gulp/__tests__/**/*.test.js'],
+            testMatch: ['<rootDir>/goobi-viewer-core/gulp/**/__tests__/**/*.test.js'],
         },
         {
             // ES-module project for all src/.../modules/**/*.mjs sources (media,

@@ -1,24 +1,26 @@
 /* ==============================================================
-   Thumbnail paginator
-   Style declarations for thumbnailPaginator.xhtml
+   Sidebar scroll preview
+   style declarations for sidebarScrollPreview.xhtml
    ==============================================================*/
 
-/* THUMBNAIL PAGINATOR */
+/* SIDEBAR SCROLL PREVIEW */
 
 .sidebar-scroll-preview {
     position: relative;
+    /* INNER */
     &__inner {
         position: absolute;
         width: 100%;
         height: 100%;
     }
+    /* GRID */
     &__grid {
         position: relative;
         height: 100%;
         display: grid;
         grid-template-columns: 1fr;
-        gap: 3px;
-        padding-inline-start: 11px;
+        gap: 8px;
+        padding: 16px 16px 16px 11px;
         .simplebar-track {
             right: unset;
             left: 0;
@@ -29,23 +31,24 @@
             }
         }
     }
+    /* ITEM */
     &__item {
         min-width: 0;
         max-width: 100%;
     }
+    /* BUTTON */
     &__button,
     &__link {
         width: 100%;
         background: transparent;
         border: none;
-        padding: 4px;
+        padding: 0;
         display: flex;
         flex-direction: column;
         max-width: 100%;
         overflow: hidden;
-        color: #212529;
+        color: var(--fg-default);
         text-align: center;
-        margin-bottom: 2px;
         &:hover {
             .sidebar-scroll-preview__image {
                 transform: scale(1.08);
@@ -57,16 +60,20 @@
             text-decoration: none;
         }
         &.-highlighted {
-            outline: 3px solid #a3f97c;
-            outline-offset: -3px;
             pointer-events: none;
+            .sidebar-scroll-preview__image-wrapper {
+                outline: 2px solid var(--color-scroll-marker);
+                outline-offset: 2px;
+            }
+            .sidebar-scroll-preview__button-text {
+                font-weight: 600;
+            }
         }
     }
     &__button-text {
         max-width: 100%;
         white-space: nowrap;
-        margin: 0.4rem 0;
-        margin-top: 0.7rem;
+        margin: 0.6rem 0 0;
         text-overflow: ellipsis;
         display: block;
         overflow: hidden;
@@ -74,9 +81,9 @@
         word-wrap: anywhere;
         word-break: break-all;
     }
+    /* IMAGE */
     &__image-wrapper {
         width: 100%;
-        // overflow: hidden;
     }
     &__image {
         display: block;
@@ -94,6 +101,7 @@
     }
 }
 
+/* RTL */
 @{RTL} {
     .sidebar-scroll-preview {
         &__grid {
@@ -105,25 +113,25 @@
     }
 }
 
-// FULLSCREEN STYLES
+/* FULLSCREEN */
 .fullscreen {
     .sidebar-scroll-preview {
         padding-top: 80px;
         width: 200px;
-		height: calc(~'100vh - 50px');
-		position: absolute;
-		top:0;
-		left: 0;
-		background-color: rgba(0,0,0,0.7);
+        height: calc(~'100vh - 50px');
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: rgb(from var(--shadow-color) r g b / 70%);
         &__button {
-            color: white;
+            color: var(--fg-on-inverse);
         }
         .simplebar-scrollbar::before {
-            background: white;
+            background: var(--bg-surface);
         }
-		&__inner {
-			height: calc(100% - 80px);
-		}
+        &__inner {
+            height: calc(100% - 80px);
+        }
     }
 }
 

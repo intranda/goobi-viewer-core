@@ -1,15 +1,12 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    xmlns:jsf="http://xmlns.jcp.org/jsf">
     <composite:interface />
 
     <composite:implementation>
@@ -22,7 +19,6 @@
                 tabindex="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'citation') ? '0' : ''}"
                 role="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'citation') ? 'button' : ''}">
                 <h2 class="widget__title widget-citation__title">#{msg.widget_citation}</h2>
-
                 <div class="widget__topbar-icons-container">
                     <div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
                         <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
@@ -123,7 +119,6 @@
                         class="widget-citation__subtitle widget__badge-container-heading">
                         #{msg.widget__citation__this_page}
                     </h3>
-
                     <ui:repeat
                         rendered="#{!activeDocumentBean.viewManager.doublePageMode and displayConditions.matchRecord('{docType:[record], numPages:1}')}"
                         var="link"
@@ -177,6 +172,7 @@
                     <script>viewerJS.clipboard.init();</script>
                 </div>
 
+                <!-- CITATION RECOMMENDATION -->
                 <viewerComponent:citationRecommendation
                     visibility-class="widget-element"
                     rendered="#{(configurationBean.displaySidebarWidgetUsageCitationRecommendation and fn:length(activeDocumentBean.viewManager.citationStringHtml) > 0)}" />

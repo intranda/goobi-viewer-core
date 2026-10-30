@@ -23,8 +23,11 @@ package io.goobi.viewer.model.archives;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,10 +35,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.client.solrj.response.FacetField;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
@@ -70,13 +79,25 @@ public class SolrEADParser extends ArchiveParser {
             SolrConstants.IDDOC_PARENT, FIELD_ARCHIVE_ENTRY_LEVEL, FIELD_ARCHIVE_ENTRY_OTHERLEVEL, SolrConstants.LOGID, SolrConstants.PI_TOPSTRUCT,
             SolrConstants.TITLE };
 
-    private Map<String, Map<String, List<SolrDocument>>> archiveDocMap = new HashMap<>();
-    /** Map of IDDOCs and their parent IDDOCs. */
-    private Map<String, String> parentIddocMap = new HashMap<>();
-    /** Map of IDDOCs and loaded ArchiveEntry nodes. */
-    private Map<String, ArchiveEntry> loadedNodeMap = new HashMap<>();
-    /** Tracks EAD_NODE_ID values seen during the current loadDatabase() call to detect duplicates. */
-    private final Set<String> seenNodeIds = new HashSet<>();
+    private static final List<String> SOLR_FIELDS_PATH = Arrays.asList(SolrConstants.IDDOC, SolrConstants.IDDOC_PARENT);
+    /** Maximum number of search hits in not yet loaded nodes for which the tree path is loaded. */
+    static final int MAX_UNPARSED_SEARCH_HITS = 100;
+    /**
+     * Maximum number of nodes loaded by one search in not yet loaded nodes. Loading the path to a hit loads every level along it in full, so a
+     * broad search could otherwise load (almost) the entire archive.
+     */
+    static final int MAX_NODES_LOADED_PER_SEARCH = 200_000;
+    /** Minimum length of a search term to also match it as a word prefix. */
+    static final int MIN_WILDCARD_TERM_LENGTH = 3;
+    /** Maximum supported tree depth when loading the path to a node (guards against loops in the IDDOC_PARENT hierarchy). */
+    private static final int MAX_TREE_DEPTH = 100;
+
+    /** Solr docs of eagerly loaded archives: archive PI -> parent IDDOC -> child docs. */
+    private final Map<String, Map<String, List<SolrDocument>>> archiveDocMap = new ConcurrentHashMap<>();
+    /** Child counts of archives that are loaded on demand: archive PI -> parent IDDOC -> number of children. */
+    private final Map<String, Map<String, Integer>> onDemandChildCounts = new ConcurrentHashMap<>();
+    /** Tracks EAD_NODE_ID values seen since the last loadDatabase() call to detect duplicates. */
+    private final Set<String> seenNodeIds = ConcurrentHashMap.newKeySet();
 
     /**
      * Gets the database names.
@@ -135,13 +156,17 @@ public class SolrEADParser extends ArchiveParser {
     }
 
     /**
-     * Loads the given database and parses the EAD document.
+     * Loads the given database and parses the EAD document. Archives with fewer nodes than the given threshold are loaded entirely in one
+     * query. Larger archives are loaded on demand: only the root and its children are built here, deeper levels are loaded from Solr when they
+     * are expanded, selected or found by a search.
      *
      * @param database the archive resource to load
-     * @param lazyLoadingThreshold minimum tree size to switch to lazy loading
+     * @param lazyLoadingThreshold minimum tree size to switch to on-demand loading
      * @return Root element of the loaded tree
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @should load entire tree if below threshold
+     * @should only load root and its children if at or above threshold
      */
     @Override
     public ArchiveEntry loadDatabase(ArchiveResource database, int lazyLoadingThreshold) throws PresentationException, IndexUnreachableException {
@@ -149,58 +174,90 @@ public class SolrEADParser extends ArchiveParser {
             throw new IllegalArgumentException("database may not be null");
         }
 
-        logger.trace("loadDatabase: {}", database.getResourceId());
+        String pi = database.getResourceId();
+        logger.trace("loadDatabase: {}", pi);
         seenNodeIds.clear();
         List<String> solrFields = getSolrFields();
-        SolrDocument topDoc =
-                DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":\"" + database.getResourceId() + '"', solrFields);
-        if (topDoc != null) {
-            String query = "+" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name() + " +" + SolrConstants.PI_TOPSTRUCT + ":\""
-                    + database.getResourceId() + "\" -" + SolrConstants.PI + ":\"" + database.getResourceId() + '"';
-            logger.trace("archive query: {}", query); //NOSONAR Debug
-            SolrDocumentList archiveDocs = DataManager.getInstance()
-                    .getSearchIndex()
-                    .search(query, SolrSearchIndex.MAX_HITS,
-                            Arrays.asList(new StringPair(SolrConstants.IDDOC_PARENT, "asc"), new StringPair(FIELD_ARCHIVE_ORDER, "asc")), solrFields);
-            logger.trace("Loaded {} archive docs.", archiveDocs.size());
-
-            Map<String, List<SolrDocument>> resourceArchiveDocMap = new HashMap<>();
-            archiveDocMap.put(database.getResourceId(), resourceArchiveDocMap);
-
-            // Add all Solr docs for this archive to map
-            for (SolrDocument doc : archiveDocs) {
-                String iddocParent = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC_PARENT);
-                if (iddocParent != null) {
-                    List<SolrDocument> docList = resourceArchiveDocMap.computeIfAbsent(iddocParent, k -> new ArrayList<>());
-                    docList.add(doc);
-                    parentIddocMap.put(SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC), iddocParent);
-                }
-            }
-            try {
-                boolean recursion = archiveDocs.size() < lazyLoadingThreshold;
-                if (!recursion) {
-                    logger.debug("Using lazy loading due to the archive tree size ({} nodes).", archiveDocs.size());
-                }
-                return loadNode(0, 0, topDoc, null, recursion);
-            } finally {
-                logger.trace("Database loaded.");
-            }
+        SolrDocument topDoc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + quote(pi), solrFields);
+        if (topDoc == null) {
+            return null;
         }
 
-        return null;
+        String query = getArchiveNodesQuery(pi);
+
+        // Count the nodes and determine which nodes have children (and how many) without fetching any node documents
+        QueryResponse facetResponse = DataManager.getInstance()
+                .getSearchIndex()
+                .searchFacetsAndStatistics(query, null, Collections.singletonList(SolrConstants.IDDOC_PARENT), 1, false);
+        long nodeCount = facetResponse.getResults().getNumFound();
+        if (nodeCount >= lazyLoadingThreshold) {
+            logger.debug("Loading archive tree '{}' on demand due to its size ({} nodes).", pi, nodeCount);
+            Map<String, Integer> childCounts = new HashMap<>();
+            FacetField facetField = facetResponse.getFacetField(SolrConstants.IDDOC_PARENT);
+            if (facetField != null && facetField.getValues() != null) {
+                for (FacetField.Count value : facetField.getValues()) {
+                    childCounts.put(value.getName(), (int) value.getCount());
+                }
+            }
+            archiveDocMap.remove(pi);
+            onDemandChildCounts.put(pi, childCounts);
+            // Root children are always loaded by loadNode()
+            return loadNode(0, 0, topDoc, false);
+        }
+
+        logger.trace("archive query: {}", query); //NOSONAR Debug
+        SolrDocumentList archiveDocs = DataManager.getInstance()
+                .getSearchIndex()
+                .search(query, SolrSearchIndex.MAX_HITS,
+                        Arrays.asList(new StringPair(SolrConstants.IDDOC_PARENT, "asc"), new StringPair(FIELD_ARCHIVE_ORDER, "asc")), solrFields);
+        logger.trace("Loaded {} archive docs.", archiveDocs.size());
+
+        // Add all Solr docs for this archive to map
+        Map<String, List<SolrDocument>> resourceArchiveDocMap = new HashMap<>();
+        for (SolrDocument doc : archiveDocs) {
+            String iddocParent = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC_PARENT);
+            if (iddocParent != null) {
+                resourceArchiveDocMap.computeIfAbsent(iddocParent, k -> new ArrayList<>()).add(doc);
+            }
+        }
+        onDemandChildCounts.remove(pi);
+        archiveDocMap.put(pi, resourceArchiveDocMap);
+        try {
+            return loadNode(0, 0, topDoc, true);
+        } finally {
+            logger.trace("Database loaded.");
+        }
     }
 
     /**
+     * @param pi Archive PI
+     * @return Solr query matching all nodes of the given archive except its root
+     */
+    private static String getArchiveNodesQuery(String pi) {
+        return "+" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name() + " +" + SolrConstants.PI_TOPSTRUCT + ":" + quote(pi) + " -"
+                + SolrConstants.PI + ":" + quote(pi);
+    }
+
+    /**
+     * @param pi Archive PI
+     * @return true if the archive with the given PI is loaded on demand; false otherwise
+     */
+    boolean isLoadedOnDemand(String pi) {
+        return pi != null && onDemandChildCounts.containsKey(pi);
+    }
+
+    /**
+     * Creates an {@link ArchiveEntry} for the given Solr document. The children of the root node (hierarchy 0) are always loaded.
+     *
      * @param order position of this node within its parent's children
      * @param hierarchy depth level of this node in the tree
      * @param doc Solr document representing this archive entry
-     * @param loadPath set of IDDOCs on the path to the search hit to load
      * @param loadChildrenRecursively if true, child nodes are loaded recursively
      * @return {@link ArchiveEntry}
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public ArchiveEntry loadNode(int order, int hierarchy, SolrDocument doc, Set<String> loadPath, boolean loadChildrenRecursively)
+    public ArchiveEntry loadNode(int order, int hierarchy, SolrDocument doc, boolean loadChildrenRecursively)
             throws PresentationException, IndexUnreachableException {
         // logger.trace("loadNode: {}", order); //NOSONAR Debug
         if (doc == null) {
@@ -251,7 +308,7 @@ public class SolrEADParser extends ArchiveParser {
         }
 
         // Associated record
-        Entry<String, Boolean> associatedRecordEntry = associatedRecordMap.get(entry.getId());
+        Entry<String, Boolean> associatedRecordEntry = associatedRecordMap != null ? associatedRecordMap.get(entry.getId()) : null;
         if (associatedRecordEntry != null) {
             entry.setAssociatedRecordPi(associatedRecordEntry.getKey());
             entry.setContainsImage(associatedRecordEntry.getValue());
@@ -270,12 +327,10 @@ public class SolrEADParser extends ArchiveParser {
         }
 
         // get child elements
-        String iddoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC);
-        if (archiveDocMap.containsKey(entry.getTopstructPi()) && archiveDocMap.get(entry.getTopstructPi()).containsKey(iddoc)) {
-            // logger.trace("found {} children of {}", archiveDocMap.get(entry.getTopstructPi()).get(iddoc).size(), iddoc); //NOSONAR Debug
+        if (hasChildDocs(entry.getTopstructPi(), getIddoc(entry))) {
             entry.setChildrenFound(true);
-            if (loadChildrenRecursively || (loadPath != null && !loadPath.isEmpty()) || entry.equals(entry.getRootNode())) {
-                loadChildren(entry, loadPath, loadChildrenRecursively);
+            if (loadChildrenRecursively || hierarchy == 0) {
+                loadChildren(entry, loadChildrenRecursively);
             }
         }
 
@@ -284,110 +339,422 @@ public class SolrEADParser extends ArchiveParser {
             entry.setId(String.valueOf(UUID.randomUUID()));
         }
 
-        loadedNodeMap.put(iddoc, entry);
-
         return entry;
     }
 
     /**
+     * Loads the immediate children of the given entry, if not yet loaded.
      *
      * @param entry the parent entry whose children are to be loaded
-     * @param loadPath set of IDDOCs on the path to the search hit
+     * @return true if children were loaded by this call; false if they were already loaded or the entry has no children
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @should load only immediate children
+     * @should not load children twice
+     */
+    @Override
+    public boolean loadChildren(ArchiveEntry entry) throws PresentationException, IndexUnreachableException {
+        return loadChildren(entry, false);
+    }
+
+    /**
+     * Loads the children of the given entry, if not yet loaded. Nodes may be shared between the global archive tree and session copies, so
+     * loading is synchronized on the entry and the child list is published in one step.
+     *
+     * @param entry the parent entry whose children are to be loaded
      * @param loadChildrenRecursively if true, child nodes are loaded recursively
+     * @return true if children were loaded by this call; false otherwise
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public void loadChildren(ArchiveEntry entry, Set<String> loadPath, boolean loadChildrenRecursively)
-            throws PresentationException, IndexUnreachableException {
-        String iddoc = SolrTools.getSingleFieldStringValue(entry.getDoc(), SolrConstants.IDDOC);
-        boolean loadChildren = loadChildrenRecursively;
-        if (archiveDocMap.containsKey(entry.getTopstructPi()) && archiveDocMap.get(entry.getTopstructPi()).containsKey(iddoc)) {
-            // logger.trace("Loading {} children of {}", archiveDocMap.get(iddoc).size(), entry.getLabel()); //NOSONAR Debug
-            int subOrder = 0;
+    private boolean loadChildren(ArchiveEntry entry, boolean loadChildrenRecursively) throws PresentationException, IndexUnreachableException {
+        if (entry == null) {
+            throw new IllegalArgumentException("entry may not be null");
+        }
+
+        synchronized (entry) {
+            if (entry.isChildrenLoaded()) {
+                return false;
+            }
+            List<SolrDocument> childDocs = getChildDocs(entry);
+            if (childDocs.isEmpty()) {
+                return false;
+            }
+            // logger.trace("Loading {} children of {}", childDocs.size(), entry.getLabel()); //NOSONAR Debug
+            List<ArchiveEntry> children = new ArrayList<>(childDocs.size());
             int subHierarchy = entry.getHierarchyLevel() + 1;
-            for (SolrDocument c : archiveDocMap.get(entry.getTopstructPi()).get(iddoc)) {
-                if (!loadChildrenRecursively && loadPath != null) {
-                    String childIddoc = SolrTools.getSingleFieldStringValue(c, SolrConstants.IDDOC);
-                    loadChildren = loadPath.contains(childIddoc);
-                    logger.trace("Child {}: allow recursion due to it being on the search path.", childIddoc);
-                }
-                ArchiveEntry child = loadNode(subOrder, subHierarchy, c, loadPath, loadChildren);
-                entry.addSubEntry(child);
+            boolean containsImage = entry.isContainsImage();
+            for (SolrDocument c : childDocs) {
+                ArchiveEntry child = loadNode(children.size(), subHierarchy, c, loadChildrenRecursively);
                 child.setParentNode(entry);
                 if (child.isContainsImage()) {
-                    entry.setContainsImage(true);
+                    containsImage = true;
                 }
-                subOrder++;
+                children.add(child);
             }
+            entry.setSubEntryList(children);
+            entry.setContainsImage(containsImage);
             entry.setChildrenLoaded(true);
             // logger.trace("Children loaded for {}", entry.getLabel());
+            return true;
         }
     }
 
     /**
-     * 
-     * @param iddoc Parent IDDOC
-     * @return Map&lt;String, List&lt;SolrDocument&gt;&gt;
+     *
+     * @param pi Archive PI
+     * @param iddoc IDDOC of the parent node
+     * @return true if the node with the given IDDOC has child nodes; false otherwise
+     */
+    private boolean hasChildDocs(String pi, String iddoc) {
+        if (pi == null || iddoc == null) {
+            return false;
+        }
+        Map<String, Integer> childCounts = onDemandChildCounts.get(pi);
+        if (childCounts != null) {
+            return childCounts.containsKey(iddoc);
+        }
+        Map<String, List<SolrDocument>> docMap = archiveDocMap.get(pi);
+        return docMap != null && docMap.containsKey(iddoc);
+    }
+
+    /**
+     *
+     * @param entry Parent entry
+     * @return Child docs of the given entry, sorted by archive order; empty list if none found
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public static List<SolrDocument> getChildDocsForIddoc(String iddoc)
+    private List<SolrDocument> getChildDocs(ArchiveEntry entry) throws PresentationException, IndexUnreachableException {
+        String pi = entry.getTopstructPi();
+        String iddoc = getIddoc(entry);
+        if (pi == null || iddoc == null) {
+            return Collections.emptyList();
+        }
+
+        Map<String, Integer> childCounts = onDemandChildCounts.get(pi);
+        if (childCounts == null) {
+            Map<String, List<SolrDocument>> docMap = archiveDocMap.get(pi);
+            return docMap != null ? docMap.getOrDefault(iddoc, Collections.emptyList()) : Collections.emptyList();
+        }
+        Integer childCount = childCounts.get(iddoc);
+        if (childCount == null) {
+            return Collections.emptyList();
+        }
+
+        return getChildDocsForIddoc(pi, iddoc, childCount);
+    }
+
+    /**
+     * Queries the child nodes of the given parent node.
+     *
+     * @param pi Archive PI
+     * @param iddoc Parent IDDOC
+     * @param rows Maximum number of child docs to return
+     * @return List of child docs, sorted by archive order
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    static List<SolrDocument> getChildDocsForIddoc(String pi, String iddoc, int rows)
             throws PresentationException, IndexUnreachableException {
-        logger.trace("getChildDocMapForIddoc: {}", iddoc);
-        SolrDocumentList archiveDocs = DataManager.getInstance()
+        logger.trace("getChildDocsForIddoc: {}", iddoc);
+        String query = "+" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name() + " +" + SolrConstants.PI_TOPSTRUCT + ":" + quote(pi) + " +"
+                + SolrConstants.IDDOC_PARENT + ":" + quote(iddoc);
+        return DataManager.getInstance()
                 .getSearchIndex()
-                .search(SolrConstants.IDDOC_PARENT + ":\"" + iddoc + "\"");
-        List<SolrDocument> ret = new ArrayList<>();
-        for (SolrDocument doc : archiveDocs) {
-            String iddocParent = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC_PARENT);
-            if (iddocParent != null) {
-                ret.add(doc);
+                .search(query, rows, Collections.singletonList(new StringPair(FIELD_ARCHIVE_ORDER, "asc")), getSolrFields());
+    }
+
+    /**
+     * Loads all levels of the tree between the given root node and the node with the given EAD node ID.
+     *
+     * @param root Root node of the tree
+     * @param nodeId EAD node ID of the requested node
+     * @return Loaded {@link ArchiveEntry} with the given ID; null if not found
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @should load path to deep node
+     * @should return null if node not found
+     */
+    @Override
+    public ArchiveEntry loadEntryPath(ArchiveEntry root, String nodeId) throws PresentationException, IndexUnreachableException {
+        if (root == null || root.getTopstructPi() == null || StringUtils.isBlank(nodeId)) {
+            return null;
+        }
+
+        SolrDocument doc = DataManager.getInstance()
+                .getSearchIndex()
+                .getFirstDoc("+" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name() + " +" + SolrConstants.PI_TOPSTRUCT + ":"
+                        + quote(root.getTopstructPi()) + " +" + SolrConstants.EAD_NODE_ID + ":" + quote(nodeId), SOLR_FIELDS_PATH);
+        if (doc == null) {
+            logger.debug("Archive node not found in index: {}", nodeId);
+            return null;
+        }
+
+        List<String> path = getPathIddocs(root, doc, new HashMap<>());
+        return path != null ? loadPath(root, path, new MutableBoolean()) : null;
+    }
+
+    /**
+     * Collects the IDDOCs between the given root and the given node doc by walking up the IDDOC_PARENT hierarchy in the index.
+     *
+     * @param root Root node of the tree
+     * @param doc Solr doc of the requested node (requires IDDOC and IDDOC_PARENT)
+     * @param parentIddocCache Cache of already resolved parent IDDOCs
+     * @return IDDOCs from the first level below the root down to the requested node; empty list if the doc is the root itself; null if the node
+     *         does not belong to the tree
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    private static List<String> getPathIddocs(ArchiveEntry root, SolrDocument doc, Map<String, String> parentIddocCache)
+            throws PresentationException, IndexUnreachableException {
+        String rootIddoc = getIddoc(root);
+        String iddoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC);
+        if (rootIddoc == null || iddoc == null) {
+            return null;
+        }
+        if (iddoc.equals(rootIddoc)) {
+            return Collections.emptyList();
+        }
+
+        Deque<String> path = new ArrayDeque<>();
+        path.addFirst(iddoc);
+        String parentIddoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC_PARENT);
+        while (parentIddoc != null && !parentIddoc.equals(rootIddoc)) {
+            if (path.size() >= MAX_TREE_DEPTH) {
+                logger.warn("Archive node {} is nested deeper than {} levels or its ancestry contains a loop.", iddoc, MAX_TREE_DEPTH);
+                return null;
             }
+            path.addFirst(parentIddoc);
+            parentIddoc = getParentIddoc(parentIddoc, parentIddocCache);
+        }
+        if (parentIddoc == null) {
+            logger.debug("Archive node {} does not belong to the tree with the root {}.", iddoc, rootIddoc);
+            return null;
+        }
+
+        return new ArrayList<>(path);
+    }
+
+    /**
+     * Counts the nodes that would be created by loading the given path, i.e. the children of each node along the path that are not yet loaded.
+     *
+     * @param root Root node of the tree
+     * @param path IDDOCs from the first level below the root down to the requested node
+     * @return Number of nodes to load
+     */
+    private int countNodesToLoad(ArchiveEntry root, List<String> path) {
+        String pi = root.getTopstructPi();
+        int ret = 0;
+        ArchiveEntry node = root;
+        String parentIddoc = getIddoc(root);
+        for (String pathIddoc : path) {
+            if (node != null && node.isChildrenLoaded()) {
+                node = findChildByIddoc(node, pathIddoc);
+            } else {
+                // Neither this level nor any level below is built yet
+                node = null;
+                ret += getChildCount(pi, parentIddoc);
+            }
+            parentIddoc = pathIddoc;
         }
 
         return ret;
     }
 
+    /**
+     * Loads the tree levels along the given path, starting from the root.
+     *
+     * @param root Root node of the tree
+     * @param path IDDOCs from the first level below the root down to the requested node
+     * @param childrenLoaded Set to true if any children were loaded
+     * @return Loaded {@link ArchiveEntry} at the end of the path; null if not found
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    private ArchiveEntry loadPath(ArchiveEntry root, List<String> path, MutableBoolean childrenLoaded)
+            throws PresentationException, IndexUnreachableException {
+        ArchiveEntry node = root;
+        for (String pathIddoc : path) {
+            if (loadChildren(node, false)) {
+                childrenLoaded.setTrue();
+            }
+            node = findChildByIddoc(node, pathIddoc);
+            if (node == null) {
+                return null;
+            }
+        }
+
+        return node;
+    }
+
+    /**
+     *
+     * @param pi Archive PI
+     * @param iddoc IDDOC of the parent node
+     * @return Number of children of the node with the given IDDOC
+     */
+    private int getChildCount(String pi, String iddoc) {
+        if (pi == null || iddoc == null) {
+            return 0;
+        }
+        Map<String, Integer> childCounts = onDemandChildCounts.get(pi);
+        if (childCounts != null) {
+            return childCounts.getOrDefault(iddoc, 0);
+        }
+        Map<String, List<SolrDocument>> docMap = archiveDocMap.get(pi);
+        return docMap != null && docMap.containsKey(iddoc) ? docMap.get(iddoc).size() : 0;
+    }
+
+    /**
+     *
+     * @param iddoc IDDOC of the child node
+     * @param parentIddocCache Cache of already resolved parent IDDOCs
+     * @return IDDOC_PARENT value of the node with the given IDDOC; null if not found
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    private static String getParentIddoc(String iddoc, Map<String, String> parentIddocCache) throws PresentationException, IndexUnreachableException {
+        if (parentIddocCache.containsKey(iddoc)) {
+            return parentIddocCache.get(iddoc);
+        }
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.IDDOC + ":" + quote(iddoc), SOLR_FIELDS_PATH);
+        String ret = doc != null ? SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC_PARENT) : null;
+        parentIddocCache.put(iddoc, ret);
+        return ret;
+    }
+
+    /**
+     *
+     * @param parent Parent node
+     * @param iddoc IDDOC of the requested child
+     * @return Child of parent with the given IDDOC; null if not found
+     */
+    private static ArchiveEntry findChildByIddoc(ArchiveEntry parent, String iddoc) {
+        for (ArchiveEntry child : parent.getSubEntryList()) {
+            if (iddoc.equals(getIddoc(child))) {
+                return child;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * @param entry Archive entry
+     * @return IDDOC of the given entry's Solr doc; null if not available
+     */
+    private static String getIddoc(ArchiveEntry entry) {
+        return entry.getDoc() != null ? SolrTools.getSingleFieldStringValue(entry.getDoc(), SolrConstants.IDDOC) : null;
+    }
+
+    /**
+     * Searches the index for nodes of an on-demand loaded archive that match the given value and loads the tree path to each hit. Paths are
+     * loaded for at most {@code MAX_UNPARSED_SEARCH_HITS} hits and for at most {@code MAX_NODES_LOADED_PER_SEARCH} newly loaded nodes in total;
+     * if either limit is reached, the result is flagged as incomplete.
+     *
+     * @param node Any node of the archive tree
+     * @param searchValue Search terms
+     * @return {@link UnparsedNodeSearchResult}
+     * @should load path to matching nodes
+     * @should match word prefixes
+     */
     @Override
-    public boolean searchInUnparsedNodes(ArchiveEntry node, String searchValue) {
+    public UnparsedNodeSearchResult searchInUnparsedNodes(ArchiveEntry node, String searchValue) {
+        return searchInUnparsedNodes(node, searchValue, MAX_UNPARSED_SEARCH_HITS, MAX_NODES_LOADED_PER_SEARCH);
+    }
+
+    /**
+     *
+     * @param node Any node of the archive tree
+     * @param searchValue Search terms
+     * @param maxHits Maximum number of hits for which to load the tree path
+     * @param maxNodesToLoad Maximum number of nodes to load in total
+     * @return {@link UnparsedNodeSearchResult}
+     * @should flag result incomplete if more hits than allowed
+     * @should skip hits whose path exceeds the node budget
+     */
+    UnparsedNodeSearchResult searchInUnparsedNodes(ArchiveEntry node, String searchValue, int maxHits, int maxNodesToLoad) {
         logger.trace("searchInUnparsedNodes");
         if (node == null) {
             throw new IllegalArgumentException("node may not be null");
         }
+        ArchiveEntry root = node.getRootNode();
+        String pi = root.getTopstructPi();
+        if (StringUtils.isBlank(searchValue) || !isLoadedOnDemand(pi)) {
+            return UnparsedNodeSearchResult.NONE;
+        }
 
-        String query =
-                "+" + SolrConstants.PI_TOPSTRUCT + ":\"" + node.getTopstructPi() + "\" +" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name()
-                        + " +(" + SolrConstants.EAD_NODE_ID + ":\"" + searchValue + "\" " + SolrConstants.TITLE + ":" + searchValue + ")"
-                        + SearchHelper.getAllSuffixes();
+        String query = getArchiveNodesQuery(pi) + " +(" + SolrConstants.EAD_NODE_ID + ":" + quote(searchValue.trim()) + " " + SolrConstants.TITLE
+                + ":(" + buildTitleQuery(searchValue) + "))" + SearchHelper.getAllSuffixes();
         // logger.trace("Unparsed node search query: {}", query); //NOSONAR Debug
 
-        boolean ret = false;
+        MutableBoolean childrenLoaded = new MutableBoolean();
+        boolean incomplete = false;
         try {
-            SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(query, SOLR_FIELDS_DATABASES);
+            SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(query, maxHits, null, SOLR_FIELDS_PATH);
+            if (result.getNumFound() > maxHits) {
+                logger.debug("Archive search for '{}' found {} nodes, loading only the first {}.", searchValue, result.getNumFound(), maxHits);
+                incomplete = true;
+            }
+            Map<String, String> parentIddocCache = new HashMap<>();
+            int remainingNodes = maxNodesToLoad;
+            int skippedHits = 0;
             for (SolrDocument doc : result) {
-                String iddoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC);
-                if (!loadedNodeMap.containsKey(iddoc)) {
-                    // Load tree from given node down to hit node
-                    Set<String> loadPath = new HashSet<>();
-                    String parentIddoc = parentIddocMap.get(iddoc);
-                    if (parentIddoc != null) {
-                        loadPath.add(parentIddoc);
-                        while (!loadedNodeMap.containsKey(parentIddoc) && parentIddocMap.get(parentIddoc) != null) {
-                            parentIddoc = parentIddocMap.get(parentIddoc);
-                            loadPath.add(parentIddoc);
-                            logger.trace("added parent iddoc to hierarchy: {}", parentIddoc);
-                        }
-                        loadChildren(loadedNodeMap.get(parentIddoc), loadPath, false);
-                        ret = true;
-                    }
-
+                List<String> path = getPathIddocs(root, doc, parentIddocCache);
+                if (path == null) {
+                    continue;
                 }
+                // Each hit in a level that is not loaded yet loads that entire level, which may hold many thousands of nodes
+                int nodesToLoad = countNodesToLoad(root, path);
+                if (nodesToLoad > remainingNodes) {
+                    skippedHits++;
+                    continue;
+                }
+                remainingNodes -= nodesToLoad;
+                loadPath(root, path, childrenLoaded);
+            }
+            if (skippedHits > 0) {
+                logger.debug("Archive search for '{}': {} hits skipped, loading their tree paths would exceed {} nodes.", searchValue,
+                        skippedHits, maxNodesToLoad);
+                incomplete = true;
             }
         } catch (PresentationException | IndexUnreachableException e) {
             logger.error(e.getMessage());
         }
 
-        return ret;
+        return new UnparsedNodeSearchResult(childrenLoaded.isTrue(), incomplete);
+    }
+
+    /**
+     * Builds a query for the title field that requires all terms of the given search value. Terms with at least
+     * {@code MIN_WILDCARD_TERM_LENGTH} characters also match as word prefixes; shorter terms only match whole words, since prefix searches
+     * for one or two characters would match almost every node.
+     *
+     * @param searchValue Search terms
+     * @return Query string for the title field
+     * @should require all terms
+     * @should add prefix wildcard to terms with at least three characters
+     * @should escape special characters
+     */
+    static String buildTitleQuery(String searchValue) {
+        return Arrays.stream(searchValue.trim().split("\\s+")).map(term -> {
+            String escapedTerm = ClientUtils.escapeQueryChars(term);
+            if (term.length() < MIN_WILDCARD_TERM_LENGTH) {
+                return "+" + escapedTerm;
+            }
+            // Keep the plain term so that it is still analyzed (wildcard terms are not), e.g. for case-insensitive or stemmed matches
+            return "+(" + escapedTerm + " " + escapedTerm + "*)";
+        }).collect(Collectors.joining(" "));
+    }
+
+    /**
+     * @param value Value to quote
+     * @return Given value escaped and wrapped in double quotes for use in a Solr query
+     */
+    private static String quote(String value) {
+        return "\"" + ClientUtils.escapeQueryChars(value) + "\"";
     }
 
     /**

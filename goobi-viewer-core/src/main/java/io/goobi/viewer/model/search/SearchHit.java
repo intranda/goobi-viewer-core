@@ -69,6 +69,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.cms.CMSArchiveConfig;
 import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
@@ -114,6 +115,8 @@ public class SearchHit implements Comparable<SearchHit> {
     private String altUrl;
     /** Secondary label. */
     private String altLabel;
+    /** Catalog type if altUrl points into an archive with catalog view (affects link wording); null otherwise. */
+    private CMSArchiveConfig.CatalogType altUrlCatalogType = null;
     @JsonIgnore
     private final Locale locale;
     private final List<SearchHit> children = new ArrayList<>();
@@ -944,6 +947,14 @@ public class SearchHit implements Comparable<SearchHit> {
     
     public String getAltLabel() {
         return altLabel;
+    }
+
+    public CMSArchiveConfig.CatalogType getAltUrlCatalogType() {
+        return altUrlCatalogType;
+    }
+
+    public void setAltUrlCatalogType(CMSArchiveConfig.CatalogType altUrlCatalogType) {
+        this.altUrlCatalogType = altUrlCatalogType;
     }
 
     

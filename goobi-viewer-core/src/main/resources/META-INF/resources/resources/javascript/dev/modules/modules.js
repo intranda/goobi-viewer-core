@@ -2518,7 +2518,7 @@
 
     /**
      * Adds the drag handle that resizes the left panels: one shared
-     * --immersive-panel-width custom property, persisted in sessionStorage.
+     * --_immersive-panel-width custom property, persisted in sessionStorage.
      */
     function setupPanelResize(immersiveRoot) {
         const immersiveViewer = immersiveRoot && immersiveRoot.querySelector('.immersive__viewer');
@@ -2529,7 +2529,7 @@
         const MAX_WIDTH_RATIO = 0.8;
         const maxWidth = () => immersiveViewer.getBoundingClientRect().width * MAX_WIDTH_RATIO;
         const clamp = (px) => Math.min(Math.max(px, MIN_WIDTH), maxWidth());
-        const applyWidth = (px) => immersiveViewer.style.setProperty('--immersive-panel-width', Math.round(px) + 'px');
+        const applyWidth = (px) => immersiveViewer.style.setProperty('--_immersive-panel-width', Math.round(px) + 'px');
         let stored = NaN;
         try {
             stored = parseInt(sessionStorage.getItem(WIDTH_KEY), 10);
@@ -3366,7 +3366,7 @@
             if (gridOverlay) gridOverlay.setAttribute('data-thumb-size', String(step));
             if (gridSizeSlider) {
                 gridSizeSlider.value = String(step);
-                gridSizeSlider.style.setProperty('--immersive-slider-fill', `${(step / THUMB_SIZE_MAX) * 100}%`);
+                gridSizeSlider.style.setProperty('--_immersive-slider-fill', `${(step / THUMB_SIZE_MAX) * 100}%`);
                 if (gridSizeLabels[step]) {
                     gridSizeSlider.setAttribute('aria-valuetext', gridSizeLabels[step]);
                 } else {
