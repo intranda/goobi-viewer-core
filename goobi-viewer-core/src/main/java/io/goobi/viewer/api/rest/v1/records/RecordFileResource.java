@@ -336,7 +336,7 @@ public class RecordFileResource {
 
         String mimeType = "application/octet-stream";
         try {
-            mimeType = new MediaResourceHelper(config).setContentHeaders(servletResponse, filename, path);
+            mimeType = new MediaResourceHelper(config).setContentHeaders(servletRequest, servletResponse, filename, path, false);
         } catch (IOException e) {
             logger.error("Failed to probe file content type");
         }
@@ -415,7 +415,7 @@ public class RecordFileResource {
 
         String mimeType = "application/octet-stream";
         try {
-            mimeType = new MediaResourceHelper(config).setContentHeaders(servletResponse, filename, path);
+            mimeType = new MediaResourceHelper(config).setContentHeaders(servletRequest, servletResponse, filename, path, false);
         } catch (IOException e) {
             logger.error("Failed to probe file content type");
         }
@@ -585,7 +585,8 @@ public class RecordFileResource {
         String mimeType = "application/octet-stream";
         if (Files.isRegularFile(resourceFile)) {
             try {
-                mimeType = new MediaResourceHelper(config).setContentHeaders(servletResponse, resourceFile.getFileName().toString(), resourceFile);
+                mimeType = new MediaResourceHelper(config).setContentHeaders(servletRequest, servletResponse, resourceFile.getFileName().toString(),
+                        resourceFile, true);
             } catch (IOException e) {
                 logger.error("Failed to probe file content type");
             }

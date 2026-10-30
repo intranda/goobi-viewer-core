@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.security.clients;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.never;
@@ -103,5 +104,51 @@ class ClientApplicationManagerTest {
 
         assertTrue(result.isPresent());
         assertSame(stored, result.get());
+    }
+    /**
+     * @see ClientApplicationManager#isClientApplicationRequest(HttpServletRequest)
+     * @verifies return false when request is null
+     */
+    @Test
+    void isClientApplicationRequest_shouldReturnFalseWhenRequestIsNull() {
+        assertFalse(ClientApplicationManager.isClientApplicationRequest(null));
+    }
+
+    /**
+     * @see ClientApplicationManager#isClientApplicationRequest(HttpServletRequest)
+     * @verifies return true when client identifier header is present
+     */
+    @Test
+    void isClientApplicationRequest_shouldReturnTrueWhenClientIdentifierHeaderIsPresent() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        when(request.getHeader(ClientApplicationManager.CLIENT_IDENTIFIER_HEADER)).thenReturn("test-client-id");
+
+        assertTrue(ClientApplicationManager.isClientApplicationRequest(request));
+    }
+
+    /**
+     * @see ClientApplicationManager#isClientApplicationRequest(HttpServletRequest)
+     * @verifies return true when client is registered in session
+     */
+    @Test
+    void isClientApplicationRequest_shouldReturnTrueWhenClientIsRegisteredInSession() {
+        HttpSession session = Mockito.mock(HttpSession.class);
+        when(session.getAttribute(ClientApplicationManager.CLIENT_SESSION_ATTRIBUTE)).thenReturn(new ClientApplication("test-client-id"));
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        when(request.getSession(false)).thenReturn(session);
+
+        assertTrue(ClientApplicationManager.isClientApplicationRequest(request));
+    }
+
+    /**
+     * @see ClientApplicationManager#isClientApplicationRequest(HttpServletRequest)
+     * @verifies return false for regular request
+     */
+    @Test
+    void isClientApplicationRequest_shouldReturnFalseForRegularRequest() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        when(request.getSession(false)).thenReturn(Mockito.mock(HttpSession.class));
+
+        assertFalse(ClientApplicationManager.isClientApplicationRequest(request));
     }
 }

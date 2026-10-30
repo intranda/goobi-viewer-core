@@ -23,9 +23,12 @@ package io.goobi.viewer.model.security;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus.Status;
 
+@Execution(ExecutionMode.CONCURRENT)
 class CopyrightIndicatorStatusTest {
 
     /**

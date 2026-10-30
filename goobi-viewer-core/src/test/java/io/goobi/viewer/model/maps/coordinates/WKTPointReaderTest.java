@@ -2,10 +2,13 @@ package io.goobi.viewer.model.maps.coordinates;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import mil.nga.sf.geojson.Geometry;
 import mil.nga.sf.geojson.Point;
 
+@Execution(ExecutionMode.CONCURRENT)
 class WKTPointReaderTest {
 
     private static final String INCOMPLETE_POINT = "51.235";

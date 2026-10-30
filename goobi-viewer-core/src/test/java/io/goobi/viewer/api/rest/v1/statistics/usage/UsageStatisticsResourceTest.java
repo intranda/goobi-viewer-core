@@ -28,9 +28,12 @@ import java.time.LocalDate;
 import java.time.Month;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import jakarta.ws.rs.BadRequestException;
 
+@Execution(ExecutionMode.CONCURRENT)
 class UsageStatisticsResourceTest {
 
     /**

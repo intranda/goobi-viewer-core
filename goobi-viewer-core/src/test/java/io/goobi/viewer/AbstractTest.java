@@ -26,6 +26,7 @@ import java.nio.file.Path;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.parallel.ResourceLock;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -35,7 +36,11 @@ import io.goobi.viewer.controller.RestApiManager;
 
 /**
  * JUnit test classes that extend this class will have test-specific logging and config configurations.
+ * <p>
+ * The {@code DataManager} singleton is shared JVM-wide, so all subclasses hold the "DataManager" resource lock and are never run
+ * concurrently with each other under JUnit parallel execution.
  */
+@ResourceLock("DataManager")
 public abstract class AbstractTest {
     
     protected static final String PI_KLEIUNIV = "PPN517154005";

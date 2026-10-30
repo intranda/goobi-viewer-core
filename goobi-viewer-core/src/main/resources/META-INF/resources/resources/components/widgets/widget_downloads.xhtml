@@ -129,7 +129,7 @@
                     <!-- SINGLE LANGUAGE -->
                     <ui:fragment
                         visibility-class="widget-element"
-                        rendered="#{displayConditions.matchRecord('{contentType:![TEI], pageType:[viewFulltext, viewFullscreen], accessCondition:VIEW_FULLTEXT}')}">
+                        rendered="#{activeDocumentBean.viewManager.topStructElement.fulltextAvailable and displayConditions.matchRecord('{contentType:![TEI], pageType:[viewFulltext, viewFullscreen], accessCondition:VIEW_FULLTEXT}')}">
                         <a
                             href="#{activeDocumentBean.viewManager.teiUrlForAllPages}"
                             id="teiWork"
@@ -435,7 +435,7 @@
                     <!-- MIRADOR FULL RECORD -->
                     <ui:fragment
                         visibility-class="widget-element"
-                        rendered="#{displayConditions.matchRecord('{contentType:[IMAGE, PDF], numPages:1, accessCondition:GENERATE_IIIF_MANIFEST}')}">
+                        rendered="#{displayConditions.matchRecord('{mimeType:[image, application/pdf], numPages:1, accessCondition:GENERATE_IIIF_MANIFEST}')}">
                         <a
                             href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifManifest}&amp;page=1"
                             id="mirador"
@@ -587,7 +587,7 @@
                     <!-- MIRADOR PAGE -->
                     <ui:fragment
                         visibility-class="widget-element"
-                        rendered="#{displayConditions.matchPage('{numPages:2, contentType:[IMAGE, PDF], accessCondition:GENERATE_IIIF_MANIFEST}')}">
+                        rendered="#{displayConditions.matchPage('{numPages:2, mimeType:[image, application/pdf], accessCondition:GENERATE_IIIF_MANIFEST}')}">
                         <a
                             href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifPageManifest}"
                             id="mirador"
@@ -687,7 +687,9 @@
                             jsf:id="pdfRangeDownloads"
                             visibility-class="widget-element"
                             class="widget-downloads__page-range-downloads-inner">
-                            <h:form styleClass="widget__form-wrapper" id="pdfPageRangeDownloadForm">
+                            <h:form
+                                styleClass="widget__form-wrapper"
+                                id="pdfPageRangeDownloadForm">
                                 <div class="widget-downloads__page-range-downloads-inputs-wrapper">
                                     <div class="widget-downloads__page-range-downloads-inputs-wrapper-inner">
                                         <!-- FROM -->
@@ -773,7 +775,9 @@
                     <div
                         id="widgetAdditionalFiles"
                         class="widget-downloads__additional-files-wrapper">
-                        <h:form styleClass="widget__form-wrapper" id="widgetAdditionalFilesForm">
+                        <h:form
+                            styleClass="widget__form-wrapper"
+                            id="widgetAdditionalFilesForm">
                             <h3
                                 id="additionFilesTitle"
                                 class="widget-downloads__subtitle widget__badge-container-heading">
