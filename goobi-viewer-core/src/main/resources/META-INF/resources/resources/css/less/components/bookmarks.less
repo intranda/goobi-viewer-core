@@ -100,6 +100,78 @@
             max-height: 250px;
         }
     }
+    &__dropdown-list-counter {
+        display: inline-block;
+        float: right;
+        padding: 0 3px;
+        font-size: var(--font-size-caption);
+        color: var(--fg-on-brand);
+        border-radius: 2px;
+        background-color: var(--bg-brand);
+    }
+    &__dropdown-list-image {
+        height: 75px;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: contain;
+    }
+    &__dropdown-list-remove {
+        text-align: center;
+        [data-bookmark-list-type='delete'] {
+            width: 16px;
+            height: 16px;
+        }
+    }
+    /* DROPDOWN ACTIONS */
+    &__dropdown-list-actions {
+        a {
+            text-decoration: none;
+        }
+        border-top: 1px solid var(--border-strong);
+    }
+    &__dropdown-list-reset,
+    &__dropdown-list-send,
+    &__dropdown-list-search,
+    &__dropdown-list-mirador {
+        font-size: var(--font-size-body-small);
+        border-bottom: 1px solid var(--border-strong);
+        a,
+        button {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 10px;
+        }
+        /* BUTTON (.btn) SETS ITS OWN FONT SIZE, SO ALIGN IT WITH THE LINKS */
+        button {
+            font-size: inherit;
+            line-height: inherit;
+        }
+    }
+    /* DROPDOWN LINKS */
+    &__dropdown-list-single-entry,
+    &__dropdown-list-title,
+    &__dropdown-list-remove,
+    &__dropdown-list-reset,
+    &__dropdown-list-send,
+    &__dropdown-list-search,
+    &__dropdown-list-mirador {
+        button,
+        a,
+        span,
+        h3 {
+            color: var(--fg-link-subtle);
+            &:hover,
+            &:focus,
+            &:active {
+                color: var(--fg-link-subtle);
+            }
+        }
+    }
+    &__dropdown-list-mirador {
+        border: none;
+    }
 }
 
 /* POPUP */
