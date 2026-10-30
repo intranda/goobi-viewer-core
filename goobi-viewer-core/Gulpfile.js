@@ -27,7 +27,8 @@ const reporter = require('postcss-reporter');
 const { depsPathsJS, depsPathsCSS, tablerIconSources } = require('./gulp/depsPaths');
 const replaywebpagePatch = require('./gulp/replaywebpagePatch');
 const tokenCheck = require('./gulp/tokenCheck');
-const themeTokenReport = require('./gulp/themeTokens');
+const tokenReport = require('./gulp/tokenCheck/report');
+const themeTokenReport = require('./gulp/tokenCheck/renames');
 
 const isWin = process.platform === 'win32';
 const toPosix = (p) => (p ? p.replace(/\\/g, '/') : p);
@@ -997,15 +998,16 @@ function printTargets(cb) {
 
 /**
  * Reports token-layer violations and returns whether the check failed.
- * Set GV_TOKENWARN=1 to list warnings as well; GV_THEME_LESS_ROOT points the theme
- * contract at another theme's css/less directory (customer theme updates);
- * GV_THEMECHECK=0 runs the core rules only.
+ * GV_THEME_LESS_ROOT points the theme contract at another theme's css/less directory (customer
+ * theme updates); GV_THEMECHECK=0 runs the core rules only. A checked theme gets an HTML report
+ * in target/token-check/; GV_TOKENCHECK_STEP=3 (or 2,3 or all) prints steps in the terminal as well.
  *
  * @returns {Promise<boolean>} Whether errors or stale baseline entries exist.
  */
 async function reportTokens() {
     const result = await tokenCheck.runTokenCheck();
-    logBlock('check-tokens', tokenCheck.formatReport(result).split('\n'));
+    const report = result.theme.status === 'checked' ? tokenReport.writeReport(result) : null;
+    logBlock('check-tokens', tokenCheck.formatReport(result, { report }).split('\n'));
     return result.core.length > 0;
 }
 
@@ -1056,10 +1058,10 @@ exports.icons = buildIcons;
 
 /* ── Task exports ────────────────────────────────────────────────────────────────────────────
    - npm run build      → token check, then styles, JS bundles, riot tags
-   - npm run check:tokens → the six token sentences (gulp/tokenCheck.js): core findings fail the task,
-     theme findings are printed as information only
+   - npm run check:tokens → the six token sentences (gulp/tokenCheck/): core findings fail the task,
+     theme findings go to target/token-check/<theme>.html (gulp/tokenCheck/report.js), the terminal sums them up
      GV_THEME_LESS_ROOT=<theme>/css/less picks the theme; GV_THEMECHECK=0 skips the theme
-   - npm run theme:tokens → theme update report (gulp/themeTokens.js), needs GV_THEME_LESS_ROOT
+   - npm run theme:tokens → theme update report (gulp/tokenCheck/renames.js), needs GV_THEME_LESS_ROOT
    - npm run dev        → starts watchers (no initial full sync; run npm run sync separately if needed)
    - npm run copyDeps   → copies declared 3rd-party assets, then regenerates
                           the patched replaywebpage bundle (see gulp/replaywebpagePatch.js)
