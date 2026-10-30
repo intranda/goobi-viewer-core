@@ -1,28 +1,23 @@
-/*
-Theme token report for customer theme updates (`npm run theme:tokens`): which token lines of
-a theme still differ from the core defaults, which are redundant, renamed or unknown.
-Not a check — nothing here fails a build.
-*/
+/**
+ * Theme token report for customer theme updates (`npm run theme:tokens`): which token lines of
+ * a theme still differ from the core defaults, which are redundant, renamed or unknown.
+ * Not a check — nothing here fails a build. RENAMED_TOKENS and successorAdvice serve the token check too.
+ */
 
 const fs = require('fs');
 const path = require('path');
 const less = require('less');
 const postcss = require('postcss');
-const { MODULE_ROOT, LESS_ROOT, parseLess, withoutStrings, COLOR_LITERAL } = require('./tokenCheck');
+const { MODULE_ROOT, LESS_ROOT, COLOR_LITERAL } = require('./constants');
+const { parseLess, withoutStrings } = require('./parse');
 
-/* ---------- theme token report (customer theme updates) ---------- */
-
-// Renamed and removed public tokens: report hints and R1 messages. Removed = null.
 const RENAMED_TOKENS = new Map([
-    // Core renames 10/2026 (grammar --<property>-<role>[-prominence][-state]; single colours read the palette line)
     ['--bg-general', '--bg-page'],
     ['--fg-general', '--fg-default'],
     ['--bg-content-box', '--bg-surface'],
     ['--fg-content-box', '--fg-default'],
     ['--bg-popover', '--bg-elevated'],
     ['--fg-popover', '--fg-default'],
-    ['--bg-header', '--header-bg'],
-    ['--fg-header', '--header-fg'],
     ['--bg-canvas', '--bg-sunken'],
     ['--bg-image-frame', 'var(--color-image-frame)'],
     ['--fg-heading-content-box', '--fg-heading'],
@@ -50,7 +45,7 @@ const RENAMED_TOKENS = new Map([
     ['--fg-on-danger-strong', '--fg-on-danger'],
     ['--bg-warning', '--bg-warning-subtle'],
     ['--fg-on-warning', '--fg-on-warning-subtle'],
-    ['--fg-on-warning-hover', 'var(--color-maintenance-link-hover)'],
+    ['--fg-on-warning-hover', 'var(--color-maintenance-link-strong)'],
     ['--bg-warning-strong', '--bg-warning'],
     ['--fg-on-warning-strong', '--fg-on-warning'],
     ['--bg-info-strong', '--bg-info'],
@@ -71,7 +66,8 @@ const RENAMED_TOKENS = new Map([
     ['--bg-viewer-canvas', '--bg-stage'],
     ['--bg-viewer-canvas-stripe', 'var(--_stripe)'],
     ['--bg-document-highlight', 'var(--color-document-highlight)'],
-    ['--bg-document-highlight-selected', 'var(--color-document-highlight-selected)'],
+    ['--bg-document-highlight-selected', 'var(--color-document-highlight-current)'],
+    ['--color-document-highlight-selected', '--color-document-highlight-current'],
     ['--bg-document-selection', 'var(--color-document-selection)'],
     ['--outline-document-focus', 'var(--color-document-focus)'],
     ['--outline-document-drawing', 'var(--color-document-selection)'],
@@ -83,24 +79,23 @@ const RENAMED_TOKENS = new Map([
     ['--color-hero', '--bg-brand-strong'],
     ['--color-hero-gradient', null],
     ['--bg-mask', '--bg-scrim'],
-    ['--bg-login-surface', 'var(--color-login-surface)'],
-    ['--fg-login-surface', 'var(--color-login-text)'],
-    ['--bg-login-field', 'var(--color-login-surface)'],
-    ['--fg-login-field', 'var(--color-login-text)'],
-    ['--border-login-field', 'var(--color-login-field-border)'],
+    ['--bg-login-surface', 'var(--color-login-card)'],
+    ['--fg-login-surface', 'var(--color-login-ink)'],
+    ['--bg-login-field', 'var(--color-login-card)'],
+    ['--fg-login-field', 'var(--color-login-ink)'],
+    ['--border-login-field', 'var(--color-login-field-line)'],
     ['--fg-login-label', 'var(--color-login-label)'],
-    ['--border-login-box', 'var(--color-login-box-border)'],
+    ['--border-login-box', 'var(--color-login-box-line)'],
     ['--bg-login-aside', 'var(--color-login-aside)'],
     ['--fg-login-aside', '--fg-white'],
     ['--bg-login-aside-tile', 'var(--color-login-tile)'],
-    ['--bg-login-aside-tile-hover', 'var(--color-login-tile-hover)'],
-    ['--radius-container-large', '--view-object-image-radius'],
+    ['--bg-login-aside-tile-hover', 'var(--color-login-tile-strong)'],
+    ['--radius-container-large', null],
     ['--font-size-small', '--font-size-caption'],
     ['--font-size-medium', '--font-size-body-small'],
     ['--font-size-normal', '--font-size-body'],
     ['--font-size-large', '--font-size-body-large'],
     ['--font-size-xlarge', '--font-size-heading-small'],
-    // Feature layer dissolved: the five remaining feature tokens read their role directly
     ['--widget-body-icon', '--fg-default'],
     ['--widget-topbar-icon', '--fg-brand'],
     ['--datepicker-day-bg-hover', '--bg-hover'],
@@ -246,15 +241,6 @@ const RENAMED_TOKENS = new Map([
     ['--facet-control-active', null],
     ['--facet-control-active-fg', null],
     ['--archives-overlay-text', null],
-    ['--numeric-paginator-active-bg', '--numeric-paginator-bg-active'],
-    ['--calendar-day-hover-bg', '--calendar-day-bg-hover'],
-    ['--calendar-day-hover-fg', '--calendar-day-fg-hover'],
-    ['--ner-navigation-hover-bg', '--ner-navigation-bg-hover'],
-    ['--entity-work-color', '--entity-work-bg'],
-    ['--entity-person-color', '--entity-person-bg'],
-    ['--entity-agent-color', '--entity-agent-bg'],
-    ['--entity-award-color', '--entity-award-bg'],
-    ['--entity-event-color', '--entity-event-bg'],
     ['--border', '--border-faint (a color now — readers write border: 1px solid var(--border-faint))'],
     ['--border-controls', '--border-input (a color now — readers write border: 1px solid var(--border-input))'],
     ['--archives-card-border', '--archives-card-border-color (a color now)'],
@@ -409,7 +395,6 @@ const RENAMED_TOKENS = new Map([
     ['--widget-toc-toggle-icon-color-hover', null],
     ['--widget-toc-link-color-hover', null],
     ['--widget-toc-active-color', null],
-    // Layer 3 dissolved: components read roles directly; a successor exists only where a role was made for it
     ['--bg-control-active', null],
     ['--active-facets-badge-fg-muted', null],
     ['--active-facets-badge-shadow-hover', null],
@@ -461,16 +446,78 @@ const RENAMED_TOKENS = new Map([
     ['--fg-on-accent', null],
     ['--fg-on-highlight', null],
 ]);
-const renameHint = (name) => (RENAMED_TOKENS.has(name) ? (RENAMED_TOKENS.get(name) ? `renamed — now ${RENAMED_TOKENS.get(name)}` : 'removed — delete the read') : null);
 const THEME_BUCKETS = ['light', 'dark', 'base', 'palette', 'root'];
-const VERDICT_ORDER = ['unknown', 'renamed', 'keep', 'pair', 'redundant'];
+const VERDICT_ORDER = ['unknown', 'renamed', 'folded', 'keep', 'pair', 'redundant'];
+const ROLE_NAME = /^--(?:bg|fg|border|outline|shadow|display|filter)-/;
+const SHARED_ROLE = /^--(?:bg|fg|border|outline|shadow|display|filter|radius|font)-/;
+const GLOBAL_NAME = /^--(?:bg|fg|border|outline|shadow|display|filter|color|font|radius|lk|lh|ci|focus|mask|print|placeholder|brand|accent|highlight|container|button)(?:-|$)/;
+
+/**
+ * The names a theme line went through. A later rename can move a target on again
+ * (--widget-icon-color-topbar → --widget-topbar-icon → --fg-brand), so the chain is followed to
+ * the first name the core declares; a target with a note keeps the note and gets the newer name.
+ *
+ * @param {string} name old token name
+ * @param {(name: string) => boolean} coreHas whether the core declares a token
+ * @returns {Array<string|null>} every step; the last is the successor, null when the token was removed or never renamed
+ */
+function renamePath(name, coreHas, seen = new Set([name])) {
+    const target = RENAMED_TOKENS.get(name) ?? null;
+    const lead = target?.match(/^--[\w-]+/)?.[0];
+    if (!lead || coreHas(lead) || !RENAMED_TOKENS.has(lead) || seen.has(lead)) {
+        return [target];
+    }
+    seen.add(lead);
+    const rest = renamePath(lead, coreHas, seen);
+    const next = rest.at(-1);
+    const nextName = next?.match(/^(?:var\()?(--[\w-]+)\)?$/)?.[1];
+    const last = nextName ? target.split(lead).join(nextName) : next;
+    return [lead, ...rest.slice(0, -1), last];
+}
+
+const successor = (name, coreHas) => renamePath(name, coreHas).at(-1);
+
+/**
+ * What becomes of an old token name in the current core: a successor to rename the line to, a shared role
+ * the component token dissolved into (drop the line, the component reads the role), or nothing.
+ *
+ * @param {string} name old token name
+ * @param {(name: string) => boolean} coreHas whether the core declares a token
+ * @returns {{action: 'rename'|'drop'|'delete'|'keep', to?: string, via?: string[], reused?: boolean}}
+ */
+function successorAdvice(name, coreHas) {
+    if (coreHas(name) && RENAMED_TOKENS.get(name)?.startsWith(`${name}-`)) {
+        return { action: 'rename', to: successor(name, coreHas), reused: true };
+    }
+    if (coreHas(name)) {
+        return { action: 'keep' };
+    }
+    const steps = renamePath(name, coreHas);
+    const to = steps.at(-1);
+    if (!to) {
+        return { action: 'delete' };
+    }
+    const intoRole = SHARED_ROLE.test(to.match(/^--[\w-]+/)?.[0] ?? '');
+    if (intoRole && (!GLOBAL_NAME.test(name) || (steps.length > 1 && !ROLE_NAME.test(steps[0])))) {
+        return { action: 'drop', to, via: steps.slice(0, -1) };
+    }
+    return { action: 'rename', to };
+}
 
 function themeBucket(stack) {
     for (const header of stack) {
-        if (/^\.mx-theme-light(\(\))?$/.test(header)) return 'light';
-        if (/^\.mx-theme-dark(\(\))?$/.test(header)) return 'dark';
-        if (/^\.mx-theme-base\(\)$/.test(header)) return 'base';
-        if (/^\.mx-theme-palette\(\)$/.test(header)) return 'palette';
+        if (/^\.mx-theme-light(\(\))?$/.test(header)) {
+            return 'light';
+        }
+        if (/^\.mx-theme-dark(\(\))?$/.test(header)) {
+            return 'dark';
+        }
+        if (/^\.mx-theme-base\(\)$/.test(header)) {
+            return 'base';
+        }
+        if (/^\.mx-theme-palette\(\)$/.test(header)) {
+            return 'palette';
+        }
     }
     return 'root';
 }
@@ -485,10 +532,14 @@ function normalizeValue(value) {
 }
 
 function resolveTokens(value, lookup, depth = 0) {
-    if (depth > 12) return value;
+    if (depth > 12) {
+        return value;
+    }
     const next = value.replace(/var\(\s*(--[\w-]+)\s*(?:,\s*([^()]*(?:\([^()]*\))?[^()]*))?\)/g, (match, name, fallback) => {
         const found = lookup(name);
-        if (found !== undefined) return found;
+        if (found !== undefined) {
+            return found;
+        }
         return fallback !== undefined ? fallback.trim() : match;
     });
     return next === value ? value : resolveTokens(next, lookup, depth + 1);
@@ -503,7 +554,11 @@ function resolveTokens(value, lookup, depth = 0) {
  */
 function classifyThemeTokens(sources, core) {
     const declared = Object.fromEntries(THEME_BUCKETS.map((bucket) => [bucket, new Map()]));
-    for (const source of sources) for (const d of parseLess(source).declarations) declared[themeBucket(d.stack)].set(d.name, { value: d.value, line: d.line });
+    for (const source of sources) {
+        for (const d of parseLess(source).declarations) {
+            declared[themeBucket(d.stack)].set(d.name, { value: d.value, line: d.line });
+        }
+    }
     const coreHas = (name) => core.light.has(name) || core.dark.has(name);
     const lookupFor = (mode) => {
         const theme = new Map([...declared.palette, ...declared.base, ...declared.root, ...declared[mode]].map(([name, d]) => [name, d.value]));
@@ -515,8 +570,13 @@ function classifyThemeTokens(sources, core) {
         for (const [name, { value, line }] of declared[bucket]) {
             const modes = bucket === 'light' || bucket === 'dark' ? [bucket] : ['light', 'dark'];
             const row = { token: name, mode: bucket, line, theme: value, literal: COLOR_LITERAL.test(withoutStrings(value)) };
+            const advice = successorAdvice(name, coreHas);
+            if (advice.reused) {
+                rows.push({ ...row, verdict: 'renamed', hint: `now ${advice.to} — ${name} means something else in the core now` });
+                continue;
+            }
             if (!coreHas(name)) {
-                const renamed = RENAMED_TOKENS.get(name);
+                const renamed = advice.to;
                 const target = renamed && /^--[\w-]+$/.test(renamed) && coreHas(renamed) ? renamed : null;
                 if (
                     target &&
@@ -528,13 +588,17 @@ function classifyThemeTokens(sources, core) {
                         core: modes.map((mode) => core[mode].get(target)).join(' | '),
                         hint: `old name of ${target}; equals its core default`,
                     });
-                } else if (renamed) rows.push({ ...row, verdict: 'renamed', hint: `now ${renamed}` });
-                else
+                } else if (advice.action === 'drop') {
+                    rows.push({ ...row, verdict: 'folded', hint: `part of ${renamed} now${advice.via.length ? ` (via ${advice.via.join(' → ')})` : ''}` });
+                } else if (renamed) {
+                    rows.push({ ...row, verdict: 'renamed', hint: `now ${renamed}` });
+                } else {
                     rows.push({
                         ...row,
                         verdict: 'unknown',
                         hint: RENAMED_TOKENS.has(name) ? 'removed — delete the line' : 'no core token of this name — theme-only feature or removed',
                     });
+                }
                 continue;
             }
             row.core = modes.map((mode) => core[mode].get(name)).join(' | ');
@@ -542,7 +606,9 @@ function classifyThemeTokens(sources, core) {
                 (mode) => normalizeValue(resolveTokens(value, lookupFor(mode))) === normalizeValue(resolveTokens(core[mode].get(name) ?? '', coreLookup(mode)))
             );
             row.verdict = same ? 'redundant' : 'keep';
-            if (!same && row.literal && bucket !== 'palette') row.hint = 'color literal — declare it as --color-* in .mx-theme-palette() and read it here';
+            if (!same && row.literal && bucket !== 'palette') {
+                row.hint = 'color literal — declare it as --color-* in .mx-theme-palette() and read it here';
+            }
             rows.push(row);
         }
     }
@@ -551,9 +617,12 @@ function classifyThemeTokens(sources, core) {
         ['dark', 'light'],
     ]) {
         for (const [name, { line }] of declared[mode]) {
-            if (declared[other].has(name) || !coreHas(name)) continue;
-            if (rows.some((r) => r.token === name && r.mode === mode && r.verdict === 'keep'))
+            if (declared[other].has(name) || !coreHas(name)) {
+                continue;
+            }
+            if (rows.some((r) => r.token === name && r.mode === mode && r.verdict === 'keep')) {
                 rows.push({ token: name, mode, line, verdict: 'pair', hint: `add a value to .mx-theme-${other}() as well` });
+            }
         }
     }
     return rows.sort((a, b) => VERDICT_ORDER.indexOf(a.verdict) - VERDICT_ORDER.indexOf(b.verdict) || a.token.localeCompare(b.token) || a.mode.localeCompare(b.mode));
@@ -573,12 +642,19 @@ async function themeTokenReport(themeLessRoot, { moduleRoot = MODULE_ROOT, lessR
     const light = new Map();
     const dark = new Map();
     postcss.parse(output.css).walkRules((rule) => {
-        for (let parent = rule.parent; parent.type !== 'root'; parent = parent.parent) if (parent.type === 'atrule') return;
-        if (rule.selector === ':root') rule.walkDecls(/^--/, (d) => light.set(d.prop, d.value) && dark.set(d.prop, d.value));
-        else if (rule.selector === '.color-theme-dark') rule.walkDecls(/^--/, (d) => dark.set(d.prop, d.value));
+        for (let parent = rule.parent; parent.type !== 'root'; parent = parent.parent) {
+            if (parent.type === 'atrule') {
+                return;
+            }
+        }
+        if (rule.selector === ':root') {
+            rule.walkDecls(/^--/, (d) => light.set(d.prop, d.value) && dark.set(d.prop, d.value));
+        } else if (rule.selector === '.color-theme-dark') {
+            rule.walkDecls(/^--/, (d) => dark.set(d.prop, d.value));
+        }
     });
     const themeRoot = path.resolve(moduleRoot, themeLessRoot);
-    const sources = ['misc/mixins.less', 'misc/variables.less']
+    const sources = ['misc/mixins.less', 'misc/variables.less', 'misc/core-defaults.less']
         .filter((file) => fs.existsSync(path.join(themeRoot, file)))
         .map((file) => fs.readFileSync(path.join(themeRoot, file), 'utf8'));
     return classifyThemeTokens(sources, { light, dark });
@@ -587,6 +663,7 @@ async function themeTokenReport(themeLessRoot, { moduleRoot = MODULE_ROOT, lessR
 const VERDICT_TEXT = {
     unknown: 'unknown — no core token of this name (theme-only feature, or removed: delete)',
     renamed: 'renamed — the core token has a new name (rename the line, keep the value)',
+    folded: 'folded — the component now reads a shared role (delete the line; set the role only if everything reading it should change)',
     keep: 'keep — differs from the core default',
     pair: 'pair — declared in one mode only',
     redundant: 'redundant — equals the core default (delete)',
@@ -596,7 +673,9 @@ function formatThemeTokenReport(rows) {
     const lines = [VERDICT_ORDER.map((v) => `${v} ${rows.filter((r) => r.verdict === v).length}`).join(' · ')];
     for (const verdict of VERDICT_ORDER) {
         const group = rows.filter((r) => r.verdict === verdict);
-        if (!group.length) continue;
+        if (!group.length) {
+            continue;
+        }
         lines.push('', VERDICT_TEXT[verdict]);
         for (const r of group) {
             const value = r.theme === undefined ? '' : `  ${r.theme}`;
@@ -607,4 +686,4 @@ function formatThemeTokenReport(rows) {
     return lines.join('\n');
 }
 
-module.exports = { RENAMED_TOKENS, classifyThemeTokens, themeTokenReport, formatThemeTokenReport };
+module.exports = { RENAMED_TOKENS, successor, successorAdvice, classifyThemeTokens, themeTokenReport, formatThemeTokenReport };
