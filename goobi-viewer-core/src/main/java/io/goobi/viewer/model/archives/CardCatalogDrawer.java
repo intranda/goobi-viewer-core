@@ -37,7 +37,7 @@ public class CardCatalogDrawer {
 
     private volatile RegisterCache registerCache;
 
-    private static class RegisterCache {
+    private static final class RegisterCache {
 
         private final int chunkSize;
         private final List<CardCatalogRegisterRange> ranges;
