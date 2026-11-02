@@ -1266,7 +1266,7 @@ public final class SearchHelper {
                         ClientApplicationManager.getClientFromRequest(request), privilege);
         logger.trace("New filter query suffix: {}", filterQuerySuffix);
         if (request != null && request.getSession(false) != null) {
-            request.getSession().setAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX, filterQuerySuffix);
+            request.getSession(false).setAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX, filterQuerySuffix);
         } else {
             logger.warn("No HttpServletRequest found, cannot set filter query.");
         }

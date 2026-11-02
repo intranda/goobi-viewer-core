@@ -43,29 +43,26 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import jakarta.servlet.http.HttpServletRequest;
-
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
-
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.managedbeans.UserBean;
-import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -503,7 +500,8 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         jakarta.servlet.http.HttpSession session = Mockito.mock(jakarta.servlet.http.HttpSession.class);
         // Simulate a session that has already been invalidated
         Mockito.doThrow(new IllegalStateException("setAttribute: Session [null] has already been invalidated"))
-                .when(session).setAttribute(Mockito.anyString(), Mockito.any());
+                .when(session)
+                .setAttribute(Mockito.anyString(), Mockito.any());
 
         // Must not throw; must return false gracefully
         assertFalse(AccessConditionUtils.addSessionPermission("PRIV_TEST", "value", session));
@@ -545,8 +543,8 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     /**
      * @verifies return null without session scan when cdi returns null user
      *
-     * When CDI is active and returns a UserBean with null user (anonymous visitor), the method must
-     * return null directly without falling through to the expensive O(N) session scan.
+     *           When CDI is active and returns a UserBean with null user (anonymous visitor), the method must return null directly without falling
+     *           through to the expensive O(N) session scan.
      */
     @Test
     void retrieveUserFromContext_shouldReturnNullWithoutSessionScanWhenCdiReturnsNullUser() {
@@ -568,9 +566,8 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     /**
      * @verifies return user via session scan when stored under non standard key
      *
-     * In CDI/Weld environments, session-scoped beans may be stored under a generated key rather than
-     * the EL name "userBean". This test verifies that the fallback scan (findInstanceInSessionAttributes)
-     * correctly locates the UserBean in that case.
+     *           In CDI/Weld environments, session-scoped beans may be stored under a generated key rather than the EL name "userBean". This test
+     *           verifies that the fallback scan (findInstanceInSessionAttributes) correctly locates the UserBean in that case.
      */
     @Test
     void retrieveUserFromContext_shouldReturnUserViaSessionScanWhenStoredUnderNonStandardKey() {
@@ -646,7 +643,8 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     void fetchAccessibleFileNames_shouldReturnEmptyListForRestrictedRecordAnonymous() throws Exception {
         // Confirm the test Solr has FILENAME_ALTO docs for this PI; skip if data is missing
         // to distinguish "no documents found" from "access denied"
-        SolrDocumentList docs = DataManager.getInstance().getSearchIndex()
+        SolrDocumentList docs = DataManager.getInstance()
+                .getSearchIndex()
                 .search("+PI_TOPSTRUCT:34115495_1940 +DOCTYPE:PAGE +FILENAME_ALTO:[* TO *]",
                         10, null, Arrays.asList("FILENAME_ALTO", "ACCESSCONDITION"));
         org.junit.jupiter.api.Assumptions.assumeTrue(docs != null && !docs.isEmpty(),
@@ -764,10 +762,10 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         }).when(session).removeAttribute(anyString());
 
         // PRIV_ entries for OLD_PI — must all be removed. Covers all three key schemes.
-        store.put("PRIV_VIEW_IMAGES_OLD_PI_page1.png", new java.util.HashMap<>());               // fileName scheme
-        store.put("PRIV_DOWNLOAD_PDF_OLD_PI_page1.pdf", new java.util.HashMap<>());              // fileName scheme
-        store.put("PRIV_VIEW_FULLTEXT_OLD_PI", new java.util.HashMap<>());                       // no fileName (suffix match)
-        store.put("PRIV_DOWNLOAD_ORIGINAL_CONTENT_OLD_PI", new Object());                        // no fileName (suffix match)
+        store.put("PRIV_VIEW_IMAGES_OLD_PI_page1.png", new java.util.HashMap<>()); // fileName scheme
+        store.put("PRIV_DOWNLOAD_PDF_OLD_PI_page1.pdf", new java.util.HashMap<>()); // fileName scheme
+        store.put("PRIV_VIEW_FULLTEXT_OLD_PI", new java.util.HashMap<>()); // no fileName (suffix match)
+        store.put("PRIV_DOWNLOAD_ORIGINAL_CONTENT_OLD_PI", new Object()); // no fileName (suffix match)
         // PRIV_ entries for KEEP_PI — must remain.
         store.put("PRIV_VIEW_IMAGES_KEEP_PI_page1.png", new java.util.HashMap<>());
         store.put("PRIV_VIEW_FULLTEXT_KEEP_PI_page1.txt", new java.util.HashMap<>());
@@ -824,7 +822,8 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see AccessConditionUtils#checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(String, java.util.Set, jakarta.servlet.http.HttpServletRequest)
+     * @see AccessConditionUtils#checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(String, java.util.Set,
+     *      jakarta.servlet.http.HttpServletRequest)
      * @verifies return empty map when privileges set is null
      */
     @Test
@@ -835,7 +834,8 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see AccessConditionUtils#checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(String, java.util.Set, jakarta.servlet.http.HttpServletRequest)
+     * @see AccessConditionUtils#checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(String, java.util.Set,
+     *      jakarta.servlet.http.HttpServletRequest)
      * @verifies return empty map when privileges set is empty
      */
     @Test
@@ -846,7 +846,8 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see AccessConditionUtils#checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(String, java.util.Set, jakarta.servlet.http.HttpServletRequest)
+     * @see AccessConditionUtils#checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(String, java.util.Set,
+     *      jakarta.servlet.http.HttpServletRequest)
      * @verifies return empty submap for each privilege when identifier is blank
      */
     @Test
@@ -860,7 +861,8 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see AccessConditionUtils#checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(String, java.util.Set, jakarta.servlet.http.HttpServletRequest)
+     * @see AccessConditionUtils#checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(String, java.util.Set,
+     *      jakarta.servlet.http.HttpServletRequest)
      * @verifies return same result as single-privilege call for each privilege
      */
     @Test
@@ -894,7 +896,8 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see AccessConditionUtils#checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(String, java.util.Set, jakarta.servlet.http.HttpServletRequest)
+     * @see AccessConditionUtils#checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(String, java.util.Set,
+     *      jakarta.servlet.http.HttpServletRequest)
      * @verifies handle three or more privileges in one batch
      */
     @Test
@@ -915,18 +918,24 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see AccessConditionUtils#checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(String, java.util.Set, jakarta.servlet.http.HttpServletRequest)
+     * @see AccessConditionUtils#checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(String, java.util.Set,
+     *      jakarta.servlet.http.HttpServletRequest)
      * @verifies populate session cache per privilege so subsequent calls hit cache
      */
     @Test
-    void checkAccessPermissionByIdentifierForAllLogidsAndPrivileges_shouldPopulateSessionCachePerPrivilegeSoSubsequentCallsHitCache() throws Exception {
+    void checkAccessPermissionByIdentifierForAllLogidsAndPrivileges_shouldPopulateSessionCachePerPrivilegeSoSubsequentCallsHitCache()
+            throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpSession session = mock(HttpSession.class);
-        when(request.getSession()).thenReturn(session);
+        when(request.getSession(false)).thenReturn(session);
         Map<String, Object> sessionAttrs = new HashMap<>();
         doAnswer(inv -> sessionAttrs.get(inv.getArgument(0, String.class))).when(session).getAttribute(anyString());
-        doAnswer(inv -> { sessionAttrs.put(inv.getArgument(0, String.class), inv.getArgument(1)); return null; })
-                .when(session).setAttribute(anyString(), Mockito.any());
+        doAnswer(inv -> {
+            sessionAttrs.put(inv.getArgument(0, String.class), inv.getArgument(1));
+            return null;
+        })
+                .when(session)
+                .setAttribute(anyString(), Mockito.any());
         // retrieveUserFromContext scans session attributes via getAttributeNames(); return empty enumeration
         // since no user is stored in this test session.
         when(session.getAttributeNames()).thenReturn(Collections.enumeration(new ArrayList<>()));
@@ -1047,7 +1056,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     void checkAccessPermissionsForPisAndPrivileges_shouldPopulateSessionCachePerIdentifierAndPrivilege() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpSession session = mock(HttpSession.class);
-        when(request.getSession()).thenReturn(session);
+        when(request.getSession(false)).thenReturn(session);
         Map<String, Object> sessionAttrs = new HashMap<>();
         doAnswer(inv -> sessionAttrs.get(inv.getArgument(0, String.class))).when(session).getAttribute(anyString());
         doAnswer(inv -> {
@@ -1074,7 +1083,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     void checkAccessPermissionsForPisAndPrivileges_shouldHitSessionCacheOnSubsequentCallWithoutAdditionalSolrRoundtrip() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpSession session = mock(HttpSession.class);
-        when(request.getSession()).thenReturn(session);
+        when(request.getSession(false)).thenReturn(session);
         Map<String, Object> sessionAttrs = new HashMap<>();
         doAnswer(inv -> sessionAttrs.get(inv.getArgument(0, String.class))).when(session).getAttribute(anyString());
         doAnswer(inv -> {
@@ -1246,7 +1255,8 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         AccessPermission access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, "15920242",
                 "01_portrait_wseeost.pdf", IMAGE_OR_BORN_DIGITAL, null, null);
         assertTrue(access.isGranted());
-        verify(session).setAttribute(Mockito.eq(IPrivilegeHolder.PREFIX_PRIV + IMAGE_OR_BORN_DIGITAL.getCacheKey() + "_15920242_01_portrait_wseeost.pdf"),
+        verify(session).setAttribute(
+                Mockito.eq(IPrivilegeHolder.PREFIX_PRIV + IMAGE_OR_BORN_DIGITAL.getCacheKey() + "_15920242_01_portrait_wseeost.pdf"),
                 Mockito.any());
     }
 
