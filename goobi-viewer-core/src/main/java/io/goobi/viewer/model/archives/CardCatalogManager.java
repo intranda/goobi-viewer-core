@@ -264,22 +264,7 @@ public class CardCatalogManager {
             return Optional.empty();
         }
         int chunkSize = Math.max(1, DataManager.getInstance().getConfiguration().getCardCatalogRegisterChunkSize());
-        return Optional.of(getOrLoadRegisterRanges(drawer, chunkSize));
-    }
-
-    private List<CardCatalogRegisterRange> getOrLoadRegisterRanges(CardCatalogDrawer drawer, int chunkSize)
-            throws PresentationException, IndexUnreachableException {
-        List<CardCatalogRegisterRange> ranges = drawer.getRegisterRanges(chunkSize);
-        if (ranges == null) {
-            synchronized (drawer) {
-                ranges = drawer.getRegisterRanges(chunkSize);
-                if (ranges == null) {
-                    ranges = loadRegisterRanges(drawer, chunkSize);
-                    drawer.setRegisterRanges(chunkSize, ranges);
-                }
-            }
-        }
-        return ranges;
+        return Optional.of(drawer.getOrLoadRegisterRanges(chunkSize, () -> loadRegisterRanges(drawer, chunkSize)));
     }
 
     /**
@@ -299,20 +284,28 @@ public class CardCatalogManager {
             }
             catalogTypesCleared = System.currentTimeMillis();
         }
-        Optional<CMSArchiveConfig.CatalogType> type = catalogTypes.get(pi);
-        if (type == null) {
-            try {
-                type = DataManager.getInstance()
-                        .getDao()
-                        .getCmsArchiveConfigForArchive(pi)
-                        .filter(CMSArchiveConfig::isCardCatalog)
-                        .map(CMSArchiveConfig::getCatalogType);
-            } catch (DAOException e) {
-                logger.warn("Could not load archive configuration for '{}': {}", pi, e.getMessage());
-                type = Optional.empty();
-            }
-            catalogTypes.put(pi, type);
+        return Optional.ofNullable(catalogTypes.get(pi)).orElseGet(() -> loadCatalogType(pi));
+    }
+
+    /**
+     * Loads the catalog type of the archive resource with the given PI from its CMS configuration and caches the result (also if empty).
+     *
+     * @param pi PI of the archive resource
+     * @return the catalog type, or empty if the archive has no catalog view or the configuration could not be loaded
+     */
+    private Optional<CMSArchiveConfig.CatalogType> loadCatalogType(String pi) {
+        Optional<CMSArchiveConfig.CatalogType> type;
+        try {
+            type = DataManager.getInstance()
+                    .getDao()
+                    .getCmsArchiveConfigForArchive(pi)
+                    .filter(CMSArchiveConfig::isCardCatalog)
+                    .map(CMSArchiveConfig::getCatalogType);
+        } catch (DAOException e) {
+            logger.warn("Could not load archive configuration for '{}': {}", pi, e.getMessage());
+            type = Optional.empty();
         }
+        catalogTypes.put(pi, type);
         return type;
     }
 
