@@ -30,10 +30,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 class UrlRedirectFilterTest {
 
@@ -76,6 +78,9 @@ class UrlRedirectFilterTest {
         when(request.getQueryString()).thenReturn("locale=de");
         HttpServletResponse response = mock(HttpServletResponse.class);
         FilterChain chain = mock(FilterChain.class);
+
+        HttpSession session = Mockito.mock(HttpSession.class);
+        when(request.getSession(false)).thenReturn(session);
 
         new UrlRedirectFilter().doFilter(request, response, chain);
 
