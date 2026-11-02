@@ -148,4 +148,10 @@ public class ViewAttributes {
         return collections;
     }
 
+    @Override
+    public String toString() {
+        return "ViewAttributes: DocStruct %s; PageType %s; MimeType %s; PageCount %s; Collections: %s".formatted(this.docStructType, this.pageType,
+                this.mimeType, this.recordPageCount, this.collections);
+    }
+
 }

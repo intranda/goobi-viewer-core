@@ -409,10 +409,11 @@ public class ViewManager implements Serializable {
     /**
      * Returns the docstruct type that governs calendar applicability for the given record.
      *
-     * <p>Calendar applicability follows the parent record's docstruct (e.g. "Newspaper"), not the issue's or volume's own docstruct
-     * ("NewspaperIssue" etc.). Anchor children carry that parent in {@code anchorStructElement}; records tied to their parent by a
-     * {@code GROUPID_*} field alone have no anchor struct element, so the group record is looked up in the index instead. Anchors and group
-     * records are themselves the parent and use their own docstruct.
+     * <p>
+     * Calendar applicability follows the parent record's docstruct (e.g. "Newspaper"), not the issue's or volume's own docstruct ("NewspaperIssue"
+     * etc.). Anchor children carry that parent in {@code anchorStructElement}; records tied to their parent by a {@code GROUPID_*} field alone have
+     * no anchor struct element, so the group record is looked up in the index instead. Anchors and group records are themselves the parent and use
+     * their own docstruct.
      *
      * @param topStructElement top struct element of the record; may not be null
      * @param anchorStructElement anchor struct element, or null if the record is not an anchor child
@@ -609,7 +610,7 @@ public class ViewManager implements Serializable {
      */
     private String getImageInfo(PhysicalElement page, PageType pageType) {
         try {
-            ImageInformation info = imageDeliveryBean.getImages().getImageInformation(page, pageType);
+            ImageInformation info = imageDeliveryBean.getImages().getImageInformation(page, getTopStructElement(), pageType);
             if (info.getWidth() * info.getHeight() == 0) {
                 String filePath = page.getFilepath();
                 if (ImageHandler.isExternalUrl(filePath) && ImageHandler.isImageUrl(filePath, false)) {
@@ -1286,11 +1287,10 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * Returns the number of volumes belonging to this anchor record. The value is queried live from Solr (the current
-     * count of ISWORK records referencing this anchor via PI_PARENT) rather than read from the anchor's stored
-     * NUMVOLUMES field, so it is correct even if the anchor has not been re-indexed since a volume was added or removed.
-     * The result is cached for the lifetime of this ViewManager instance (one query per opened record). Non-anchor
-     * records always return 0.
+     * Returns the number of volumes belonging to this anchor record. The value is queried live from Solr (the current count of ISWORK records
+     * referencing this anchor via PI_PARENT) rather than read from the anchor's stored NUMVOLUMES field, so it is correct even if the anchor has not
+     * been re-indexed since a volume was added or removed. The result is cached for the lifetime of this ViewManager instance (one query per opened
+     * record). Non-anchor records always return 0.
      *
      * @return the current number of volumes; 0 for non-anchor records
      * @throws io.goobi.viewer.exceptions.PresentationException if any.

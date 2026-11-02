@@ -63,6 +63,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
+import io.goobi.viewer.model.viewer.StructElement;
 
 /**
  * Provides urls to download pdfs, images and image footer.
@@ -183,6 +184,26 @@ public class ImageHandler {
      */
     public ImageInformation getImageInformation(PhysicalElement page, PageType pageType)
             throws ContentLibException, ViewerConfigurationException, URISyntaxException, IndexUnreachableException, DAOException {
+        return getImageInformation(page, null, pageType);
+    }
+
+    /**
+     * getImageInformation.
+     *
+     * @param page physical page providing image dimensions and access permissions
+     * @param docStruct top struct element of the record the page belongs to
+     * @param pageType page type determining tile and zoom configuration
+     * @return The image information for the image file of the given page
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException if any.
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws ViewerConfigurationException
+     * @throws DAOException
+     * @should return expected value for given input
+     */
+    public ImageInformation getImageInformation(PhysicalElement page, StructElement docStruct, PageType pageType)
+            throws ContentLibException, ViewerConfigurationException, URISyntaxException, IndexUnreachableException, DAOException {
         URI fileUri = PathConverter.toURI(getIIIFBaseUrl(page.getFilepath()));
         int width = page.getImageWidth(); //0 if width is not known
         int height = page.getImageHeight(); //0 if height is not known
@@ -200,7 +221,7 @@ public class ImageHandler {
             apiUri = urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(page.getPi(), fileUri).buildURI();
         }
 
-        ViewAttributes viewAttributes = new ViewAttributes(page, pageType);
+        ViewAttributes viewAttributes = new ViewAttributes(page, docStruct, pageType);
         boolean useTiles = DataManager.getInstance().getConfiguration().useTiles(viewAttributes);
         Map<Integer, List<Integer>> tileSizes = DataManager.getInstance().getConfiguration().getTileSizes(viewAttributes);
         List<Integer> sizes = DataManager.getInstance()
