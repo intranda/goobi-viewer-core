@@ -156,7 +156,7 @@
 		<weld-servlet-shaded.version>5.1.7.Final</weld-servlet-shaded.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
 		<xml-apis.version>1.4.01</xml-apis.version>
-		<zookeeper.version>3.9.6</zookeeper.version>
+		<zookeeper.version>3.9.7</zookeeper.version>
 		<sf-geojson.version>3.3.3</sf-geojson.version>
 	</properties>
 
