@@ -46,6 +46,7 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.model.CachingMap;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -333,13 +334,15 @@ public class CardCatalogManager {
             return Optional.empty();
         }
         String parentIddoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC_PARENT);
+        // Neutralize CR/LF/tab in the user-controlled entry ID before logging to prevent log injection (javasecurity:S5145)
+        String safeEntryId = StringTools.stripPatternBreakingChars(entryId);
         for (CardCatalogDrawer drawer : index.getDrawers()) {
             if (drawer.getIddoc().equals(parentIddoc)) {
                 Integer order = getIndexedOrder(doc);
                 if (order != null && order >= 0 && isEntryAt(drawer, order, entryId)) {
                     return Optional.of(new ImmutablePair<>(drawer, order + 1));
                 }
-                logger.warn("Archive order for card '{}' in drawer '{}' is not positional; counting preceding siblings as fallback.", entryId,
+                logger.warn("Archive order for card '{}' in drawer '{}' is not positional; counting preceding siblings as fallback.", safeEntryId,
                         drawer.getId());
                 Optional<Integer> counted = countPrecedingSiblings(drawer, doc);
                 if (counted.isPresent() && isEntryAt(drawer, counted.get(), entryId)) {
@@ -354,7 +357,7 @@ public class CardCatalogManager {
                         }
                     }
                 }
-                logger.warn("Card '{}' not found within the first {} cards of drawer '{}'; giving up.", entryId, scanLimit, drawer.getId());
+                logger.warn("Card '{}' not found within the first {} cards of drawer '{}'; giving up.", safeEntryId, scanLimit, drawer.getId());
                 return Optional.empty();
             }
         }

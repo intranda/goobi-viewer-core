@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.archives;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -38,7 +39,7 @@ public class CardCatalogDrawer {
     private final String label;
     private final int entryCount;
 
-    private volatile RegisterCache registerCache;
+    private final AtomicReference<RegisterCache> registerCache = new AtomicReference<>();
 
     /** Guards register computation so concurrent requests for the same drawer compute it only once. */
     private final Object registerLock = new Object();
@@ -92,7 +93,7 @@ public class CardCatalogDrawer {
     }
 
     public List<CardCatalogRegisterRange> getRegisterRanges(int chunkSize) {
-        RegisterCache cache = registerCache;
+        RegisterCache cache = registerCache.get();
         return cache != null && cache.chunkSize == chunkSize ? cache.ranges : null;
     }
 
@@ -124,6 +125,6 @@ public class CardCatalogDrawer {
     }
 
     void setRegisterRanges(int chunkSize, List<CardCatalogRegisterRange> registerRanges) {
-        this.registerCache = new RegisterCache(chunkSize, registerRanges);
+        this.registerCache.set(new RegisterCache(chunkSize, registerRanges));
     }
 }
