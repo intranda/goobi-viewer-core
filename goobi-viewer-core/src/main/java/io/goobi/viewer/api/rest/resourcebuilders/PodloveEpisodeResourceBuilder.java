@@ -66,9 +66,10 @@ import jakarta.servlet.http.HttpServletRequest;
 /**
  * Builds the episode configuration (version 5) consumed by the Podlove Web Player for a podcast episode record.
  *
- * <p>The episode is expected to be a top-level record whose first page holds the audio file. Chapters are read from the
- * structure elements of the record that carry a start time in {@link #FIELD_CHAPTER_START}. If the record belongs to a series
- * (referenced in {@link #FIELD_SERIES_ID}), the series group record is used as the podcast show.
+ * <p>
+ * The episode is expected to be a top-level record whose first page holds the audio file. Chapters are read from the structure elements of the record
+ * that carry a start time in {@link #FIELD_CHAPTER_START}. If the record belongs to a series (referenced in {@link #FIELD_SERIES_ID}), the series
+ * group record is used as the podcast show.
  */
 public class PodloveEpisodeResourceBuilder {
 
@@ -280,8 +281,8 @@ public class PodloveEpisodeResourceBuilder {
     }
 
     /**
-     * Converts a time value into the normal play time format "HH:MM:SS.mmm" expected by Podlove. Accepted inputs are "H:MM:SS(.mmm)",
-     * "MM:SS(.mmm)" and plain seconds (optionally with fraction).
+     * Converts a time value into the normal play time format "HH:MM:SS.mmm" expected by Podlove. Accepted inputs are "H:MM:SS(.mmm)", "MM:SS(.mmm)"
+     * and plain seconds (optionally with fraction).
      *
      * @param value time value to convert
      * @return normalized time, or null if the value cannot be parsed
@@ -344,7 +345,7 @@ public class PodloveEpisodeResourceBuilder {
     }
 
     private boolean hasPermission(String pi, PhysicalElement page, String privilege) throws IndexUnreachableException, DAOException {
-        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null, pi,
+        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession(false) : null, pi,
                 page.getFileName(), privilege, request != null ? NetTools.getIpAddress(request) : null).isGranted();
     }
 

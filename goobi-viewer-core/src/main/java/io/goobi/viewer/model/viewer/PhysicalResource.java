@@ -47,8 +47,8 @@ import jakarta.faces.context.FacesContext;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * Represents a physical file resource belonging to a digitised record, encapsulating the file path,
- * record identifier, page order, file size, MIME type, and access-permission checks.
+ * Represents a physical file resource belonging to a digitised record, encapsulating the file path, record identifier, page order, file size, MIME
+ * type, and access-permission checks.
  */
 public class PhysicalResource {
 
@@ -136,7 +136,7 @@ public class PhysicalResource {
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             AccessPermission access =
-                    AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request.getSession(), pi, getFileName(),
+                    AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request.getSession(false), pi, getFileName(),
                             IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES, NetTools.getIpAddress(request));
             downloadTicketRequired = access.isDownloadTicketRequired();
             return access.isGranted();

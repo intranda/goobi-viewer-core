@@ -48,9 +48,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 /**
- * Utility class providing shared helper methods for JAX-RS request filters. Handles access
- * control checks such as concurrent view limits, image size restrictions, and record-level
- * permission evaluation against the Solr index.
+ * Utility class providing shared helper methods for JAX-RS request filters. Handles access control checks such as concurrent view limits, image size
+ * restrictions, and record-level permission evaluation against the Solr index.
  */
 public final class FilterTools {
 
@@ -81,7 +80,7 @@ public final class FilterTools {
      */
     public static boolean checkForConcurrentViewLimit(String pi, HttpServletRequest request) {
         // logger.trace("filterForConcurrentViewLimit: {}", request.getSession().getId()); //NOSONAR Debug
-        HttpSession session = request != null ? request.getSession() : null;
+        HttpSession session = request != null ? request.getSession(false) : null;
         // Release all locks for this session except the current record
         if (session != null) {
             DataManager.getInstance().getRecordLockManager().removeLocksForSessionId(session.getId(), Collections.singletonList(pi));

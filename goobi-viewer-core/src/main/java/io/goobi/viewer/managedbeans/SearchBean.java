@@ -28,7 +28,6 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.SecureRandom;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -242,9 +241,9 @@ public class SearchBean implements SearchInterface, Serializable {
     private Random random = new SecureRandom();
 
     /**
-     * Random sort field generated for the currently active search, cached and reused (instead of re-rolled on every request) so that
-     * reloading, paging through or returning to a randomly sorted hit list keeps the same order. Cleared in
-     * {@link #resetSearchParameters(boolean, boolean)}, i.e. whenever a genuinely new search is started.
+     * Random sort field generated for the currently active search, cached and reused (instead of re-rolled on every request) so that reloading,
+     * paging through or returning to a randomly sorted hit list keeps the same order. Cleared in {@link #resetSearchParameters(boolean, boolean)},
+     * i.e. whenever a genuinely new search is started.
      */
     private String randomSortSeed;
 
@@ -978,7 +977,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     } else {
                         // Session bookmark list
                         Optional<BookmarkList> obs =
-                                DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession());
+                                DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getSession());
                         if (obs.isPresent()) {
                             itemQuery = obs.get().getFilterQuery();
                         }
@@ -2447,7 +2446,7 @@ public class SearchBean implements SearchInterface, Serializable {
             } else {
                 // Session bookmark list
                 Optional<BookmarkList> bookmarkList =
-                        DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession());
+                        DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getSession());
                 if (bookmarkList.isPresent() && !bookmarkList.get().getItems().isEmpty()) {
                     ret.add(new StringPair(bookmarkList.get().getName(),
                             ViewerResourceBundle.getTranslation("bookmarkList_session", locale)));

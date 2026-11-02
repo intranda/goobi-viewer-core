@@ -22,7 +22,6 @@
 package io.goobi.viewer.filters;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ConcurrentModificationException;
@@ -30,6 +29,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
@@ -38,12 +42,7 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.DateTools;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * Servlet filter that counts and tracks active HTTP sessions for monitoring purposes.
@@ -65,36 +64,39 @@ public class SessionCounterFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain fc) throws IOException, ServletException {
         // logger.trace("doFilter"); //NOSONAR Debug
         HttpServletRequest req = (HttpServletRequest) request;
-        String id = req.getSession().getId();
-        Map<String, String> metadataMap = DataManager.getInstance().getSessionMap().get(id);
-        ZonedDateTime now = DateTools.now().atZone(ZoneId.systemDefault());
-        if (metadataMap == null) {
-            metadataMap = new LinkedHashMap<>();
-            DataManager.getInstance().getSessionMap().put(id, metadataMap);
-            metadataMap.put("id", id);
-            metadataMap.put("created", now.format(DateTools.FORMATTERJAVAUTILDATETOSTRING));
-        }
-        metadataMap.put("address", req.getRemoteAddr());
-        metadataMap.put("x-forwarded-for", req.getHeader("x-forwarded-for"));
-        metadataMap.put("last request", now.format(DateTools.FORMATTERJAVAUTILDATETOSTRING));
-        metadataMap.put("previous request",
-                DateTools.getLocalDateTimeFromMillis(req.getSession().getLastAccessedTime(), false)
-                        .atZone(ZoneId.systemDefault())
-                        .format(DateTools.FORMATTERJAVAUTILDATETOSTRING));
-        metadataMap.put("timeout", String.valueOf(req.getSession().getMaxInactiveInterval()) + " s");
-
-        Optional<Map<Object, Map>> logicalViews =
-                Optional.ofNullable((Map) req.getSession().getAttribute("com.sun.faces.renderkit.ServerSideStateHelper.LogicalViewMap"));
-        Integer numberOfLogicalViews = logicalViews.map(map -> map.keySet().size()).orElse(0);
-        Integer numberOfTotalViews = logicalViews.map(map -> {
-            try {
-                return map.values().stream().mapToInt(value -> value.keySet().size()).sum();
-            } catch (ConcurrentModificationException e) {
-                return 0;
+        HttpSession session = req.getSession(false);
+        if (session != null) {
+            String id = session.getId();
+            Map<String, String> metadataMap = DataManager.getInstance().getSessionMap().get(id);
+            ZonedDateTime now = DateTools.now().atZone(ZoneId.systemDefault());
+            if (metadataMap == null) {
+                metadataMap = new LinkedHashMap<>();
+                DataManager.getInstance().getSessionMap().put(id, metadataMap);
+                metadataMap.put("id", id);
+                metadataMap.put("created", now.format(DateTools.FORMATTERJAVAUTILDATETOSTRING));
             }
-        }).orElse(0);
-        metadataMap.put("Logical Views stored in session", numberOfLogicalViews.toString());
-        metadataMap.put("Total views stored in session", numberOfTotalViews.toString());
+            metadataMap.put("address", req.getRemoteAddr());
+            metadataMap.put("x-forwarded-for", req.getHeader("x-forwarded-for"));
+            metadataMap.put("last request", now.format(DateTools.FORMATTERJAVAUTILDATETOSTRING));
+            metadataMap.put("previous request",
+                    DateTools.getLocalDateTimeFromMillis(req.getSession().getLastAccessedTime(), false)
+                            .atZone(ZoneId.systemDefault())
+                            .format(DateTools.FORMATTERJAVAUTILDATETOSTRING));
+            metadataMap.put("timeout", String.valueOf(req.getSession().getMaxInactiveInterval()) + " s");
+
+            Optional<Map<Object, Map>> logicalViews =
+                    Optional.ofNullable((Map) req.getSession().getAttribute("com.sun.faces.renderkit.ServerSideStateHelper.LogicalViewMap"));
+            Integer numberOfLogicalViews = logicalViews.map(map -> map.keySet().size()).orElse(0);
+            Integer numberOfTotalViews = logicalViews.map(map -> {
+                try {
+                    return map.values().stream().mapToInt(value -> value.keySet().size()).sum();
+                } catch (ConcurrentModificationException e) {
+                    return 0;
+                }
+            }).orElse(0);
+            metadataMap.put("Logical Views stored in session", numberOfLogicalViews.toString());
+            metadataMap.put("Total views stored in session", numberOfTotalViews.toString());
+        }
 
         fc.doFilter(request, response); // continue
     }
