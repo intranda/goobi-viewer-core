@@ -53,8 +53,8 @@ import jakarta.ws.rs.core.MediaType;
 /**
  * REST resource providing OpenSearch protocol endpoints for search and auto-suggest functionality.
  * <p>
- * The endpoint URL is referenced in the header of the viewer theme's {@code template.html}. Returns the XML document
- * from {@code /resources/opensearch/opensearch.xml}.
+ * The endpoint URL is referenced in the header of the viewer theme's {@code template.html}. Returns the XML document from
+ * {@code /resources/opensearch/opensearch.xml}.
  */
 @Path(ApiUrls.OPENSEARCH)
 @ViewerRestServiceBinding
@@ -70,10 +70,10 @@ public class OpenSearchResource {
     /**
      * Builds the OpenSearch description document for this viewer instance.
      *
-     * <p>Placeholder tokens in the underlying {@code opensearch.xml} template are substituted with the configured
-     * application name, description, and the request's application URL; {@code {resourceUrl:...}} tokens are resolved via
-     * the session's navigation helper when available, otherwise against the configured theme path. If the template cannot
-     * be read or parsed, the error is logged and no content is returned.
+     * <p>
+     * Placeholder tokens in the underlying {@code opensearch.xml} template are substituted with the configured application name, description, and the
+     * request's application URL; {@code {resourceUrl:...}} tokens are resolved via the session's navigation helper when available, otherwise against
+     * the configured theme path. If the template cannot be read or parsed, the error is logged and no content is returned.
      *
      * @return the OpenSearch description document as an XML string
      */
@@ -98,7 +98,7 @@ public class OpenSearchResource {
                         .replace("{applicationUrl}", rootUrl);
                 Matcher resourceUrlMatcher = Pattern.compile(RESOURCE_URL_REGEX).matcher(xml);
                 Optional<NavigationHelper> onh =
-                        BeanUtils.getBeanFromSession(servletRequest.getSession(), "navigationHelper", NavigationHelper.class);
+                        BeanUtils.getBeanFromSession(servletRequest.getSession(false), "navigationHelper", NavigationHelper.class);
                 while (resourceUrlMatcher.find()) {
                     String path = resourceUrlMatcher.group(1);
                     String resourcePath = onh.map(nh -> nh.getResource(path))

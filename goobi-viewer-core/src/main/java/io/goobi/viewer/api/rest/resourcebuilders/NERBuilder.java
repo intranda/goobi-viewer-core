@@ -120,7 +120,7 @@ public class NERBuilder {
                         if (!altoFileName.contains("/")) {
                             altoFileName = topStructPi + "/" + altoFileName;
                         }
-                        if (AccessConditionUtils.checkAccess(request.getSession(), "text", topStructPi, altoFileName,
+                        if (AccessConditionUtils.checkAccess(request.getSession(false), "text", topStructPi, altoFileName,
                                 NetTools.getIpAddress(request), false).isGranted()) {
 
                             String altoString = "";

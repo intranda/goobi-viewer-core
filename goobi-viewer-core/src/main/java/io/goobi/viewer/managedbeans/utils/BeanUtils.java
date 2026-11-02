@@ -40,13 +40,12 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
 import io.goobi.viewer.managedbeans.AdminBean;
 import io.goobi.viewer.managedbeans.BookmarkBean;
-import io.goobi.viewer.managedbeans.CollectionBrowseBean;
-import io.goobi.viewer.managedbeans.TermBrowseBean;
 import io.goobi.viewer.managedbeans.CalendarBean;
 import io.goobi.viewer.managedbeans.CaptchaBean;
 import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.managedbeans.CmsCollectionsBean;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
+import io.goobi.viewer.managedbeans.CollectionBrowseBean;
 import io.goobi.viewer.managedbeans.CollectionViewBean;
 import io.goobi.viewer.managedbeans.ContentBean;
 import io.goobi.viewer.managedbeans.CreateRecordBean;
@@ -55,6 +54,7 @@ import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.MetadataBean;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.SearchBean;
+import io.goobi.viewer.managedbeans.TermBrowseBean;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.storage.ApplicationBean;
 import io.goobi.viewer.managedbeans.storage.SessionBean;
@@ -142,7 +142,7 @@ public final class BeanUtils {
     public static HttpSession getSession() {
         HttpServletRequest request = getRequest();
         if (request != null) {
-            return request.getSession();
+            return request.getSession(false);
         }
 
         return null;
@@ -381,9 +381,9 @@ public final class BeanUtils {
     /**
      * getPersistentStorageBean.
      *
-     * <p>Returns the {@code @ApplicationScoped} ApplicationBean. The result is cached in a static
-     * volatile field after the first successful lookup to avoid repeated Weld CDI bean resolution
-     * (which involves a Thread.getStackTrace() call on every invocation).
+     * <p>
+     * Returns the {@code @ApplicationScoped} ApplicationBean. The result is cached in a static volatile field after the first successful lookup to
+     * avoid repeated Weld CDI bean resolution (which involves a Thread.getStackTrace() call on every invocation).
      *
      * @return the ApplicationBean managed bean
      */
@@ -401,8 +401,8 @@ public final class BeanUtils {
     }
 
     /**
-     * Clears the cached ApplicationBean instance. Call this only in tests that replace the bean
-     * with a mock, to prevent stale cache entries from leaking across test methods.
+     * Clears the cached ApplicationBean instance. Call this only in tests that replace the bean with a mock, to prevent stale cache entries from
+     * leaking across test methods.
      */
     static void clearCachedApplicationBean() {
         cachedApplicationBean = null;

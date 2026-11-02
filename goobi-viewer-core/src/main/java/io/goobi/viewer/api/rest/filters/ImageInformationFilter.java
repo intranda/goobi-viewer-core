@@ -144,7 +144,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
             String filename = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_FILENAME);
             try {
                 return AccessConditionUtils
-                        .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest.getSession(), pi, filename,
+                        .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest.getSession(false), pi, filename,
                                 IPrivilegeHolder.PRIV_ZOOM_IMAGES, NetTools.getIpAddress(
                                         servletRequest))
                         .isGranted();
