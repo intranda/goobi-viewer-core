@@ -114,7 +114,7 @@
 		<eclipselink.version>4.0.9</eclipselink.version>
 		<h2.version>2.4.240</h2.version>
 		<httpmime.version>4.5.14</httpmime.version>
-		<icu.version>78.3</icu.version>
+		<icu.version>79.1</icu.version>
 		<jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
 		<jakarta.el.version>6.0.1</jakarta.el.version>
 		<jakarta.enterprise.version>4.1.0</jakarta.enterprise.version>
