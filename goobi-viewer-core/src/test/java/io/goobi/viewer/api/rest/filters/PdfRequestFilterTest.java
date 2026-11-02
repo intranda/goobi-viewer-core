@@ -91,7 +91,7 @@ class PdfRequestFilterTest extends AbstractDatabaseAndSolrEnabledTest {
         HttpSession session = Mockito.mock(HttpSession.class);
         Mockito.when(session.getAttributeNames()).thenReturn(Collections.enumeration(List.of("pi")));
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        Mockito.when(request.getSession()).thenReturn(session);
+        Mockito.when(request.getSession(false)).thenReturn(session);
         Mockito.when(request.getAttribute("pi"))
                 .thenReturn(pi);
         ContainerRequestContext context = Mockito.spy(ContainerRequestContext.class);
@@ -112,7 +112,7 @@ class PdfRequestFilterTest extends AbstractDatabaseAndSolrEnabledTest {
         HttpSession session = Mockito.mock(HttpSession.class);
         Mockito.when(session.getAttributeNames()).thenReturn(Collections.enumeration(List.of("pi")));
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        Mockito.when(request.getSession()).thenReturn(session);
+        Mockito.when(request.getSession(false)).thenReturn(session);
         Mockito.when(request.getAttribute("pi"))
                 .thenReturn(pi);
         ContainerRequestContext context = Mockito.spy(ContainerRequestContext.class);
@@ -131,7 +131,7 @@ class PdfRequestFilterTest extends AbstractDatabaseAndSolrEnabledTest {
     void checkPageAllowed_shouldReturnFalseIfSessionUnavailable() throws Exception {
         // Request with null session should return false
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        Mockito.when(request.getSession()).thenReturn(null);
+        Mockito.when(request.getSession(false)).thenReturn(null);
 
         Assertions.assertFalse(PdfRequestFilter.checkPageAllowed("PPN123", "00000001.tif", 50, 10, request));
 
@@ -151,7 +151,7 @@ class PdfRequestFilterTest extends AbstractDatabaseAndSolrEnabledTest {
         HttpSession session = Mockito.mock(HttpSession.class);
         Mockito.when(session.getAttribute("pdf_quota")).thenReturn(null);
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        Mockito.when(request.getSession()).thenReturn(session);
+        Mockito.when(request.getSession(false)).thenReturn(session);
 
         // 0% quota means 0 allowed pages, so even with empty quota map the page is rejected
         Assertions.assertFalse(PdfRequestFilter.checkPageAllowed("PPN123", "00000001.tif", 0, 10, request));
@@ -172,7 +172,7 @@ class PdfRequestFilterTest extends AbstractDatabaseAndSolrEnabledTest {
         HttpSession session = Mockito.mock(HttpSession.class);
         Mockito.when(session.getAttribute("pdf_quota")).thenReturn(quotaMap);
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        Mockito.when(request.getSession()).thenReturn(session);
+        Mockito.when(request.getSession(false)).thenReturn(session);
 
         // Page is already in the quota set, so it should be allowed regardless of percentage
         Assertions.assertTrue(PdfRequestFilter.checkPageAllowed("PPN123", "00000001.tif", 10, 10, request));
@@ -193,7 +193,7 @@ class PdfRequestFilterTest extends AbstractDatabaseAndSolrEnabledTest {
         HttpSession session = Mockito.mock(HttpSession.class);
         Mockito.when(session.getAttribute("pdf_quota")).thenReturn(quotaMap);
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        Mockito.when(request.getSession()).thenReturn(session);
+        Mockito.when(request.getSession(false)).thenReturn(session);
 
         // 10% of 10 = 1 allowed page, and 1 page is already in the set, so a new page must be rejected
         Assertions.assertFalse(PdfRequestFilter.checkPageAllowed("PPN123", "00000002.tif", 10, 10, request));
@@ -211,7 +211,7 @@ class PdfRequestFilterTest extends AbstractDatabaseAndSolrEnabledTest {
         HttpSession session = Mockito.mock(HttpSession.class);
         Mockito.when(session.getAttribute("pdf_quota")).thenReturn(quotaMap);
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        Mockito.when(request.getSession()).thenReturn(session);
+        Mockito.when(request.getSession(false)).thenReturn(session);
 
         // 50% of 10 = 5 allowed pages; quota is empty, so the page should be accepted and added
         Assertions.assertTrue(PdfRequestFilter.checkPageAllowed("PPN123", "00000001.tif", 50, 10, request));

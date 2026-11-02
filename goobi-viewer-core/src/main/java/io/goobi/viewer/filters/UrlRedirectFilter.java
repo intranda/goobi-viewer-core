@@ -86,7 +86,7 @@ public class UrlRedirectFilter implements Filter {
                         return;
                     }
 
-                    ViewHistory.setCurrentView(currentPath.get(), httpRequest.getSession());
+                    ViewHistory.setCurrentView(currentPath.get(), httpRequest.getSession(false));
                     if (!ViewerPathBuilder.startsWith(currentPath.get().getPagePath(), "cms") && currentPath.get().getCmsPage() != null) {
                         if (currentPath.get().getCmsPage().isMayContainUrlParameters()
                                 || StringUtils.isBlank(currentPath.get().getParameterPath().toString().replaceAll("/?\\d+/?", ""))) {

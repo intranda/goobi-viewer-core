@@ -79,13 +79,13 @@ public class SessionCounterFilter implements Filter {
             metadataMap.put("x-forwarded-for", req.getHeader("x-forwarded-for"));
             metadataMap.put("last request", now.format(DateTools.FORMATTERJAVAUTILDATETOSTRING));
             metadataMap.put("previous request",
-                    DateTools.getLocalDateTimeFromMillis(req.getSession().getLastAccessedTime(), false)
+                    DateTools.getLocalDateTimeFromMillis(req.getSession(false).getLastAccessedTime(), false)
                             .atZone(ZoneId.systemDefault())
                             .format(DateTools.FORMATTERJAVAUTILDATETOSTRING));
-            metadataMap.put("timeout", String.valueOf(req.getSession().getMaxInactiveInterval()) + " s");
+            metadataMap.put("timeout", String.valueOf(req.getSession(false).getMaxInactiveInterval()) + " s");
 
             Optional<Map<Object, Map>> logicalViews =
-                    Optional.ofNullable((Map) req.getSession().getAttribute("com.sun.faces.renderkit.ServerSideStateHelper.LogicalViewMap"));
+                    Optional.ofNullable((Map) req.getSession(false).getAttribute("com.sun.faces.renderkit.ServerSideStateHelper.LogicalViewMap"));
             Integer numberOfLogicalViews = logicalViews.map(map -> map.keySet().size()).orElse(0);
             Integer numberOfTotalViews = logicalViews.map(map -> {
                 try {

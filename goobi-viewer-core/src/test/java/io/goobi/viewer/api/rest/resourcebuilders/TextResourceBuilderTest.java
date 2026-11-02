@@ -39,8 +39,6 @@ import jakarta.servlet.http.HttpSession;
 
 class TextResourceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
 
-
-
     /**
      * @verifies prioritize plaintext over ALTO
      */
@@ -48,7 +46,7 @@ class TextResourceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
     void getFulltextMap_shouldPrioritizePlaintextOverAlto() throws Exception {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         HttpSession session = Mockito.mock(HttpSession.class);
-        Mockito.when(request.getSession()).thenReturn(session);
+        Mockito.when(request.getSession(false)).thenReturn(session);
         Mockito.when(session.getAttribute("userBean")).thenReturn(new UserBean());
 
         Map<java.nio.file.Path, String> result = new TextResourceBuilder().getFulltextMap(PI_KLEIUNIV, request);
@@ -63,7 +61,7 @@ class TextResourceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
     void getAltoAsZip_shouldThrowContentNotFoundExceptionIfNoAltoFilesFound() throws Exception {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         HttpSession session = Mockito.mock(HttpSession.class);
-        Mockito.when(request.getSession()).thenReturn(session);
+        Mockito.when(request.getSession(false)).thenReturn(session);
         Mockito.when(session.getAttribute("userBean")).thenReturn(new UserBean());
 
         // A record with no ALTO files must produce a 404 instead of an IllegalArgumentException
@@ -131,7 +129,7 @@ class TextResourceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
     void getFulltextAsZip_shouldThrowContentNotFoundExceptionIfNoFulltextFilesFound() throws Exception {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         HttpSession session = Mockito.mock(HttpSession.class);
-        Mockito.when(request.getSession()).thenReturn(session);
+        Mockito.when(request.getSession(false)).thenReturn(session);
         Mockito.when(session.getAttribute("userBean")).thenReturn(new UserBean());
 
         // A record with no fulltext files must produce a 404 instead of an IllegalArgumentException
