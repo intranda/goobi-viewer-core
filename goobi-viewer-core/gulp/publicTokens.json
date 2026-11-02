@@ -219,7 +219,7 @@
     "--search-list-hit-align-items",
     "--search-list-hit-column-gap",
     "--search-list-hit-columns-tablet",
-    "--search-list-hit-options-direction",
+    "--search-list-hit-options-button-min-height",
     "--search-list-hit-options-gap",
     "--search-list-hit-options-transition",
     "--search-list-hit-row-gap",
