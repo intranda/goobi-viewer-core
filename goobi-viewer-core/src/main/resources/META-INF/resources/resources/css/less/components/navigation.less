@@ -30,7 +30,7 @@
         position: relative;
         &.active > a,
         &.active > button {
-            background-color: @lightgray;
+            background-color: var(--bg-subtle);
         }
     }
     a,
@@ -44,12 +44,12 @@
         &:focus,
         &:active {
             text-decoration: none;
-            background-color: @lightgray;
+            background-color: var(--bg-subtle);
         }
     }
     .caret {
         margin-left: 5px;
-        color: @middlegray;
+        color: var(--fg-muted);
     }
     &__user-login {
     }
@@ -62,8 +62,9 @@
         top: calc(~'100% + 1px');
         left: 0;
         min-width: 250px;
-        border: 1px solid @lightgray;
-        background-color: @white;
+        border: 1px solid var(--border-default);
+        background-color: var(--bg-elevated);
+        color: var(--fg-default);
         z-index: 999;
         ul {
         }
@@ -74,7 +75,7 @@
                 height: 1px;
                 margin: 9px 0;
                 overflow: hidden;
-                background-color: @middlegray;
+                background-color: var(--border-strong);
             }
         }
         a,
@@ -105,8 +106,9 @@
         left: 0;
         width: 100%;
         padding: 15px;
-        border: 1px solid @lightgray;
-        background: @white;
+        border: 1px solid var(--border-default);
+        background: var(--bg-elevated);
+        color: var(--fg-default);
         z-index: 998;
         &.in {
             display: block;

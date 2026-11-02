@@ -1,7 +1,6 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
@@ -60,7 +59,6 @@
                                 <span class="pull-left">#{msg.widgetNerFacetting_setRange}:</span>
                                 <span class="pull-right">#{msg.widgetNerFacetting_filterTags}:</span>
                             </div>
-
                             <div class="clearfix" />
 
                             <!-- SET RANGE -->
@@ -132,9 +130,7 @@
                                     </a>
                                 </li>
                             </ul>
-
                             <div class="clearfix" />
-
                             <div class="overview-content" />
                         </div>
 
@@ -148,7 +144,6 @@
                                 <span class="pull-left">#{msg.widgetNerFacetting_setSection}:</span>
                                 <span class="pull-right">#{msg.widgetNerFacetting_filterTags}:</span>
                             </div>
-
                             <div class="clearfix" />
 
                             <!-- SET RANGE -->
@@ -214,7 +209,6 @@
                                     </a>
                                 </li>
                             </ul>
-
                             <div class="clearfix" />
 
                             <!-- SCALE -->
@@ -242,46 +236,42 @@
 
                             <!-- TAGS -->
                             <div id="sectionTags" />
-
                             <div class="clearfix" />
                         </div>
                     </div>
                 </div>
 
+                <!-- NER CONFIG SCRIPT -->
                 <script type="text/javascript">
                     var nerFacettingConfig = {
-    currentPage: '#{navigationHelper.currentPage}',
-    baseUrl: '#{request.contextPath}',
-    workId: '#{activeDocumentBean.viewManager.pi}',
-    overviewTrigger: '#overviewTrigger',
-    overviewContent: '.overview-content',
-    sectionTrigger: '#sectionTrigger',
-    sectionContent: '.section-content',
-    facettingTrigger: '.facetting-trigger',
-    setTagRange: '.set-tag-range-widget',
-    setTagRangeOverview: '.set-tag-range-widget.overview',
-    setTagRangeSection: '.set-tag-range-widget.section',
-    slider: '#sliderVertical',
-    sliderScale: '#sliderScale',
-    sectionTags: '#sectionTags',
-    currentTags: '.current-tags',
-    sliderHandle: '#sliderVertical .ui-slider-handle',
-    sliderSectionStripe: '#sliderScale .scale-section-stripe',
-    recurrenceNumber: 10,
-    recurrenceSectionNumber: 100,
-    loader: '#nerFacettingLoader',
-    msg: {
-        noJSON: '#{msg.widgetNerFacetting_noJSON}',
-        emptyTag: '#{msg.widgetNerFacetting_emptyTag}',
-        page: '#{msg.widgetNerFacetting_page}',
-        tags: '#{msg.widgetNerFacetting_tags}',
-    },
-};
-
-// NOTE: do not call viewerJS.nerFacetting.init() here. Initialization is handled centrally
-// in viewerJS.js (the "#widgetNerFacetting" block), which also sets nerFacettingConfig.sidebarRight.
-// Calling init() here as well binds every handler twice, causing duplicate NER tag requests and
-// an inconsistent filter-icon state.
+                        currentPage: '#{navigationHelper.currentPage}',
+                        baseUrl: '#{request.contextPath}',
+                        workId: '#{activeDocumentBean.viewManager.pi}',
+                        overviewTrigger: '#overviewTrigger',
+                        overviewContent: '.overview-content',
+                        sectionTrigger: '#sectionTrigger',
+                        sectionContent: '.section-content',
+                        facettingTrigger: '.facetting-trigger',
+                        setTagRange: '.set-tag-range-widget',
+                        setTagRangeOverview: '.set-tag-range-widget.overview',
+                        setTagRangeSection: '.set-tag-range-widget.section',
+                        slider: '#sliderVertical',
+                        sliderScale: '#sliderScale',
+                        sectionTags: '#sectionTags',
+                        currentTags: '.current-tags',
+                        sliderHandle: '#sliderVertical .ui-slider-handle',
+                        sliderSectionStripe: '#sliderScale .scale-section-stripe',
+                        recurrenceNumber: 10,
+                        recurrenceSectionNumber: 100,
+                        loader: '#nerFacettingLoader',
+                        msg: {
+                            noJSON: '#{msg.widgetNerFacetting_noJSON}',
+                            emptyTag: '#{msg.widgetNerFacetting_emptyTag}',
+                            page: '#{msg.widgetNerFacetting_page}',
+                            tags: '#{msg.widgetNerFacetting_tags}',
+                        },
+                    };
+                    // NO INIT HERE, VIEWERJS.JS INITS IT ONCE (HANDLERS WOULD BIND TWICE)
                 </script>
             </div>
         </h:panelGroup>

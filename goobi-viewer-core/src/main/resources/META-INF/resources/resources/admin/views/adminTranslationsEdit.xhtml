@@ -7,14 +7,14 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
             <f:event
                 type="preRenderView"
                 listener="#{navigationHelper.setCurrentPageAdmin('adminTranslationsEdit', [[ adminBean.currentTranslationGroup.selectedEntry.newEntryMode ? 'admin__translations__add_new_entry':'admin__translations__translate_field', adminBean.currentTranslationGroup != null ? msg[adminBean.currentTranslationGroup.name] : '']])}" />
-            <!-- reset TranslationGroup#fullyTranslatedEntryCount and TranslationGroup#untranslatedEntryCount to update progress bar. Gets called at every page reload and ajax call -->
+
+            <!-- RESET THE PROGRESS COUNTS, RUNS ON EVERY REQUEST -->
             <f:event
                 type="preRenderView"
                 listener="#{adminBean.resetCurrentTranslationGroupStatusCount()}" />
@@ -38,7 +38,6 @@
                             <h1 class="admin__title">#{msg[adminBean.currentTranslationGroup.name]}</h1>
                         </div>
                         <viewerComponent:adminBreadcrumbs />
-
                         <div class="admin__content-inner-content">
                             <ui:fragment rendered="#{!adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
                                 <!-- INFO TEXT -->
@@ -48,11 +47,9 @@
                                         escape="false" />
                                 </div>
                             </ui:fragment>
-
                             <div class="admin__content-wrapper">
                                 <div class="admin__content-main -sticky -refreshHCsticky">
                                     <h2>#{msg.admin__translations}</h2>
-
                                     <ui:fragment rendered="#{adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
                                         <div class="admin__default-block">
                                             <div class="admin__translations-fields -firstField form-group form-row">
@@ -80,7 +77,6 @@
                                             </div>
                                         </div>
                                     </ui:fragment>
-
                                     <div class="admin__default-block">
                                         <fieldset>
                                             <ui:fragment rendered="#{!adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
@@ -120,7 +116,6 @@
                                             </ui:repeat>
                                         </fieldset>
                                     </div>
-
                                     <div class="admin__final-actions">
                                         <ui:fragment rendered="#{adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
                                             <!-- CANCEL BUTTON -->
@@ -128,6 +123,7 @@
                                                 styleClass="btn admin__cancel-button"
                                                 value="#{msg.button__abort}"
                                                 action="#{adminBean.cancelSelectedMessageEntryAction}" />
+
                                             <!-- SAVE BUTTON -->
                                             <h:commandButton
                                                 styleClass="btn btn--default mr-3"
@@ -135,7 +131,6 @@
                                                 action="#{adminBean.saveSelectedMessageEntryAction}"
                                                 disabled="#{adminBean.currentTranslationGroup.selectedEntry.keySuffixBlank}" />
                                         </ui:fragment>
-
                                         <ui:fragment rendered="#{!adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
                                             <!-- RETURN BUTTON -->
                                             <h:outputLink
@@ -143,6 +138,7 @@
                                                 value="#{navigationHelper.applicationUrl}admin/translations/">
                                                 #{msg.admin__translations_return_to_overview}
                                             </h:outputLink>
+
                                             <!-- PREVIOUS BUTTON -->
                                             <h:commandButton
                                                 styleClass="btn btn--default mr-3"
@@ -150,6 +146,7 @@
                                                 action="#{adminBean.currentTranslationGroup.prevEntry}">
                                                 <f:ajax render="@form" />
                                             </h:commandButton>
+
                                             <!-- NEXT BUTTON -->
                                             <h:commandButton
                                                 styleClass="btn btn--full"
@@ -172,7 +169,6 @@
                                             </div>
                                         </div>
                                     </ui:fragment>
-
                                     <ui:fragment rendered="#{!adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
                                         <div class="admin__default-block">
                                             <div class="admin__sidebar-progress-wrapper">
@@ -201,11 +197,9 @@
                                                     styleClass="form-control admin__translations-search-input"
                                                     value="#{adminBean.currentTranslationGroup.filterString}"
                                                     immediate="true">
-
-														<f:ajax
+                                                    <f:ajax
                                                         execute="@form"
                                                         render="overviewList" />
-
                                                 </h:inputText>
                                                 <div class="admin__translations-search-clear">x</div>
                                                 <div class="admin__translations-search-action">
@@ -267,9 +261,11 @@
                         </div>
                     </h:form>
                 </h:panelGroup>
+
                 <!-- REATTACH HC STICKY AFTER AJAX CALL -->
                 <script>adminJS.translationsEdit.init();</script>
-                <!-- Keep translation lock alive; releases lock on navigation -->
+
+                <!-- KEEP THE TRANSLATION LOCK ALIVE, RELEASED ON NAVIGATION -->
                 <h:outputScript>
                     (function() {
                         if (!window.viewerJS || !viewerJS.WebSocket) { return; }

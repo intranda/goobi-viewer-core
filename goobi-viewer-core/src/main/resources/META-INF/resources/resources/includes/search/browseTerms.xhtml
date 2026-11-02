@@ -3,10 +3,6 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <ui:param
         name="termList"
@@ -14,7 +10,6 @@
     <ui:param
         name="baseUrl"
         value="#{baseUrl != null ? baseUrl : navigationHelper.termUrl.concat('/').concat(termBrowseBean.browsingMenuField).concat('/').concat(termBrowseBean.filterQuery).concat('/')}" />
-
     <ui:fragment rendered="#{!termBrowseBean.browsingMenuFieldTranslated}">
         <viewerComponent:alphabeticPaginator baseUrl="#{baseUrl}" />
     </ui:fragment>
@@ -29,7 +24,7 @@
                 items="#{termList}"
                 var="term"
                 varStatus="status">
-                <!-- newSearch5 pattern link -->
+                <!-- TERM LINK -->
                 <li>
                     <h:outputLink
                         value="#{navigationHelper.termUrl}/-/#{termBrowseBean.getBrowsingMenuFieldForLanguage(navigationHelper.localeString)}%3A%22#{term}%22/1/-/#{termBrowseBean.filterQuery}/#{navigationHelper.subThemeQueryParam}"
@@ -44,8 +39,7 @@
         </ul>
     </nav>
 
-    <div class="clearfix" />
-
+    <!-- PAGINATOR -->
     <viewerComponent:simplePaginator
         itemCount="#{termBrowseBean.lastPage}"
         itemActive="#{termBrowseBean.currentPage}"

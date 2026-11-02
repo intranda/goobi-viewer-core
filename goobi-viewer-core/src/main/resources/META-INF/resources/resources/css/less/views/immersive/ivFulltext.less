@@ -4,13 +4,15 @@
    ==============================================================*/
 
 .immersive {
+    /* PANEL */
     &__panel-fulltext {
         padding: 16px 16px 18px;
     }
 
+    /* FULLTEXT */
     &__fulltext {
-        color: @immersive-chrome-fg;
-        font-size: @fontMedium;
+        color: var(--fg-default);
+        font-size: var(--font-size-body-small);
         line-height: 1.7;
         white-space: pre-wrap;
         overflow-wrap: break-word;
@@ -20,7 +22,7 @@
             padding-top: 8px;
             font-style: italic;
             text-align: center;
-            color: @immersive-chrome-fg;
+            color: var(--fg-default);
             opacity: 0.75;
         }
     }
@@ -41,18 +43,20 @@
         }
     }
 
+    /* HIGHLIGHT */
     &__highlight {
-        border: 2px solid @immersive-accent;
+        border: 2px solid var(--border-brand);
         background-color: transparent;
         pointer-events: none;
         border-radius: 1px;
         transition: background-color @immersive-transition;
 
         &.-active {
-            background-color: @immersive-highlight-bg;
+            background-color: rgb(from var(--bg-highlight) r g b / 35%);
         }
     }
 
+    /* TEXT STRUCTURE */
     &__fulltext-block {
         margin: 0 0 14px;
         padding-left: 10px;
@@ -67,8 +71,8 @@
         }
 
         &.is-linked-active {
-            border-left-color: ~'rgb(var(--immersive-ocr-block-rgb))';
-            background-color: ~'rgba(var(--immersive-ocr-block-rgb), 0.08)';
+            border-left-color: var(--color-ocr-block);
+            background-color: rgb(from var(--color-ocr-block) r g b / 0.08);
         }
     }
 
@@ -78,7 +82,7 @@
         transition: background-color 0.1s ease;
 
         &.is-linked-active {
-            background-color: ~'rgba(var(--immersive-ocr-line-rgb), 0.16)';
+            background-color: rgb(from var(--color-ocr-line) r g b / 0.16);
         }
     }
 
@@ -86,14 +90,14 @@
         border-radius: 2px;
         transition: background-color 0.1s ease;
 
-        /* Near-opaque chip with its own ink: a translucent fill over the
-           stacked line/block tints cannot hold AA contrast in the dark theme. */
+        /* WORD CHIP */
         &.is-linked-active {
-            background-color: ~'rgba(var(--immersive-ocr-word-rgb), 0.9)';
-            color: var(--immersive-ocr-word-fg);
+            background-color: rgb(from var(--color-ocr-word) r g b / 0.9);
+            color: var(--color-on-ocr-word);
         }
     }
 
+    /* TEXT REGION */
     &__text-region {
         pointer-events: auto;
         border: 2px solid transparent;
@@ -102,29 +106,29 @@
             background-color 0.1s ease;
 
         &.is-linked-active {
-            border-color: @immersive-accent;
-            background-color: @immersive-highlight-bg;
+            border-color: var(--border-brand);
+            background-color: rgb(from var(--bg-highlight) r g b / 35%);
         }
     }
 
     &__text-region-block {
         border-width: 1px;
         border-style: dashed;
-        border-color: ~'rgba(var(--immersive-ocr-block-rgb), 0.5)';
+        border-color: rgb(from var(--color-ocr-block) r g b / 0.5);
 
         &.is-linked-active {
-            border-color: ~'rgb(var(--immersive-ocr-block-rgb))';
-            background-color: ~'rgba(var(--immersive-ocr-block-rgb), 0.08)';
+            border-color: var(--color-ocr-block);
+            background-color: rgb(from var(--color-ocr-block) r g b / 0.08);
         }
     }
 
     &__text-region-line {
         border-width: 1px;
-        border-color: ~'rgba(var(--immersive-ocr-line-rgb), 0.25)';
+        border-color: rgb(from var(--color-ocr-line) r g b / 0.25);
 
         &.is-linked-active {
-            border-color: ~'rgb(var(--immersive-ocr-line-rgb))';
-            background-color: ~'rgba(var(--immersive-ocr-line-rgb), 0.16)';
+            border-color: var(--color-ocr-line);
+            background-color: rgb(from var(--color-ocr-line) r g b / 0.16);
         }
     }
 
@@ -132,18 +136,19 @@
         border-width: 1px;
 
         &.is-linked-active {
-            border-color: ~'rgb(var(--immersive-ocr-word-rgb))';
-            background-color: ~'rgba(var(--immersive-ocr-word-rgb), 0.35)';
+            border-color: var(--color-ocr-word);
+            background-color: rgb(from var(--color-ocr-word) r g b / 0.35);
         }
     }
 
+    /* FULLTEXT LEGEND */
     &__fulltext-legend {
         display: flex;
         flex-wrap: wrap;
         gap: 4px 14px;
         margin: 10px 0 12px;
-        color: @immersive-chrome-fg;
-        font-size: @fontSmall;
+        color: var(--fg-default);
+        font-size: var(--font-size-caption);
     }
 
     &__fulltext-legend-item {
@@ -162,18 +167,18 @@
     }
 
     &__fulltext-legend-item-block::before {
-        border: 1px dashed ~'rgb(var(--immersive-ocr-block-rgb))';
-        background-color: ~'rgba(var(--immersive-ocr-block-rgb), 0.08)';
+        border: 1px dashed var(--color-ocr-block);
+        background-color: rgb(from var(--color-ocr-block) r g b / 0.08);
     }
 
     &__fulltext-legend-item-line::before {
-        border-color: ~'rgb(var(--immersive-ocr-line-rgb))';
-        background-color: ~'rgba(var(--immersive-ocr-line-rgb), 0.16)';
+        border-color: var(--color-ocr-line);
+        background-color: rgb(from var(--color-ocr-line) r g b / 0.16);
     }
 
     &__fulltext-legend-item-word::before {
-        border-color: ~'rgb(var(--immersive-ocr-word-rgb))';
-        background-color: ~'rgba(var(--immersive-ocr-word-rgb), 0.9)';
+        border-color: var(--color-ocr-word);
+        background-color: rgb(from var(--color-ocr-word) r g b / 0.9);
     }
 }
 

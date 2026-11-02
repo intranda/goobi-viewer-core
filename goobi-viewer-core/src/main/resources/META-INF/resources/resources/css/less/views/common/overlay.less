@@ -1,6 +1,8 @@
-/**
- * Styling for overlays covering the entire screen if active
- */
+/* ==============================================================
+   Overlay
+   style declarations for overlay.xhtml
+   ==============================================================*/
+/* OVERLAY */
 [data-overlay='content'] {
     display: none;
 }
@@ -15,21 +17,13 @@
         left: 0;
         width: 100vw;
         height: 100vh;
-        background-color: rgba(0, 0, 0, 0.8);
+        background-color: rgb(from var(--bg-scrim) r g b / 80%);
         overflow-y: auto;
         z-index: 9999;
         &.fullscreen {
             & > * {
                 width: 100%;
                 height: 100%;
-            }
-            .fullscreen-close {
-                position: absolute;
-                bottom: 35px;
-                right: 15px;
-                font-size: 1.4rem;
-                width: auto;
-                height: auto;
             }
         }
     }
@@ -38,34 +32,26 @@
         background-color: transparent;
     }
     .modal {
-        background-color: rgba(0, 0, 0, 0.8);
-    }
-    .fullscreen-close {
-        display: none;
+        background-color: rgb(from var(--bg-scrim) r g b / 80%);
     }
 }
 
+/* MODAL OVERLAY */
 .overlay-modal {
-    &__inner {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100%;
-        padding: 10px;
-    }
     .modal-content {
         max-width: 800px;
     }
 }
 
+/* PLAIN OVERLAY */
 .overlay-plain {
     .close {
         position: absolute;
         right: 40px;
         top: 40px;
         z-index: 2000;
-        background: rgba(255, 255, 255, 0.85);
-        color: black;
+        background: rgb(from var(--bg-surface) r g b / 85%);
+        color: var(--fg-default);
         opacity: 1;
         width: 40px;
         height: 40px;
@@ -76,9 +62,26 @@
     }
 }
 
+/* FULLSCREEN OVERLAY */
 .overlay-fullscreen {
     iframe {
         width: 100%;
         height: 100%;
     }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
 }

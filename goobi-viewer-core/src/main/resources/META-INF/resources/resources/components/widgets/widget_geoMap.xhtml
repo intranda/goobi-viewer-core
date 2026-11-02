@@ -1,12 +1,11 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
-    <!-- INTERFACE OPTIONS -->
+    <!-- INTERFACE -->
     <composite:interface>
         <composite:attribute
             name="geoMap"
@@ -93,10 +92,10 @@
                 $('#widgetGeoMap_#{cc.attrs.geoMap.id}').show();
                 $(document).ready(() => {
                     $('#expandMap_#{cc.attrs.geoMap.id}').on('click', (e) => {
-                    	$('[data-loader="fullOverlay"]').show();
+                        $('[data-loader="fullOverlay"]').show();
                         let oembedUrl = "#{cc.attrs.geoMap.getOEmbedURI('_parent')}";
                         viewerJS.oembed(oembedUrl).then(($node) => {
-                        	$node.on('load', () => $('[data-loader="fullOverlay"]').hide());
+                            $node.on('load', () => $('[data-loader="fullOverlay"]').hide());
                             viewerJS.overlay.open($node, true, true, () => $node.remove());
                         });
                     });

@@ -5,9 +5,7 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
@@ -33,16 +31,13 @@
                         <h1 class="admin__title">#{msg.admin__category_edit}</h1>
                     </ui:fragment>
                 </div>
-
                 <viewerComponent:adminBreadcrumbs />
-
                 <div class="admin__content-inner-content">
                     <!-- CREATE / EDIT -->
                     <h:form
                         id="adminCategoryCreateForm"
                         prependId="false">
                         <h2>#{msg.admin__category_general}</h2>
-
                         <div class="admin__default-block">
                             <fieldset>
                                 <!-- TITLE -->
@@ -68,6 +63,7 @@
                                         </button>
                                     </div>
                                 </div>
+
                                 <!-- DESCRIPTION -->
                                 <div class="form-group form-row">
                                     <div class="col-2 control-label admin__form-label">

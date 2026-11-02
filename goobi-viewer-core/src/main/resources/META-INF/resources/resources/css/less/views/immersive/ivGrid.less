@@ -8,7 +8,7 @@
 .mx-immersive-grid-slider-track() {
     height: 4px;
     border-radius: 2px;
-    background: linear-gradient(to right, @immersive-accent 0 var(--immersive-slider-fill), @immersive-slider-track var(--immersive-slider-fill));
+    background: linear-gradient(to right, var(--fg-brand) 0 var(--_immersive-slider-fill), var(--border-strong) var(--_immersive-slider-fill));
 }
 
 .mx-immersive-grid-slider-thumb() {
@@ -16,8 +16,10 @@
     height: 16px;
     border: 0;
     border-radius: 50%;
-    background-color: @immersive-accent;
-    box-shadow: @immersive-thumb-shadow;
+    background-color: var(--fg-brand);
+    box-shadow:
+        0 1px 2px rgb(from var(--shadow-color) r g b / 10%),
+        0 4px 10px rgb(from var(--shadow-color) r g b / 13%);
     transition: transform @immersive-transition;
 }
 
@@ -26,18 +28,18 @@
         position: absolute;
         inset: 0;
         z-index: 300;
-        background-color: @immersive-canvas-bg;
-        --immersive-grid-col: 150px;
-        --immersive-grid-thumb-h: 220px;
+        background-color: var(--bg-sunken);
+        --_immersive-grid-col: 150px;
+        --_immersive-grid-thumb-h: 220px;
 
         &[data-thumb-size='0'] {
-            --immersive-grid-col: 110px;
-            --immersive-grid-thumb-h: 150px;
+            --_immersive-grid-col: 110px;
+            --_immersive-grid-thumb-h: 150px;
         }
 
         &[data-thumb-size='2'] {
-            --immersive-grid-col: 230px;
-            --immersive-grid-thumb-h: 330px;
+            --_immersive-grid-col: 230px;
+            --_immersive-grid-thumb-h: 330px;
         }
 
         .thumbnails-image-wrapper {
@@ -50,7 +52,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            height: var(--immersive-grid-thumb-h);
+            height: var(--_immersive-grid-thumb-h);
             text-decoration: none;
             transition: height 0.2s ease;
         }
@@ -61,7 +63,9 @@
             width: auto;
             height: auto;
             border-radius: 2px;
-            box-shadow: @immersive-thumb-shadow;
+            box-shadow:
+                0 1px 2px rgb(from var(--shadow-color) r g b / 10%),
+                0 4px 10px rgb(from var(--shadow-color) r g b / 13%);
             transition:
                 transform 0.2s ease,
                 box-shadow 0.2s ease;
@@ -69,7 +73,9 @@
 
         .thumbnails-image-wrapper:hover .thumbnails-image {
             transform: translateY(-5px);
-            box-shadow: @immersive-thumb-shadow-hover;
+            box-shadow:
+                0 2px 4px rgb(from var(--shadow-color) r g b / 10%),
+                0 14px 28px rgb(from var(--shadow-color) r g b / 22%);
         }
 
         .thumbnails-image.immersive__grid-thumb--denied {
@@ -90,8 +96,8 @@
 
         .thumbnails-label {
             max-width: 100%;
-            color: @immersive-chrome-fg;
-            font-size: @fontSmall;
+            color: var(--fg-default);
+            font-size: var(--font-size-caption);
             font-weight: 600;
             white-space: nowrap;
             overflow: hidden;
@@ -101,12 +107,12 @@
         .thumbnails-image-wrapper.selected {
             .thumbnails-image {
                 box-shadow:
-                    0 0 0 3px @immersive-accent,
-                    0 6px 16px ~'rgba(var(--immersive-accent-rgb), 0.35)';
+                    0 0 0 3px var(--fg-brand),
+                    0 6px 16px rgb(from var(--fg-brand) r g b / 0.35);
             }
 
             .thumbnails-label {
-                color: @immersive-accent;
+                color: var(--fg-brand);
                 font-weight: 700;
             }
         }
@@ -131,7 +137,7 @@
             transform @immersive-transition;
 
         &:hover {
-            color: @immersive-accent;
+            color: var(--fg-brand);
             transform: scale(1.12);
         }
     }
@@ -166,25 +172,25 @@
         height: 40px;
         padding: 0 14px;
         .mx-immersive-floating();
-        color: @immersive-chrome-fg;
+        color: var(--fg-default);
     }
 
     &__grid-size-icon {
         opacity: 0.7;
+    }
 
-        &-small {
-            width: 16px;
-            height: 16px;
-        }
+    &__grid-size-icon-small {
+        width: 16px;
+        height: 16px;
+    }
 
-        &-large {
-            width: 24px;
-            height: 24px;
-        }
+    &__grid-size-icon-large {
+        width: 24px;
+        height: 24px;
     }
 
     &__grid-size-slider {
-        --immersive-slider-fill: 50%;
+        --_immersive-slider-fill: 50%;
         appearance: none;
         width: 140px;
         height: 24px;
@@ -203,7 +209,6 @@
         &::-webkit-slider-thumb {
             .mx-immersive-grid-slider-thumb();
             appearance: none;
-            // centers the 16px thumb on the 4px webkit track
             margin-top: -6px;
         }
 
@@ -224,7 +229,7 @@
 
     &__grid-mount {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(var(--immersive-grid-col), 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(var(--_immersive-grid-col), 1fr));
         gap: 26px 20px;
         max-width: 100%;
         margin: 0 auto;

@@ -5,9 +5,7 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
@@ -33,6 +31,7 @@
                     <div class="admin__title-bar">
                         <!-- TITLE -->
                         <h1 class="admin__title">#{msg.cms_overview}</h1>
+
                         <!-- CREATE NEW PAGE -->
                         <ui:fragment rendered="#{userBean.user.cmsAdmin}">
                             <a
@@ -42,9 +41,7 @@
                             </a>
                         </ui:fragment>
                     </div>
-
                     <viewerComponent:adminBreadcrumbs />
-
                     <div class="admin__content-inner-content">
                         <div class="admin__table-tools">
                             <!-- PAGINATOR -->
@@ -53,7 +50,6 @@
                             </div>
 
                             <!-- FILTER -->
-                            <!-- TODO add categories and subtheme to this filter, too -->
                             <div class="admin__table-filter">
                                 <viewerComponent:dataTableColumnFilter
                                     key="admin__cms_page_search"
@@ -145,6 +141,7 @@
                                                     aria-label="#{msg.edit}: #{page.title}">
                                                     #{msg.edit}
                                                 </a>
+
                                                 <!-- PREVIEW -->
                                                 <ui:fragment rendered="#{page.published}">
                                                     <a
@@ -216,7 +213,6 @@
                                 </div>
                             </ui:repeat>
                         </div>
-
                         <div class="admin__table-tools">
                             <!-- BOTTOM PAGINATOR -->
                             <div class="admin__table-paginator">
@@ -228,6 +224,7 @@
             </h:panelGroup>
         </div>
 
+        <!-- OVERVIEW SCRIPT -->
         <script type="text/javascript">
             $(document).ready(function () {
                 var dataTableConfig = {

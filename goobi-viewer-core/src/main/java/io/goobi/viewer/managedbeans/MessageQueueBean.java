@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.commons.lang3.StringUtils;
@@ -83,6 +84,11 @@ import jakarta.jms.Session;
 public class MessageQueueBean implements Serializable {
 
     private static final Logger log = LogManager.getLogger(MessageQueueBean.class);
+
+    /** Minimum time between two cleanups of old finished messages. */
+    static final long MESSAGE_CLEANUP_INTERVAL_MILLIS = 60L * 60 * 1000;
+    /** Time of the last cleanup of old finished messages (0 = not yet run, so the first call after startup cleans up). */
+    private static final AtomicLong LAST_MESSAGE_CLEANUP = new AtomicLong(0);
 
     private static final long serialVersionUID = -8818079687932871359L;
 
@@ -420,7 +426,17 @@ public class MessageQueueBean implements Serializable {
         cleanOldMessages();
     }
 
+    /**
+     * Deletes finished messages older than the configured purge interval, but at most once per {@link #MESSAGE_CLEANUP_INTERVAL_MILLIS}.
+     * This is called whenever a message is queued or processed; running the cleanup each time made every queued task (e.g. one per indexed
+     * record) wait for a database-wide delete.
+     */
     private static void cleanOldMessages() {
+        long now = System.currentTimeMillis();
+        long last = LAST_MESSAGE_CLEANUP.get();
+        if (now - last < MESSAGE_CLEANUP_INTERVAL_MILLIS || !LAST_MESSAGE_CLEANUP.compareAndSet(last, now)) {
+            return;
+        }
         try {
             int deleteAfterDays = DataManager.getInstance().getConfiguration().getActiveMQMessagePurgeInterval();
             if (deleteAfterDays > 0) {

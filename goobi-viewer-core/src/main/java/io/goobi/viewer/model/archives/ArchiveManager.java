@@ -29,7 +29,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -41,6 +40,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
@@ -52,7 +52,6 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
-import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
@@ -65,6 +64,11 @@ public class ArchiveManager implements Serializable {
     private static final long serialVersionUID = -2417652614144759711L;
 
     private static final Logger logger = LogManager.getLogger(ArchiveManager.class);
+
+    /** Number of linked records checked per query when looking for the neighbors of an archive node. */
+    private static final int NEIGHBOR_SCAN_PAGE_SIZE = 100;
+    /** Maximum number of linked record pages checked when looking for the neighbors of an archive node. */
+    private static final int NEIGHBOR_SCAN_MAX_PAGES = 10;
 
     private final ArchiveParser eadParser;
 
@@ -253,17 +257,26 @@ public class ArchiveManager implements Serializable {
     }
 
     /**
-     * 
+     * Resolves the archive containing the given entry and loads its tree, unless the archive is shown as catalog view: that view never displays the
+     * tree, and catalogs can hold around a million entries.
+     *
      * @param identifier EAD node ID used to locate the containing archive
      * @return ArchiveResource
      * @throws IllegalStateException
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @should resolve the archive without loading its tree when it is shown as catalog
      */
     public ArchiveResource loadArchiveForEntry(String identifier) throws IllegalStateException, PresentationException, IndexUnreachableException {
         ArchiveResource resource = getArchiveForEntrySolr(identifier);
-        this.initializeArchiveTree(resource);
+        if (resource == null || !isCatalogView(resource)) {
+            this.initializeArchiveTree(resource);
+        }
         return resource;
+    }
+
+    boolean isCatalogView(ArchiveResource resource) {
+        return DataManager.getInstance().getCardCatalogManager().getCatalogType(resource.getResourceId()).isPresent();
     }
 
     /**
@@ -313,9 +326,6 @@ public class ArchiveManager implements Serializable {
             throw new IllegalArgumentException("entryId may not be null");
         }
 
-        Optional<String> prev = Optional.empty();
-        Optional<String> next = Optional.empty();
-
         // Determine main archive PI for the given node ID
         String query1 = "+" + SolrConstants.EAD_NODE_ID + ":\"" + entryId + "\" +" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name();
         SolrDocument archiveRootDoc = DataManager.getInstance()
@@ -323,53 +333,84 @@ public class ArchiveManager implements Serializable {
                 .getFirstDoc(query1, Collections.singletonList(SolrConstants.PI_TOPSTRUCT));
         if (archiveRootDoc == null) {
             logger.trace("No indexed EAD parent archive found");
-            return Pair.of(prev, next);
+            return Pair.of(Optional.empty(), Optional.empty());
         }
 
-        // Get list of all node IDs for the archive, sorted by EAD_NODE_ID
         String archivePi = SolrTools.getSingleFieldStringValue(archiveRootDoc, SolrConstants.PI_TOPSTRUCT);
-        String query2 = "+" + SolrConstants.PI_TOPSTRUCT + ":\"" + archivePi + "\" +" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name();
-        SolrDocumentList archiveNodeDocs = DataManager.getInstance()
-                .getSearchIndex()
-                .search(query2, SolrSearchIndex.MAX_HITS, null, Collections.singletonList(SolrConstants.EAD_NODE_ID));
-        Set<String> archiveNodeIds = archiveNodeDocs.stream()
-                .map(doc -> SolrTools.getSingleFieldStringValue(doc, SolrConstants.EAD_NODE_ID))
-                .filter(StringUtils::isNotEmpty)
-                .collect(Collectors.toSet());
-
-        // Find records with linked archive nodes that belong to the relevant archive.
-        // Require a PI to restrict the hits to top-level records: sub-structure DOCSTRCT elements carry
-        // EAD_NODE_ID but no PI, are not navigable targets, and would otherwise produce a null PI below.
-        String query3 =
-                "+" + SolrConstants.PI + ":* +" + SolrConstants.EAD_NODE_ID + ":* +" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name();
-        SolrDocumentList linkedRecordDocs = DataManager.getInstance()
-                .getSearchIndex()
-                .search(query3, SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(SolrConstants.EAD_NODE_ID, "asc")),
-                        Arrays.asList(SolrConstants.PI, SolrConstants.EAD_NODE_ID));
-
-        // Filter records, leaving only those linked to nodes in the relevant archive
-        List<SolrDocument> relevantRecordDocs = linkedRecordDocs.stream()
-                .filter(doc -> archiveNodeIds.contains(SolrTools.getSingleFieldStringValue(doc, SolrConstants.EAD_NODE_ID)))
-                .toList();
-
-        ListIterator<SolrDocument> iter = relevantRecordDocs.listIterator();
-        while (iter.hasNext()) {
-            SolrDocument doc = iter.next();
-            String pi = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI);
-            String nodeId = SolrTools.getSingleFieldStringValue(doc, SolrConstants.EAD_NODE_ID);
-            if (entryId.equals(nodeId)) {
-                if (iter.hasNext()) {
-                    String nextPi = SolrTools.getSingleFieldStringValue(iter.next(), SolrConstants.PI);
-                    // Use ofNullable to stay null-safe if a hit unexpectedly lacks a PI (Optional.of would throw an NPE)
-                    next = Optional.ofNullable(nextPi);
-                }
-                break;
-            }
-            // Use ofNullable to stay null-safe if a hit unexpectedly lacks a PI (Optional.of would throw an NPE)
-            prev = Optional.ofNullable(pi);
-        }
+        Optional<String> prev = Optional.ofNullable(findLinkedRecordNeighbor(archivePi, entryId, false));
+        Optional<String> next = Optional.ofNullable(findLinkedRecordNeighbor(archivePi, entryId, true));
 
         return Pair.of(prev, next);
+    }
+
+    /**
+     * Finds the record linked to a node of the given archive whose EAD_NODE_ID directly precedes or follows the given node ID. Linked records are
+     * scanned in EAD_NODE_ID order in pages of {@link #NEIGHBOR_SCAN_PAGE_SIZE}; records linked to nodes of other archives are skipped. The
+     * scan stops after {@link #NEIGHBOR_SCAN_MAX_PAGES} pages.
+     *
+     * @param archivePi PI of the archive
+     * @param entryId EAD node ID of the current entry
+     * @param following If true, look for the next record; otherwise for the previous one
+     * @return PI of the neighboring record; null if none found
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    private static String findLinkedRecordNeighbor(String archivePi, String entryId, boolean following)
+            throws PresentationException, IndexUnreachableException {
+        String quotedEntryId = quote(entryId);
+        String range = following ? "[" + quotedEntryId + " TO *]" : "[* TO " + quotedEntryId + "]";
+        // Require a PI to restrict the hits to top-level records: sub-structure DOCSTRCT elements carry
+        // EAD_NODE_ID but no PI, are not navigable targets, and would otherwise produce a null PI below.
+        String query = "+" + SolrConstants.PI + ":* +" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name() + " +" + SolrConstants.EAD_NODE_ID
+                + ":" + range + " -" + SolrConstants.EAD_NODE_ID + ":" + quotedEntryId;
+        List<StringPair> sortFields = Collections.singletonList(new StringPair(SolrConstants.EAD_NODE_ID, following ? "asc" : "desc"));
+        for (int page = 0; page < NEIGHBOR_SCAN_MAX_PAGES; page++) {
+            SolrDocumentList linkedRecordDocs = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(query, page * NEIGHBOR_SCAN_PAGE_SIZE, NEIGHBOR_SCAN_PAGE_SIZE, sortFields, null,
+                            Arrays.asList(SolrConstants.PI, SolrConstants.EAD_NODE_ID))
+                    .getResults();
+            if (linkedRecordDocs.isEmpty()) {
+                return null;
+            }
+
+            // Determine which of the linked nodes belong to the relevant archive
+            Set<String> nodeIds = linkedRecordDocs.stream()
+                    .map(doc -> SolrTools.getSingleFieldStringValue(doc, SolrConstants.EAD_NODE_ID))
+                    .filter(StringUtils::isNotEmpty)
+                    .collect(Collectors.toSet());
+            String archiveNodesQuery = "+" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name() + " +" + SolrConstants.PI_TOPSTRUCT + ":"
+                    + quote(archivePi) + " +" + SolrConstants.EAD_NODE_ID + ":("
+                    + nodeIds.stream().map(ArchiveManager::quote).collect(Collectors.joining(" ")) + ")";
+            Set<String> archiveNodeIds = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(archiveNodesQuery, nodeIds.size(), null, Collections.singletonList(SolrConstants.EAD_NODE_ID))
+                    .stream()
+                    .map(doc -> SolrTools.getSingleFieldStringValue(doc, SolrConstants.EAD_NODE_ID))
+                    .collect(Collectors.toSet());
+
+            for (SolrDocument doc : linkedRecordDocs) {
+                String pi = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI);
+                if (pi != null && archiveNodeIds.contains(SolrTools.getSingleFieldStringValue(doc, SolrConstants.EAD_NODE_ID))) {
+                    return pi;
+                }
+            }
+            if (linkedRecordDocs.size() < NEIGHBOR_SCAN_PAGE_SIZE) {
+                return null;
+            }
+        }
+        logger.debug("No neighbor of archive node {} found within the first {} linked records.", entryId,
+                NEIGHBOR_SCAN_MAX_PAGES * NEIGHBOR_SCAN_PAGE_SIZE);
+
+        return null;
+    }
+
+    /**
+     * @param value Value to quote
+     * @return Given value escaped and wrapped in double quotes for use in a Solr query
+     */
+    private static String quote(String value) {
+        return "\"" + ClientUtils.escapeQueryChars(value) + "\"";
     }
 
     /**
@@ -393,7 +434,7 @@ public class ArchiveManager implements Serializable {
             ArchiveEntry trueRoot = getTrueRoot(archives.get(resource));
             if (entry == null) {
                 if (trueRoot == null) {
-                    Collections.emptyList();
+                    return Collections.emptyList();
                 }
                 return Collections.singletonList(trueRoot);
             } else if (trueRoot != null && (trueRoot.equals(entry) || trueRoot.equals(entry.getParentNode()))) {
@@ -497,7 +538,7 @@ public class ArchiveManager implements Serializable {
                 }
             } catch (IOException | HTTPException e) {
                 this.databaseState = DatabaseState.ERROR_NOT_REACHABLE;
-                throw new ArchiveConnectionException("Error retrieving database {} from {}", resource.toString(), e);
+                throw new ArchiveConnectionException("Error retrieving database {}", resource.toString(), e);
             }
         }
     }

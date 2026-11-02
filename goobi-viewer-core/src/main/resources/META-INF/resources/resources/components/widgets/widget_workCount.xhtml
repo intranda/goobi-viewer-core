@@ -1,11 +1,10 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:util="http://goobi.io/util">
-    <!-- interface options -->
+    <!-- INTERFACE -->
     <composite:interface>
         <composite:attribute
             name="collapse"
@@ -14,7 +13,7 @@
             default="false" />
     </composite:interface>
 
-    <!-- component content -->
+    <!-- CONTENT -->
     <composite:implementation>
         <!-- WIDGET WORK COUNT STANDARD -->
         <h:panelGroup rendered="#{cc.attrs.collapse == false}">
@@ -24,7 +23,6 @@
                 <div class="widget__topbar widget-workcount__topbar">
                     <h2 class="widget__title widget-workcount__title">#{msg.totalNumberOfVolumes}</h2>
                 </div>
-
                 <div class="widget__body widget-workcount__body">
                     <span>
                         <strong>#{searchBean.totalNumberOfVolumes}</strong>
@@ -52,7 +50,6 @@
                         </a>
                     </h2>
                 </div>
-
                 <div
                     id="workCountCollapse"
                     class="widget__body widget-workcount__body collapse">

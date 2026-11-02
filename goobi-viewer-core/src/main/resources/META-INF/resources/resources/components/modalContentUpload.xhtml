@@ -1,17 +1,15 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:o="http://omnifaces.org/ui"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <composite:interface />
+
     <composite:implementation>
-        <!-- Modal -->
+        <!-- MODAL -->
         <div
             class="modal fade content-upload-modal show"
             id="contentUploadModal"
@@ -33,12 +31,10 @@
                             <span aria-hidden="true">x</span>
                         </button>
                     </div>
-
                     <div class="modal-body">
                         <p>
                             <h:outputText value="#{msg.user__upload_content_modal_desc}" />
                         </p>
-
                         <h:form
                             id="content-upload-modal__contentUploadForm"
                             styleClass="form-horizontal"
@@ -56,7 +52,6 @@
                                         <span class="content-upload-modal__label-span">#{msg.title}:</span>
                                         <span class="content-upload-modal__label-required-field">(#{msg.form__required_field})</span>
                                     </label>
-
                                     <div class="col-12 col-lg-9">
                                         <h:inputText
                                             id="content-upload-modal__uploadJobTitle"
@@ -81,7 +76,6 @@
                                         class="col-lg-3 control-label">
                                         <span class="content-upload-modal__label-span">#{msg.description}:</span>
                                     </label>
-
                                     <div class="col-12 col-lg-9">
                                         <h:inputTextarea
                                             id="content-upload-modal__uploadJobDescription"
@@ -102,12 +96,11 @@
                                         class="col-lg-3 control-label">
                                         <span class="content-upload-modal__label-span">#{msg.admin__create_record__files__title}:</span>
                                     </label>
-
                                     <div class="col-12 col-lg-9 content-upload-modal__file-upload-button">
                                         <o:inputFile
                                             value="#{uploadBean.currentUploadJob.files}"
                                             multiple="true">
-                                            <!--                                             <f:ajax listener="#{uploadBean.uploadFiles}" /> -->
+                                            <!-- NO CHILDREN -->
                                         </o:inputFile>
                                     </div>
                                 </div>
@@ -161,18 +154,16 @@
                                     </div>
                                 </h:panelGroup>
                             </div>
-                            <!-- REQUIRED CHECKBOX FOR USAGE OF PERSONAL DATA OR ANYTHING ELSE -->
-                            <!-- TO DO: CONFIG SWITCH FOR THIS RENDERED CONDITION CHECKBOX, VALUE + ADDITIONAL TEXT WHICH IS SEND BY FORM(?) -->
+
+                            <!-- REQUIRED CONSENT CHECKBOX -->
                             <div class="content-upload-modal__required-checkbox-wrapper">
                                 <div class="form-row">
                                     <p class="col-12 content-upload-modal__accept-terms-text">#{msg.user__upload_content_modal_consent_desc}</p>
-
                                     <div
                                         id="sendContactFormAcceptTerms"
                                         class="col-12 col-sm-3 content-upload-modal__accept-terms-label">
                                         <label class="mr-3 mb-0">#{msg.admin__terms_of_use__accept}:</label>
                                     </div>
-
                                     <div class="col-12 col-md-9 mt-3 mt-sm-0 content-upload-modal__accept-terms-radios admin__radio-switch">
                                         <h:selectOneRadio
                                             group="requiredUploadJobTerms"

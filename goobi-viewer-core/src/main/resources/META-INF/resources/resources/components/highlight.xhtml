@@ -2,7 +2,6 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html">
     <composite:interface>
@@ -21,7 +20,7 @@
     </composite:interface>
 
     <composite:implementation>
-        <!-- CONDITION: IS ANY HIGHLIGHTED OBJECT SET UP FOR THE CURRENT DATE? -->
+        <!-- HIGHLIGHT FOR THE CURRENT DATE -->
         <c:set
             scope="request"
             var="highlight"
@@ -30,7 +29,7 @@
             styleClass="highlighted-object"
             layout="block"
             rendered="#{highlight != null}">
-            <!-- CONDITION: DOES AN OBJECT IMAGE EXIST? YES: RENDER LINK + IMAGE + IMAGE TITLE -->
+            <!-- WITH IMAGE, LINK AND TITLE -->
             <ui:fragment rendered="#{highlight.hasImageURI()}">
                 <a
                     class="highlighted-object__link"
@@ -47,7 +46,7 @@
                 </a>
             </ui:fragment>
 
-            <!-- CONDITION: DOES AN OBJECT IMAGE EXIST? NO: RENDER LINK ONLY -->
+            <!-- WITHOUT IMAGE, LINK ONLY -->
             <ui:fragment rendered="#{!highlight.hasImageURI()}">
                 <a
                     class="highlighted-object__no-image-link"
@@ -61,9 +60,9 @@
                     items="#{highlight.metadataList}"
                     var="metadata">
                     <h:panelGroup rendered="#{!metadata.blank}">
-                        <!-- grouped="true" -->
+                        <!-- GROUPED VALUES -->
                         <h:panelGroup rendered="#{metadata.group}">
-                            <!-- Single label for all values, each value is a single string -->
+                            <!-- SINGLE STRING -->
                             <h:panelGroup rendered="#{metadata.singleString}">
                                 <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
                                     <ui:param
@@ -72,7 +71,7 @@
                                 </ui:include>
                             </h:panelGroup>
 
-                            <!-- Each value has a label column and a value column -->
+                            <!-- KEY VALUE PAIRS -->
                             <h:panelGroup rendered="#{!metadata.singleString}">
                                 <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
                                     <ui:param
@@ -82,7 +81,7 @@
                             </h:panelGroup>
                         </h:panelGroup>
 
-                        <!-- grouped="false" -->
+                        <!-- UNGROUPED VALUES -->
                         <h:panelGroup
                             styleClass="metadata__ungrouped-wrapper"
                             layout="block"

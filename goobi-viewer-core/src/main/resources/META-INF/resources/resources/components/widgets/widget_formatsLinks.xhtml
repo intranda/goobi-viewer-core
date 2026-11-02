@@ -1,15 +1,11 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <composite:interface />
 
     <composite:implementation>
@@ -22,12 +18,10 @@
                 role="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'formats-links') ? 'button' : ''}"
                 class="widget__topbar widget-format-links__topbar #{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'formats-links') ? 'collapsible' : ''} #{!configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'formats-links') ? '' : ''}">
                 <h2 class="widget__title widget-format-links__title">#{msg.widget_formatsLinks}</h2>
-
                 <div class="widget__topbar-icons-container">
                     <div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
                         <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
                     </div>
-
                     <util:icon
                         icon="chevron-down"
                         styleClass="widget__topbar-icon-collapsible icon-rot-on-open"
@@ -241,7 +235,7 @@
                         </a>
                     </ui:fragment>
 
-                    <!-- DFG Viewer -->
+                    <!-- DFG VIEWER -->
                     <ui:fragment
                         visibility-class="widget-element"
                         rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages

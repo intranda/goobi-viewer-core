@@ -29,12 +29,14 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
@@ -105,18 +107,35 @@ public class ArchiveBean implements Serializable {
     }
 
     /**
+     * Loads the archive tree of the current resource. For card catalogs no tree is built at all: that view loads its data through the card
+     * catalog REST API, and the full tree may hold hundreds of thousands of nodes.
+     *
      * @param selectedEntryId ID of the archive entry to select after loading; may be null
      * @throws io.goobi.viewer.exceptions.ArchiveException if the archive database cannot be retrieved
      * @should not throw NullPointerException when archive becomes unresolvable after the null check
      */
     public void initializeArchiveTree(String selectedEntryId) throws ArchiveException {
         logger.trace("initializeArchiveTree: {}", selectedEntryId);
+        this.archiveConfig = null;
+        this.databaseLoaded = false;
         // getCurrentArchive() re-resolves the archive via ArchiveManager on each call and returns null once the
         // archive list is reloaded in another thread; capture it once so the null check above covers all uses
         // below (java:S2259)
         ArchiveResource currentArchive = getCurrentArchive();
         if (currentArchive != null) {
             try {
+                Optional<CMSArchiveConfig> config =
+                        DataManager.getInstance().getDao().getCmsArchiveConfigForArchive(currentArchive.getResourceId());
+                if (config.isPresent()) {
+                    logger.trace("Found configuration for archive resource: {}", currentArchive.getResourceId());
+                    this.archiveConfig = config.get();
+                }
+                if (isCardCatalog()) {
+                    this.archiveTree = null;
+                    this.databaseLoaded = true;
+                    this.searchString = "";
+                    return;
+                }
                 // clone the global archive tree so its state (which nodes are expanded) is not preserved between sessions
                 // if state of archive tree should be reset on each page reload, remove the if-clause or call ArchiveTree.collapseAll()
                 if (this.archiveTree == null || !this.archiveTree.getRootElement().getTopstructPi().equals(currentArchive.getResourceId())) {
@@ -133,18 +152,17 @@ public class ArchiveBean implements Serializable {
                 if (StringUtils.isNotBlank(selectedEntryId)) {
                     this.setSelectedEntryId(selectedEntryId);
                 }
-                Optional<CMSArchiveConfig> config =
-                        DataManager.getInstance().getDao().getCmsArchiveConfigForArchive(currentArchive.getResourceId());
-                if (config.isPresent()) {
-                    logger.trace("Found configuration for archive resource: {}", currentArchive.getResourceId());
-                    this.archiveConfig = config.get();
-                }
             } catch (PresentationException | IllegalStateException | IndexUnreachableException | DAOException e) {
                 logger.error("Error initializing archive tree: {}", e.getMessage());
                 Messages.error("Error initializing archive tree: " + e.getMessage());
+                this.archiveConfig = null;
+                this.archiveTree = null;
                 this.databaseLoaded = false;
-                throw new ArchiveConnectionException("Error retrieving database {} from {}", getCurrentResource());
+                throw new ArchiveConnectionException("Error retrieving database {}", getCurrentResource(), e);
             }
+        } else {
+            this.archiveTree = null;
+            this.searchString = "";
         }
     }
 
@@ -158,10 +176,7 @@ public class ArchiveBean implements Serializable {
                 return configuredTitle;
             }
         }
-        if (getTrueRoot() != null) {
-            return getTrueRoot().getLabel();
-        }
-        return "";
+        return getArchiveDisplayLabel();
     }
 
     /**
@@ -188,6 +203,40 @@ public class ArchiveBean implements Serializable {
         return archiveConfig;
     }
 
+    /**
+     * @return true if the current archive resource is flagged as a card catalog in its CMS configuration
+     */
+    public boolean isCardCatalog() {
+        return archiveConfig != null && archiveConfig.isCardCatalog() && Objects.equals(archiveConfig.getPi(), currentResource);
+    }
+
+    /**
+     * Serializes the card catalog configuration for an inline script. Escaping the HTML-sensitive
+     * characters after JSON serialization prevents a value such as {@code </script>} from ending
+     * the script element before the browser parses the JSON value.
+     *
+     * @param contextPath servlet context path
+     * @param translations translated UI strings keyed by message key
+     * @return a JavaScript-safe JSON object literal
+     */
+    public String getCardCatalogBootstrapJson(String contextPath, Map<String, String> translations) {
+        String root = StringUtils.defaultString(contextPath);
+        JSONObject config = new JSONObject();
+        config.put("pi", currentResource);
+        config.put("apiUrl", root + "/api/v1");
+        config.put("rootUrl", root);
+        config.put("osdScriptUrl", root + "/resources/javascript/libs/openseadragon/openseadragon.min.js");
+        boolean ownConfig = archiveConfig != null && Objects.equals(archiveConfig.getPi(), currentResource);
+        config.put("catalogType", (ownConfig ? archiveConfig.getCatalogType() : CMSArchiveConfig.CatalogType.CARD).name());
+        config.put("msg", new JSONObject(translations));
+        return config.toString()
+                .replace("&", "\\u0026")
+                .replace("<", "\\u003c")
+                .replace(">", "\\u003e")
+                .replace("\u2028", "\\u2028")
+                .replace("\u2029", "\\u2029");
+    }
+
     public void toggleEntryExpansion(ArchiveEntry entry) {
         logger.trace("toggleEntryExpansion: {}", entry);
         if (archiveTree.isEntryExpanded(entry)) {
@@ -208,12 +257,8 @@ public class ArchiveBean implements Serializable {
             return;
         }
         synchronized (getArchiveTree()) {
-            boolean updateTree = entry.isChildrenFound() && !entry.isChildrenLoaded();
+            // Loads the entry's children if necessary and regenerates the tree if they are not yet part of it
             getArchiveTree().expandEntry(entry);
-            if (updateTree) {
-                logger.trace("Updating tree");
-                getArchiveTree().update(entry.getRootNode());
-            }
         }
     }
 
@@ -289,6 +334,9 @@ public class ArchiveBean implements Serializable {
         }
 
         getArchiveTree().search(searchString);
+        if (getArchiveTree().isSearchResultsIncomplete()) {
+            Messages.warn("archives__search_too_broad");
+        }
         List<ArchiveEntry> results;
         results = getArchiveTree().getFlatEntryList();
         if (results == null || results.isEmpty()) {
@@ -385,6 +433,25 @@ public class ArchiveBean implements Serializable {
         }
 
         return Optional.ofNullable(getArchiveTree().getSelectedEntry()).orElse(getArchiveTree().getRootElement());
+    }
+
+    /**
+     * Returns a label for the archive page without requiring a materialized archive tree.
+     * Card catalogs intentionally have no session archive tree, so their resource name is the
+     * fallback for the hero title and accessible image labels.
+     *
+     * @return displayed entry label, archive resource name, or resource identifier
+     */
+    public String getArchiveDisplayLabel() {
+        ArchiveEntry entry = getDisplayEntry();
+        if (entry != null && StringUtils.isNotBlank(entry.getLabel())) {
+            return entry.getLabel();
+        }
+        ArchiveResource archive = getCurrentArchive();
+        if (archive != null && StringUtils.isNotBlank(archive.getResourceName())) {
+            return archive.getResourceName();
+        }
+        return StringUtils.defaultString(currentResource);
     }
 
     

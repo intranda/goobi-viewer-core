@@ -1,19 +1,15 @@
 /* ==============================================================
    Immersive View: Popovers
-   style declarations for viewImmersive.xhtml (share/cite/filter popovers);
-   Bootstrap portals them to <body>, outside .immersive — so they are
-   targeted by their content and restyled to match the immersive chrome
+   style declarations for viewImmersive.xhtml (share/cite/filter popovers)
    ==============================================================*/
 
-.popover:has(.widget-citation),
-.popover:has(.widget-social-media),
-.popover:has(imageFilters) {
+.popover--tool {
     max-width: 320px;
-    color: @immersive-chrome-fg;
-    background-color: @immersive-chrome-bg;
-    border: 1px solid @immersive-chrome-border-color;
-    border-radius: @immersive-radius;
-    box-shadow: @immersive-chrome-shadow;
+    color: var(--fg-default);
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-container-small);
+    box-shadow: var(--shadow-elevated);
 
     & :focus-visible {
         .mx-immersive-focus-ring();
@@ -21,21 +17,22 @@
 
     &.bs-popover-top .arrow::before,
     &.bs-popover-top .arrow::after {
-        border-top-color: @immersive-chrome-bg;
+        border-top-color: var(--bg-surface);
     }
     &.bs-popover-right .arrow::before,
     &.bs-popover-right .arrow::after {
-        border-right-color: @immersive-chrome-bg;
+        border-right-color: var(--bg-surface);
     }
     &.bs-popover-bottom .arrow::before,
     &.bs-popover-bottom .arrow::after {
-        border-bottom-color: @immersive-chrome-bg;
+        border-bottom-color: var(--bg-surface);
     }
     &.bs-popover-left .arrow::before,
     &.bs-popover-left .arrow::after {
-        border-left-color: @immersive-chrome-bg;
+        border-left-color: var(--bg-surface);
     }
 
+    /* POPOVER BODY */
     .popover-body {
         padding: 0;
     }
@@ -43,16 +40,17 @@
     .popover-header {
         margin: 0;
         padding: 12px 14px 4px;
-        color: @immersive-chrome-fg;
+        color: var(--fg-default);
         background: transparent;
         border: 0;
-        font-size: @fontSmall;
+        font-size: var(--font-size-caption);
         font-weight: 700;
         letter-spacing: 0.07em;
         text-transform: uppercase;
         opacity: 0.6;
     }
 
+    /* WIDGET RESET */
     .widget {
         margin: 0;
         border: 0;
@@ -62,127 +60,139 @@
     }
 }
 
-.popover:has(.widget-citation) {
+.popover--tool {
+    /* CITATION TOPBAR */
     .widget-citation__topbar {
         display: none;
     }
+    /* CITATION BODY */
     .widget-citation__body {
-        /* !important overrides the inline display left behind by the sidebar slideToggle collapse. */
+        /* !IMPORTANT BEATS THE INLINE DISPLAY LEFT BY THE SIDEBAR COLLAPSE */
         display: block !important;
         padding: 4px 14px 14px;
     }
 
+    /* CITATION TEXT */
     .widget-citation__license-text,
     .widget-citation__citerecommendation-text-info {
-        color: @immersive-chrome-fg;
-        font-size: @fontSmall;
+        color: var(--fg-default);
+        font-size: var(--font-size-caption);
         opacity: 0.6;
     }
 
+    /* SUBTITLES */
     .widget-citation__subtitle,
     .widget__badge-container-heading {
         margin-bottom: 6px;
-        color: @immersive-chrome-fg;
-        font-size: @fontMedium;
+        color: var(--fg-default);
+        font-size: var(--font-size-body-small);
         font-weight: 700;
     }
 
+    /* BADGES */
     .widget__badge-container .badge,
     .widget__badge-container .badge-dark {
-        color: @immersive-accent;
-        background-color: ~'rgba(var(--immersive-accent-rgb), 0.08)';
-        border-radius: @immersive-radius;
+        color: var(--fg-brand);
+        background-color: rgb(from var(--fg-brand) r g b / 0.08);
+        border-radius: var(--radius-container-small);
 
         &:hover,
         &:active,
         &:focus {
-            color: @immersive-accent;
-            background-color: ~'rgba(var(--immersive-accent-rgb), 0.1)';
+            color: var(--fg-brand);
+            background-color: rgb(from var(--fg-brand) r g b / 0.1);
             text-decoration: underline;
         }
     }
 
+    /* CUSTOM CONTROL SELECT */
     .custom-control--select {
-        color: @immersive-chrome-fg;
-        background-color: @immersive-chrome-hover-bg;
-        border: 1px solid @immersive-chrome-border-color;
-        border-radius: @immersive-radius;
+        color: var(--fg-default);
+        background-color: var(--bg-control);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-container-small);
 
         &::after {
-            border-top-color: @immersive-chrome-fg;
+            border-top-color: var(--fg-default);
         }
 
         select {
-            color: @immersive-chrome-fg;
+            color: var(--fg-default);
             background-color: transparent;
         }
     }
 
+    /* CITERECOMMENDATION */
     .widget-citation__citerecommendation-text-wrapper .widget-citation__citerecommendation-quote-icon {
-        color: @immersive-chrome-fg;
+        color: var(--fg-default);
         opacity: 0.35;
     }
     .widget-citation__citerecommendation-copy-text {
-        color: @immersive-chrome-fg;
+        color: var(--fg-default);
 
         &:hover,
         &:active,
         &:focus {
-            color: @immersive-chrome-fg;
+            color: var(--fg-default);
         }
     }
 }
 
-.popover:has(.widget-social-media) {
+.popover--tool {
+    /* SOCIAL MEDIA BODY */
     .widget-social-media__body {
         padding: 8px 14px 14px;
     }
 
+    /* SOCIAL MEDIA LINKS */
     .widget-social-media__link {
         padding: 6px;
-        border-radius: @immersive-radius-lg;
-        color: @immersive-chrome-fg;
+        border-radius: var(--radius-container);
+        color: var(--fg-default);
         transition: background-color @immersive-transition;
 
         &:hover {
-            background-color: @immersive-chrome-hover-bg;
+            background-color: var(--bg-control);
         }
 
         &:hover,
         &:focus {
-            /* Repeated colour guards against theme a:hover/a:focus rules. */
-            color: @immersive-chrome-fg;
+            /* GUARDS AGAINST THEME LINK HOVER RULES */
+            color: var(--fg-default);
         }
     }
 
-    /* Only the monochrome X logo inverts per theme; brand-coloured logos must not (invert breaks their colour). */
+    /* ONLY THE MONOCHROME X LOGO INVERTS */
     .widget-social-media__link img[src$='x_logo.svg'] {
-        filter: invert(@immersive-logo-invert);
+        filter: var(--filter-mono-image);
     }
 }
 
-.popover:has(imageFilters) {
+.popover--tool {
     input[type='range'],
     input[type='checkbox'] {
-        accent-color: @immersive-accent;
+        accent-color: var(--fg-brand);
     }
 
+    /* FILTER LIST */
     .imagefilters__filter-list {
         padding: 6px 14px 2px;
     }
 
+    /* FILTER LABELS */
     .imagefilters__label {
-        color: @immersive-chrome-fg;
+        color: var(--fg-default);
     }
 
+    /* FILTER OPTIONS */
     .imagefilters__options {
         padding: 6px 14px 14px;
 
         .btn--full {
-            color: @immersive-chrome-fg;
+            color: var(--fg-default);
             background-color: transparent;
-            border: 1px solid @immersive-chrome-border-color;
-            border-radius: @immersive-radius;
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-container-small);
             transition:
                 border-color @immersive-transition,
                 background-color @immersive-transition,
@@ -191,12 +201,16 @@
             &:hover,
             &:active,
             &:focus {
-                color: @immersive-chrome-fg;
-                border-color: @immersive-accent;
-                background-color: @immersive-chrome-hover-bg;
+                color: var(--fg-default);
+                border-color: var(--border-brand);
+                background-color: var(--bg-control);
             }
         }
     }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {
 }
 
 /* BREAKPOINT FOR DESKTOPS */

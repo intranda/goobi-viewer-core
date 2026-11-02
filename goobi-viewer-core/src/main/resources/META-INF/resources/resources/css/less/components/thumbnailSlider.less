@@ -8,18 +8,15 @@
     max-width: 100%;
     margin: 20px 0px;
 
+    /* SWIPER */
     &__swiper {
-        // max-width: 100%;
         margin-left: -5px;
         margin-right: -5px;
         overflow: hidden;
         flex-grow: 1;
         padding: 5px;
     }
-    &__item {
-        &.-activePage {
-        }
-    }
+    /* LINK */
     &__link {
         display: flex;
         flex-direction: column;
@@ -30,6 +27,7 @@
             }
         }
     }
+    /* IMAGE */
     &__image-wrapper {
         display: block;
         width: 100%;
@@ -42,11 +40,13 @@
         object-fit: cover;
         aspect-ratio: ~'3 / 4';
     }
+    /* LINK TEXT */
     &__link-text {
         text-overflow: ellipsis;
         overflow: hidden;
         padding: 5px 0px;
     }
+    /* SLIDER BUTTONS */
     &__btn-next,
     &__btn-prev {
         min-width: 28px;

@@ -6,12 +6,8 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:o="http://omnifaces.org/ui"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:cmsComponent="http://xmlns.jcp.org/jsf/composite/cms/components"
-    xmlns:formComponent="http://xmlns.jcp.org/jsf/composite/components/forms"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
@@ -26,9 +22,7 @@
         <div class="admin__title-bar">
             <h1 class="admin__title">#{msg.admin__developer__title}</h1>
         </div>
-
         <viewerComponent:adminBreadcrumbs />
-
         <div class="admin__content-inner-content">
             <div class="admin__info-text">#{msg.admin__developer__general_info_text}</div>
 
@@ -49,7 +43,6 @@
                                             styleClass="admin__developer-download-info-text"
                                             escape="false"
                                             value="#{msg.admin__developer__files_info}" />
-
                                         <button
                                             jsf:action="#{adminDeveloperBean.downloadDeveloperArchive()}"
                                             class="btn btn--full admin__developer-download-button">
@@ -58,7 +51,8 @@
                                                 iconSvgClass="icon icon-xxl"
                                                 text="#{msg.downloadButton}" />
                                         </button>
-                                        <!-- START: zip archive progress monitor -->
+
+                                        <!-- ZIP ARCHIVE PROGRESS MONITOR -->
                                         <span
                                             class="admin__developer_download_archive__loader"
                                             id="downloadZipLoader">
@@ -89,9 +83,7 @@
                                         <o:socket
                                             channel="downloadContext"
                                             onmessage="updateProgress" />
-                                        <!-- END: zip archive progress monitor -->
                                     </div>
-
                                     <div class="admin__developer-sql-info-text">#{msg.admin__developer__unzip_file}:</div>
                                     <div class="admin__developer-code-block">
                                         <!-- UNZIP FILE LINUX CODE -->
@@ -149,7 +141,6 @@
                             <h2>#{msg.admin__developer__local_messages_config_heading}</h2>
                             <div class="admin__default-block">
                                 <div class="admin__developer-sql-info-text">#{msg.admin__developer__local_messages_config_text}:</div>
-
                                 <div class="admin__developer-code-block">
                                     <div
                                         class="admin__developer-copy-to-clipboard"
@@ -219,7 +210,6 @@
                                         <span class="admin__developer-autopull-version-info-label">#{msg.admin__developer__pull_theme_message}:</span>
                                         <span>#{versionInfo.commitMessage}</span>
                                     </div>
-
                                     <div class="admin__developer-autopull-status-button-wrapper">
                                         <h:commandScript
                                             name="updateTheme"
@@ -232,7 +222,7 @@
                                         </h:commandButton>
                                     </div>
 
-                                    <!-- START: zip archive progress monitor -->
+                                    <!-- ZIP ARCHIVE PROGRESS MONITOR -->
                                     <span
                                         class="admin__developer_download_archive__loader"
                                         id="pullThemeLoader">
@@ -262,9 +252,9 @@
                                     <o:socket
                                         channel="pullThemeContext"
                                         onmessage="updatePullThemeProgress" />
-                                    <!-- END: zip archive progress monitor -->
                                 </div>
                             </h:panelGroup>
+
                             <!-- PULL VIA BACKEND IS NOT POSSIBLE TEXT -->
                             <h:panelGroup
                                 layout="block"
@@ -273,7 +263,7 @@
                                 <p class="admin__developer-autopull-wrapper-text">#{msg.admin__developer__pull_theme_not_possible}</p>
                             </h:panelGroup>
 
-                            <!-- PULL VIA BACKEND IS NOT POSSIBLE BECAUSE MSG QUEUE NOT RUNNING -->
+                            <!-- NO BACKEND PULL WITHOUT A RUNNING MESSAGE QUEUE -->
                             <h:panelGroup
                                 layout="block"
                                 styleClass="admin__developer-autopull-wrapper -isOff"
@@ -286,17 +276,14 @@
             </ui:fragment>
         </div>
 
+        <!-- COPY TO CLIPBOARD SCRIPT -->
         <script>
-            // CLEAN CODE FOR COPY TO CLIPBOARD - REMOVE BR ELEMENTS
             //<![CDATA[
-
             $('[data-copy-value]').each(function (i, obj) {
                 var originalCode = $(this).data('copy-value');
                 var cleanCode = originalCode.replace(/<br ?\/?>/g, '\n');
                 $(this).data('copy-value', cleanCode);
-                //console.log(cleanCode);
             });
-
             //]]>
         </script>
     </ui:define>

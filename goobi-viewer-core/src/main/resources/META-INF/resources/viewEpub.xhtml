@@ -3,12 +3,9 @@
     xmlns:util="http://goobi.io/util"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateBlankUnstyled.html">
     <ui:define name="metadata">
         <f:metadata>
@@ -33,15 +30,12 @@
     </ui:define>
 
     <ui:define name="content">
-        <!-- No access ticket required or already unlocked -->
+        <!-- RECORD -->
         <ui:fragment rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
             <div class="view-epub">
-                <!-- CONTROLS WRAPPER -->
+                <!-- CONTROLS -->
                 <div class="view-epub__controls-wrapper">
-                    <!-- TOC AS DROPDOWN - JUMP TO SECTION NOT WORKING FOR EVERY BOOK RIGHT NOW -->
-                    <!-- <select id="toc"></select> -->
-
-                    <!-- PREV BUTTON - WITH LTR/RTL SCRIPT -->
+                    <!-- PREVIOUS PAGE -->
                     <button
                         id="prev"
                         class="btn btn--default view-epub__controls-button"
@@ -52,7 +46,8 @@
                         onclick="rendition.prev()">
                         <util:icon icon="circle-arrow-left" />
                     </button>
-                    <!-- NEXT BUTTON - WITH LTR/RTL SCRIPT -->
+
+                    <!-- NEXT PAGE -->
                     <button
                         id="next"
                         class="btn btn--default view-epub__controls-button"
@@ -65,14 +60,14 @@
                     </button>
                 </div>
 
-                <!-- RENDERED VIEW IN THIS CONTAINER -->
+                <!-- EPUB CONTAINER -->
                 <div
                     class="view-epub__container"
                     id="epubContainer" />
             </div>
         </ui:fragment>
 
-        <!-- Access ticket required -->
+        <!-- ACCESS TICKET -->
         <ui:fragment rendered="#{activeDocumentBean.viewManager.recordAccessTicketRequired}">
             <div class="access-ticket-info">
                 <p>#{msg.access_tickets__record_access_ticket_required}</p>
@@ -86,145 +81,76 @@
             </div>
         </ui:fragment>
 
+        <!-- EPUB READER -->
         <script>
-            // console.log("load epub");
+            //<![CDATA[
+            var params = URLSearchParams && new URLSearchParams(document.location.search.substring(1));
+            var url = params && params.get('url') && decodeURIComponent(params.get('url'));
+            var currentSectionIndex = params && params.get('loc') ? params.get('loc') : undefined;
 
-            		    var params = URLSearchParams &amp; &amp; new URLSearchParams(document.location.search.substring(1));
-            		    var url = params &amp; &amp; params.get("url") &amp; &amp; decodeURIComponent(params.get("url"));
-            		    var currentSectionIndex = (params &amp; &amp; params.get("loc")) ? params.get("loc") : undefined;
+            let epubUrl = new URLSearchParams(location.search).get('url');
 
-            			let epubUrl = new URLSearchParams(location.search).get("url");
+            var book = ePub(epubUrl);
+            var rendition = book.renderTo('epubContainer', { manager: 'continuous', flow: 'paginated', width: '100%', height: '100%' });
+            rendition.display().then((e) => {});
 
-            			var book = ePub(epubUrl);
-            			// console.log("epub", book);
-            			var rendition = book.renderTo("epubContainer", {manager: "continuous",
-            		        flow: "paginated", width: "100%", height: "100%"});
-            			rendition.display()
-            			.then(e => {
-            				// console.log("displaying ", e)
-            			})
+            rendition.display(currentSectionIndex);
 
-            		    rendition.display(currentSectionIndex);
+            book.ready.then(() => {
+                var next = document.getElementById('next');
 
-            		    book.ready.then(() => {
+                next.addEventListener(
+                    'click',
+                    function (e) {
+                        book.package.metadata.direction === 'rtl' ? rendition.prev() : rendition.next();
+                        e.preventDefault();
+                    },
+                    false
+                );
 
-            		      var next = document.getElementById("next");
+                var prev = document.getElementById('prev');
+                prev.addEventListener(
+                    'click',
+                    function (e) {
+                        book.package.metadata.direction === 'rtl' ? rendition.next() : rendition.prev();
+                        e.preventDefault();
+                    },
+                    false
+                );
 
-            		      next.addEventListener("click", function(e){
-            		        book.package.metadata.direction === "rtl" ? rendition.prev() : rendition.next();
-            		        e.preventDefault();
-            		      }, false);
+                var keyListener = function (e) {
+                    if ((e.keyCode || e.which) == 37) {
+                        book.package.metadata.direction === 'rtl' ? rendition.next() : rendition.prev();
+                    }
 
-            		      var prev = document.getElementById("prev");
-            		      prev.addEventListener("click", function(e){
-            		        book.package.metadata.direction === "rtl" ? rendition.next() : rendition.prev();
-            		        e.preventDefault();
-            		      }, false);
+                    if ((e.keyCode || e.which) == 39) {
+                        book.package.metadata.direction === 'rtl' ? rendition.prev() : rendition.next();
+                    }
+                };
 
-            		      var keyListener = function(e){
+                rendition.on('keyup', keyListener);
+                document.addEventListener('keyup', keyListener, false);
+            });
 
-            		        // Left Key
-            		        if ((e.keyCode || e.which) == 37) {
-            		          book.package.metadata.direction === "rtl" ? rendition.next() : rendition.prev();
-            		        }
+            var title = document.getElementById('title');
 
-            		        // Right Key
-            		        if ((e.keyCode || e.which) == 39) {
-            		          book.package.metadata.direction === "rtl" ? rendition.prev() : rendition.next();
-            		        }
+            rendition.on('layout', function (layout) {
+                let viewer = document.getElementById('viewer');
 
-            		      };
+                if (layout.spread) {
+                    viewer.classList.remove('single');
+                } else {
+                    viewer.classList.add('single');
+                }
+            });
 
-            		      rendition.on("keyup", keyListener);
-            		      document.addEventListener("keyup", keyListener, false);
+            window.addEventListener('unload', function () {
+                console.log('unloading');
+                this.book.destroy();
+            });
 
-            		    })
-
-            		    var title = document.getElementById("title");
-
-            // 		    rendition.on("rendered", function(section){
-            // 		      var current = book.navigation &amp; &amp; book.navigation.get(section.href);
-
-            // 		      if (current) {
-            // 		        var $select = document.getElementById("toc");
-            // 		        var $selected = $select.querySelector("option[selected]");
-            // 		        if ($selected) {
-            // 		          $selected.removeAttribute("selected");
-            // 		        }
-
-            // 		        var $options = $select.querySelectorAll("option");
-            // 		        for (var i = 0; i &lt; $options.length; ++i) {
-            // 		          let selected = $options[i].getAttribute("ref") === current.href;
-            // 		          if (selected) {
-            // 		            $options[i].setAttribute("selected", "");
-            // 		          }
-            // 		        }
-            // 		      }
-
-            // 		    });
-
-            // 		    rendition.on("relocated", function(location){
-            // 		      console.log(location);
-
-            // 		      var
-            next = book.package.metadata.direction === "rtl" ?  document.getElementById("prev") : document.getElementById("next");
-            // 		      var
-            prev = book.package.metadata.direction === "rtl" ?  document.getElementById("next") : document.getElementById("prev");
-
-            // 		      if (location.atEnd) {
-            // 		        next.style.visibility = "hidden";
-            // 		      } else {
-            // 		        next.style.visibility = "visible";
-            // 		      }
-
-            // 		      if (location.atStart) {
-            // 		        prev.style.visibility = "hidden";
-            // 		      } else {
-            // 		        prev.style.visibility = "visible";
-            // 		      }
-
-            // 		    });
-
-            		    rendition.on("layout", function(layout) {
-            		      let viewer = document.getElementById("viewer");
-
-            		      if (layout.spread) {
-            		        viewer.classList.remove('single');
-            		      } else {
-            		        viewer.classList.add('single');
-            		      }
-            		    });
-
-            		    window.addEventListener("unload", function () {
-            		      console.log("unloading");
-            		      this.book.destroy();
-            		    });
-
-            // 		    book.loaded.navigation.then(function(toc){
-            // 					var $select = document.getElementById("toc"),
-            // 							docfrag = document.createDocumentFragment();
-
-            // 					toc.forEach(function(chapter) {
-            // 						var option = document.createElement("option");
-            // 						option.textContent = chapter.label;
-            // 						option.setAttribute("ref", chapter.href);
-
-            // 						docfrag.appendChild(option);
-            // 					});
-
-            // 					$select.appendChild(docfrag);
-
-            // 					$select.onchange = function(){
-            // 							var index = $select.selectedIndex,
-            // 									url = $select.options[index].getAttribute("ref");
-            // 							rendition.display(url);
-            // 							return false;
-            // 					};
-
-            // 				});
-
-            		// INIT BOOSTRAP FEATURES FOR TOOLTIPS
-            		viewerJS.helper.initBsFeatures();
+            viewerJS.helper.initBsFeatures();
+            //]]>
         </script>
     </ui:define>
 </ui:composition>

@@ -3,10 +3,6 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:x="http://myfaces.apache.org/tomahawk"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:util="http://goobi.io/util">
     <composite:interface>
         <composite:attribute
@@ -53,11 +49,12 @@
             styleClass="#{cc.attrs.rtl ? 'inputfield-paginator -rtl' : 'inputfield-paginator -ltr'} #{cc.attrs.classSuffix}"
             layout="block"
             id="#{cc.clientId}">
-            <nav role="navigation" aria-label="#{cc.attrs.positionBottom ? msg.aria_label__pagination_bottom : msg.aria_label__pagination_pages}">
+            <nav
+                role="navigation"
+                aria-label="#{cc.attrs.positionBottom ? msg.aria_label__pagination_bottom : msg.aria_label__pagination_pages}">
                 <ul>
                     <!-- FIRST ITEM -->
-                    <li
-                        class="inputfield-paginator__navigate inputfield-paginator__navigate-first-svg #{cc.attrs.itemActive == cc.attrs.firstItem ? 'inactive' : ''}">
+                    <li class="inputfield-paginator__navigate inputfield-paginator__navigate-first-svg #{cc.attrs.itemActive == cc.attrs.firstItem ? 'inactive' : ''}">
                         <a
                             onclick="if(#{cc.attrs.itemActive == cc.attrs.firstItem}){return false;}"
                             href="#{cc.attrs.urlPrefix}#{cc.attrs.firstItem}/#{cc.attrs.urlSuffix}"
@@ -76,9 +73,9 @@
                             </ui:fragment>
                         </a>
                     </li>
+
                     <!-- PREVIOUS ITEM -->
-                    <li
-                        class="inputfield-paginator__navigate inputfield-paginator__navigate-prev-svg #{cc.attrs.itemActive == cc.attrs.firstItem ? 'inactive' : ''}">
+                    <li class="inputfield-paginator__navigate inputfield-paginator__navigate-prev-svg #{cc.attrs.itemActive == cc.attrs.firstItem ? 'inactive' : ''}">
                         <a
                             onclick="if(#{cc.attrs.itemActive == cc.attrs.firstItem}){return false;}"
                             href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive - 1}/#{cc.attrs.urlSuffix}"
@@ -128,8 +125,7 @@
                     </li>
 
                     <!-- NEXT ITEM -->
-                    <li
-                        class="inputfield-paginator__navigate inputfield-paginator__navigate-next-svg #{cc.attrs.itemActive == cc.attrs.lastItem ? 'inactive' : ''}">
+                    <li class="inputfield-paginator__navigate inputfield-paginator__navigate-next-svg #{cc.attrs.itemActive == cc.attrs.lastItem ? 'inactive' : ''}">
                         <a
                             onclick="if(#{cc.attrs.itemActive == cc.attrs.lastItem}){return false;}"
                             href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 1}/#{cc.attrs.urlSuffix}"
@@ -148,9 +144,9 @@
                             </ui:fragment>
                         </a>
                     </li>
+
                     <!-- LAST ITEM -->
-                    <li
-                        class="inputfield-paginator__navigate inputfield-paginator__navigate-last-svg #{cc.attrs.itemActive == cc.attrs.lastItem ? 'inactive' : ''}">
+                    <li class="inputfield-paginator__navigate inputfield-paginator__navigate-last-svg #{cc.attrs.itemActive == cc.attrs.lastItem ? 'inactive' : ''}">
                         <a
                             onclick="if(#{cc.attrs.itemActive == cc.attrs.lastItem}){return false;}"
                             href="#{cc.attrs.urlPrefix}#{cc.attrs.lastItem}/#{cc.attrs.urlSuffix}"
@@ -172,33 +168,31 @@
                 </ul>
             </nav>
 
+            <!-- PAGINATOR SCRIPT -->
             <script type="text/javascript">
-                //Initialize keyboard shortcuts
-                // RUN FUNCTION ONLY ONCE
-                     	if (typeof doClick === 'function') {
-                     			// console.log('already defined - do nothing');
-                     		} else {
-                     			// console.log('not already defined');
-                             	var paginatorConfig = {
-                             	        previous: () => doClick(".inputfield-paginator__navigate.navigate_prev a"),
-                             	        next: () => doClick(".inputfield-paginator__navigate.navigate_next a"),
-                             	        first: () => doClick(".inputfield-paginator .navigate_first a"),
-                             	        last: () => doClick(".inputfield-paginator .navigate_last a"),
-                             	        rightToLeft: "#{activeDocumentBean.viewManager.topStructElement.rtl}",
-                             	        firstItem: #{cc.attrs.firstItem},
-                             	        lastItem: #{cc.attrs.lastItem},
-                             	        currentItem: #{cc.attrs.itemActive},
-                             	        targetUrlPrefix: "#{cc.attrs.urlPrefix}",
-                             	        targetUrlSuffix: "/#{cc.attrs.urlSuffix}",
-                             	}
-                             	function doClick(selector) {
-                             	    let query = $(selector);
-                             	    if(query.length) {
-                             	        query.get(0).click();
-                             	    }
-                             	}
-                             	viewerJS.paginator.init(paginatorConfig);
-                     		}
+                // RUN ONLY ONCE PER PAGE
+                if (typeof doClick === 'function') {
+                } else {
+                    var paginatorConfig = {
+                        previous: () => doClick('.inputfield-paginator__navigate.navigate_prev a'),
+                        next: () => doClick('.inputfield-paginator__navigate.navigate_next a'),
+                        first: () => doClick('.inputfield-paginator .navigate_first a'),
+                        last: () => doClick('.inputfield-paginator .navigate_last a'),
+                        rightToLeft: "#{activeDocumentBean.viewManager.topStructElement.rtl}",
+                        firstItem: #{cc.attrs.firstItem},
+                        lastItem: #{cc.attrs.lastItem},
+                        currentItem: #{cc.attrs.itemActive},
+                        targetUrlPrefix: "#{cc.attrs.urlPrefix}",
+                        targetUrlSuffix: "/#{cc.attrs.urlSuffix}",
+                    };
+                    function doClick(selector) {
+                        let query = $(selector);
+                        if (query.length) {
+                            query.get(0).click();
+                        }
+                    }
+                    viewerJS.paginator.init(paginatorConfig);
+                }
             </script>
         </h:panelGroup>
     </composite:implementation>

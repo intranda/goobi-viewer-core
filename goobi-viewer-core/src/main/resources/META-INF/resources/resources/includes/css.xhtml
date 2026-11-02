@@ -1,15 +1,10 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:jsf="http://xmlns.jcp.org/jsf">
-    <!-- =======================
-        all templates
-    ======================== -->
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <!-- ALL TEMPLATES -->
     <!-- BASE LIBRARIES-->
-
     <c:set
         var="cssPaths"
         value="#{[
@@ -28,7 +23,6 @@
       ['coreCSS', '/resources/css/dist/viewer.min.css']
 
     ]}" />
-
     <c:forEach
         var="path"
         items="#{cssPaths}">
@@ -40,36 +34,7 @@
         </c:if>
     </c:forEach>
 
-    <!-- ===================
-      THEME CSS
-    ==================== -->
-    <!--
-    <c:if test="#{!excludeCSS.contains('themeCSS')}">
- 	    <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.theme}.min.css?${navigationHelper.buildVersion}" />
-    </c:if>
-    -->
-
-    <!--
-        ['themeCSS', '/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.theme}.min.css']
-        <link type="FUN-TYPE" rel="#{path[0]}" href="#{libsToExclude}" />
-
-      <link type="FUN-TYPE" rel="#{path[0]}" href="#{!libsToExclude.contains(path[0])}" />
-      <c:if test="#{true}">
-    -->
-
-    <!--
-    <c:if test="#{templateName.contains('bootstrap')}">
-      <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/libs/bs/bootstrap.custom.css?${navigationHelper.buildVersion}" />
-    </c:if>
-    -->
-
-    <!-- =======================
-        template.html
-    ======================== -->
-
-    <!-- =======================
-        templateAdmin.html
-    ======================== -->
+    <!-- ADMIN TEMPLATE -->
     <ui:fragment rendered="#{templateName == 'templateAdmin.html'}">
         <!-- ADDITIONAL LIBRARIES -->
         <link
@@ -88,9 +53,7 @@
             href="#{request.contextPath}/resources/css/dist/viewer.min.css?${navigationHelper.buildVersion}" />
     </ui:fragment>
 
-    <!-- =======================
-        templateAdmin.html
-    ======================== -->
+    <!-- BLANK TEMPLATE -->
     <ui:fragment rendered="#{templateName == 'templateBlank.html'}">
         <!-- CORE CSS -->
         <link
@@ -99,11 +62,9 @@
             href="#{request.contextPath}/resources/css/dist/viewer.min.css?${navigationHelper.buildVersion}" />
 
         <!-- THEME CSS -->
-        <!-- EXCLUDED PREVENT MESSED UP STYLING FOR NEW MIRADOR AND SWAGGER API PAGE -->
-
+        <!-- EXCLUDED FOR MIRADOR AND THE API PAGE -->
         <!-- SUBTHEME CSS -->
-        <h:panelGroup
-            rendered="#{navigationHelper.subthemeSelected and navigationHelper.subThemeDiscriminatorValue!='-' and navigationHelper.currentPage != 'API'}">
+        <h:panelGroup rendered="#{navigationHelper.subthemeSelected and navigationHelper.subThemeDiscriminatorValue!='-' and navigationHelper.currentPage != 'API'}">
             <link
                 type="text/css"
                 rel="stylesheet"

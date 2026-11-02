@@ -90,8 +90,7 @@
                                                                 </h:commandLink>
                                                             </li>
                                                         </ui:repeat>
-                                                        <li
-                                                            class="#{cmsPageEditBean.pageEditState == 'SIDEBAR' ? 'active':''} admin__language-tab nav-tabs__sidebar-button">
+                                                        <li class="#{cmsPageEditBean.pageEditState == 'SIDEBAR' ? 'active':''} admin__language-tab nav-tabs__sidebar-button">
                                                             <h:commandLink
                                                                 role="button"
                                                                 value="#{msg.cms_pageSidebar}"
@@ -209,8 +208,7 @@
                                                                                             <ui:repeat
                                                                                                 var="attribute"
                                                                                                 value="#{cmsComponent.attributes.values()}">
-                                                                                                <ui:fragment
-                                                                                                    rendered="#{attribute.display and attribute.type == 'toggle'}">
+                                                                                                <ui:fragment rendered="#{attribute.display and attribute.type == 'toggle'}">
                                                                                                     <ui:repeat
                                                                                                         var="option"
                                                                                                         value="#{attribute.options}">
@@ -225,8 +223,7 @@
                                                                                                     </ui:repeat>
                                                                                                 </ui:fragment>
 
-                                                                                                <ui:fragment
-                                                                                                    rendered="#{attribute.display and attribute.type != 'toggle'}">
+                                                                                                <ui:fragment rendered="#{attribute.display and attribute.type != 'toggle'}">
                                                                                                     <ui:repeat
                                                                                                         var="option"
                                                                                                         value="#{attribute.options}">
@@ -250,8 +247,7 @@
                                                                                         </h:panelGroup>
 
                                                                                         <!-- CONTENT COMPONENT ORDER FUNCTIONS -->
-                                                                                        <ui:fragment
-                                                                                            rendered="#{!page.lockComponents and page.isDefaultLocaleSelected()}">
+                                                                                        <ui:fragment rendered="#{!page.lockComponents and page.isDefaultLocaleSelected()}">
                                                                                             <ui:include src="/resources/cms/includes/orderContentItems.xhtml" />
                                                                                         </ui:fragment>
                                                                                     </div>

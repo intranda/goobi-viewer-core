@@ -1,0 +1,130 @@
+/* ==============================================================
+	General layout/styling for content components @ frontend
+   ==============================================================*/
+/* GENERAL LAYOUT FRONTEND WRAPPER */
+.content-components {
+    &__all-items-container {
+        --_cc-h-gap: 2rem;
+        --_cc-v-gap: 3.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--_cc-v-gap) var(--_cc-h-gap);
+    }
+}
+
+/* GENERAL LAYOUT FRONTEND SINGLE COMPONENTS */
+.content-component {
+    /* NOT PUBLISHED CONTENT COMPONENT LAYOUT */
+    &__not-published-info {
+        margin-bottom: 10px;
+        font-weight: 700;
+        margin: 0 -12px 10px -12px;
+        background: var(--bg-warning-subtle);
+        padding: 7px;
+        color: var(--fg-on-warning-subtle);
+    }
+    &.-width-100 {
+        flex: 0 0 calc(~'100%');
+        max-width: calc(~'100%');
+    }
+    &.-width-75 {
+        flex: 0 0 calc(~'75% - var(--_cc-h-gap) / 3');
+        max-width: calc(~'75% - var(--_cc-h-gap) / 3');
+    }
+    &.-width-50 {
+        flex: 0 0 calc(~'50% - var(--_cc-h-gap) / 2');
+        max-width: calc(~'50% - var(--_cc-h-gap) / 2');
+    }
+    &.-width-25 {
+        flex: 0 0 calc(~'25% - var(--_cc-h-gap) / 4');
+        max-width: calc(~'25% - var(--_cc-h-gap) / 4');
+    }
+    &.-fullbleed {
+        flex: 0 0 100vw;
+        min-width: 0;
+        max-width: none;
+        margin-inline: calc(50% - 50vw);
+    }
+    &.-fullbleed ~ &.-fullbleed {
+        margin-block-start: calc(-1 * var(--_cc-v-gap, 3.5rem));
+    }
+    &.-hiddenOnDesktop {
+        display: none;
+    }
+    &.-isPrivate {
+        padding: 10px;
+        padding-top: 0;
+        border: 2px dashed var(--border-warning) !important;
+        border-top: none !important;
+    }
+    &__text {
+        p {
+            .fixedFont(@line-height-base: 1.5);
+            margin-bottom: 0;
+        }
+    }
+    &__legacy-full-width {
+        flex: 0 0 100%;
+        max-width: 100%;
+        width: 100%;
+    }
+}
+
+.fixedFont(@line-height-base: 1.5) {
+    @line-height-target: (1 - @line-height-base);
+    &::before {
+        content: '';
+        display: block;
+        height: 0;
+        width: 0;
+        margin-top: calc(unit(@line-height-target) ~'* 0.5em');
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+    .content-component {
+        &.-width-100 {
+            flex: 0 0 calc(~'100%');
+            max-width: calc(~'100%');
+        }
+        &.-width-75 {
+            flex: 0 0 calc(~'100%');
+            max-width: calc(~'100%');
+        }
+        &.-width-50 {
+            flex: 0 0 calc(~'100%');
+            max-width: calc(~'100%');
+        }
+        &.-width-25 {
+            flex: 0 0 calc(~'100%');
+            max-width: calc(~'100%');
+        }
+        &.-hiddenOnDesktop {
+            display: block;
+        }
+        &.-hiddenOnMobile {
+            display: none;
+        }
+    }
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+    .content-component {
+        &.-hiddenOnDesktop {
+            display: block;
+        }
+        &.-hiddenOnMobile {
+            display: none;
+        }
+    }
+}

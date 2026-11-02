@@ -8,7 +8,7 @@
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
-    <!-- Changed render @all to archivesForm to avoid reloads of surrounding layout elements + performance advantage  -->
+    <!-- RENDER ARCHIVESFORM, NOT @ALL (NO LAYOUT RELOAD) -->
     <c:set
         var="formId"
         value="#{formId != null ? formId : 'archivesForm'}"
@@ -21,45 +21,42 @@
         var="renderOnExpand"
         value="#{renderOnExpand != null ? renderOnExpand : formId}"
         scope="request" />
-
     <c:set
         var="archiveTree"
         value="#{archiveTree != null ? archiveTree : archiveBean.archiveTree}"
         scope="request" />
-
     <c:set
         var="selectEntryAction"
         value="#{selectEntryAction != null ? selectEntryAction : 'select'}"
         scope="request" />
 
-    <!-- A list of  EadEntry object which should be displayed in the tree.
-	Note: all entries in the list are displayed. The list must be filtered for visible elements beforehand-->
+    <!-- ENTRIES, MUST BE PRE-FILTERED -->
     <c:set
         var="visibleTree"
         value="#{archiveTree.getVisibleTree(archiveBean.searchActive)}"
         scope="request" />
 
-    <!-- var is not really needed, but a call to update the types from the config is. -->
+    <!-- CALL UPDATES THE TYPES FROM THE CONFIG -->
     <c:set
         var="nodeTypes"
         value="#{archiveBean.getUpdatedNodeTypes()}"
         scope="request" />
 
-    <!-- The indentation of each hierarchical level in pixel -->
+    <!-- INDENT PER LEVEL IN PX -->
     <c:set
         var="indent"
         value="#{indent != null ? indent : configurationBean.tocIndentation}"
         scope="view" />
-
     <div class="archives-tree__inner">
         <h:form id="#{formId}">
             <!-- ARCHIVE TREE VIEW -->
             <h:panelGroup>
                 <!-- EXPANDABLE TREEVIEW -->
                 <h:panelGroup>
-                    <!-- Call to trigger a noop ajax call to update the url of the page (to set the query "selected" to the correct record) -->
+                    <!-- NOOP AJAX CALL, UPDATES THE URL -->
                     <h:commandScript name="updateUrl" />
 
+                    <!-- NO HITS -->
                     <h:outputLabel
                         value="#{msg.hitsZero}"
                         rendered="#{empty visibleTree}" />
@@ -95,7 +92,7 @@
                                 var="entry"
                                 value="#{visibleTree}"
                                 varStatus="status">
-                                <!-- This will break indentation if replaced with a c:if -->
+                                <!-- DO NOT REPLACE WITH C:IF (BREAKS THE INDENTATION) -->
                                 <li
                                     class="archives-tree__entry #{entry.hasChild == true ? 'parent' : 'child' }"
                                     data-id="id_#{entry.id}"
@@ -132,7 +129,6 @@
                                     </div>
 
                                     <!-- TITLE -->
-
                                     <div
                                         class="archives-tree__list-entry-title #{entry.id == archiveTree.selectedEntry.id ? '-archives-selected' : ''} #{entry.searchHit ? '-archives-search-hit':''}">
                                         <span class="archives-tree__list-title-icon">
@@ -152,7 +148,6 @@
                                                 class="archives-tree__selected -anchor-jump-marker"
                                                 name="selected" />
                                         </ui:fragment>
-
                                         <div class="archives-tree__record-link-wrapper">
                                             <ui:fragment rendered="#{selectEntryAction == 'open'}">
                                                 <ui:fragment rendered="#{not empty entry.associatedRecordPi}">
@@ -163,7 +158,6 @@
                                                         data-trigger="expand"
                                                         data-select-entry="#{entry.id}">
                                                         <span>#{entry.label}</span>
-
                                                         <ui:fragment rendered="#{entry.containsImage and entry.imageAccessAllowed}">
                                                             <span class="archives-tree__record-link-icon-wrapper-outer">
                                                                 <span class="archives-tree__record-link-icon-wrapper">
@@ -171,7 +165,6 @@
                                                                 </span>
                                                             </span>
                                                         </ui:fragment>
-
                                                         <ui:fragment rendered="#{entry.containsImage and !entry.imageAccessAllowed}">
                                                             <span
                                                                 class="archives-tree__record-link-icon-wrapper-outer"
@@ -188,7 +181,6 @@
                                                         </ui:fragment>
                                                     </a>
                                                 </ui:fragment>
-
                                                 <ui:fragment rendered="#{empty entry.associatedRecordPi}">
                                                     <h:commandLink
                                                         action="#{archiveTree.toggleSelectedEntry(entry)}"
@@ -197,7 +189,6 @@
                                                         pt:data-select-entry="#{entry.id}"
                                                         pt:data-render="archiveTree">
                                                         <span>#{entry.label}</span>
-
                                                         <ui:fragment rendered="#{entry.containsImage and entry.imageAccessAllowed}">
                                                             <span class="archives-tree__record-link-icon-wrapper-outer">
                                                                 <span class="archives-tree__record-link-icon-wrapper">
@@ -205,7 +196,6 @@
                                                                 </span>
                                                             </span>
                                                         </ui:fragment>
-
                                                         <ui:fragment rendered="#{entry.containsImage and !entry.imageAccessAllowed}">
                                                             <span
                                                                 class="archives-tree__record-link-icon-wrapper-outer"
@@ -224,9 +214,8 @@
                                                     </h:commandLink>
                                                 </ui:fragment>
                                             </ui:fragment>
-
                                             <ui:fragment rendered="#{selectEntryAction == 'select'}">
-                                                <!-- (RECORD/ENTRY) HAS IMAGE -->
+                                                <!-- ENTRY WITH IMAGE -->
                                                 <ui:fragment rendered="#{entry.containsImage}">
                                                     <h:commandLink
                                                         styleClass="archives-tree__record-link #{archiveTree.expandEntryOnSelection ? 'collapsible' : ''}"
@@ -235,18 +224,15 @@
                                                         pt:data-trigger="expand"
                                                         pt:data-select-entry="#{entry.id}">
                                                         <f:ajax render="#{render}" />
-
                                                         <ui:fragment rendered="#{entry.imageAccessAllowed}">
-                                                            <!-- TO DO: TOOLTIP ONLY FOR RECORD LEVEL, SEE ABOVE -->
                                                             <span class="archives-tree__record-link-icon-wrapper-outer">
                                                                 <span class="archives-tree__record-link-icon-wrapper">
                                                                     <util:icon icon="photo" />
                                                                 </span>
                                                             </span>
                                                         </ui:fragment>
-
                                                         <ui:fragment rendered="#{!entry.imageAccessAllowed}">
-                                                            <!-- SMALL ICON IMAGE INDICATOR BEHIND RECORD (NO ACCESS) -->
+                                                            <!-- NO ACCESS ICON -->
                                                             <span
                                                                 class="archives-tree__record-link-icon-wrapper-outer"
                                                                 data-toggle="tooltip"
@@ -262,6 +248,7 @@
                                                         </ui:fragment>
                                                     </h:commandLink>
                                                 </ui:fragment>
+
                                                 <!-- RECORD HAS NO IMAGE -->
                                                 <ui:fragment rendered="#{!entry.containsImage}">
                                                     <h:commandLink
@@ -290,8 +277,8 @@
                 </h:panelGroup>
             </h:panelGroup>
 
+            <!-- FOCUS RESTORE SCRIPT -->
             <script>
-                <!--  JUMP TO LAST SAVED FOCUS ELEMENT -->
                 if (sessionStorage.getItem('focusElement')) {
                     var lastFocusElement = sessionStorage.getItem('focusElement');
                     var lastFocusElementEscaped = lastFocusElement.replace(/:/g, '\\:');
@@ -300,21 +287,20 @@
             </script>
         </h:form>
 
+        <!-- TREE SCRIPT -->
         <script>
-            // REMEMBER FOCUS AFTER AJAX FUNCTIONALITY //
             $(document).on('focus', 'button, a', function () {
-                // Only store id if the element actually has one, to prevent empty selectors later
+                // ONLY ELEMENTS WITH AN ID, NO EMPTY SELECTORS
                 if (this.id) {
                     sessionStorage.setItem('focusElement', this.id);
                 }
             });
 
-            // REMOVE TOOLTIPS AFTER AJAX ONCE SO IT IS NOT STUCK ON SCREEN BECAUSE COLLAPSE ALL BUTTON IDENTITY IS DESTROYED DUE TO THE CALL
+            // REMOVE STUCK TOOLTIPS AFTER AJAX, THE BUTTON IS REPLACED
             function fadeOutAllTooltips() {
                 $('.bs-tooltip-top').remove();
             }
 
-            // EXPAND ENTRY IF ITEM IS PARENT AND NOT ALREADY EXPANDED
             $('[data-trigger="expand"]').on('click', function () {
                 $(this).closest('.archives-tree__expandable-icon-wrapper.-collapsed').hide();
             });

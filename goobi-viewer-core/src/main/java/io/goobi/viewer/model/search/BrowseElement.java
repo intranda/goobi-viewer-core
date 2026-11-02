@@ -365,7 +365,19 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
             populateEvents(hierarchy.top(), searchTerms);
         }
         if (DataManager.getInstance().getConfiguration().isSearchRisExportEnabled()) {
-            risExport = MetadataTools.generateRIS(structElement);
+            // This runs before initCoreFields() sets anchor/pi, so getNumVolumes() can't be used yet. Count from the struct element and pre-fill
+            // the numVolumes cache, so a later getNumVolumes() call for display reuses this query.
+            Long liveNumVolumes = null;
+            if (structElement.isAnchor()) {
+                try {
+                    liveNumVolumes = SearchHelper.getVolumeCount(structElement.getPi());
+                    numVolumes = liveNumVolumes;
+                    numVolumesComputed = true;
+                } catch (IndexUnreachableException | PresentationException e) {
+                    logger.warn("Could not count volumes for anchor '{}', omitting NV from RIS export: {}", structElement.getPi(), e.getMessage());
+                }
+            }
+            risExport = MetadataTools.generateRIS(structElement.getDocStructType(), structElement.getMetadataFields(), liveNumVolumes);
         }
     }
 

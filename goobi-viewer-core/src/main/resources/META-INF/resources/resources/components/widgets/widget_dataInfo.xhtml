@@ -1,12 +1,9 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <composite:interface />
 
@@ -20,12 +17,10 @@
                 role="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'data-info') ? 'button' : ''}"
                 class="widget__topbar widget-data-info__topbar #{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'data-info') ? 'collapsible' : ''} #{!configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'data-info') ? 'in' : ''}">
                 <h2 class="widget__title widget-data-info__title">#{msg.widget__data_info__title}</h2>
-
                 <div class="widget__topbar-icons-container">
                     <div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
                         <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
                     </div>
-
                     <util:icon
                         icon="chevron-down"
                         styleClass="widget__topbar-icon-collapsible icon-rot-on-open"
@@ -83,7 +78,6 @@
                         </a>
                     </h:panelGroup>
                 </div>
-
                 <div class="widget-data-info__infos-wrapper">
                     <!-- URN -->
                     <ui:fragment rendered="#{not empty activeDocumentBean.viewManager.topStructElement.getMetadataValue('URN')}">
@@ -101,7 +95,7 @@
                     </ui:fragment>
                 </div>
 
-                <!-- FORMATS (badges) -->
+                <!-- FORMATS -->
                 <div class="widget-data-info__formats widget__badge-container">
                     <!-- METS -->
                     <ui:fragment rendered="#{displayConditions.matchRecord('{docType:![group], accessCondition:DOWNLOAD_METADATA, sourceFormat:[METS, METS_MARC]}')}">
@@ -163,7 +157,7 @@
                         </a>
                     </ui:fragment>
 
-                    <!-- DUBLIN CORE (source file) -->
+                    <!-- DUBLIN CORE SOURCE FILE -->
                     <ui:fragment rendered="#{displayConditions.matchRecord('{docType:![group], accessCondition:DOWNLOAD_METADATA, sourceFormat:[DUBLINCORE]}')}">
                         <a
                             href="#{activeDocumentBean.viewManager.sourceFileResolverUrl}"
@@ -191,8 +185,6 @@
                     </ui:fragment>
                 </div>
             </div>
-            <!-- END BODY -->
         </div>
-        <!-- END WIDGET -->
     </composite:implementation>
 </ui:composition>

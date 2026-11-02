@@ -278,6 +278,7 @@ public final class AccessConditionUtils {
                         .append("\")");
                 break;
             case "png":
+            case "gif":
             case "jp2":
             case "obj":
             case "gltf":

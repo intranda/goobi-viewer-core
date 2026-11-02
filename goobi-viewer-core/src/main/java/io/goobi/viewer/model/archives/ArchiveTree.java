@@ -23,10 +23,12 @@ package io.goobi.viewer.model.archives;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -35,6 +37,7 @@ import org.apache.logging.log4j.Logger;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.archives.ArchiveParser.UnparsedNodeSearchResult;
 
 /**
  * Table of contents and associated functionality for a record. Instances can be either the default archive or a session-local copy.
@@ -62,11 +65,22 @@ public class ArchiveTree implements Serializable {
     private Map<String, Boolean> entryExpansionMap = new HashMap<>();
     private Map<String, Boolean> entryVisiblilityMap = new HashMap<>();
 
+    /**
+     * IDs of entries whose children are contained in the generated entry list. Nodes are shared between the global tree and session copies, so
+     * children loaded via another tree instance are only part of this tree's entry list after it has been regenerated.
+     */
+    private Set<String> childrenInView = new HashSet<>();
+
+    /** Parser used to load nodes on demand; resolved via {@link ArchiveManager} if not set. */
+    private transient ArchiveParser eadParser;
+
     /** Actively selected entry. */
     private ArchiveEntry selectedEntry;
 
     private boolean treeBuilt = false;
     private boolean treeFullyLoaded = true;
+    /** True if the last search was too broad to load all matching nodes of a not fully loaded tree. */
+    private boolean searchResultsIncomplete = false;
 
     private final boolean expandEntryOnSelection;
 
@@ -80,6 +94,7 @@ public class ArchiveTree implements Serializable {
 
     public ArchiveTree(ArchiveTree orig) {
         this();
+        this.eadParser = orig.eadParser;
         update(orig.trueRootElement);
     }
 
@@ -111,6 +126,12 @@ public class ArchiveTree implements Serializable {
         setTrueRootElement(root);
 
         List<ArchiveEntry> tree = root.getAsFlatList(true);
+        Set<String> parentIds = new HashSet<>();
+        for (ArchiveEntry entry : tree) {
+            if (entry.getSubEntryList() != null && !entry.getSubEntryList().isEmpty()) {
+                parentIds.add(entry.getId());
+            }
+        }
         for (ArchiveEntry entry : tree) {
             if (entry.isHasChildren() && !entry.isChildrenLoaded()) {
                 checkTreeFullyLoaded(tree);
@@ -119,6 +140,19 @@ public class ArchiveTree implements Serializable {
         }
         // logger.trace("Generated tree of size {}", tree.size()); //NOSONAR Debug
         entryMap.put(DEFAULT_GROUP, tree);
+        childrenInView = parentIds;
+    }
+
+    /**
+     * Checks whether the children of the given entry are contained in the generated entry list of this tree.
+     *
+     * @param entry archive entry to check
+     * @return true if the children of the given entry are part of this tree's entry list; false otherwise
+     * @should return false if children were added after generation
+     * @should return true after regeneration
+     */
+    public boolean isChildrenInView(ArchiveEntry entry) {
+        return entry != null && childrenInView.contains(entry.getId());
     }
 
     /**
@@ -426,14 +460,44 @@ public class ArchiveTree implements Serializable {
      *
      * @param identifier node identifier to search for in the tree
      * @return the {@link ArchiveEntry} with the given identifier if it exists in the tree; null otherwise
+     * @should load path to entry not yet loaded
      */
     public ArchiveEntry getEntryById(String identifier) {
-        return findEntry(identifier, getRootElement()).orElse(null);
+        Optional<ArchiveEntry> found = findEntry(identifier, getRootElement());
+        if (found.isPresent() || isTreeFullyLoaded() || trueRootElement == null || StringUtils.isBlank(identifier)) {
+            return found.orElse(null);
+        }
+
+        // Entry may be in a part of the tree that is not loaded yet
+        synchronized (this) {
+            found = findEntry(identifier, getRootElement());
+            if (found.isPresent()) {
+                return found.get();
+            }
+            ArchiveParser parser = getEadParser();
+            if (parser == null) {
+                return null;
+            }
+            try {
+                ArchiveEntry loaded = parser.loadEntryPath(trueRootElement, identifier);
+                if (loaded != null) {
+                    logger.trace("Loaded tree path to entry {}", identifier);
+                    generate(trueRootElement);
+                }
+                return loaded;
+            } catch (PresentationException | IndexUnreachableException e) {
+                logger.error("Could not load archive entry {}: {}", identifier, e.getMessage());
+                return null;
+            }
+        }
     }
 
     /**
      *
      * @param searchValue search string to match against node labels and IDs
+     * @should search in not loaded nodes if tree not fully loaded
+     * @should not search in index if tree fully loaded
+     * @should flag search results incomplete if parser reports incomplete search
      */
     public void search(String searchValue) {
         if (getRootElement() == null) {
@@ -441,13 +505,14 @@ public class ArchiveTree implements Serializable {
             return;
         }
 
+        searchResultsIncomplete = false;
         if (StringUtils.isNotBlank(searchValue)) {
             // hide all elements
             getRootElement().resetFoundList();
             // search in all/some metadata fields of all elements?
 
             // for now: search only labels
-            searchInNode(getRootElement(), searchValue, isTreeFullyLoaded());
+            searchInNode(getRootElement(), searchValue, !isTreeFullyLoaded());
 
             // fill flatList with displayable fields
             flatEntryList = getRootElement().getSearchList();
@@ -466,9 +531,14 @@ public class ArchiveTree implements Serializable {
     void searchInNode(ArchiveEntry node, String searchValue, boolean searchInNotLoadedNodes) {
         if (searchInNotLoadedNodes) {
             // Do a Solr search and load subtrees of found nodes
-            if (DataManager.getInstance().getArchiveManager().getEadParser().searchInUnparsedNodes(node, searchValue)) {
-                update(node.getRootNode());
-                logger.trace("New nodes were loaded during the search, updating tree...");
+            ArchiveParser parser = getEadParser();
+            if (parser != null) {
+                UnparsedNodeSearchResult result = parser.searchInUnparsedNodes(node, searchValue);
+                searchResultsIncomplete = result.incomplete();
+                if (result.nodesLoaded()) {
+                    update(node.getRootNode());
+                    logger.trace("New nodes were loaded during the search, updating tree...");
+                }
             }
         }
         if (node.getId() != null && node.getId().equals(searchValue)) {
@@ -521,6 +591,32 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
+     * @return true if the last search was too broad to load all matching nodes; false otherwise
+     */
+    public boolean isSearchResultsIncomplete() {
+        return searchResultsIncomplete;
+    }
+
+    /**
+     *
+     * @return Parser used for loading nodes on demand
+     */
+    ArchiveParser getEadParser() {
+        if (eadParser == null) {
+            return DataManager.getInstance().getArchiveManager().getEadParser();
+        }
+        return eadParser;
+    }
+
+    /**
+     *
+     * @param eadParser Parser to use for loading nodes on demand
+     */
+    void setEadParser(ArchiveParser eadParser) {
+        this.eadParser = eadParser;
+    }
+
+    /**
      * 
      * @param entry archive entry to check visibility for
      * @return true if given entry is currently visible; false otherwise
@@ -550,6 +646,8 @@ public class ArchiveTree implements Serializable {
      * Expands this entry and sets all sub-entries visible if their immediate parent is expanded.
      * 
      * @param entry archive entry to expand
+     * @should add loaded children to entry list
+     * @should add children loaded via another tree to entry list
      */
     public void expandEntry(ArchiveEntry entry) {
         // logger.trace("expand: {}", label); //NOSONAR Debug
@@ -559,11 +657,19 @@ public class ArchiveTree implements Serializable {
 
         if (!entry.isChildrenLoaded()) {
             logger.trace("Loading children for entry: {}", entry.getLabel());
+            ArchiveParser parser = getEadParser();
             try {
-                ((SolrEADParser) DataManager.getInstance().getArchiveManager().getEadParser()).loadChildren(entry, null, false);
+                if (parser != null) {
+                    parser.loadChildren(entry);
+                }
             } catch (PresentationException | IndexUnreachableException e) {
                 logger.error(e.getMessage());
             }
+        }
+        // Children may have been loaded just now or via another tree instance sharing this node
+        if (entry.getSubEntryList() != null && !entry.getSubEntryList().isEmpty() && !isChildrenInView(entry) && trueRootElement != null) {
+            logger.trace("Regenerating tree to include children of entry: {}", entry.getLabel());
+            generate(trueRootElement);
         }
 
         entryExpansionMap.put(entry.getId(), true);

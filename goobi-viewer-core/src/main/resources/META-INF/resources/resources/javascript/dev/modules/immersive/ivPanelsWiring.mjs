@@ -101,7 +101,7 @@ export function setupPanels(immersiveRoot, keys) {
 
 /**
  * Adds the drag handle that resizes the left panels: one shared
- * --immersive-panel-width custom property, persisted in sessionStorage.
+ * --_immersive-panel-width custom property, persisted in sessionStorage.
  */
 export function setupPanelResize(immersiveRoot) {
     const immersiveViewer = immersiveRoot && immersiveRoot.querySelector('.immersive__viewer');
@@ -112,7 +112,7 @@ export function setupPanelResize(immersiveRoot) {
     const MAX_WIDTH_RATIO = 0.8;
     const maxWidth = () => immersiveViewer.getBoundingClientRect().width * MAX_WIDTH_RATIO;
     const clamp = (px) => Math.min(Math.max(px, MIN_WIDTH), maxWidth());
-    const applyWidth = (px) => immersiveViewer.style.setProperty('--immersive-panel-width', Math.round(px) + 'px');
+    const applyWidth = (px) => immersiveViewer.style.setProperty('--_immersive-panel-width', Math.round(px) + 'px');
     let stored = NaN;
     try {
         stored = parseInt(sessionStorage.getItem(WIDTH_KEY), 10);

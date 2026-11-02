@@ -572,6 +572,10 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
             Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME + ":\"00000001.jpg\" "
                     + SolrConstants.FILENAME + "_JPEG:\"00000001.jpg\")", result);
         }
+        {
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.gif");
+            Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.gif\"", result);
+        }
     }
 
     /**

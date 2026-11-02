@@ -27,9 +27,12 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 
+@Execution(ExecutionMode.CONCURRENT)
 class CMSStatisticsFilterContentTest {
 
     /**

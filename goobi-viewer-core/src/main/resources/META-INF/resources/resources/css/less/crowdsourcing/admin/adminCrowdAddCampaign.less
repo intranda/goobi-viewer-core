@@ -21,7 +21,6 @@
             grid-template-columns: minmax(180px, auto) auto;
         }
     }
-
     &__campaign-media-file-box {
         .admin-cms-media__file-select,
         .admin-cms-media__file-bottom {
@@ -66,8 +65,6 @@
             font-size: 14px;
         }
     }
-    &__campaign-date-picker-group {
-    }
     &__campaign-date-picker {
         width: 100%;
         position: relative;
@@ -99,7 +96,6 @@
             margin-left: 25px;
         }
     }
-
     .edit-content-page {
         &.edit-content-page-content {
             padding-bottom: 30px;
@@ -126,73 +122,20 @@
             }
         }
     }
+}
 
-    .create-page-right {
-        margin-bottom: 20px;
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {
+}
 
-        #cmsCreatePageMetadataItemWrapper {
-            border: 1px solid #ccc;
-        }
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
-        .page-metadata-item-status {
-            > div {
-                margin-top: 2em;
-                &:nth-of-type(1) {
-                    margin-top: 0;
-                }
-            }
-            .page-metadata-item-date-selector {
-                display: grid;
-                grid-template-columns: 25% auto;
-                h2 {
-                    grid-column: span 2;
-                }
-                .cms-module__actions {
-                    grid-column-start: 2;
-                    justify-self: end;
-                }
-            }
-            .cms-module__actions {
-                float: right;
-            }
-            .form-control {
-                line-height: 21px;
-                text-align: left;
-            }
-        }
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+}
 
-        .campaign-statistics {
-            margin-top: 10px;
-            border: 1px solid #ccc;
-            background-color: #fff;
-            flex-wrap: wrap;
-            &__text {
-                width: 100%;
-                padding: 10px;
-                dl {
-                    dt {
-                        &:after {
-                        }
-                    }
-                    dd {
-                    }
-                }
-            }
-
-            &__bar {
-                width: 100%;
-                display: block;
-                padding: 0 10px 10px 10px;
-                progressBar {
-                    height: 50px;
-                }
-                .goobi-progress-bar-wrapper {
-                    .goobi-progress-bar {
-                        &__bar {
-                        }
-                    }
-                }
-            }
-        }
-    }
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
 }

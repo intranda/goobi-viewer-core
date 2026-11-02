@@ -13,9 +13,7 @@
     </ui:define>
 
     <ui:define name="head">
-        <!-- The Scalar bundle self-initializes on load and touches document.body,
-             so it has to stay in the head where body does not exist yet. Do not
-             move it to the end of the body or load it with target="body". -->
+        <!-- KEEP IN THE HEAD, THE BUNDLE TOUCHES BODY ON LOAD -->
         <script
             type="text/javascript"
             src="#{request.contextPath}/resources/javascript/libs/scalar/standalone.js?#{navigationHelper.buildVersion}" />
@@ -23,15 +21,15 @@
     </ui:define>
 
     <ui:define name="content">
-        <!-- Unlike the versioned Scalar script above, h:outputStylesheet carries no
-             cache-buster, so a recheck after editing rest_api.css needs a hard reload -
-             Mojarra's default resource max-age is 7 days. -->
+        <!-- REST API STYLES, NO CACHE-BUSTER (HARD RELOAD, 7-DAY MAX-AGE) -->
         <h:outputStylesheet
             library="css"
             name="/misc/rest_api.css" />
 
+        <!-- API REFERENCE -->
         <div id="scalar-api-reference" />
 
+        <!-- API REFERENCE SCRIPT -->
         <script>
             //<![CDATA[
             viewerJS.apiDocs.init('#scalar-api-reference', '#{request.contextPath}', '#{navigationHelper.localeString}');

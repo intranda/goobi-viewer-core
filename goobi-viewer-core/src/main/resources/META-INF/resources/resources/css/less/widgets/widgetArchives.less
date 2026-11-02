@@ -58,14 +58,14 @@
             }
             &:hover:not(.-disabled),
             &:focus-visible:not(.-disabled) {
-                color: @hoverblue;
+                color: var(--fg-link-hover);
                 outline: none;
                 .icon-wrapper {
                     transform: scale(1.08);
                 }
             }
             &:active:not(.-disabled) {
-                color: @activeblue;
+                color: var(--fg-link-pressed);
                 .icon-wrapper {
                     transform: scale(0.94);
                 }
@@ -74,8 +74,6 @@
         &__prev {
             margin-left: auto;
             margin-right: 1.8rem;
-        }
-        &__next {
         }
     }
 }

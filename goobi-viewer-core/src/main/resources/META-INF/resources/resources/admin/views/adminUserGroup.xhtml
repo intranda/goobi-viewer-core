@@ -6,8 +6,6 @@
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
@@ -27,14 +25,11 @@
                         <h:panelGroup rendered="#{adminBean.currentUserGroup.id == null}">
                             <h1 class="admin__title">#{msg.admin__group_create_new}</h1>
                         </h:panelGroup>
-
                         <h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
                             <h1 class="admin__title">#{msg.admin__group_edit}</h1>
                         </h:panelGroup>
                     </div>
-
                     <viewerComponent:adminBreadcrumbs />
-
                     <div
                         class="admin__content-inner-content"
                         role="form">
@@ -43,7 +38,6 @@
                             styleClass="form-horizontal"
                             prependId="false">
                             <h2>#{msg.general}</h2>
-
                             <div class="admin__default-block">
                                 <fieldset>
                                     <div class="form-group form-row">
@@ -69,7 +63,6 @@
                                             </button>
                                         </div>
                                     </div>
-
                                     <div class="form-group form-row">
                                         <div class="col-2 control-label admin__form-label">
                                             <label for="userGroupDescription">#{msg.description}:</label>
@@ -91,7 +84,6 @@
                                             </button>
                                         </div>
                                     </div>
-
                                     <div class="form-group form-row">
                                         <div class="col-2 control-label admin__form-label">
                                             <label for="userGroupOwner">#{msg.userGroup_owner}:</label>
@@ -127,7 +119,7 @@
                                 </fieldset>
                             </div>
 
-                            <!-- TODO changes made here are not reset when canceling! -->
+                            <!-- CHANGES HERE ARE NOT RESET ON CANCEL -->
                             <h2>#{msg.admin__user_group_manage_members}</h2>
                             <h:panelGroup
                                 layout="block"
@@ -167,7 +159,6 @@
                                         </button>
                                     </div>
                                 </div>
-
                                 <div class="form-row admin__group-member-entry">
                                     <div class="col-11">
                                         <div class="admin__group-member-name">#{adminBean.currentUserGroup.owner.backendDisplayName}</div>

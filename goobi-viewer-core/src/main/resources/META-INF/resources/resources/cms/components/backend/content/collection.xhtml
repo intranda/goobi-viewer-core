@@ -1,13 +1,8 @@
 <ui:composition
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms">
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <composite:interface>
         <composite:attribute
             name="contentItem"
@@ -25,7 +20,6 @@
                 <div class="admin__content-component-input-label">
                     <label for="pageListCategory">#{msg.admin__cms_collections_solr_field}#{cc.attrs.contentItem.mandatory?'*':''}:</label>
                 </div>
-
                 <div class="admin__content-component-input-field">
                     <!-- AREA FOR AJAX REFRESH -->
                     <h:panelGroup id="collectionSelectGroup">
@@ -36,7 +30,6 @@
                                 infoClass="cms-module__option-message-status success"
                                 warnClass="cms-module__option-message-status warning"
                                 errorClass="cms-module__option-message-status danger" />
-
                             <div class="cms-module__option-message-mark">
                                 <i
                                     class="fa fa-check"
@@ -58,7 +51,8 @@
                                     var="field"
                                     itemValue="#{field}"
                                     itemLabel="#{field}" />
-                                <!-- DYNAMIC COLLECTIONS: offered when at least one exists, or kept when already selected so the value stays valid -->
+
+                                <!-- DYNAMIC COLLECTIONS, OFFERED IF ANY EXIST OR SELECTED (KEEPS THE VALUE VALID) -->
                                 <f:selectItem
                                     itemValue="DC_DYNAMIC"
                                     itemLabel="#{msg.admin__dynamic_collections}"
@@ -73,8 +67,7 @@
                 </div>
             </div>
 
-            <!-- HIERARCHY-ONLY OPTIONS: base collection and ignore collections only apply to a real Solr collection hierarchy, not to the flat set of
-                 dynamic collections. The outer panelGroup is always rendered so it remains a valid f:ajax target when switching the source field. -->
+            <!-- HIERARCHY-ONLY OPTIONS, OUTER PANELGROUP ALWAYS RENDERED AS AJAX TARGET -->
             <h:panelGroup
                 id="collectionHierarchyOptions"
                 layout="block">
@@ -87,7 +80,6 @@
                         <div class="admin__content-component-input-label">
                             <label for="baseCollection">#{msg.cms_itemBaseCollection}:</label>
                         </div>
-
                         <div class="admin__content-component-input-field">
                             <!-- AREA FOR AJAX REFRESH -->
                             <h:panelGroup id="baseCollectionGroup">
@@ -98,7 +90,6 @@
                                         infoClass="cms-module__option-message-status success"
                                         warnClass="cms-module__option-message-status warning"
                                         errorClass="cms-module__option-message-status danger" />
-
                                     <div class="cms-module__option-message-mark">
                                         <i
                                             class="fa fa-check"
@@ -133,7 +124,6 @@
                         <div class="admin__content-component-input-label">
                             <label for="ignoreCollection">#{msg.cms_itemIgnoreCollections}:</label>
                         </div>
-
                         <div class="admin__content-component-input-field">
                             <!-- AREA FOR AJAX REFRESH -->
                             <h:panelGroup id="ignoreCollectionGroup">
@@ -144,7 +134,6 @@
                                         infoClass="cms-module__option-message-status success"
                                         warnClass="cms-module__option-message-status warning"
                                         errorClass="cms-module__option-message-status danger" />
-
                                     <div class="cms-module__option-message-mark">
                                         <i
                                             class="fa fa-check"
@@ -195,7 +184,6 @@
                                 infoClass="cms-module__option-message-status success"
                                 warnClass="cms-module__option-message-status warning"
                                 errorClass="cms-module__option-message-status danger" />
-
                             <div class="cms-module__option-message-mark">
                                 <i
                                     class="fa fa-check"
@@ -232,7 +220,6 @@
                 <div class="admin__content-component-input-label">
                     <label for="facetting">#{msg.cms_searchPrefix}#{cc.attrs.contentItem.mandatory ? '*' : ''}:</label>
                 </div>
-
                 <div class="admin__content-component-input-field">
                     <!-- AREA FOR AJAX REFRESH -->
                     <h:panelGroup id="facettingGroup">
@@ -243,7 +230,6 @@
                                 infoClass="cms-module__option-message-status success"
                                 warnClass="cms-module__option-message-status warning"
                                 errorClass="cms-module__option-message-status danger" />
-
                             <div class="cms-module__option-message-mark">
                                 <i
                                     class="fa fa-check"

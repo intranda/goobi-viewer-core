@@ -36,19 +36,16 @@
                 </h:panelGroup>
             </h:panelGroup>
 
+            <!-- CHART SCRIPT -->
             <script type="text/javascript">
-                (function() {
+                (function () {
                     const filter = '#{cc.attrs.component.getContent("filter").filterQuery}';
                     const url = new URL('#{request.contextPath}/api/v1/statistics/index/top-collections', window.location.origin);
                     url.searchParams.set('lang', '#{navigationHelper.localeString}');
                     if (filter) {
                         url.searchParams.set('filter', filter);
                     }
-                    viewerJS.statistics.charts.renderTopCollections(
-                        'canvas-top-collections#{cc.clientId}',
-                        url.toString(),
-                        '#{request.contextPath}/browse/'
-                    );
+                    viewerJS.statistics.charts.renderTopCollections('canvas-top-collections#{cc.clientId}', url.toString(), '#{request.contextPath}/browse/');
                 })();
             </script>
         </ui:fragment>

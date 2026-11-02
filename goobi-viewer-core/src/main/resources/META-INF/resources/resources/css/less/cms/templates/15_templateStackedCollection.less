@@ -3,11 +3,7 @@
    style declarations for cms_template_15_stackedCollection.xhtml
    ==============================================================*/
 /* TPL STACKED COLLECTION */
-/* BLOCK */
 .tpl-stacked-collection {
-    h1 {
-    }
-    /* ELEMENT */
     &__text {
         margin-bottom: 15px;
     }
@@ -23,13 +19,14 @@
         margin: 0 auto 1.5rem auto;
     }
     .card {
-        border: 1px solid @middlegray;
+        border: 1px solid var(--border-strong);
         border-radius: 0;
-        background-color: @lightgray;
+        background-color: var(--bg-subtle);
+        color: var(--fg-default);
         box-shadow: none;
     }
     .card-header {
-        .mx-clearfloats;
+        .mx-clearfloats();
         padding: 0;
         display: flex;
         align-items: center;
@@ -65,37 +62,15 @@
             &:hover,
             &:active,
             &:focus {
-                color: @black;
+                color: var(--fg-default);
                 text-decoration: none;
             }
             i {
-                color: #555;
+                color: var(--fg-secondary);
                 padding-left: 10px;
-                &.fa-angle-flip {
-                    &::before {
-                        content: '';
-                        display: inline-block;
-                        width: 1em;
-                        height: 1em;
-                        vertical-align: middle;
-                        background-color: currentColor;
-                        mask: url('../../icons/outline/chevron-up.svg') center/contain no-repeat;
-                        -webkit-mask: url('../../icons/outline/chevron-up.svg') center/contain no-repeat;
-                    }
-                }
             }
             &.card-title-collapse {
                 flex-grow: 1;
-            }
-            &.collapsed {
-                i {
-                    &.fa-angle-flip {
-                        &::before {
-                            mask: url('../../icons/outline/chevron-down.svg') center/contain no-repeat;
-                            -webkit-mask: url('../../icons/outline/chevron-down.svg') center/contain no-repeat;
-                        }
-                    }
-                }
             }
         }
     }
@@ -105,18 +80,17 @@
             width: 16px;
             height: 16px;
             line-height: 16px;
-            font-size: @fontMedium;
+            font-size: var(--font-size-body-small);
             text-align: center;
-            color: @white;
-            background-color: @orange;
+            color: var(--fg-black);
+            background-color: var(--color-rss);
         }
-    }
-    .card-collapse {
     }
     .card-body {
         padding-left: 59px;
-        border-top-color: @middlegray !important;
-        background-color: @white;
+        border-top-color: var(--border-strong) !important;
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         &__links {
             display: flex;
             justify-content: space-between;
@@ -124,26 +98,15 @@
         &__list {
             margin-left: 20px;
         }
-        ul {
-        }
-        li {
-        }
-        a {
-        }
-        &__collection,
-        &__rss {
-        }
-        &__collection {
-        }
         &__rss {
             .fa {
                 width: 16px;
                 height: 16px;
                 line-height: 16px;
-                font-size: @fontMedium;
+                font-size: var(--font-size-body-small);
                 text-align: center;
-                color: @white;
-                background-color: @orange;
+                color: var(--fg-black);
+                background-color: var(--color-rss);
             }
         }
     }
@@ -159,12 +122,11 @@
         margin: 0;
     }
     &__info-toggle {
-        font-size: 1.8rem;
+        font-size: var(--font-size-body-large);
     }
 }
 
 /* MODIFICATION */
-
 @{RTL} {
     .tpl-stacked-collection {
         &__actions {

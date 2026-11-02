@@ -1,59 +1,66 @@
 /* ==============================================================
    Error Page
    style declarations for error.xhtml (application errors)
+   Colours: fixed --color-error-* palette entries (see error.less), identical in every theme.
    ==============================================================*/
 /* ERROR CARD */
-/* BLOCK */
 .view-error-card {
-    border: 1px solid #ccc;
+    border: 1px solid var(--color-error-line);
     border-radius: 3px;
-    background: #fff;
-    color: #1a1a1a;
+    background-color: var(--color-error-card);
+    color: var(--color-error-ink);
+    color-scheme: light;
     padding: 2rem;
-    /* MODIFICATION */
+    /* VARIANTS */
     &--warning {
-        border-top: 5px solid @yellowBar;
+        border-top: 5px solid var(--color-error-warning);
     }
     &--danger {
-        border-top: 5px solid @redBar;
+        border-top: 5px solid var(--color-error-danger);
     }
-    /* ELEMENT */
+    /* CONTENT */
     &__title {
-        font-size: 2rem;
+        font-size: var(--font-size-heading-small);
         font-weight: 700;
-        color: #1a1a1a;
+        color: var(--color-error-ink);
         margin: 0 0 1rem;
         line-height: 1.2;
     }
     &__message {
-        font-size: @fontMedium;
-        color: #666;
+        font-size: var(--font-size-body-small);
+        color: var(--color-error-ink-muted);
         line-height: 1.7;
         margin: 0;
         a {
-            color: #3365a9;
+            color: var(--color-error-link);
+            text-decoration: underline;
+            &:hover,
+            &:focus,
+            &:active {
+                color: var(--color-error-link-strong);
+            }
         }
     }
     &__divider {
         border: none;
-        border-top: 1px solid #ccc;
+        border-top: 1px solid var(--color-error-line);
         margin: 2rem 0;
     }
     &__details-label {
-        font-size: @fontSmall;
+        font-size: var(--font-size-caption);
         font-weight: 600;
-        color: #666;
+        color: var(--color-error-ink-muted);
         text-transform: uppercase;
         letter-spacing: 0.06em;
         margin-bottom: 0.8rem;
     }
     &__details-block {
-        background: #f7f7f7;
-        border: 1px solid #ccc;
+        background-color: var(--color-error-well);
+        border: 1px solid var(--color-error-line);
         padding: 1rem 1.2rem;
         font-family: monospace;
-        font-size: @fontSmall;
-        color: #4b4b4b;
+        font-size: var(--font-size-caption);
+        color: var(--color-error-ink);
         line-height: 1.8;
         margin: 0;
         dt {
@@ -73,41 +80,6 @@
         margin-top: 2rem;
     }
 }
-
-/* DARK MODE (triggered by viewer theme toggle) */
-.color-theme-dark .view-error-card {
-    background: #253044;
-    color: #e3e4e7;
-    border-color: transparent;
-    border-radius: 3px;
-    &.view-error-card--warning {
-        border-top-color: @yellowBar;
-    }
-    &.view-error-card--danger {
-        border-top-color: @redBar;
-    }
-    .view-error-card__title {
-        color: #e3e4e7;
-    }
-    .view-error-card__message {
-        color: #d8d9dd;
-        a {
-            color: #93c5fd;
-        }
-    }
-    .view-error-card__divider {
-        border-top-color: transparent;
-    }
-    .view-error-card__details-label {
-        color: #d8d9dd;
-    }
-    .view-error-card__details-block {
-        background: #000e29;
-        border-color: transparent;
-        color: #e3e4e7;
-    }
-}
-
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
 }
@@ -121,7 +93,7 @@
     .view-error-card {
         padding: 1.5rem;
         &__title {
-            font-size: @fontLarge;
+            font-size: var(--font-size-body-large);
         }
     }
 }
@@ -131,7 +103,7 @@
     .view-error-card {
         padding: 1.2rem;
         &__title {
-            font-size: @fontNormal;
+            font-size: var(--font-size-body);
         }
     }
 }

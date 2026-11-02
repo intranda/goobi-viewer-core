@@ -4,8 +4,6 @@
    ==============================================================*/
 #widgetMetadata {
     dl {
-        dt {
-        }
         dd {
             a,
             button {
@@ -16,17 +14,17 @@
 }
 
 .widget-metadata {
+    /* TOPBAR */
     &__topbar {
         margin-top: 20px;
     }
-    &__topbar:first-child {
-        margin-top: none;
-    }
+    /* BODY */
     &__body {
         a {
             display: inline;
         }
     }
+    /* KEY VALUE GROUP */
     &__key-value-group {
         dd {
             margin-bottom: 0;
@@ -34,13 +32,11 @@
         margin-bottom: 1rem;
         &:last-child {
             margin-bottom: 0;
-            //			dd:last-child {
-            //				margin-bottom: 0;
-            //			}
         }
     }
 }
 
+/* RTL */
 @{RTL} #widgetMetadata {
     dl dd {
         margin-right: 0;

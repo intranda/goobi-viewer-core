@@ -69,9 +69,9 @@ var viewerJS = (function (viewer) {
                     let $anchor = $(hash);
                     if ($anchor.length > 0) {
                         setTimeout(() => {
-                            let $topHeader = $('.page-header__top');
-                            let $navHeader = $('.page-navigation');
-                            $('html, body').scrollTop($anchor.offset().top);
+                            // scrollIntoView honours the scroll-padding-top the theme sets for
+                            // the sticky header; a raw scrollTop lands the anchor underneath it
+                            $anchor[0].scrollIntoView();
                         }, 0);
                     }
                 });
