@@ -149,7 +149,7 @@
 		<quartz.version>2.5.2</quartz.version>
 		<reflections.version>0.10.2</reflections.version>
 		<rome.version>2.1.0</rome.version>
-		<spring.version>7.0.9</spring.version>
+		<spring.version>7.0.10</spring.version>
 		<slf4j.version>2.0.20</slf4j.version>
 		<swagger.version>2.2.55</swagger.version>
 		<tomcat.version>10.1.31</tomcat.version>
