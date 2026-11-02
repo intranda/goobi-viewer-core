@@ -176,7 +176,7 @@ public class MetsResolver extends HttpServlet {
             return;
         }
 
-        User user = BeanUtils.getUserFromSession(request.getSession());
+        User user = BeanUtils.getUserFromSession(request.getSession(false));
         if (user == null) {
             try {
                 UserBean userBean = BeanUtils.getUserBean();

@@ -149,7 +149,7 @@ public class AccessRightsRequestFilter implements ContainerRequestFilter {
         try {
             if (FilterTools.isThumbnail(request)) {
                 access = AccessConditionUtils
-                        .checkAccessPermissionForThumbnail(request.getSession(), pi, contentFileName, NetTools.getIpAddress(request))
+                        .checkAccessPermissionForThumbnail(request.getSession(false), pi, contentFileName, NetTools.getIpAddress(request))
                         .isGranted();
             } else {
                 String[] privileges = getRequiredPrivileges(request);
@@ -160,7 +160,7 @@ public class AccessRightsRequestFilter implements ContainerRequestFilter {
                     throw new ServiceNotAllowedException("Serving this resource is currently impossible Because no persistent identifier is given");
                 } else if (StringUtils.isNotBlank(contentFileName)) {
                     access = AccessConditionUtils
-                            .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request.getSession(), pi, contentFileName,
+                            .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request.getSession(false), pi, contentFileName,
                                     RequiredPrivileges.of(privileges), NetTools.getIpAddress(request), null)
                             .isGranted();
                 } else if (pageNo != null) {

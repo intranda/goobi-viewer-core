@@ -41,8 +41,8 @@ import jakarta.servlet.http.HttpSession;
 /**
  * Offers methods to store information about the current and previous html-view (page) in the session store.
  *
- * <p>The fullscreen view is explicitly excluded from the recorded views, since it acts only as a magnification of the image view, not as a separate
- * page
+ * <p>
+ * The fullscreen view is explicitly excluded from the recorded views, since it acts only as a magnification of the image view, not as a separate page
  *
  * @author Florian Alpers
  */
@@ -69,7 +69,7 @@ public final class ViewHistory {
         try {
             if (request != null) {
                 HttpServletRequest httpRequest = (HttpServletRequest) request;
-                HttpSession session = httpRequest.getSession();
+                HttpSession session = httpRequest.getSession(false);
                 if (session != null) {
                     String hostUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest);
                     String applicationName = httpRequest.getContextPath();
@@ -97,7 +97,8 @@ public final class ViewHistory {
      * Saves the given {@code currentPath} to the session map, keeping the previously stored currentPath as previousPath if it has a different
      * PageType than the current path.
      *
-     * <p>The path stored as currentPath can be retrieved by {@link #getCurrentView(ServletRequest)}; the previously stored path can be retrieved by
+     * <p>
+     * The path stored as currentPath can be retrieved by {@link #getCurrentView(ServletRequest)}; the previously stored path can be retrieved by
      * {@link #getPreviousView(ServletRequest)}
      *
      * @param session The http session to store the path in
@@ -141,7 +142,7 @@ public final class ViewHistory {
     public static synchronized Optional<ViewerPath> getCurrentView(ServletRequest request) {
         if (request != null) {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
-            HttpSession session = httpRequest.getSession();
+            HttpSession session = httpRequest.getSession(false);
 
             if (session != null) {
                 ViewerPath previousPath = (ViewerPath) session.getAttribute(CURRENT_URL);
@@ -163,7 +164,7 @@ public final class ViewHistory {
     public static synchronized Optional<ViewerPath> getPreviousView(ServletRequest request) {
         if (request != null) {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
-            HttpSession session = httpRequest.getSession();
+            HttpSession session = httpRequest.getSession(false);
 
             if (session != null) {
                 ViewerPath previousPath = (ViewerPath) session.getAttribute(PREVIOUS_URL);

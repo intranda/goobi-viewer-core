@@ -69,7 +69,6 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.RequiredPrivileges;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.solr.SolrConstants.DocType;
-import jakarta.ws.rs.BadRequestException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -77,6 +76,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -289,7 +289,8 @@ public class RecordsFilesImageResource extends ImageResource {
         ImageInformation info = super.getInfoAsJson();
         try {
             // Add auth services if access not granted
-            if (!AccessConditionUtils.checkAccessPermissionForImage(request.getSession(), pi, filename, NetTools.getIpAddress(request)).isGranted()) {
+            if (!AccessConditionUtils.checkAccessPermissionForImage(request.getSession(false), pi, filename, NetTools.getIpAddress(request))
+                    .isGranted()) {
                 for (Service service : AuthorizationFlowTools.getAuthServices(pi, filename)) {
                     info.addService(service);
                 }
@@ -305,10 +306,11 @@ public class RecordsFilesImageResource extends ImageResource {
     }
 
     /**
-     * Validates the PI and returns it unchanged. Throws {@link BadRequestException} (HTTP 400)
-     * if the PI contains characters that are illegal in java.net.URI paths or Solr queries.
+     * Validates the PI and returns it unchanged. Throws {@link BadRequestException} (HTTP 400) if the PI contains characters that are illegal in
+     * java.net.URI paths or Solr queries.
      *
-     * <p>Declared static so it can be invoked inside the super() constructor call.
+     * <p>
+     * Declared static so it can be invoked inside the super() constructor call.
      *
      * @param pi persistent identifier to validate
      * @return the unchanged pi if valid

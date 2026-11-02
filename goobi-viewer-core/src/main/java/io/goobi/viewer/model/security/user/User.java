@@ -42,7 +42,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.annotations.Index;
@@ -53,6 +52,7 @@ import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.v1.authentication.UserAvatarResource;
 import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.AuthenticationException;
@@ -71,7 +71,6 @@ import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.user.icon.UserAvatarOption;
 import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.controller.DateTools;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -415,9 +414,9 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         }
         // always allow access if the only condition is open access and there is no special license configured for it
         if (requiredAccessConditions.size() == 1 && requiredAccessConditions.contains(SolrConstants.OPEN_ACCESS_VALUE)
-                    && DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) == null) {
-                return AccessPermission.granted();
-            }
+                && DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) == null) {
+            return AccessPermission.granted();
+        }
 
         Map<String, AccessPermission> permissionMap = HashMap.newHashMap(requiredAccessConditions.size());
         for (String accessCondition : requiredAccessConditions) {
@@ -871,8 +870,8 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * hasPrivilegeForAllSubthemeDiscriminatorValues.
      *
-     * @return true if this user has access to all CMS subtheme discriminator values (as superuser or
-     *         via an unrestricted CMS admin license), false otherwise
+     * @return true if this user has access to all CMS subtheme discriminator values (as superuser or via an unrestricted CMS admin license), false
+     *         otherwise
      */
     public boolean hasPrivilegeForAllSubthemeDiscriminatorValues() {
 
@@ -1225,12 +1224,10 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         return 3;
     }
 
-    
     public Map<String, String> getUserProperties() {
         return userProperties;
     }
 
-    
     public void setUserProperties(Map<String, String> userProperties) {
         this.userProperties = userProperties;
     }
@@ -1318,7 +1315,8 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * {@inheritDoc}
      *
-     * <p>Required by the ILicensee interface.
+     * <p>
+     * Required by the ILicensee interface.
      */
     @Override
     public String getName() {
@@ -1415,22 +1413,18 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         return URI.create(URI_ID_TEMPLATE.replace("{id}", this.getId().toString()));
     }
 
-    
     public void setAgreedToTermsOfUse(boolean agreedToTermsOfUse) {
         this.agreedToTermsOfUse = agreedToTermsOfUse;
     }
 
-    
     public boolean isAgreedToTermsOfUse() {
         return agreedToTermsOfUse;
     }
 
-    
     public UserAvatarOption getAvatarType() {
         return Optional.ofNullable(avatarType).orElse(UserAvatarOption.DEFAULT);
     }
 
-    
     public void setAvatarType(UserAvatarOption avatarType) {
         this.avatarType = avatarType;
     }
@@ -1486,12 +1480,10 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         });
     }
 
-    
     public Long getLocalAvatarUpdated() {
         return localAvatarUpdated;
     }
 
-    
     public void setLocalAvatarUpdated(Long localAvatarUpdated) {
         this.localAvatarUpdated = localAvatarUpdated;
     }
