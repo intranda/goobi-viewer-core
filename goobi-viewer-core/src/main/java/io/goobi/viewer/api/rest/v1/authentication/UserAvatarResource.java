@@ -35,23 +35,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import jakarta.inject.Inject;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DefaultValue;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.NotFoundException;
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -87,6 +70,21 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.SchemaProperty;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 
 /**
  * REST resource for uploading, retrieving, and deleting user avatar images.
@@ -113,18 +111,12 @@ public class UserAvatarResource extends ImageResource {
     private static final long MAX_AVATAR_UPLOAD_BYTES = 16L * 1024L * 1024L;
 
     public UserAvatarResource(
-            @Context
-            ContainerRequestContext context,
-            @Context
-            HttpServletRequest request,
-            @Context
-            HttpServletResponse response,
+            @Context ContainerRequestContext context,
+            @Context HttpServletRequest request,
+            @Context HttpServletResponse response,
             @Parameter(description = "User id",
-                    schema = @Schema(minimum = "1", maximum = "9223372036854775807"))
-            @PathParam("userId")
-            Long userId,
-            @Context
-            ContentServerCacheManager cacheManager) throws WebApplicationException, ViewerConfigurationException {
+                    schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("userId") Long userId,
+            @Context ContentServerCacheManager cacheManager) throws WebApplicationException, ViewerConfigurationException {
         super(context, request, response, "", getMediaFileUrl(userId).toString(), cacheManager);
         AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
         if (urls == null) {
@@ -259,14 +251,10 @@ public class UserAvatarResource extends ImageResource {
     @ApiResponse(responseCode = "413",
             description = "Upload exceeds the maximum avatar size (mirrors the JSF maxsize attribute)")
     @ApiResponse(responseCode = "500", description = "Internal server error during file upload")
-    public Response uploadAvatarFile(@DefaultValue("true")
-    @FormDataParam("enabled")
-    boolean enabled,
-            @FormDataParam("filename")
-            String uploadFilename,
-            @FormDataParam("file")
-            InputStream uploadedInputStream, @Parameter(hidden = true) @FormDataParam("file")
-            FormDataContentDisposition fileDetail) {
+    public Response uploadAvatarFile(@DefaultValue("true") @FormDataParam("enabled") boolean enabled,
+            @FormDataParam("filename") String uploadFilename,
+            @FormDataParam("file") InputStream uploadedInputStream,
+            @Parameter(hidden = true) @FormDataParam("file") FormDataContentDisposition fileDetail) {
 
         if (uploadedInputStream == null) {
             return Response.status(Status.NOT_ACCEPTABLE).entity("Upload stream is null").build();
@@ -351,7 +339,7 @@ public class UserAvatarResource extends ImageResource {
         } catch (DAOException e) {
             logger.warn("Error getting user from authorization token", e);
         }
-        UserBean userBean = BeanUtils.getUserBeanFromSession(servletRequest.getSession());
+        UserBean userBean = BeanUtils.getUserBeanFromSession(servletRequest.getSession(false));
         if (userBean == null) {
             logger.trace("Unable to get user: No UserBean found in session store.");
             return Optional.empty();

@@ -66,6 +66,7 @@ public abstract class ArchiveParser implements Serializable {
      * 
      * @param searchIndex Solr search index to query
      * @return Map&lt;String, Entry&lt;String, Boolean&gt;&gt;
+     * @should keep first record if several records are linked to the same node
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -79,7 +80,13 @@ public abstract class ArchiveParser implements Serializable {
                     .stream()
                     .collect(Collectors.toMap(doc -> SolrTools.getAsString(doc.getFieldValue(SolrConstants.EAD_NODE_ID)),
                             doc -> new SimpleEntry<String, Boolean>(SolrTools.getAsString(doc.getFieldValue(SolrConstants.PI)),
-                                    SolrTools.getAsBoolean(doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE)))));
+                                    SolrTools.getAsBoolean(doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE))),
+                            (first, second) -> {
+                                // Several records linked to the same archive node: keep the first one
+                                logger.warn("Records {} and {} are linked to the same archive node; using {}.", first.getKey(), second.getKey(),
+                                        first.getKey());
+                                return first;
+                            }));
         }
         return Collections.emptyMap();
     }
@@ -110,6 +117,18 @@ public abstract class ArchiveParser implements Serializable {
     public abstract ArchiveEntry loadDatabase(ArchiveResource database, int lazyLoadingThreshold)
             throws PresentationException, IndexUnreachableException, IllegalStateException, IOException, HTTPException;
 
+    /**
+     * Result of a search in archive nodes that are not yet loaded.
+     *
+     * @param nodesLoaded true if new nodes were loaded into the tree
+     * @param incomplete true if the search was too broad to load all matching nodes
+     */
+    public record UnparsedNodeSearchResult(boolean nodesLoaded, boolean incomplete) {
+
+        /** Result for a search that loaded nothing and is not incomplete. */
+        public static final UnparsedNodeSearchResult NONE = new UnparsedNodeSearchResult(false, false);
+    }
+
     public static String getIdForName(String name) {
         return name.replaceAll("(?i)\\.xml", "");
     }
@@ -120,7 +139,33 @@ public abstract class ArchiveParser implements Serializable {
      * 
      * @param node archive entry node to search within
      * @param searchValue search term to match against unparsed nodes
-     * @return true if new nodes were loaded; false otherwise
+     * @return {@link UnparsedNodeSearchResult}
      */
-    public abstract boolean searchInUnparsedNodes(ArchiveEntry node, String searchValue);
+    public abstract UnparsedNodeSearchResult searchInUnparsedNodes(ArchiveEntry node, String searchValue);
+
+    /**
+     * Loads the immediate children of the given entry, if the parser supports loading nodes on demand. The default implementation does nothing.
+     *
+     * @param entry the parent entry whose children are to be loaded
+     * @return true if children were loaded by this call; false otherwise
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public boolean loadChildren(ArchiveEntry entry) throws PresentationException, IndexUnreachableException {
+        return false;
+    }
+
+    /**
+     * Loads all tree levels between the given root and the node with the given EAD node ID, if the parser supports loading nodes on demand. The
+     * default implementation does nothing.
+     *
+     * @param root Root node of the tree
+     * @param nodeId EAD node ID of the requested node
+     * @return Loaded {@link ArchiveEntry} with the given ID; null if not found
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public ArchiveEntry loadEntryPath(ArchiveEntry root, String nodeId) throws PresentationException, IndexUnreachableException {
+        return null;
+    }
 }

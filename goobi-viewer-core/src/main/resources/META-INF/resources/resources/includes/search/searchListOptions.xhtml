@@ -2,14 +2,9 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <ui:param
         name="search"
         value="#{searchParam != null ? searchParam : searchBean}" />
@@ -17,9 +12,10 @@
     <!-- SEARCH LIST OPTIONS -->
     <div class="search-list__options-container">
         <ui:fragment rendered="#{navigationHelper.currentPage == 'search' || navigationHelper.currentPage == 'searchlist'}">
-            <h1 class="search-list__options-container-heading">#{msg.search}</h1>
+            <h1 class="search-list__options-container-heading">#{navigationHelper.cmsPage and not empty cmsBean.currentPage.title ? cmsBean.currentPage.title : msg.search}</h1>
         </ui:fragment>
 
+        <!-- OPTIONS -->
         <div class="search-list__options">
             <!-- HITCOUNT -->
             <p class="search-list__hitcount">
@@ -54,27 +50,15 @@
                 <viewerComponent:searchSaveDialog prependId="false" />
             </ui:fragment>
 
-            <!-- Excel export is now a configured <format name="excel"> and appears in the export dropdown below. -->
-
             <!-- EXPORT OPTIONS DROPDOWN -->
+            <!-- EXCEL EXPORT IS A CONFIGURED FORMAT -->
             <ui:fragment rendered="#{not empty configurationBean.enabledSearchExportFormats}">
                 <div
                     class="dropdown search-list__export-dropdown-wrapper"
                     data-msg-timeout="#{msg.download_timeout}"
                     data-msg-error="#{msg.download_internal_error}"
                     data-msg-denied="#{msg.search_export__access_denied}">
-                    <button
-                        class="btn btn--clean dropdown-toggle search-list__option-button search-list__export-dropdown-toggle"
-                        type="button"
-                        data-toggle="dropdown"
-                        aria-expanded="false"
-                        title="#{msg.search_export__list_export_action_tooltip}">
-                        <util:icon
-                            icon="file-export"
-                            svgClass="icon" />
-                    </button>
-
-                    <!-- Loading indicator shown while an export is being generated (see inline script below) -->
+                    <!-- EXPORT LOADER -->
                     <span
                         class="search-list__export-loader d-none"
                         aria-live="polite">
@@ -84,8 +68,9 @@
                         #{msg.search_export__generating}
                     </span>
 
+                    <!-- EXPORT DROPDOWN -->
                     <div class="dropdown-menu search-list__export-dropdown">
-                        <!-- SEARCH EXPORT (XSLT formats: RIS, Endnote, BibTeX, …) -->
+                        <!-- SEARCH EXPORT -->
                         <h6 class="search-list__export-dropdown-heading">#{msg.search_export__list_dropdown_heading}</h6>
                         <ui:repeat
                             value="#{configurationBean.enabledSearchExportFormats}"
@@ -103,8 +88,6 @@
                                 <f:param
                                     name="sortString"
                                     value="#{search.sortString}" />
-                                <!-- 	                        <f:passThroughAttribute name="data-toggle" value="tooltip" /> -->
-                                <!-- 	                        <f:passThroughAttribute name="data-placement" value="top" /> -->
                                 <f:passThroughAttribute
                                     name="aria-label"
                                     value="#{msg['search_export_'.concat(exportFormat.name)]}" />
@@ -158,6 +141,7 @@
                 </button>
             </div>
 
+            <!-- HELP -->
             <ui:fragment rendered="#{searchType != 1}">
                 <div class="search-list__help">
                     <button
@@ -180,7 +164,4 @@
             </ui:fragment>
         </div>
     </div>
-
-    <!-- CLEAR PULL-RIGHT -->
-    <div class="clearfix" />
 </ui:composition>

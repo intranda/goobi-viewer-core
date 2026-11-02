@@ -109,21 +109,6 @@
         <cve>CVE-2025-48734</cve>
     </suppress>
 
-
-    <!-- ZooKeeper 3.9.4 is a transitive dependency of solr-solrj-zookeeper and cannot be upgraded
-         independently without risking incompatibility with the Solr client. To be re-evaluated when
-         Solr ships a version that includes a fixed ZooKeeper release; solr-solrj 9.10.1 is currently the
-         newest published 9.x, so there is no such version to move to. The regex covers both the
-         zookeeper and zookeeper-jute artifacts (same release train, same transitive origin). -->
-    <suppress>
-        <notes><![CDATA[
-        file name: zookeeper-3.9.4.jar / zookeeper-jute-3.9.4.jar - transitive of solr-solrj-zookeeper, cannot be upgraded independently
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.zookeeper/zookeeper.*@.*$</packageUrl>
-        <cve>CVE-2026-24308</cve>
-        <cve>CVE-2026-24281</cve>
-    </suppress>
-
     <!-- CVE-2026-44825 is hardcoded credentials in the "bin/solr auth enable" setup CLI script of the
          Solr server distribution. goobi-viewer only consumes solr-api/solr-solrj as a Java client
          library against an externally run Solr server; it never ships or invokes bin/solr. -->

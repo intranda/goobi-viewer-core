@@ -11,7 +11,7 @@
     &__thumb {
         height: 250px;
         margin-bottom: 10px;
-        border: 1px solid @lightgray;
+        border: 1px solid var(--border-default);
         overflow: hidden;
     }
     &__title {
@@ -19,7 +19,7 @@
     }
     &__image {
         height: 190px;
-        border-bottom: 1px solid @lightgray;
+        border-bottom: 1px solid var(--border-default);
         img {
             width: 100%;
         }
@@ -29,7 +29,7 @@
         height: 60px;
         display: inline-block;
         width: 100%;
-        background-color: rgba(255, 255, 255, 0.9);
+        background-color: rgb(from var(--bg-surface) r g b / 90%);
         a {
         }
     }

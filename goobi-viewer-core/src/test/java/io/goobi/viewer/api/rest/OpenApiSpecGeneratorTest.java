@@ -38,6 +38,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
 import io.goobi.viewer.api.rest.filters.UserLoggedInFilter;
@@ -52,6 +54,7 @@ import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.tags.Tag;
 
+@Execution(ExecutionMode.CONCURRENT)
 class OpenApiSpecGeneratorTest {
 
     /**

@@ -26,6 +26,9 @@ const autoprefixer = require('autoprefixer');
 const reporter = require('postcss-reporter');
 const { depsPathsJS, depsPathsCSS, tablerIconSources } = require('./gulp/depsPaths');
 const replaywebpagePatch = require('./gulp/replaywebpagePatch');
+const tokenCheck = require('./gulp/tokenCheck');
+const tokenReport = require('./gulp/tokenCheck/report');
+const themeTokenReport = require('./gulp/tokenCheck/renames');
 
 const isWin = process.platform === 'win32';
 const toPosix = (p) => (p ? p.replace(/\\/g, '/') : p);
@@ -90,9 +93,7 @@ function resolveDirs() {
     const gulpCfgPath = process.env.GV_GULP_CFG || path.join(home, '.config', 'gulp_userconfig.json');
     const viewerCfgPath =
         process.env.GV_VIEWER_CFG ||
-        (isWin
-            ? path.join('C:', 'opt', 'digiverso', 'viewer', 'config', 'config_viewer.xml')
-            : path.join('/', 'opt', 'digiverso', 'viewer', 'config', 'config_viewer.xml'));
+        (isWin ? path.join('C:', 'opt', 'digiverso', 'viewer', 'config', 'config_viewer.xml') : path.join('/', 'opt', 'digiverso', 'viewer', 'config', 'config_viewer.xml'));
 
     // Read gulp user config (JSON)
     let cfg;
@@ -120,10 +121,7 @@ function resolveDirs() {
     let themeRepoDir = null;
     try {
         const entries = fs.readdirSync(gitViewerDir);
-        themeRepoDir =
-            entries.find((e) => e === `theme-${mainTheme}`) ||
-            entries.find((e) => e.startsWith('theme-') && e.includes(mainTheme)) ||
-            null;
+        themeRepoDir = entries.find((e) => e === `theme-${mainTheme}`) || entries.find((e) => e.startsWith('theme-') && e.includes(mainTheme)) || null;
     } catch {
         // gitViewerDir does not exist or is not readable — fall back to convention
     }
@@ -149,10 +147,8 @@ function resolveDirs() {
 
     if (special && special.length) {
         deployDir =
-            [
-                path.join(cfg.tomcat_dir, `goobi-viewer-theme-${special}`),
-                path.join(cfg.tomcat_dir, `theme-${special}`),
-            ].find((c) => fs.existsSync(c)) || path.join(cfg.tomcat_dir, `goobi-viewer-theme-${special}`);
+            [path.join(cfg.tomcat_dir, `goobi-viewer-theme-${special}`), path.join(cfg.tomcat_dir, `theme-${special}`)].find((c) => fs.existsSync(c)) ||
+            path.join(cfg.tomcat_dir, `goobi-viewer-theme-${special}`);
     } else {
         const candidates = [
             // tomcat webapps: exact config name (legacy prefix)
@@ -164,19 +160,9 @@ function resolveDirs() {
             // tomcat webapps: git repo dir name
             ...(themeRepoDir ? [path.join(cfg.tomcat_dir, themeRepoDir)] : []),
             // dev target: conventional name
-            path.join(
-                home,
-                'git',
-                'goobi-viewer',
-                `goobi-viewer-theme-${mainTheme}`,
-                `goobi-viewer-theme-${mainTheme}`,
-                'target',
-                'viewer'
-            ),
+            path.join(home, 'git', 'goobi-viewer', `goobi-viewer-theme-${mainTheme}`, `goobi-viewer-theme-${mainTheme}`, 'target', 'viewer'),
             // dev target: actual repo dir name
-            ...(themeRepoDir
-                ? [path.join(gitViewerDir, themeRepoDir, themeRepoDir, 'target', 'viewer')]
-                : []),
+            ...(themeRepoDir ? [path.join(gitViewerDir, themeRepoDir, themeRepoDir, 'target', 'viewer')] : []),
         ];
 
         deployDir = candidates.find((c) => fs.existsSync(c)) || candidates[0];
@@ -189,17 +175,9 @@ function resolveDirs() {
     if (!themeDir) {
         if (themeRepoDir) {
             const innerDir = path.join(gitViewerDir, themeRepoDir, themeRepoDir);
-            themeDir = fs.existsSync(innerDir)
-                ? innerDir
-                : path.join(gitViewerDir, themeRepoDir);
+            themeDir = fs.existsSync(innerDir) ? innerDir : path.join(gitViewerDir, themeRepoDir);
         } else {
-            themeDir = path.join(
-                home,
-                'git',
-                'goobi-viewer',
-                `goobi-viewer-theme-${mainTheme}`,
-                `goobi-viewer-theme-${mainTheme}`
-            );
+            themeDir = path.join(home, 'git', 'goobi-viewer', `goobi-viewer-theme-${mainTheme}`, `goobi-viewer-theme-${mainTheme}`);
         }
     }
 
@@ -391,11 +369,7 @@ function buildIcons() {
 
 /** Unified footer line for task summaries. */
 function taskFooter(generated, copied, errors, started) {
-    return (
-        colors.green('✓ ') +
-        colors.white(`${generated} generated · ${copied} copied · ${errors} errors · `) +
-        colors.magenta(elapsedMs(started))
-    );
+    return colors.green('✓ ') + colors.white(`${generated} generated · ${copied} copied · ${errors} errors · `) + colors.magenta(elapsedMs(started));
 }
 
 const verovio = () => {
@@ -442,18 +416,7 @@ const verovio = () => {
  * @param {number=}  opts.errors     Number of errors (default: 0).
  * @param {string[]=} opts.extra     Extra lines to append to the log block.
  */
-function logTask({
-    name,
-    started,
-    changed,
-    src,
-    projOut = [],
-    deployOut = [],
-    genCount,
-    copyCount,
-    errors = 0,
-    extra = [],
-}) {
+function logTask({ name, started, changed, src, projOut = [], deployOut = [], genCount, copyCount, errors = 0, extra = [] }) {
     const changedPath = typeof changed === 'string' ? changed : undefined;
 
     const lines = [`time: ${colors.gray(new Date().toLocaleTimeString('de-DE', { hour12: false }))}`];
@@ -505,12 +468,7 @@ function buildStyles(changedFilePath = null) {
         .pipe(guard())
         .pipe(sourcemaps.init())
         .pipe(less({ compress: true }))
-        .pipe(
-            postcss([
-                ...(ENABLE_AUTOPREFIX ? [autoprefixer()] : []),
-                ...(SHOW_AP_WARNINGS ? [reporter({ clearReportedMessages: true, throwError: false })] : []),
-            ])
-        )
+        .pipe(postcss([...(ENABLE_AUTOPREFIX ? [autoprefixer()] : []), ...(SHOW_AP_WARNINGS ? [reporter({ clearReportedMessages: true, throwError: false })] : [])]))
         .pipe(header(banner))
         .pipe(rename('viewer.min.css'))
         .pipe(
@@ -583,6 +541,8 @@ function bundleViewerJS(changedFilePath = null) {
                 joinPosix(paths.jsModulesRoot, 'viewer', 'viewerJS.js'),
                 joinPosix(paths.jsModulesRoot, 'viewer', 'viewerJS.helper.js'),
                 joinPosix(paths.jsModulesRoot, 'viewer', 'viewerJS.*.js'),
+                joinPosix(paths.jsModulesRoot, 'viewer', 'cardCatalog', 'viewerJS.cardCatalog.js'),
+                joinPosix(paths.jsModulesRoot, 'viewer', 'cardCatalog', 'viewerJS.cardCatalog.*.js'),
                 joinPosix(paths.jsModulesRoot, 'modules.js'),
                 joinPosix(paths.jsModulesRoot, 'viewer', 'geoMap', 'viewerJS.geoMap.js'),
                 joinPosix(paths.jsModulesRoot, 'viewer', 'geoMap', '*.js'),
@@ -707,11 +667,7 @@ function copyDependencies() {
         const srcOpts = { cwd: def.cwd, allowEmpty: true };
         const resolvedCwd = def.cwd ? path.resolve(def.cwd) : null;
         if (def.base) {
-            srcOpts.base = path.isAbsolute(def.base)
-                ? def.base
-                : resolvedCwd
-                  ? path.resolve(resolvedCwd, def.base)
-                  : path.resolve(def.base);
+            srcOpts.base = path.isAbsolute(def.base) ? def.base : resolvedCwd ? path.resolve(resolvedCwd, def.base) : path.resolve(def.base);
         } else if (resolvedCwd) {
             srcOpts.base = resolvedCwd;
         }
@@ -746,11 +702,7 @@ function copyDependencies() {
         const srcOpts = { cwd: def.cwd, allowEmpty: true };
         const resolvedCwd = def.cwd ? path.resolve(def.cwd) : null;
         if (def.base) {
-            srcOpts.base = path.isAbsolute(def.base)
-                ? def.base
-                : resolvedCwd
-                  ? path.resolve(resolvedCwd, def.base)
-                  : path.resolve(def.base);
+            srcOpts.base = path.isAbsolute(def.base) ? def.base : resolvedCwd ? path.resolve(resolvedCwd, def.base) : path.resolve(def.base);
         } else if (resolvedCwd) {
             srcOpts.base = resolvedCwd;
         }
@@ -847,9 +799,7 @@ function fullSync() {
                 copyCount: copied,
                 extra: [
                     `dst: ${colors.blue(prettyPath(DEPLOYMENT_DIR))}`,
-                    ...(copiedEntries
-                        ? copiedEntries.map(({ src, dst }) => `  • ${colors.green(src)} → ${colors.blue(dst)}`)
-                        : []),
+                    ...(copiedEntries ? copiedEntries.map(({ src, dst }) => `  • ${colors.green(src)} → ${colors.blue(dst)}`) : []),
                 ],
             });
         });
@@ -924,13 +874,7 @@ async function java() {
     const coreMs = await runMaven(CORE_DIR, ['install']);
     const themeMs = await runMaven(THEME_DIR, ['package']);
     const totalMs = Number(process.hrtime.bigint() - tAll) / 1e6;
-    log(
-        colors.bold(
-            `[java] core [install] ${colors.cyan(fmt(coreMs))} · theme [package] ${colors.cyan(
-                fmt(themeMs)
-            )} · total ${colors.magenta(fmt(totalMs))}`
-        )
-    );
+    log(colors.bold(`[java] core [install] ${colors.cyan(fmt(coreMs))} · theme [package] ${colors.cyan(fmt(themeMs))} · total ${colors.magenta(fmt(totalMs))}`));
 }
 
 /* ╔══════════════════════════════════════════════════════════════════════╗
@@ -943,27 +887,22 @@ async function java() {
  */
 function watchMode() {
     requireDeploymentDir();
-    logBlock('watch', [
-        `deploy: ${colors.blue(prettyPath(DEPLOYMENT_DIR))}`,
-        colors.gray('watching for changes — run "npm run sync" for a full initial sync'),
-    ]);
+    logBlock('watch', [`deploy: ${colors.blue(prettyPath(DEPLOYMENT_DIR))}`, colors.gray('watching for changes — run "npm run sync" for a full initial sync')]);
     // JS bundles
-    gulp.watch([
-        joinPosix(paths.jsModulesRoot, '{viewer,cms,admin,crowdsourcing}', '**', '*.js'),
-        joinPosix(paths.jsModulesRoot, '**', '*.mjs'),
-    ]).on('change', (p) => {
+    gulp.watch([joinPosix(paths.jsModulesRoot, '{viewer,cms,admin,crowdsourcing}', '**', '*.js'), joinPosix(paths.jsModulesRoot, '**', '*.mjs')]).on('change', (p) => {
         bundleModules();
         bundleViewerJS(p);
     });
 
     // #15809: indexCharts.js is bundled into viewer.min.js, so a change rebuilds the viewer bundle.
     gulp.watch(joinPosix(paths.jsModulesRoot, 'statistics', 'charts', '*.js')).on('change', (p) => bundleViewerJS(p));
-    gulp.watch(joinPosix(paths.jsModulesRoot, 'browsersupport', '**', '*.js')).on('change', (p) =>
-        bundleBrowserSupportJS(p)
-    );
+    gulp.watch(joinPosix(paths.jsModulesRoot, 'browsersupport', '**', '*.js')).on('change', (p) => bundleBrowserSupportJS(p));
 
     // Styles & tags
-    gulp.watch(joinPosix(paths.lessRoot, '**', '*.less')).on('change', (p) => buildStyles(p));
+    const themePaths = tokenCheck.themePaths();
+    gulp.watch(joinPosix(paths.lessRoot, '**', '*.less'), gulp.series(checkTokens, () => buildStyles()));
+    // Theme findings are information only: no core rebuild, and the watcher never stops on them.
+    if (themePaths.enabled) gulp.watch([joinPosix(themePaths.lessRoot, '**', '*.less'), joinPosix(themePaths.root, '**', '*.{xhtml,html,tag,js}')], reportThemeTokens);
     gulp.watch(joinPosix(paths.jsDevRoot, 'tags', '**', '*.tag')).on('change', (p) => compileRiotTags(p));
 
     // Static assets (no dist CSS/JS)
@@ -1019,11 +958,7 @@ function watchMode() {
         try {
             const { default: del } = await import('del');
             await del(targetPath, { force: true });
-            logBlock('static', [
-                `deleted: ${colors.green(filePath)}`,
-                `dst: ${colors.blue(targetPath)}`,
-                colors.yellow('• removed'),
-            ]);
+            logBlock('static', [`deleted: ${colors.green(filePath)}`, `dst: ${colors.blue(targetPath)}`, colors.yellow('• removed')]);
         } catch (err) {
             console.warn('[WARN] Could not delete file from deploy dir:', err.message);
         }
@@ -1058,13 +993,59 @@ function printTargets(cb) {
 }
 
 /* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ Token check                                                          ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+/**
+ * Reports token-layer violations and returns whether the check failed.
+ * GV_THEME_LESS_ROOT points the theme contract at another theme's css/less directory (customer
+ * theme updates); GV_THEMECHECK=0 runs the core rules only. A checked theme gets an HTML report
+ * in target/token-check/; GV_TOKENCHECK_STEP=3 (or 2,3 or all) prints steps in the terminal as well.
+ *
+ * @returns {Promise<boolean>} Whether errors or stale baseline entries exist.
+ */
+async function reportTokens() {
+    const result = await tokenCheck.runTokenCheck();
+    const report = result.theme.status === 'checked' ? tokenReport.writeReport(result) : null;
+    logBlock('check-tokens', tokenCheck.formatReport(result, { report }).split('\n'));
+    return result.core.length > 0;
+}
+
+// Theme findings never fail anything; this task only prints the report.
+async function reportThemeTokens() {
+    await reportTokens();
+}
+
+async function checkTokens() {
+    if (await reportTokens()) {
+        const error = new Error('Build stopped. Fix the token issues listed above, then save again or rerun the command.');
+        // Expected validation failures need the diagnostics, not a Gulp stack trace.
+        // Unexpected exceptions still retain their stack for debugging.
+        error.showStack = false;
+        throw error;
+    }
+}
+
+/**
+ * Lists which token overrides of a theme still differ from the core defaults.
+ * GV_THEME_LESS_ROOT points at the theme's css/less directory.
+ */
+async function themeTokens() {
+    if (!process.env.GV_THEME_LESS_ROOT) throw new Error('GV_THEME_LESS_ROOT=<theme>/css/less is required');
+    const rows = await themeTokenReport.themeTokenReport(process.env.GV_THEME_LESS_ROOT);
+    logBlock('theme-tokens', themeTokenReport.formatThemeTokenReport(rows).split('\n'));
+}
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
    ║ Task composition & exports                                           ║
    ╚══════════════════════════════════════════════════════════════════════╝ */
 
 const buildJS = gulp.series(bundleModules, bundleViewerJS, bundleBrowserSupportJS, verovio);
 const buildAll = gulp.series(gulp.parallel(buildStyles, buildJS, compileRiotTags));
 
-exports.build = buildAll;
+exports.build = gulp.series(checkTokens, buildAll);
+exports['check-tokens'] = checkTokens;
+exports['theme-tokens'] = themeTokens;
 exports.dev = watchMode;
 // The order matters: patchReplayWebPage overwrites ui.js and must run AFTER
 // copyDependencies, so the patch survives even if a merge reintroduces the
@@ -1076,7 +1057,11 @@ exports.java = java;
 exports.icons = buildIcons;
 
 /* ── Task exports ────────────────────────────────────────────────────────────────────────────
-   - npm run build      → builds styles, JS bundles, riot tags, icons
+   - npm run build      → token check, then styles, JS bundles, riot tags
+   - npm run check:tokens → the six token sentences (gulp/tokenCheck/): core findings fail the task,
+     theme findings go to target/token-check/<theme>.html (gulp/tokenCheck/report.js), the terminal sums them up
+     GV_THEME_LESS_ROOT=<theme>/css/less picks the theme; GV_THEMECHECK=0 skips the theme
+   - npm run theme:tokens → theme update report (gulp/tokenCheck/renames.js), needs GV_THEME_LESS_ROOT
    - npm run dev        → starts watchers (no initial full sync; run npm run sync separately if needed)
    - npm run copyDeps   → copies declared 3rd-party assets, then regenerates
                           the patched replaywebpage bundle (see gulp/replaywebpagePatch.js)

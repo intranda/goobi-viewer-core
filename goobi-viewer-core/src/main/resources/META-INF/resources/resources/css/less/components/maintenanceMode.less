@@ -13,7 +13,7 @@
         min-height: 45px;
         padding: 10px 0;
         width: 100%;
-        background: #fed44c;
+        background: var(--bg-warning-subtle);
         position: relative;
     }
 
@@ -21,7 +21,7 @@
         display: flex;
         gap: 40px;
         align-items: center;
-        color: black;
+        color: var(--fg-on-warning-subtle);
         padding-right: 40px;
     }
 
@@ -32,8 +32,8 @@
     &__text {
         p,
         a {
-            color: black;
-            font-size: 16px;
+            color: var(--fg-on-warning-subtle);
+            font-size: var(--font-size-body);
             line-height: 1.4;
 
             &:last-child {
@@ -47,7 +47,7 @@
             &:hover,
             &:focus,
             &:active {
-                color: #333;
+                color: var(--color-maintenance-link-strong);
             }
         }
     }
@@ -57,16 +57,33 @@
         position: absolute;
         right: 28px;
         top: 30px;
-        font-size: 22px;
+        font-size: 22px; // Fixed icon/marker geometry; independent of text scale.
         background: transparent;
         padding: 0;
         border: none;
-        color: black;
+        color: var(--fg-on-warning-subtle);
 
         &:hover,
         &:focus,
         &:active {
-            color: #333;
+            color: var(--color-maintenance-link-strong);
+        }
+
+        /* the "X" bars are drawn via ::before/::after with background-color, not color,
+           so they need their own override to stay legible on the warning background
+           in both light and dark mode */
+        &:before,
+        &:after {
+            background-color: var(--fg-on-warning-subtle);
+        }
+
+        &:hover:before,
+        &:hover:after,
+        &:focus:before,
+        &:focus:after,
+        &:active:before,
+        &:active:after {
+            background-color: var(--color-maintenance-link-strong);
         }
     }
 }

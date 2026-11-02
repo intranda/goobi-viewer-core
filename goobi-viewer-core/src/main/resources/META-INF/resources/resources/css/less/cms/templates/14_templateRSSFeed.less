@@ -3,41 +3,25 @@
    style declarations for cms_template_14_RSSFeed.xhtml
    ==============================================================*/
 /* TPL RSS FEED */
-/* BLOCK */
 .tpl-rss {
-    h1 {
-    }
-    /* ELEMENT */
-    &__text {
-        margin-bottom: 15px;
-    }
     &__grid {
         display: grid;
         grid-template-columns: 1.5fr 4fr;
         gap: 20px;
     }
-    &__feed {
-    }
     &__item {
         padding: 10px;
-        border: 1px solid @middlegray;
+        border: 1px solid var(--border-strong);
         margin-bottom: 15px;
     }
     &__item-title {
         margin-bottom: 10px;
         padding-bottom: 10px;
-        h2 {
-        }
-        a {
-        }
     }
     &__item-image {
         img {
             max-width: 100%;
         }
-    }
-    &__item-date {
-        margin-bottom: 10px;
     }
     &__item-metadata {
         display: grid;
@@ -58,7 +42,6 @@
 }
 
 /* MODIFICATION */
-
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
 }
@@ -70,9 +53,6 @@
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
     .tpl-rss {
-        &__item-tilte {
-            margin-top: 15px;
-        }
         &__grid {
             grid-template-columns: 1fr;
         }

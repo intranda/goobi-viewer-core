@@ -33,6 +33,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 
@@ -40,6 +42,7 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
  * @author Florian Alpers
  *
  */
+@Execution(ExecutionMode.CONCURRENT)
 class TableDataProviderTest {
 
     List<Integer> sourceList;
@@ -244,6 +247,20 @@ class TableDataProviderTest {
         list = provider.getPaginatorList();
         Assertions.assertEquals(200, list.get(list.size() - 1), 0);
 
+    }
+
+    /**
+     * @verifies stay within the last page after a filter shrinks the list
+     * @see TableDataProvider#getPaginatorList
+     */
+    @Test
+    void getPaginatorList_shouldStayWithinLastPageAfterFilterShrinksList() {
+        provider.resetAll();
+        provider.cmdMoveLast();
+        provider.getFilterIfPresent("MAX").ifPresent(filter -> filter.setValue("25"));
+        List<Integer> list = provider.getPaginatorList();
+        Assertions.assertEquals(5, list.size());
+        Assertions.assertEquals(21, list.get(0), 0);
     }
 
     /**

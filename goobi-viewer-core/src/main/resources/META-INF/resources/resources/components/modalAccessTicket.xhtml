@@ -1,17 +1,14 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:o="http://omnifaces.org/ui"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <composite:interface />
+
     <composite:implementation>
-        <!-- Modal -->
+        <!-- MODAL -->
         <div
             class="modal fade access-ticket-modal show"
             id="accessTicketModal"
@@ -33,7 +30,6 @@
                             <span aria-hidden="true">x</span>
                         </button>
                     </div>
-
                     <div class="modal-body">
                         <!-- DESCRIPTION FOR REQUESTING A TICKET -->
                         <h2 data-mode="ticketMode">
@@ -42,7 +38,6 @@
                         <p data-mode="ticketMode">
                             <h:outputText value="#{msg.access_tickets__modal_desc_request}" />
                         </p>
-
                         <div class="access-ticket-modal__accessTicket">
                             <!-- ENTER PASSWORD MODE -->
                             <h:form
@@ -62,7 +57,7 @@
                                         <h:outputText value="#{msg.access_tickets__modal_desc_pw}" />
                                     </p>
 
-                                    <!-- PASSWORD (visible when ticket request mode OFF) -->
+                                    <!-- PASSWORD, REQUEST MODE OFF -->
                                     <div class="form-group form-row">
                                         <label
                                             id="access-ticket-modal__labelAccessTicketPassword"
@@ -70,7 +65,6 @@
                                             class="col-lg-3 control-label">
                                             <span class="access-ticket-modal__label-span">#{msg.access_tickets__ticket}:</span>
                                         </label>
-
                                         <div class="col-12 col-lg-9">
                                             <h:inputSecret
                                                 id="access-ticket-modal__accessTicketPassword"
@@ -86,9 +80,8 @@
                                             </h:inputSecret>
                                         </div>
                                     </div>
-
                                     <div class="access-ticket-modal__actions">
-                                        <!-- SWITCH TO TICKET REQUEST MODE (visible when ticket request mode OFF)-->
+                                        <!-- SWITCH TO REQUEST MODE, REQUEST MODE OFF -->
                                         <div
                                             class="form-row access-ticket-modal__action"
                                             data-target="switchToTicketMode">
@@ -100,7 +93,8 @@
                                                 </button>
                                             </div>
                                         </div>
-                                        <!-- SUBMIT PASSWORD (visible when ticket request mode OFF) -->
+
+                                        <!-- SUBMIT PASSWORD, REQUEST MODE OFF -->
                                         <div class="form-row access-ticket-modal__action">
                                             <div class="col-sm-12 d-flex justify-content-end">
                                                 <h:commandButton
@@ -124,7 +118,7 @@
                                 <div
                                     class="access-ticket-modal__ticket-mode"
                                     data-mode="ticketMode">
-                                    <!-- E-MAIL (visible when ticket request mode ON) -->
+                                    <!-- E-MAIL, REQUEST MODE ON -->
                                     <h:panelGroup
                                         layout="block"
                                         styleClass="form-group form-row"
@@ -134,8 +128,6 @@
                                             for="access-ticket-modal__accessTicketEmail"
                                             class="col-lg-12 control-label">
                                             <span class="access-ticket-modal__label-span">#{msg.email}:</span>
-                                            <!-- REQUIRED MSG NOT NEEDED? FILLED AUTOMATICALLY -->
-                                            <!--                                         <span class="access-ticket-modal__label-required-field">(#{msg.form__required_field})</span> -->
                                         </label>
                                         <div class="col-12">
                                             <div class="cms-module__option-message">
@@ -175,7 +167,7 @@
                                         </div>
                                     </h:panelGroup>
 
-                                    <!-- REQUEST MESSAGE (visible when ticket request mode ON) -->
+                                    <!-- REQUEST MESSAGE, REQUEST MODE ON -->
                                     <div class="form-group form-row">
                                         <label
                                             id="access-ticket-modal__labelAccessTicketRequestMessage"
@@ -183,7 +175,6 @@
                                             class="col-12 control-label">
                                             <span class="access-ticket-modal__label-span">#{msg.access_tickets__request_message}:</span>
                                         </label>
-
                                         <div class="col-12">
                                             <h:inputTextarea
                                                 id="access-ticket-modal__requestMessage"
@@ -227,7 +218,6 @@
                                             </div>
                                         </div>
                                     </ui:fragment>
-
                                     <div class="access-ticket-modal__required-checkbox-wrapper">
                                         <div class="form-row">
                                             <p class="col-12 feedback-modal__accept-terms-text">
@@ -235,13 +225,11 @@
                                                     escape="false"
                                                     value="#{msg.feedbackAcceptingTerms}" />
                                             </p>
-
                                             <div
                                                 id="sendContactFormAcceptTerms"
                                                 class="col-12 col-sm-3 feedback-modal__accept-terms-label">
                                                 <label class="mr-3 mb-0">#{msg.admin__terms_of_use__accept}:</label>
                                             </div>
-
                                             <div class="col-12 col-md-9 mt-3 mt-sm-0 feedback-modal__accept-terms-radios admin__radio-switch">
                                                 <h:selectOneRadio
                                                     group="requiredAccessTicketTerms"
@@ -270,9 +258,8 @@
                                             </div>
                                         </div>
                                     </div>
-
                                     <div class="access-ticket-modal__actions small-button-loader__wrapper">
-                                        <!-- SWITCH TO PASSWORD ENTER MODE (visible when ticket request mode ON)-->
+                                        <!-- SWITCH TO PASSWORD MODE, REQUEST MODE ON -->
                                         <div
                                             class="form-row access-ticket-modal__action"
                                             data-target="switchToPasswordMode">
@@ -285,7 +272,7 @@
                                             </div>
                                         </div>
 
-                                        <!-- SUBMIT REQUEST (visible when ticket request mode ON) -->
+                                        <!-- SUBMIT REQUEST, REQUEST MODE ON -->
                                         <div class="form-row access-ticket-modal__action">
                                             <div class="col-sm-12 d-flex justify-content-end">
                                                 <h:commandButton
@@ -296,7 +283,6 @@
                                                     pt:data-target="buttonLoaderClickEvent" />
                                             </div>
                                         </div>
-
                                         <div
                                             class="small-button-loader__icon -top-right"
                                             data-target="buttonLoader" />
@@ -304,7 +290,7 @@
 
                                     <!-- SHOW LOADER AFTER BUTTON CLICK FOR REQUESTING TICKET -->
                                     <script>
-                                        // Guard against empty jQuery sets to prevent TypeError on undefined
+                                        // GUARD AGAINST EMPTY JQUERY SETS
                                         $.fn.isValid = function () {
                                             return this[0] ? this[0].checkValidity() : true;
                                         };
@@ -316,14 +302,11 @@
                                             }
                                         });
                                     </script>
-
-                                    <!-- TODO: captcha? -->
-
-                                    <!-- TODO: user consent? -->
                                 </div>
                             </h:form>
                         </div>
 
+                        <!-- TICKET SCRIPT -->
                         <script>
                             $('[data-target="switchToTicketMode"]').on('click', function () {
                                 $('[data-mode="passwordMode"]').hide();
@@ -335,7 +318,6 @@
                                 $('[data-mode="passwordMode"]').fadeIn();
                             });
 
-                            // OPEN MODAL ON PAGE LOAD
                             $(document).ready(function () {
                                 $('#accessTicketModal').modal('show');
                             });

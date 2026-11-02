@@ -12,6 +12,8 @@
   "scripts": {
     "dev": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp dev",
     "build": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp build",
+    "check:tokens": "cross-env NODE_NO_WARNINGS=1 gulp check-tokens",
+    "theme:tokens": "cross-env NODE_NO_WARNINGS=1 gulp theme-tokens",
     "icons": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp icons",
     "copyDeps": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp copy-deps",
     "sync": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp sync-all",
@@ -54,6 +56,7 @@
     "jest-junit": "^17.0.0",
     "jest-sonar": "^0.2.16",
     "lefthook": "^2.0.14",
+    "less": "^4.8.1",
     "lint-staged": "^15.2.10",
     "merge-stream": "^2.0.0",
     "pixl-xml": "^1.0.13",
@@ -102,7 +105,7 @@
     "sweetalert2": "~11.26.0",
     "swiper": "~12.1.0",
     "three": "~0.132.2",
-    "tinymce": "8.8.2",
+    "tinymce": "8.10.1",
     "tone": "^15.1.22",
     "verovio": "^5.6.0"
   },

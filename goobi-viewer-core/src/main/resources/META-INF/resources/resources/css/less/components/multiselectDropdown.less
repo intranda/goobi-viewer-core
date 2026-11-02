@@ -1,16 +1,16 @@
 .multiselect-dropdown {
     position: relative;
     width: 100%;
-    height: 34px;
-    font-size: 1.4rem;
-    color: @black;
-    border: 1px solid @middlegray;
-    background-color: @white;
+    min-height: 34px;
+    font-size: var(--font-size-body-small);
+    color: var(--fg-default);
+    border: 1px solid var(--border-strong);
+    background-color: var(--bg-surface);
     &.in {
     }
     &-trigger {
         position: relative;
-        height: 32px;
+        min-height: 32px;
         padding: 5px 12px;
         padding-right: 30px;
         overflow: hidden;
@@ -25,7 +25,7 @@
             height: 0;
             margin-top: -0.15rem;
             pointer-events: none;
-            border-top: 0.35rem solid @black;
+            border-top: 0.35rem solid var(--fg-default);
             border-right: 0.35rem solid transparent;
             border-bottom: 0.35rem solid transparent;
             border-left: 0.35rem solid transparent;
@@ -33,16 +33,16 @@
     }
     ul {
         display: none;
-        .mx-list-reset;
+        .mx-list-reset();
         position: absolute;
-        top: 32px;
+        top: 100%;
         left: -1px;
         width: calc(~'100% + 2px');
         max-height: 200px;
         padding: 5px 12px;
-        border: 1px solid @middlegray;
-        border-top-color: @white;
-        background-color: @white;
+        border: 1px solid var(--border-strong);
+        border-top-color: var(--bg-surface);
+        background-color: var(--bg-surface);
         overflow-y: auto;
         z-index: 2000;
     }

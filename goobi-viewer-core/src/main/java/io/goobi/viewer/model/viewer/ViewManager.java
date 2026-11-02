@@ -125,6 +125,7 @@ import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.citation.CitationList;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.citation.CitationTools;
+import io.goobi.viewer.model.cms.CMSArchiveConfig;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.media.webarchives.WebArchiveReader;
 import io.goobi.viewer.model.metadata.ComplexMetadata;
@@ -253,6 +254,8 @@ public class ViewManager implements Serializable {
     private String citationStyle = null;
     private CitationProcessorWrapper citationProcessorWrapper;
     private ArchiveResource archiveResource = null;
+
+    private CMSArchiveConfig.CatalogType archiveCatalogType = null;
     private Pair<Optional<String>, Optional<String>> archiveTreeNeighbours = Pair.of(Optional.empty(), Optional.empty());
     private List<CopyrightIndicatorStatus> copyrightIndicatorStatuses = null;
     private CopyrightIndicatorLicense copyrightIndicatorLicense = null;
@@ -321,6 +324,10 @@ public class ViewManager implements Serializable {
                 DataManager.getInstance().getArchiveManager().updateArchiveList();
                 this.archiveResource = DataManager.getInstance().getArchiveManager().loadArchiveForEntry(archiveId);
                 this.archiveTreeNeighbours = DataManager.getInstance().getArchiveManager().findIndexedNeighbours(archiveId);
+                if (this.archiveResource != null) {
+                    this.archiveCatalogType =
+                            DataManager.getInstance().getCardCatalogManager().getCatalogType(this.archiveResource.getResourceId()).orElse(null);
+                }
             }
         } catch (ArchiveException e) {
             logger.error("Error creating archive link for {}: {}", this.pi, e.getMessage());
@@ -329,6 +336,20 @@ public class ViewManager implements Serializable {
 
     public Pair<Optional<String>, Optional<String>> getArchiveTreeNeighbours() {
         return archiveTreeNeighbours;
+    }
+
+    /**
+     * @return true if the archive containing this record's linked EAD node is flagged as a card catalog
+     */
+    public boolean isCardCatalogArchive() {
+        return archiveCatalogType != null;
+    }
+
+    /**
+     * @return catalog type of the archive containing this record's linked EAD node; null if that archive has no catalog view
+     */
+    public CMSArchiveConfig.CatalogType getArchiveCatalogType() {
+        return archiveCatalogType;
     }
 
     public List<ArchiveEntry> getArchiveHierarchyForIdentifier(String identifier) {
@@ -388,10 +409,11 @@ public class ViewManager implements Serializable {
     /**
      * Returns the docstruct type that governs calendar applicability for the given record.
      *
-     * <p>Calendar applicability follows the parent record's docstruct (e.g. "Newspaper"), not the issue's or volume's own docstruct
-     * ("NewspaperIssue" etc.). Anchor children carry that parent in {@code anchorStructElement}; records tied to their parent by a
-     * {@code GROUPID_*} field alone have no anchor struct element, so the group record is looked up in the index instead. Anchors and group
-     * records are themselves the parent and use their own docstruct.
+     * <p>
+     * Calendar applicability follows the parent record's docstruct (e.g. "Newspaper"), not the issue's or volume's own docstruct ("NewspaperIssue"
+     * etc.). Anchor children carry that parent in {@code anchorStructElement}; records tied to their parent by a {@code GROUPID_*} field alone have
+     * no anchor struct element, so the group record is looked up in the index instead. Anchors and group records are themselves the parent and use
+     * their own docstruct.
      *
      * @param topStructElement top struct element of the record; may not be null
      * @param anchorStructElement anchor struct element, or null if the record is not an anchor child
@@ -588,7 +610,7 @@ public class ViewManager implements Serializable {
      */
     private String getImageInfo(PhysicalElement page, PageType pageType) {
         try {
-            ImageInformation info = imageDeliveryBean.getImages().getImageInformation(page, pageType);
+            ImageInformation info = imageDeliveryBean.getImages().getImageInformation(page, getTopStructElement(), pageType);
             if (info.getWidth() * info.getHeight() == 0) {
                 String filePath = page.getFilepath();
                 if (ImageHandler.isExternalUrl(filePath) && ImageHandler.isImageUrl(filePath, false)) {
@@ -1265,11 +1287,10 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * Returns the number of volumes belonging to this anchor record. The value is queried live from Solr (the current
-     * count of ISWORK records referencing this anchor via PI_PARENT) rather than read from the anchor's stored
-     * NUMVOLUMES field, so it is correct even if the anchor has not been re-indexed since a volume was added or removed.
-     * The result is cached for the lifetime of this ViewManager instance (one query per opened record). Non-anchor
-     * records always return 0.
+     * Returns the number of volumes belonging to this anchor record. The value is queried live from Solr (the current count of ISWORK records
+     * referencing this anchor via PI_PARENT) rather than read from the anchor's stored NUMVOLUMES field, so it is correct even if the anchor has not
+     * been re-indexed since a volume was added or removed. The result is cached for the lifetime of this ViewManager instance (one query per opened
+     * record). Non-anchor records always return 0.
      *
      * @return the current number of volumes; 0 for non-anchor records
      * @throws io.goobi.viewer.exceptions.PresentationException if any.

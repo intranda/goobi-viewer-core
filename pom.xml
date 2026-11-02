@@ -53,7 +53,7 @@
 		<sonar.java.target>21</sonar.java.target>
 
 		<!-- Shared dependency versions (later of the previous drifts preferred) -->
-		<checkstyle.version>14.3.0</checkstyle.version>
+		<checkstyle.version>14.4.0</checkstyle.version>
 		<commons-configuration2.version>2.15.1</commons-configuration2.version>
 		<commons-io.version>2.22.0</commons-io.version>
 		<commons-jxpath.version>1.4.0</commons-jxpath.version>
@@ -63,7 +63,7 @@
 		<httpcore.version>4.4.16</httpcore.version>
 		<jakarta.servlet-api.version>6.0.0</jakarta.servlet-api.version>
 		<jakarta.transaction-api.version>2.0.1</jakarta.transaction-api.version>
-		<jackson.version>2.22.3</jackson.version>
+		<jackson.version>2.22.4</jackson.version>
 		<jdom2.version>2.0.6.1</jdom2.version>
 		<!-- https://github.com/stleary/JSON-java -->
 		<json.version>20260814</json.version>

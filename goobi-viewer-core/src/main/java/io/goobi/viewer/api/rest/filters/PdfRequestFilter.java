@@ -275,15 +275,15 @@ public class PdfRequestFilter implements ContainerRequestFilter {
     @SuppressWarnings("unchecked")
     static boolean checkPageAllowed(String pi, String pageFile, int percentage, int numTotalRecordPages, HttpServletRequest request) {
         logger.trace("checkPageAllowed({}, {}, {}, {})", pi, pageFile, percentage, numTotalRecordPages);
-        if (request == null || request.getSession() == null) {
+        if (request == null || request.getSession(false) == null) {
             logger.trace("session not found");
             return false;
         }
         try {
-            Map<String, Set<String>> quotaMap = (Map<String, Set<String>>) request.getSession().getAttribute(ATTRIBUTE_PDF_QUOTA);
+            Map<String, Set<String>> quotaMap = (Map<String, Set<String>>) request.getSession(false).getAttribute(ATTRIBUTE_PDF_QUOTA);
             if (quotaMap == null) {
                 quotaMap = new HashMap<>();
-                request.getSession().setAttribute(ATTRIBUTE_PDF_QUOTA, quotaMap);
+                request.getSession(false).setAttribute(ATTRIBUTE_PDF_QUOTA, quotaMap);
             }
             if (quotaMap.get(pi) == null) {
                 quotaMap.put(pi, new HashSet<>());
@@ -347,12 +347,13 @@ public class PdfRequestFilter implements ContainerRequestFilter {
      * @throws IndexUnreachableException
      */
     private void filterForAccessConditions(String pi, String divId, String privName) throws ServiceNotAllowedException {
-        logger.trace("filterForAccessConditions: session:{} pi:{} priv:{}", servletRequest.getSession().getId(), pi, privName);
+        logger.trace("filterForAccessConditions: session:{} pi:{} priv:{}",
+                Optional.ofNullable(servletRequest.getSession(false)).map(s -> s.getId()).orElse("[no session]"), pi, privName);
         AccessPermission access = AccessPermission.denied();
         try {
             access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, divId, privName, servletRequest);
             if (access.isGranted() && access.isDownloadTicketRequired()
-                    && !AccessConditionUtils.isHasDownloadTicket(pi, servletRequest.getSession())) {
+                    && !AccessConditionUtils.isHasDownloadTicket(pi, servletRequest.getSession(false))) {
                 logger.trace("Agent has no download ticket for PI: {}", pi);
                 access.setGranted(false);
             }

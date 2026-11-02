@@ -131,8 +131,7 @@ public class AnnotationResource {
     @ApiResponse(responseCode = "200", description = "A page of annotations from the annotation collection")
     @ApiResponse(responseCode = "400", description = "The page number is less than 1 or not a number")
     @ApiResponse(responseCode = "500", description = "The annotations could not be read from the database")
-    public AnnotationPage getAnnotationCollectionPage(@PathParam("page")
-    Integer page)
+    public AnnotationPage getAnnotationCollectionPage(@PathParam("page") Integer page)
             throws ContentLibException, DAOException {
         AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
         return builder.getWebAnnotationPage(page);
@@ -150,9 +149,7 @@ public class AnnotationResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Get an annotation by its identifier")
     @ApiResponse(responseCode = "404", description = "No annotation found for the given id")
-    public IAnnotation getAnnotation(@Parameter(description = "Identifier of the annotation")
-    @PathParam("id")
-    Long id)
+    public IAnnotation getAnnotation(@Parameter(description = "Identifier of the annotation") @PathParam("id") Long id)
             throws DAOException, ContentLibException {
         AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
         return builder.getWebAnnotation(id).orElseThrow(() -> new ContentNotFoundException("Not annotation with id = " + id + "found"));
@@ -170,9 +167,7 @@ public class AnnotationResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Get an annotation by its identifier")
     @ApiResponse(responseCode = "404", description = "No comment annotation found for the given id")
-    public IAnnotation getComment(@Parameter(description = "Identifier of the annotation")
-    @PathParam("id")
-    Long id)
+    public IAnnotation getComment(@Parameter(description = "Identifier of the annotation") @PathParam("id") Long id)
             throws DAOException, ContentLibException {
         AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
         return builder.getCommentWebAnnotation(id).orElseThrow(() -> new ContentNotFoundException("Not annotation with id = " + id + "found"));
@@ -217,9 +212,7 @@ public class AnnotationResource {
     @ApiResponse(responseCode = "200", description = "Return the deleted annotation")
     @ApiResponse(responseCode = "403", description = "Not allowed to delete this annotation — it was created by another user")
     @ApiResponse(responseCode = "404", description = "Annotation not found by the given id")
-    public IAnnotation deleteAnnotation(@Parameter(description = "Identifier of the annotation")
-    @PathParam("id")
-    Long id)
+    public IAnnotation deleteAnnotation(@Parameter(description = "Identifier of the annotation") @PathParam("id") Long id)
             throws DAOException, ContentLibException {
         AnnotationConverter converter = new AnnotationConverter(urls);
         CrowdsourcingAnnotation pAnno = DataManager.getInstance().getDao().getAnnotation(id);
@@ -297,7 +290,7 @@ public class AnnotationResource {
         } catch (DAOException e) {
             logger.warn("Error getting user from authorization token", e);
         }
-        UserBean userBean = BeanUtils.getUserBeanFromSession(servletRequest.getSession());
+        UserBean userBean = BeanUtils.getUserBeanFromSession(servletRequest.getSession(false));
         if (userBean != null) {
             return userBean.getUser();
         }

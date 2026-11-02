@@ -36,23 +36,17 @@
                 </h:panelGroup>
             </h:panelGroup>
 
+            <!-- CHART SCRIPT -->
             <script type="text/javascript">
-                (function() {
-                    // Both filter and logarithmicScale come from the same CMSStatisticsFilterContent attached to the
-                    // "filter" item; the centuries-specific backend editor (statisticsFilterCenturies.xhtml) renders
-                    // the checkbox below the Solr-input so they're visually grouped. EL renders the boolean as the
-                    // string "true" / "false" (or empty when content is missing), hence the explicit comparison.
+                (function () {
                     const filter = '#{cc.attrs.component.getContent("filter").filterQuery}';
+                    // EL GIVES TRUE, FALSE OR EMPTY AS A STRING, HENCE THE STRING COMPARISON
                     const logScale = '#{cc.attrs.component.getContent("filter").logarithmicScale}' === 'true';
                     const url = new URL('#{request.contextPath}/api/v1/statistics/index/publication-centuries', window.location.origin);
                     if (filter) {
                         url.searchParams.set('filter', filter);
                     }
-                    viewerJS.statistics.charts.renderPublicationCenturies(
-                        'canvas-publication-centuries#{cc.clientId}',
-                        url.toString(),
-                        logScale
-                    );
+                    viewerJS.statistics.charts.renderPublicationCenturies('canvas-publication-centuries#{cc.clientId}', url.toString(), logScale);
                 })();
             </script>
         </ui:fragment>

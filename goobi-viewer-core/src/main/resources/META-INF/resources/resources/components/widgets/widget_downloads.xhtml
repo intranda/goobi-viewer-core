@@ -22,12 +22,10 @@
                 role="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'downloads') ? 'button' : ''}"
                 class="widget__topbar widget-downloads__topbar #{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'downloads') ? 'collapsible' : ''} #{!configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'downloads') ? 'in' : ''}">
                 <h2 class="widget__title widget-downloads__title">#{msg.widget__downloads__title}</h2>
-
                 <div class="widget__topbar-icons-container">
                     <div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
                         <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
                     </div>
-
                     <util:icon
                         icon="chevron-down"
                         styleClass="widget__topbar-icon-collapsible icon-rot-on-open"
@@ -50,6 +48,7 @@
                             escape="false" />
                     </p>
                 </ui:fragment>
+
                 <!-- INTRODUCTION TEXT DOWNLOADS GENERAL -->
                 <ui:fragment rendered="#{fn:length(msg['widget__downloads__intro_text_text_formats']) > 0 and displayConditions.matchRecord('{pageType:[viewFulltext]}') }">
                     <p
@@ -84,8 +83,7 @@
                         #{msg.widget__downloads__complete_record}
                     </h3>
 
-                    <!-- WORK FULLTEXT FORMATS (VIEW_FULLTEXT not checked here because each method already has access permission checks) -->
-
+                    <!-- WORK FULLTEXT FORMATS, ACCESS CHECKED PER METHOD -->
                     <!-- ALTO (WORK) -->
                     <ui:fragment
                         visibility-class="widget-element"
@@ -127,10 +125,11 @@
                             </a>
                         </ui:repeat>
                     </ui:fragment>
+
                     <!-- SINGLE LANGUAGE -->
                     <ui:fragment
                         visibility-class="widget-element"
-                        rendered="#{displayConditions.matchRecord('{contentType:![TEI], pageType:[viewFulltext, viewFullscreen], accessCondition:VIEW_FULLTEXT}')}">
+                        rendered="#{activeDocumentBean.viewManager.topStructElement.fulltextAvailable and displayConditions.matchRecord('{contentType:![TEI], pageType:[viewFulltext, viewFullscreen], accessCondition:VIEW_FULLTEXT}')}">
                         <a
                             href="#{activeDocumentBean.viewManager.teiUrlForAllPages}"
                             id="teiWork"
@@ -145,6 +144,7 @@
                             #{msg.TEI}
                         </a>
                     </ui:fragment>
+
                     <!-- FULLTEXT (WORK) -->
                     <ui:fragment
                         visibility-class="widget-element"
@@ -165,7 +165,6 @@
                     </ui:fragment>
 
                     <!-- WORK METADATA DOWNLOAD (DOWNLOAD_METADATA CHECK) -->
-
                     <!-- METS -->
                     <ui:fragment
                         visibility-class="widget-element"
@@ -300,7 +299,6 @@
                                     text="#{msg.label__pdf_download}" />
                             </a>
                         </ui:fragment>
-
                         <ui:fragment
                             visibility-class="widget-element"
                             rendered="#{configurationBean.generatePdfInMessageQueue}">
@@ -344,7 +342,7 @@
                         </a>
                     </ui:fragment>
 
-                    <!-- External download link -->
+                    <!-- EXTERNAL DOWNLOAD LINK -->
                     <ui:fragment
                         visibility-class="widget-element"
                         rendered="#{activeDocumentBean.viewManager.externalDownloadUrl != null}">
@@ -394,6 +392,7 @@
                         visibility-class="widget-element"
                         rendered="#{configurationBean.docHierarchyPdfEnabled and displayConditions.matchRecord('{tocSize: 2}')}">
                         <h:form
+                            styleClass="widget__form-wrapper"
                             class="d-inline-flex"
                             id="titleBodyForm"
                             prependId="false">
@@ -436,7 +435,7 @@
                     <!-- MIRADOR FULL RECORD -->
                     <ui:fragment
                         visibility-class="widget-element"
-                        rendered="#{displayConditions.matchRecord('{contentType:[IMAGE, PDF], numPages:1, accessCondition:GENERATE_IIIF_MANIFEST}')}">
+                        rendered="#{displayConditions.matchRecord('{mimeType:[image, application/pdf], numPages:1, accessCondition:GENERATE_IIIF_MANIFEST}')}">
                         <a
                             href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifManifest}&amp;page=1"
                             id="mirador"
@@ -490,7 +489,7 @@
                     <ui:fragment
                         visibility-class="widget-element"
                         rendered="#{activeDocumentBean.viewManager.getDownloadOptionsForPage(activeDocumentBean.viewManager.currentPage).size() > 0 and displayConditions.matchPage('{pageType:[viewObject, viewFullscreen, cmsPage], contentType: [IMAGE, PDF], accessCondition:DOWNLOAD_IMAGES}')}">
-                        <!-- IMAGE (PAGE) GENERATE LINKS FOR EVERY CONFIGURED DOWNLOAD SIZE -->
+                        <!-- PAGE IMAGE, ONE LINK PER CONFIGURED SIZE -->
                         <ui:repeat
                             varStatus="status"
                             var="option"
@@ -588,7 +587,7 @@
                     <!-- MIRADOR PAGE -->
                     <ui:fragment
                         visibility-class="widget-element"
-                        rendered="#{displayConditions.matchPage('{numPages:2, contentType:[IMAGE, PDF], accessCondition:GENERATE_IIIF_MANIFEST}')}">
+                        rendered="#{displayConditions.matchPage('{numPages:2, mimeType:[image, application/pdf], accessCondition:GENERATE_IIIF_MANIFEST}')}">
                         <a
                             href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifPageManifest}"
                             id="mirador"
@@ -605,6 +604,7 @@
                     </ui:fragment>
                 </div>
 
+                <!-- MEDIA DOWNLOADS -->
                 <div
                     jsf:id="mediaDownloads"
                     rendered="#{displayConditions.getTag('mediaDownloads').getChildCount('widget-element') > 0}"
@@ -614,7 +614,6 @@
                         class="widget-downloads__subtitle widget__badge-container-heading">
                         #{msg.widget__downloads__media}
                     </h3>
-
                     <ui:fragment
                         visibility-class="widget-element"
                         rendered="#{displayConditions.matchPage('{pageType:[viewObject, viewFullscreen], contentType:[AUDIO], accessCondition:DOWNLOAD_IMAGES}')}">
@@ -632,7 +631,6 @@
                             #{msg.action__download_audio}
                         </a>
                     </ui:fragment>
-
                     <ui:fragment
                         visibility-class="widget-element"
                         rendered="#{displayConditions.matchPage('{pageType:[viewObject, viewFullscreen], contentType:[VIDEO], accessCondition:DOWNLOAD_IMAGES}')}">
@@ -650,7 +648,6 @@
                             #{msg.action__download_video}
                         </a>
                     </ui:fragment>
-
                     <ui:fragment
                         visibility-class="widget-element"
                         rendered="#{displayConditions.matchPage('{pageType:[viewObject, viewFullscreen], contentType:[MODEL], accessCondition:DOWNLOAD_IMAGES}')}">
@@ -681,7 +678,6 @@
                         class="widget-downloads__subtitle widget__badge-container-heading">
                         #{msg.widget__downloads__page_range}
                     </h3>
-
                     <div
                         class="widget-downloads__page-range-downloads-box"
                         data-target="pageRangeDownload">
@@ -691,7 +687,9 @@
                             jsf:id="pdfRangeDownloads"
                             visibility-class="widget-element"
                             class="widget-downloads__page-range-downloads-inner">
-                            <h:form id="pdfPageRangeDownloadForm">
+                            <h:form
+                                styleClass="widget__form-wrapper"
+                                id="pdfPageRangeDownloadForm">
                                 <div class="widget-downloads__page-range-downloads-inputs-wrapper">
                                     <div class="widget-downloads__page-range-downloads-inputs-wrapper-inner">
                                         <!-- FROM -->
@@ -719,7 +717,6 @@
                                         </div>
                                     </div>
                                 </div>
-
                                 <button
                                     jsf:action="#{activeDocumentBean.viewManager.generatePageRangePdf()}"
                                     id="pdfPageRangeLink"
@@ -740,7 +737,7 @@
                 </div>
 
                 <!-- IMAGE FRAGMENT -->
-                <!-- Note: displayed conditionally per css/js when an image area is selected -->
+                <!-- SHOWN BY CSS AND JS WHEN AN IMAGE AREA IS SELECTED -->
                 <div
                     class="widget-downloads__image-fragment-wrapper widget__badge-container"
                     data-fragment-link="wrapper">
@@ -750,7 +747,6 @@
                             class="widget-downloads__subtitle widget__badge-container-heading">
                             #{msg.image_fragment}
                         </h3>
-
                         <a
                             class="badge badge-dark widget-downloads__image-fragment-page"
                             data-fragment-link="page"
@@ -773,18 +769,20 @@
                         </a>
                     </div>
                 </div>
+
                 <!-- INTEGRATED WIDGET ADDITIONAL FILES -->
                 <ui:fragment rendered="#{activeDocumentBean.viewManager.displayContentDownloadMenu}">
                     <div
                         id="widgetAdditionalFiles"
                         class="widget-downloads__additional-files-wrapper">
-                        <h:form id="widgetAdditionalFilesForm">
+                        <h:form
+                            styleClass="widget__form-wrapper"
+                            id="widgetAdditionalFilesForm">
                             <h3
                                 id="additionFilesTitle"
                                 class="widget-downloads__subtitle widget__badge-container-heading">
                                 #{msg.widget_additionalFiles}
                             </h3>
-
                             <ul class="widget-downloads__additional-files-list">
                                 <ui:repeat
                                     varStatus="status"
@@ -803,7 +801,8 @@
                         </h:form>
                     </div>
                 </ui:fragment>
-                <!-- Module contributions -->
+
+                <!-- MODULE CONTRIBUTIONS -->
                 <c:forEach
                     var="module"
                     items="#{configurationBean.modules}">
@@ -814,9 +813,8 @@
                     </c:forEach>
                 </c:forEach>
             </div>
-            <!-- END BODY -->
 
-            <!--  Handling page range download buttons and inputs -->
+            <!-- PAGE RANGE DOWNLOAD SCRIPT -->
             <script>
                 $('[data-target="showPageRangeDownload"]').on('click', function () {
                     $(this).hide();
@@ -826,6 +824,5 @@
                 });
             </script>
         </div>
-        <!-- END WIDGET -->
     </composite:implementation>
 </ui:composition>

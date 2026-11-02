@@ -3,26 +3,19 @@
    style declarations for NER Popovers in viewFulltext.xhtml 
    ==============================================================*/
 /* NER POPOVERS */
-.ner-person {
-    color: @personColor;
-}
-.ner-location {
-    color: @locationColor;
-}
-.ner-institution {
-    color: @corporateColor;
-}
 .ner-trigger,
 .ner-detail-trigger {
     position: relative;
     text-decoration: underline;
-    color: @blue;
+    color: var(--fg-link);
     cursor: pointer;
 }
 .ner-trigger {
+    /* ICON */
     .fa {
         margin-right: 0.1875rem;
     }
+    /* NER POPOVER POINTER */
     .ner-popover-pointer {
         display: none;
         position: absolute;
@@ -33,7 +26,7 @@
         margin: 0 0 0 -0.5rem;
         border-width: 0.5rem;
         border-style: solid;
-        border-color: transparent transparent @gray transparent;
+        border-color: transparent transparent var(--border-contrast) transparent;
     }
 }
 .ner-detail-trigger {
@@ -51,8 +44,9 @@
 .ner-popover {
     position: absolute;
     width: 18.75rem;
-    border: 2px solid @gray;
-    background-color: @white;
+    border: 2px solid var(--border-contrast);
+    background-color: var(--bg-elevated);
+    color: var(--fg-default);
     z-index: 100;
 }
 .ner-popover-close {
@@ -85,8 +79,9 @@
         }
         .ner-popover-detail {
             position: relative;
-            background-color: @lightgray;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25) inset;
+            background-color: var(--bg-subtle);
+            color: var(--fg-default);
+            box-shadow: 0 1px 3px rgb(from var(--shadow-color) r g b / 25%) inset;
         }
         .ner-popover-detail-header {
             padding: 0.625rem;

@@ -23,7 +23,10 @@ package io.goobi.viewer.model.security.authentication.model;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
+@Execution(ExecutionMode.CONCURRENT)
 class BibliothecaAuthenticationRequestTest {
 
     /**

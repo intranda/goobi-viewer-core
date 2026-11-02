@@ -7,8 +7,14 @@
  * Goobi viewer core CSS (viewer.min.css)
  **************************************************************/
 
-/* CORE VARIABLES AND MIXINS */
+/* TOKEN LAYER */
 @import 'misc/variables.less';
+@import 'misc/palette.less';
+@import 'misc/tokens.less';
+@import 'misc/paletteAdmin.less';
+@import 'misc/tokensAdmin.less';
+
+/* CORE */
 @import 'misc/mixins.less';
 @import 'misc/print.less';
 @import 'misc/fonts.less';
@@ -67,6 +73,7 @@
 @import 'components/sliders.less';
 @import 'components/userGeneratedContent.less';
 @import 'components/colorThemeToggle.less';
+@import 'components/themeLogo.less';
 @import 'components/cookieBanner.less';
 @import 'components/maintenanceMode.less';
 @import 'components/disclaimerModal.less';
@@ -123,6 +130,7 @@
 
 /* COMMON VIEWS */
 @import 'views/common/browse.less';
+@import 'views/common/dataTable.less';
 @import 'views/common/error.less';
 @import 'views/common/errorPage.less';
 @import 'views/common/feedback.less';
@@ -143,6 +151,7 @@
 @import 'views/search/searchTermList.less';
 
 /* USER VIEWS */
+@import 'views/user/profilePicture.less';
 @import 'views/user/user.less';
 @import 'views/user/userActivity.less';
 @import 'views/user/userAnnotations.less';
@@ -205,6 +214,7 @@
 @import 'admin/layout/basics.less';
 @import 'admin/layout/layout.less';
 @import 'admin/layout/elements.less';
+@import 'admin/layout/gridSystem.less';
 @import 'admin/layout/misc.less';
 @import 'admin/admin.less';
 
@@ -249,6 +259,8 @@
 
 /* CMS COMPONENTS */
 @import 'cms/components/collectionTiled.less';
+@import 'cms/components/discoveryPaths.less';
+@import 'cms/components/searchHero.less';
 @import 'cms/components/sectionHeader.less';
 @import 'cms/components/solrQueryCollection.less';
 @import 'cms/components/statisticsCharts.less';
@@ -300,35 +312,37 @@
 @import 'cms/templates/32_templateGalleryText.less';
 @import 'cms/templates/33_templateSlider.less';
 
-// GENERAL CMS CONTENT COMPONENT FRONTEND LAYOUT FILE
-@import 'cms/contentComponents/generalLayout.less';
+/* CMS CONTENT COMPONENTS LAYOUT */
+@import 'cms/components/generalLayout.less';
 
-// SINGLE CMS CONTENT COMPONENT FRONTEND LAYOUT FILE
-@import 'cms/contentComponents/browse.less';
-@import 'cms/contentComponents/campaigns.less';
-@import 'cms/contentComponents/collection.less';
-@import 'cms/contentComponents/contactForm.less';
-@import 'cms/contentComponents/dividerLine.less';
-@import 'cms/contentComponents/faqItem.less';
-@import 'cms/contentComponents/faqOverview.less';
-@import 'cms/contentComponents/geomap.less';
-@import 'cms/contentComponents/htmltext.less';
-@import 'cms/contentComponents/image.less';
-@import 'cms/contentComponents/masonry.less';
-@import 'cms/contentComponents/pagelist.less';
-@import 'cms/contentComponents/publicBookmarks.less';
-@import 'cms/contentComponents/rssFeed.less';
-@import 'cms/contentComponents/search.less';
-@import 'cms/contentComponents/searchBox.less';
-@import 'cms/contentComponents/searchFacets.less';
-@import 'cms/contentComponents/searchHitlist.less';
-@import 'cms/contentComponents/slider.less';
-@import 'cms/contentComponents/splitText.less';
-@import 'cms/contentComponents/tagcloud.less';
-@import 'cms/contentComponents/text.less';
-@import 'cms/contentComponents/timeline.less';
-@import 'cms/contentComponents/trackingOptOut.less';
-@import 'cms/contentComponents/document.less';
+/* CMS CONTENT COMPONENTS */
+@import 'cms/components/browse.less';
+@import 'cms/components/campaigns.less';
+@import 'cms/components/collection.less';
+@import 'cms/components/contactForm.less';
+@import 'cms/components/dividerLine.less';
+@import 'cms/components/faqItem.less';
+@import 'cms/components/faqOverview.less';
+@import 'cms/components/geomap.less';
+@import 'cms/components/highlight.less';
+@import 'cms/components/htmltext.less';
+@import 'cms/components/image.less';
+@import 'cms/components/masonry.less';
+@import 'cms/components/pagelist.less';
+@import 'cms/components/pagesTiled.less';
+@import 'cms/components/publicBookmarks.less';
+@import 'cms/components/rssFeed.less';
+@import 'cms/components/search.less';
+@import 'cms/components/searchBox.less';
+@import 'cms/components/searchFacets.less';
+@import 'cms/components/searchHitlist.less';
+@import 'cms/components/slider.less';
+@import 'cms/components/splitText.less';
+@import 'cms/components/tagcloud.less';
+@import 'cms/components/text.less';
+@import 'cms/components/timeline.less';
+@import 'cms/components/trackingOptOut.less';
+@import 'cms/components/document.less';
 
 /* CMS VIEWS */
 @import 'cms/views/adminCmsCategories.less';
@@ -346,15 +360,20 @@
 @import 'cms/views/adminCmsArchiveEdit.less';
 @import 'cms/views/adminCmsArchives.less';
 
-/* Crowdsourcing */
+/* CROWDSOURCING */
 @import 'crowdsourcing/crowdsourcing.less';
 @import 'crowdsourcing/campaignsOverview.less';
 @import 'crowdsourcing/admin/adminCrowdCampaigns.less';
 @import 'crowdsourcing/admin/adminCrowdAddCampaign.less';
 @import 'crowdsourcing/annotations.less';
 
-/* Archives */
+/* ARCHIVES */
 @import 'archives/archives.less';
+@import 'archives/cardCatalog/ccLayout.less';
+@import 'archives/cardCatalog/ccSidebar.less';
+@import 'archives/cardCatalog/ccOverview.less';
+@import 'archives/cardCatalog/ccStage.less';
+@import 'archives/cardCatalog/ccStrip.less';
 @import 'archives/archivesList.less';
 @import 'archives/archivesTree.less';
 

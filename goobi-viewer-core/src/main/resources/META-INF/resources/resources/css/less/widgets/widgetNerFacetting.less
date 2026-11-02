@@ -4,31 +4,17 @@
    ==============================================================*/
 #widgetNerFacetting {
     margin-bottom: 1.3125rem;
-    h2 {
-    }
     ul {
         margin: 0;
         padding: 0;
         list-style: none;
     }
     .facetting-content {
-        .nav-tabs {
-            li {
-                a {
-                    .fa {
-                    }
-                }
-            }
-        }
         .tab-content {
             position: relative;
             .tab-pane {
                 position: relative;
                 padding: 10px;
-                &.active {
-                }
-                h3 {
-                }
             }
         }
     }
@@ -42,7 +28,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    background-color: @white;
+    background-color: var(--bg-surface);
     background-image: url('@{images}/ajax_preloader.gif');
     background-position: center center;
     background-repeat: no-repeat;
@@ -53,14 +39,16 @@
 #overview,
 #section {
     position: relative;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-strong);
     border-top: none;
+    /* TAG FILTER DESCRIPTION */
     .tag-filter-description {
         float: left;
         width: 100%;
         margin-bottom: 5px;
-        font-size: @fontSmall;
+        font-size: var(--font-size-caption);
     }
+    /* FILTER TAGS */
     .filter-tags {
         margin: 0 0 15px 0;
         padding: 0;
@@ -71,19 +59,19 @@
             margin-right: 3px;
             a {
                 text-decoration: none;
-                color: @middlegray;
+                color: var(--fg-muted);
                 &:hover {
                     text-decoration: none;
-                    color: @middlegray;
+                    color: var(--fg-muted);
                 }
                 &.active[data-type='person'] {
-                    color: @personColor;
+                    color: var(--fg-entity-person);
                 }
                 &.active[data-type='location'] {
-                    color: @locationColor;
+                    color: var(--fg-entity-location);
                 }
                 &.active[data-type='corporation'] {
-                    color: @corporateColor;
+                    color: var(--fg-entity-institution);
                 }
             }
             &.reset-filter {
@@ -95,17 +83,18 @@
 
 /* OVERVIEW */
 #overview {
+    /* CURRENT TAGS */
     .current-tags {
         position: absolute;
         display: none;
         left: 100%;
         padding: 2px 4px;
-        font-size: @fontSmall;
-        color: @black;
-        border: 1px solid @gray;
+        font-size: var(--font-size-caption);
+        color: var(--fg-default);
+        border: 1px solid var(--border-contrast);
         border-radius: 4px;
-        background-color: @white;
-        box-shadow: 0px 5px 7px rgba(0, 0, 0, 0.4);
+        background-color: var(--bg-elevated);
+        box-shadow: 0px 5px 7px rgb(from var(--shadow-color) r g b / 40%);
         z-index: 999;
         &:before {
             content: '';
@@ -118,7 +107,7 @@
             margin-top: -5px;
             border-width: 5px;
             border-style: solid;
-            border-color: transparent @gray transparent transparent;
+            border-color: transparent var(--border-contrast) transparent transparent;
         }
         &.right {
             &:before {
@@ -133,35 +122,34 @@
                 margin-top: -5px;
                 border-width: 5px;
                 border-style: solid;
-                border-color: transparent transparent transparent @gray;
+                border-color: transparent transparent transparent var(--border-contrast);
             }
         }
         .page-tag {
             margin-right: 3px;
             white-space: nowrap;
             &:hover {
-                background-color: @tagHoverColor;
+                background-color: var(--bg-subtle);
             }
             &.empty {
                 display: none;
             }
             &.PERSON {
-                color: @personColor;
+                color: var(--fg-entity-person);
             }
             &.LOCATION {
-                color: @locationColor;
+                color: var(--fg-entity-location);
             }
             &.CORPORATION {
-                color: @corporateColor;
-            }
-            &.INSTITUTION {
-                color: @corporateColor;
+                color: var(--fg-entity-institution);
             }
         }
     }
+    /* SET TAG RANGE WIDGET */
     .set-tag-range-widget {
         max-width: 50%;
     }
+    /* OVERVIEW CONTENT */
     .overview-content {
         max-height: 600px;
         overflow-y: auto;
@@ -177,43 +165,38 @@
                 }
                 .page-number {
                     width: 25%;
-                    font-size: @fontSmall;
+                    font-size: var(--font-size-caption);
                     font-weight: bold;
                     a {
-                        color: @black;
+                        color: var(--fg-default);
                         &:hover,
                         &:active,
                         &:focus {
                             text-decoration: none;
-                            color: @black;
+                            color: var(--fg-default);
                         }
                     }
                 }
                 .tag-container {
                     width: 75%;
-                    font-size: @fontSmall;
+                    font-size: var(--font-size-caption);
                     .page-tag {
                         margin-right: 3px;
                         white-space: nowrap;
                         &:hover {
-                            background-color: @tagHoverColor;
-                        }
-                        &:hover {
+                            background-color: var(--bg-subtle);
                         }
                         &.empty {
                             display: none;
                         }
                         &.PERSON {
-                            color: @personColor;
+                            color: var(--fg-entity-person);
                         }
                         &.LOCATION {
-                            color: @locationColor;
+                            color: var(--fg-entity-location);
                         }
                         &.CORPORATION {
-                            color: @corporateColor;
-                        }
-                        &.INSTITUTION {
-                            color: @corporateColor;
+                            color: var(--fg-entity-institution);
                         }
                     }
                 }
@@ -222,21 +205,19 @@
     }
 }
 
-/* SECTION */
-#section {
-}
-
+/* SLIDER */
 #sliderScale {
     position: relative;
     float: left;
     width: 10%;
-    border-top: 1px solid @middlegray;
-    border-bottom: 1px solid @middlegray;
+    border-top: 1px solid var(--border-strong);
+    border-bottom: 1px solid var(--border-strong);
+    /* SCALE PAGE */
     .scale-page {
         position: absolute;
         left: -8px;
-        font-size: @fontNormal;
-        color: @middlegray;
+        font-size: var(--font-size-body);
+        color: var(--fg-muted);
         &.start {
             top: 0;
         }
@@ -244,19 +225,21 @@
             bottom: 0;
         }
     }
+    /* SLIDER DESCRIPTION */
     .slider-description {
         position: absolute;
         top: 50%;
         left: -52px;
         width: 100px;
         margin-top: -10px;
-        font-size: @fontSmall;
+        font-size: var(--font-size-caption);
         text-align: center;
-        color: @middlegray;
+        color: var(--fg-muted);
         -ms-transform: rotate(-90deg);
         -webkit-transform: rotate(-90deg);
         transform: rotate(-90deg);
     }
+    /* SCALE STRIPES */
     .scale-stripes {
         position: absolute;
         width: 100%;
@@ -269,7 +252,7 @@
             float: right;
             width: 50%;
             height: 60px;
-            border-bottom: 1px solid @middlegray;
+            border-bottom: 1px solid var(--border-strong);
             &.middle {
                 width: 75%;
             }
@@ -285,7 +268,7 @@
         right: 3px;
         width: 2px;
         height: 100px;
-        background-color: @scaleHandleColor;
+        background-color: var(--color-chart-ner);
         z-index: 11;
     }
 }
@@ -296,7 +279,7 @@
     height: 600px;
     margin-right: 3px;
     border: none;
-    background: @middlegray;
+    background: var(--bg-selected);
     z-index: 10;
     .ui-slider-handle {
         left: -25px;
@@ -304,7 +287,7 @@
         height: 16px;
         margin-bottom: -8px;
         border: none;
-        background: @scaleHandleColor;
+        background: var(--color-chart-ner);
         &:after {
             content: '';
             position: absolute;
@@ -315,7 +298,7 @@
             height: 0;
             border-width: 15px;
             border-style: solid;
-            border-color: transparent transparent transparent @scaleHandleColor;
+            border-color: transparent transparent transparent var(--color-chart-ner);
         }
         &:focus {
             outline: none;
@@ -325,10 +308,10 @@
             top: -3px;
             left: 2.6em;
             padding: 2px 4px;
-            font-size: @fontSmall;
-            color: @white;
+            font-size: var(--font-size-caption);
+            color: var(--fg-on-inverse);
             border-radius: 4px;
-            background-color: @black;
+            background-color: var(--bg-inverse);
             white-space: nowrap;
             z-index: 999;
             &:before {
@@ -342,12 +325,13 @@
                 margin-top: -5px;
                 border-width: 5px;
                 border-style: solid;
-                border-color: transparent @black transparent transparent;
+                border-color: transparent var(--bg-inverse) transparent transparent;
             }
         }
     }
 }
 
+/* SECTION TAGS */
 #sectionTags {
     float: left;
     width: 90%;
@@ -359,22 +343,19 @@
         display: inline-block;
         margin-right: 3px;
         &:hover {
-            background-color: @tagHoverColor;
+            background-color: var(--bg-subtle);
         }
         &.empty {
             display: none;
         }
         &.PERSON {
-            color: @personColor;
+            color: var(--fg-entity-person);
         }
         &.LOCATION {
-            color: @locationColor;
+            color: var(--fg-entity-location);
         }
         &.CORPORATION {
-            color: @corporateColor;
-        }
-        &.INSTITUTION {
-            color: @corporateColor;
+            color: var(--fg-entity-institution);
         }
     }
 }

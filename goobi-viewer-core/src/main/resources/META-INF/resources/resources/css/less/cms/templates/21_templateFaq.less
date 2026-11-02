@@ -3,19 +3,16 @@
    style declarations for cms_template_21_faq.xhtml
    ==============================================================*/
 /* FAQ */
-/* BLOCK */
 .tpl-faq {
-    /* ELEMENT */
-    h1 {
-    }
     &__description {
         margin-bottom: 15px;
         padding: 2rem;
     }
     &__list {
         padding: 2rem;
-        border: 1px solid @middlegray;
-        background-color: @white;
+        border: 1px solid var(--border-strong);
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         margin-bottom: 15px;
         .card {
             border-radius: 0;
@@ -27,46 +24,29 @@
         .card-header {
             border: none;
             border-radius: 0;
-            &:hover {
-            }
             &__fragment-link {
                 padding-left: 10px;
-                font-size: @fontMedium;
+                font-size: var(--font-size-body-small);
                 opacity: 0.4;
                 &:hover {
                     opacity: 1;
                 }
             }
         }
-
         .card-title {
-            font-size: @fontNormal;
+            font-size: var(--font-size-body);
             font-weight: 400;
             margin-bottom: 0;
             a {
-                color: @black;
+                color: var(--fg-default);
                 &:hover,
                 &:active,
                 &:focus {
                     text-decoration: none;
-                    color: @black;
+                    color: var(--fg-default);
                 }
                 .fa {
                     margin-right: 5px;
-                }
-                .fa-chevron-down {
-                    display: none;
-                }
-                .fa-chevron-up {
-                    display: inline-block;
-                }
-                &.collapsed {
-                    .fa-chevron-down {
-                        display: inline-block;
-                    }
-                    .fa-chevron-up {
-                        display: none;
-                    }
                 }
             }
         }

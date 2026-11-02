@@ -3,8 +3,14 @@ set -e
 
 VIEWER_UID=${VIEWER_UID:-1000}
 VIEWER_GID=${VIEWER_GID:-1000}
-groupmod -o -g "${VIEWER_GID}" user
-usermod -o -u "${VIEWER_UID}" user
+groupmod -o -g "${VIEWER_GID}" ${USER}
+usermod -o -u "${VIEWER_UID}" ${USER}
+
+# generate ssh key for theme pulling if not present
+if [ ! -f "${CATALINA_HOME}/.ssh/id_ed25519" ]; then
+  mkdir -p -m 700 "${CATALINA_HOME}/.ssh"
+  ssh-keygen -t ed25519 -N "" -f "${CATALINA_HOME}/.ssh/id_ed25519" -q
+fi
 
 rm -f /tmp/startup-succeeded
 
@@ -77,6 +83,10 @@ fi
 # Generate directory structure in case the viewer directory is bind mounted
 mkdir -p /opt/digiverso/{logs,viewer/{abbyy,cmdi,deleted_mets,hotfolder,media,orig_lido,orig_denkxweb,success,ugc,alto,cms_media,error_mets,indexed_lido,mix,pdf,tei,updated_mets,cache,config,fulltext,indexed_mets,oai/token,ptif,themes,wc,bin}}
 
+# adding config files if not present
+cp -a --update=none /viewer-template/config/. /opt/digiverso/viewer/config/
+chmod +x /opt/digiverso/viewer/config/script*.sh 2>/dev/null || true
+
 echo "Setting database configuration from environment..."
 envsubst "\$DB_HOST \$DB_PORT \$DB_NAME \$DB_USER \$DB_PASSWORD" <"${CATALINA_HOME}/conf/viewer.xml.template" > "${CATALINA_HOME}/conf/Catalina/localhost/${WEBAPP_NAME}.xml"
 envsubst "\$TOMCAT_SAMESITECOOKIES" </tmp/context.xml.template >"${CATALINA_HOME}/conf/context.xml"
@@ -141,14 +151,14 @@ done
 
 echo "Updating file ownership..."
 # this will cause less disk access than `chown -R`
-find "${CATALINA_HOME}" /opt/digiverso/viewer/ /opt/digiverso/logs/ \! -user user \( -exec chown user:user '{}' + -o -true \)
+find "${CATALINA_HOME}" /opt/digiverso/viewer/ /opt/digiverso/logs/ \! -user ${USER} \( -exec chown ${USER}:${USER} '{}' + -o -true \)
 
 # No initial user password given
 if [[ -z "${VIEWER_USERPASS-}" ]]; then
   echo "Starting application server..."
   # Record the resolved webapp path so healthcheck.sh knows what to request.
   printf '%s' "${VIEWER_BASE_PATH}" > /tmp/startup-succeeded
-  exec gosu user catalina.sh run
+  exec gosu ${USER} catalina.sh run
 fi
 
 VIEWER_USERMAIL="${VIEWER_USERMAIL:-goobi@intranda.com}"
@@ -158,7 +168,7 @@ run_sql() { mysql -h "${DB_HOST}" -u "${DB_USER}" -P "${DB_PORT}" "${DB_NAME}" -
 # Initialize DB to insert the initial user into the db
 if [[ -z "$(run_sql "SHOW TABLES LIKE 'viewer_users'")" ]]; then
   echo "Initializing database..."
-  gosu user catalina.sh run > /dev/null 2>&1 &
+  gosu ${USER} catalina.sh run > /dev/null 2>&1 &
   TOMCAT_PID=$!
   until [[ -n "$(run_sql "SHOW TABLES LIKE 'viewer_users'")" ]]; do
     echo "Waiting for schema initialization..."
@@ -189,4 +199,4 @@ unset STORED_HASH STORED_2B NEW_HASH EMAIL_SQL
 echo "Starting application server..."
 # Record the resolved webapp path so healthcheck.sh knows what to request.
 printf '%s' "${VIEWER_BASE_PATH}" > /tmp/startup-succeeded
-exec gosu user catalina.sh run
+exec gosu ${USER} catalina.sh run

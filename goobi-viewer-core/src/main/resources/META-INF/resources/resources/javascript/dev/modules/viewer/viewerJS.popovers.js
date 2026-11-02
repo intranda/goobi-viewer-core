@@ -33,10 +33,10 @@ var viewerJS = (function (viewer) {
     const _popoverSelectorAttribute = 'data-popover-element';
     const _popoverTitleAttribute = 'data-popover-title';
     const _popoverPlacementAttribute = 'data-popover-placement';
-    const _popoverTemplate =
-        "<div class='popover' role='tooltip'><div class='arrow'></div><h2 class='popover-title-custom'>#{title}</h2><div class='popover-body'></div></div>";
-    const _popoverTemplateNoTitle =
-        "<div class='popover' role='tooltip'><div class='arrow'></div><div class='popover-body'></div></div>";
+    const _popoverClassAttribute = 'data-popover-class';
+    const _popoverTemplate = "<div class='popover' role='tooltip'><div class='arrow'></div><h2 class='popover-title-custom'>#{title}</h2><div class='popover-body'></div></div>";
+    const _popoverTemplateNoTitle = "<div class='popover' role='tooltip'><div class='arrow'></div><div class='popover-body'></div></div>";
+    const _popoverTemplateDefault = "<div class='popover' role='tooltip'><div class='arrow'></div><h3 class='popover-header'></h3><div class='popover-body'></div></div>";
     const _dismissPopoverAttribute = 'data-popover-dismiss';
     const _clickOutside = 'click-outside';
     const _popoverOnShowAttribute = 'data-popover-onshow';
@@ -52,15 +52,9 @@ var viewerJS = (function (viewer) {
                 if ($popover.length === 1) {
                     this.initPopover($element, $popover);
                 } else if ($popover.length > 1) {
-                    console.error(
-                        "Found more than one popover matching selector '" +
-                            popoverSelector +
-                            "'. Cannot initialize popover"
-                    );
+                    console.error("Found more than one popover matching selector '" + popoverSelector + "'. Cannot initialize popover");
                 } else {
-                    console.error(
-                        "Found no popover matching selector '" + popoverSelector + "'. Cannot initialize popover"
-                    );
+                    console.error("Found no popover matching selector '" + popoverSelector + "'. Cannot initialize popover");
                 }
             });
         },
@@ -123,14 +117,8 @@ var viewerJS = (function (viewer) {
                     $wrapper.offset({ top: 0, left: 0 });
 
                     $wrapper.offset({
-                        top:
-                            event.pageY -
-                            Math.ceil($wrapper.height() / 2) +
-                            (config.offset && config.offset.top ? config.offset.top : 0),
-                        left:
-                            event.pageX +
-                            $arrow.outerWidth() +
-                            (config.offset && config.offset.left ? config.offset.left : 0),
+                        top: event.pageY - Math.ceil($wrapper.height() / 2) + (config.offset && config.offset.top ? config.offset.top : 0),
+                        left: event.pageX + $arrow.outerWidth() + (config.offset && config.offset.left ? config.offset.left : 0),
                     });
 
                     $(popoverSelector)
@@ -200,6 +188,11 @@ var viewerJS = (function (viewer) {
             } else {
                 config.template = _popoverTemplateNoTitle;
             }
+        }
+
+        let popoverClass = $trigger.attr(_popoverClassAttribute);
+        if (popoverClass) {
+            config.template = (config.template || _popoverTemplateDefault).replace("class='popover'", "class='popover " + popoverClass + "'");
         }
         return config;
     }

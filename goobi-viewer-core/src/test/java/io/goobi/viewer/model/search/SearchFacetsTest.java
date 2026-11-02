@@ -988,6 +988,109 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchFacets#updateFacetItem(String, String, List, boolean)
+     * @verifies preserve literal plus signs in percent encoded values
+     */
+    @Test
+    void updateFacetItem_shouldPreserveLiteralPlusSignsInPercentEncodedValues() {
+        List<IFacetItem> items = new ArrayList<>(1);
+        SearchFacets.updateFacetItem("FIELD1", "M%20+%20M", items, false);
+        Assertions.assertEquals(1, items.size());
+        Assertions.assertEquals("M + M", items.get(0).getValue());
+    }
+
+    /**
+     * @see SearchFacets#parseFacetString(String,List,Map)
+     * @verifies preserve literal plus signs in percent encoded facet values
+     */
+    @Test
+    void parseFacetString_shouldPreserveLiteralPlusSignsInPercentEncodedFacetValues() {
+        List<IFacetItem> facetItems = new ArrayList<>();
+        SearchFacets.parseFacetString("MD_ARTIST%3A%22M%20+%20M%20geb.%201994%22", facetItems, null);
+        Assertions.assertEquals(1, facetItems.size());
+        Assertions.assertEquals("MD_ARTIST:\"M + M geb. 1994\"", facetItems.get(0).getLink());
+    }
+
+    /**
+     * @see SearchFacets#parseFacetString(String,List,Map)
+     * @verifies preserve encoded plus signs in percent encoded facet values
+     */
+    @Test
+    void parseFacetString_shouldPreserveEncodedPlusSignsInPercentEncodedFacetValues() {
+        List<IFacetItem> facetItems = new ArrayList<>();
+        SearchFacets.parseFacetString("MD_ARTIST%3A%22M%20%2B%20M%22", facetItems, null);
+        Assertions.assertEquals(1, facetItems.size());
+        Assertions.assertEquals("MD_ARTIST:\"M + M\"", facetItems.get(0).getLink());
+    }
+
+    /**
+     * @see SearchFacets#parseFacetString(String,List,Map)
+     * @verifies preserve escaped plus signs in viewer generated facet links
+     */
+    @Test
+    void parseFacetString_shouldPreserveEscapedPlusSignsInViewerGeneratedFacetLinks() throws UnsupportedEncodingException {
+        String link = URLEncoder.encode(BeanUtils.escapeCriticalUrlChracters("MD_ARTIST:M + M"), SearchBean.URL_ENCODING);
+        List<IFacetItem> facetItems = new ArrayList<>();
+        SearchFacets.parseFacetString(link, facetItems, null);
+        Assertions.assertEquals(1, facetItems.size());
+        Assertions.assertEquals("MD_ARTIST:M + M", facetItems.get(0).getLink());
+    }
+
+    /**
+     * @see SearchFacets#parseFacetString(String,List,Map)
+     * @verifies decode plus signs as spaces in form encoded facet values
+     */
+    @Test
+    void parseFacetString_shouldDecodePlusSignsAsSpacesInFormEncodedFacetValues() {
+        List<IFacetItem> facetItems = new ArrayList<>();
+        SearchFacets.parseFacetString("MD_ARTIST%3Aa+b", facetItems, null);
+        Assertions.assertEquals(1, facetItems.size());
+        Assertions.assertEquals("MD_ARTIST:a b", facetItems.get(0).getLink());
+    }
+
+    /**
+     * @see SearchFacets#decodeFacetString(String)
+     * @verifies preserve literal plus signs if spaces are percent encoded
+     */
+    @Test
+    void decodeFacetString_shouldPreserveLiteralPlusSignsIfSpacesArePercentEncoded() {
+        Assertions.assertEquals("a + b", SearchFacets.decodeFacetString("a%20+%20b"));
+        Assertions.assertEquals("a + b", SearchFacets.decodeFacetString("a + b"));
+    }
+
+    /**
+     * @see SearchFacets#decodeFacetString(String)
+     * @verifies decode plus signs as spaces if form encoded
+     */
+    @Test
+    void decodeFacetString_shouldDecodePlusSignsAsSpacesIfFormEncoded() {
+        Assertions.assertEquals("a b", SearchFacets.decodeFacetString("a+b"));
+        // Double-encoded
+        Assertions.assertEquals("a b", SearchFacets.decodeFacetString("a%2Bb"));
+    }
+
+    /**
+     * @see SearchFacets#decodeFacetString(String)
+     * @verifies restore escaped characters after decoding
+     */
+    @Test
+    void decodeFacetString_shouldRestoreEscapedCharactersAfterDecoding() {
+        Assertions.assertEquals("a+b/c", SearchFacets.decodeFacetString("aU002BbU002Fc"));
+        Assertions.assertEquals("100%", SearchFacets.decodeFacetString("100U0025"));
+    }
+
+    /**
+     * @see SearchFacets#decodeFacetString(String)
+     * @verifies return undecoded string if malformed
+     */
+    @Test
+    void decodeFacetString_shouldReturnUndecodedStringIfMalformed() {
+        Assertions.assertEquals("100%", SearchFacets.decodeFacetString("100%"));
+        // First pass succeeds, second pass fails on the resulting literal '%'
+        Assertions.assertEquals("100%", SearchFacets.decodeFacetString("100%25"));
+    }
+
+    /**
      * Regression guard for the replacement of Collections.synchronizedMap with ConcurrentHashMap.
      * Verifies that concurrent reads and writes to availableFacets do not throw
      * ConcurrentModificationException or any other concurrency error.

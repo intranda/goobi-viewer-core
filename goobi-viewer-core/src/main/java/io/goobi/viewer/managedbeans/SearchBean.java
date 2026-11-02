@@ -28,7 +28,6 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.SecureRandom;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -242,9 +241,9 @@ public class SearchBean implements SearchInterface, Serializable {
     private Random random = new SecureRandom();
 
     /**
-     * Random sort field generated for the currently active search, cached and reused (instead of re-rolled on every request) so that
-     * reloading, paging through or returning to a randomly sorted hit list keeps the same order. Cleared in
-     * {@link #resetSearchParameters(boolean, boolean)}, i.e. whenever a genuinely new search is started.
+     * Random sort field generated for the currently active search, cached and reused (instead of re-rolled on every request) so that reloading,
+     * paging through or returning to a randomly sorted hit list keeps the same order. Cleared in {@link #resetSearchParameters(boolean, boolean)},
+     * i.e. whenever a genuinely new search is started.
      */
     private String randomSortSeed;
 
@@ -832,6 +831,8 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws IndexUnreachableException
      * @should construct query correctly
      * @should construct query info correctly
+     * @should include both range bounds in query info
+     * @should include both range bounds in query info for NOT item
      * @should add multiple facets for the same field correctly
      * @should add multiple facets for the same field correctly if field already in current facets
      * @should only add identical facets once
@@ -976,7 +977,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     } else {
                         // Session bookmark list
                         Optional<BookmarkList> obs =
-                                DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession());
+                                DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getSession());
                         if (obs.isPresent()) {
                             itemQuery = obs.get().getFilterQuery();
                         }
@@ -996,38 +997,12 @@ public class SearchBean implements SearchInterface, Serializable {
                     String infoFieldLabel =
                             SearchHelper.SEARCH_FILTER_ALL.getField().equals(item.getField()) ? item.getLabel() : item.getField();
                     sbInfo.append('(').append(ViewerResourceBundle.getTranslation(infoFieldLabel, BeanUtils.getLocale())).append(": ");
-                    switch (line.getOperator()) {
-                        case AND:
-                            if (SolrConstants.BOOKMARKS.equals(item.getField()) && !userBean.isLoggedIn()) {
-                                // Session bookmark list value
-                                sbInfo.append(ViewerResourceBundle.getTranslation("bookmarkList_session", BeanUtils.getLocale()));
-                            } else if (item.isRange()) {
-                                sbInfo.append('[').append(item.getValue()).append(" - ").append(item.getValue2()).append(']');
-                            } else {
-                                if (item.isDisplaySelectItems()) {
-                                    sbInfo.append(ViewerResourceBundle.getTranslation(item.getValue(), BeanUtils.getLocale()));
-                                } else {
-                                    sbInfo.append(item.getValue());
-                                }
-                            }
-                            break;
-                        case NOT:
-                            if (item.isDisplaySelectItems()) {
-                                sbInfo.append(ViewerResourceBundle.getTranslation(item.getValue(), BeanUtils.getLocale()));
-                            } else {
-                                sbInfo.append(item.getValue());
-                            }
-                            break;
-                        default:
-                            if (item.isRange()) {
-                                sbInfo.append('[').append(item.getValue()).append(" - ").append(item.getValue2()).append(']');
-                            } else {
-                                if (item.isDisplaySelectItems()) {
-                                    sbInfo.append(ViewerResourceBundle.getTranslation(item.getValue(), BeanUtils.getLocale()));
-                                } else {
-                                    sbInfo.append(item.getValue());
-                                }
-                            }
+                    if (SearchItemOperator.AND == line.getOperator() && SolrConstants.BOOKMARKS.equals(item.getField())
+                            && !userBean.isLoggedIn()) {
+                        // Session bookmark list value
+                        sbInfo.append(ViewerResourceBundle.getTranslation("bookmarkList_session", BeanUtils.getLocale()));
+                    } else {
+                        appendQueryInfoValue(sbInfo, item);
                     }
                     sbInfo.append(')');
                 }
@@ -1098,6 +1073,22 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.debug("advanced query: {}", sb);
 
         return sb.toString();
+    }
+
+    /**
+     * Appends the human-readable value of the given query item to the advanced search query info.
+     *
+     * @param sbInfo Query info builder to append to
+     * @param item Query item whose value(s) to append
+     */
+    private static void appendQueryInfoValue(StringBuilder sbInfo, SearchQueryItem item) {
+        if (item.isRangeQuery()) {
+            sbInfo.append('[').append(item.getValue()).append(" - ").append(item.getValue2()).append(']');
+        } else if (item.isDisplaySelectItems()) {
+            sbInfo.append(ViewerResourceBundle.getTranslation(item.getValue(), BeanUtils.getLocale()));
+        } else {
+            sbInfo.append(item.getValue());
+        }
     }
 
     /**
@@ -2455,7 +2446,7 @@ public class SearchBean implements SearchInterface, Serializable {
             } else {
                 // Session bookmark list
                 Optional<BookmarkList> bookmarkList =
-                        DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession());
+                        DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getSession());
                 if (bookmarkList.isPresent() && !bookmarkList.get().getItems().isEmpty()) {
                     ret.add(new StringPair(bookmarkList.get().getName(),
                             ViewerResourceBundle.getTranslation("bookmarkList_session", locale)));

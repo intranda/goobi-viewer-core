@@ -1,26 +1,33 @@
-// Buttons
-//
-// Various button styles.
-//
-// Weight: 1
-//
-// Markup:
-// <button type="button" class="btn {{modifier_class}}">Button Element</button>
-// <input type="button" class="btn {{modifier_class}}" value="Input Element" />
-// <a href="#" class="btn {{modifier_class}}">Link Element</a>
-//
-// .btn--default - Modifier class for a default button.
-// .btn--success - Modifier class for a success button.
-// .btn--danger - Modifier class for a danger button.
-// .btn--full - Modifier class for a CI button.
-// .btn--clean - Modifier class for a button without styling.
-// .btn--link - Modifier class for a button which looks like a link.
-// .btn--inactive - Modifier class for an inactive button.
-//
-// Styleguide Components.button
+/* ==============================================================
+   Buttons
+   modifiers: btn--default, btn--success, btn--danger, btn--full,
+   btn--trans, btn--clean, btn--link, btn--icon, btn--inactive
+   ==============================================================*/
+/* PUBLIC BUTTONS GROW WITH THEIR TEXT */
+:where(html:not(:has(#admin))) {
+    .btn {
+        font-size: var(--font-size-body);
+        line-height: var(--line-height-body);
+        white-space: normal;
+    }
+    .btn-sm,
+    .btn-group-sm > .btn,
+    .input-group-sm > .input-group-prepend > .btn,
+    .input-group-sm > .input-group-append > .btn {
+        font-size: var(--font-size-body-small);
+    }
+    .btn-lg,
+    .btn-group-lg > .btn,
+    .input-group-lg > .input-group-prepend > .btn,
+    .input-group-lg > .input-group-append > .btn {
+        font-size: var(--font-size-body-large);
+    }
+}
+
+/* BUTTON */
 .btn {
-    color: @btnDefault;
-    border-radius: 0;
+    color: var(--fg-secondary);
+    border-radius: var(--radius-button);
     background-color: transparent;
     &:hover,
     &:active,
@@ -45,48 +52,52 @@
 
 /* MODIFICATIONS */
 .btn--default {
-    border-color: @btnDefaultBorder;
-    background-color: @btnDefaultBgc;
+    border-color: var(--border-strong);
+    background-color: var(--bg-subtle);
     &:hover,
     &:active,
     &:focus {
-        background-color: @btnDefaultHoverBgc;
+        background-color: var(--bg-hover);
     }
 }
 
 .btn--success {
-    color: @btnSuccess;
-    border-color: @btnSuccessBorder;
-    background-color: @btnSuccessBgc;
+    color: var(--fg-on-success-subtle);
+    border-color: var(--border-success);
+    background-color: var(--bg-success-subtle);
     &:hover,
     &:active,
     &:focus {
-        color: @btnSuccess;
-        background-color: @btnSuccessHoverBgc;
+        color: var(--fg-on-success-subtle);
+        background-color: var(--bg-success-subtle-hover);
     }
 }
 
 .btn--danger {
-    color: @btnDanger;
-    border-color: @btnDangerBorder;
-    background-color: @btnDangerBgc;
+    color: var(--fg-on-danger-subtle);
+    border-color: var(--border-danger);
+    background-color: var(--bg-danger-subtle);
     &:hover,
     &:active,
     &:focus {
-        color: @btnDanger;
-        background-color: @btnDangerHoverBgc;
+        color: var(--fg-on-danger-subtle);
+        background-color: var(--bg-danger-subtle-hover);
     }
 }
 
 .btn--full {
-    color: @white;
-    border-color: @blue;
-    background-color: @blue;
+    color: var(--fg-on-brand);
+    border-color: var(--bg-brand);
+    background-color: var(--bg-brand);
     &:hover,
-    &:active,
     &:focus {
-        color: @white;
-        background-color: @btnFullHoverBgc;
+        color: var(--fg-on-brand);
+        background-color: var(--bg-brand-hover);
+    }
+    /* PRESSED IS NOT FOCUSED */
+    &:active {
+        color: var(--fg-on-brand);
+        background-color: var(--bg-brand-pressed);
     }
 }
 
@@ -99,18 +110,14 @@
 
 .btn--link {
     padding: 0;
-    color: @blue;
+    color: var(--fg-link);
     border: none;
     &:hover,
     &:active,
     &:focus {
         text-decoration: underline;
-        color: @btnDefault;
+        color: var(--fg-secondary);
     }
-}
-
-.btn--hidden {
-    display: none !important;
 }
 
 .btn--inactive {
@@ -120,21 +127,22 @@
 
 .btn--icon {
     padding: 2px;
-    font-size: inherit; // !important removed - check themes for changes
-    color: @black;
+    font-size: inherit;
+    color: var(--fg-default);
     border: none;
     &:hover,
     &:active,
     &:focus {
-        color: @black;
+        color: var(--fg-default);
     }
 }
 
+/* ICON LINK BUTTON */
 a.btn--icon {
     line-height: normal;
 }
 
-// BUTTONS MIN-WIDTH
+/* MIN-WIDTH */
 .btn--full,
 .btn--default,
 .btn--danger,
@@ -142,6 +150,7 @@ a.btn--icon {
     min-width: 100px;
 }
 
+/* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
 }
 
@@ -151,7 +160,7 @@ a.btn--icon {
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-    // BUTTONS MIN-WIDTH
+    /* MIN-WIDTH */
     .btn--full,
     .btn--default,
     .btn--danger,

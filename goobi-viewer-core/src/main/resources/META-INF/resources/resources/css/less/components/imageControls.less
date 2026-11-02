@@ -3,17 +3,17 @@
    Style declarations for imageControls.xhtml
    ==============================================================*/
 
-@image-controls-touch-size: 26px;
-@image-controls-icon-size: 17px;
-@image-controls-gap: 0.1rem;
+@image-controls-touch-size: 32px;
+@image-controls-icon-size: 18px;
+@image-controls-gap: 4px;
+@image-controls-group-gap: 20px;
 /* CONTROLS */
-/* BLOCK */
 .image-controls {
-    padding: 10px;
+    padding: 12px;
     position: relative;
-    background: @image-controls-background;
-    color: @image-controls-icon-color;
-    border: 1px solid @image-controls-container-border-color;
+    background: var(--bg-surface);
+    color: var(--fg-default);
+    border: 1px solid transparent;
     &.-ltr,
     .-ltr {
         direction: ltr;
@@ -22,37 +22,41 @@
     .-rtl {
         direction: rtl;
     }
+    /* INNER */
     &__inner {
         display: flex;
+        align-items: center;
         flex-wrap: wrap;
-        gap: 4px;
+        gap: 8px @image-controls-group-gap;
     }
-    // GRID/GAP SIZING FOR THE IMAGE ACTIONS/CONTROLS + (DOC) OPTIONS
+    /* GRID AND GAP SIZING FOR ACTIONS AND OPTIONS */
     &__actions,
     &__actions-nav,
     &__actions-additional,
     &__options {
         display: flex;
-        gap: 3px;
+        align-items: center;
+        gap: @image-controls-gap;
         flex-wrap: wrap;
+    }
+    /* GROUPS: PAGING, VIEW, DOCUMENT */
+    &__actions-additional {
+        border-inline-start: 1px solid var(--border-subtle);
+        padding-inline-start: @image-controls-group-gap;
     }
     /* DOCUMENT OPTIONS */
     &__options {
         margin-left: auto;
-        display: flex;
-        align-items: center;
-        align-content: center;
-        flex-wrap: wrap;
-        gap: @image-controls-gap;
         padding: 0;
         list-style: none;
     }
+    /* OPTIONS */
     &__option {
         display: flex;
         align-items: center;
         flex: 0 0 auto;
         margin: 0;
-        color: @image-controls-icon-color;
+        color: var(--fg-default);
         font-size: inherit;
         line-height: 1;
 
@@ -83,14 +87,12 @@
 
         &:hover,
         &:focus-within {
-            color: @image-controls-icon-color-hover;
+            color: var(--fg-on-control-hover);
         }
         &:active {
-            color: @image-controls-icon-color-active;
+            color: var(--fg-on-control-hover);
         }
 
-        &.fulltext {
-        }
         &.add-to-bookmark {
             [data-bookmark-list-type='add'] {
                 background-image: none;
@@ -128,7 +130,7 @@
         &.share-image-region {
             cursor: pointer;
             a.active {
-                color: #ff2523;
+                color: var(--color-region);
             }
         }
     }
@@ -136,8 +138,8 @@
     &__option > .image-controls__share-image-link,
     &__option > button,
     &__option [data-bookmark-list-type='add'] {
-        min-width: @image-controls-touch-size;
-        min-height: @image-controls-touch-size;
+        width: @image-controls-touch-size;
+        height: @image-controls-touch-size;
         padding: 0;
         border: none;
         background: transparent;
@@ -181,58 +183,41 @@
             stroke-width 0.18s ease,
             fill 0.18s ease;
     }
-    &__option > .btn.btn--icon:hover .icon-wrapper,
-    &__option > .btn.btn--icon:focus .icon-wrapper,
-    &__option > .image-controls__share-image-link:hover .icon-wrapper,
-    &__option > .image-controls__share-image-link:focus .icon-wrapper,
-    &__option > button:hover .icon-wrapper,
-    &__option > button:focus .icon-wrapper,
-    &__option [data-bookmark-list-type='add']:hover .icon-wrapper,
-    &__option [data-bookmark-list-type='add']:focus .icon-wrapper {
-        transform: scale(1.08) translateY(-1px);
-        filter: drop-shadow(0 3px 8px fade(@black, 18%));
-    }
     /* ACTIONS */
     &__actions {
-        // margin-right: auto;
         flex-grow: 1;
-        ul {
-        }
+        gap: @image-controls-group-gap;
         li {
             align-self: center;
         }
     }
-    &__select-text {
-        display: flex;
-        align-items: center;
-        margin-inline-end: 1rem;
-        & + .image-controls__action.select {
-            width: 145px;
-        }
-    }
+    /* INCLUDES */
     &__includes-container {
         display: none;
     }
+    /* ACTIONS */
     &__action {
-        width: 36px;
-        height: 36px;
-        border: 1px solid @image-controls-border-color;
-        background: @image-controls-action-background;
+        /* TEXT AND PAGE SELECTORS SET THE MINIMUM, ICONS KEEP THEIR SIZE */
+        --_action-size: ~'max(32px, calc(var(--font-size-body-small) * var(--line-height-body) + 0.6rem + 2px))';
+        width: var(--_action-size);
+        height: var(--_action-size);
+        flex-shrink: 0;
+        border: 0;
+        background: transparent;
         display: flex;
         justify-content: center;
         align-items: center;
         cursor: pointer;
-        color: @image-controls-icon-color;
+        color: var(--fg-default);
         &:hover,
         &:focus {
-            background-color: @image-controls-action-background-hover;
-            color: @image-controls-icon-color-hover;
+            background-color: var(--bg-control-hover);
+            color: var(--fg-on-control-hover);
         }
         &:active {
-            background-color: @image-controls-action-background-hover;
-            color: @image-controls-icon-color-active;
+            background-color: var(--bg-control-hover);
+            color: var(--fg-on-control-hover);
         }
-        /* ELEMENT */
         a,
         span,
         button {
@@ -243,7 +228,7 @@
             height: 100%;
             width: 100%;
             padding: 0.2rem;
-            font-size: 1.2rem;
+            font-size: var(--font-size-caption);
             white-space: nowrap;
             font-weight: 400;
             color: inherit;
@@ -260,15 +245,17 @@
             svg {
                 width: 100%;
                 height: 100%;
+                max-width: 32px;
+                max-height: 32px;
                 display: block;
             }
         }
         .custom-control--select::after {
-            border-top-color: @image-controls-icon-color;
+            border-top-color: var(--fg-default);
         }
         button {
             white-space: nowrap;
-            font-size: 12px;
+            font-size: var(--font-size-caption);
         }
         span {
             cursor: inherit;
@@ -281,57 +268,33 @@
             &:focus {
                 background-color: transparent;
             }
-            a,
-            span,
-            button {
-            }
-            //	    	> img, svg {
-            //	    		width: 32px;
-            //	    		height: 32px;
-            //	    		padding: 0.4rem;
-            //	    	}
-        }
-        /* ELEMENT */
-        &.start {
-        }
-        &.page-browse,
-        &.select {
-        }
-        &.page-browse {
-            a,
-            span {
-            }
-        }
-        &.back {
         }
         &.select-text {
             width: auto;
             min-width: 32px;
             border: none;
             span {
-                font-size: @fontMedium;
+                font-size: var(--font-size-body-small);
                 border: none;
                 cursor: text;
             }
         }
         &.select {
             width: 110px;
+            border: 1px solid var(--border-subtle);
             .custom-control--select {
-                height: 30px;
+                height: 100%;
+                min-height: 0;
                 border: none;
                 background: inherit;
-                color: @image-controls-icon-color;
+                color: var(--fg-default);
                 select {
+                    height: 100%;
+                    min-height: 0;
                     background: inherit;
-                    color: @image-controls-icon-color;
-                }
-                &:after {
+                    color: var(--fg-default);
                 }
             }
-        }
-        &.forward {
-        }
-        &.end {
         }
         &.double-page-view,
         &.single-page-view,
@@ -342,26 +305,8 @@
                 padding: 0.7rem;
             }
         }
-        &.double-page-view {
-        }
-        &.single-page-view {
-        }
-        &.switch-pages {
-            a {
-            }
-            svg {
-            }
-        }
-        &.rotate-left {
-        }
-        &.rotate-right {
-        }
-        &.reset {
-        }
-        &.enter-fullscreen {
-        }
         &.zoom-slider-wrapper {
-            width: 100px;
+            width: 104px;
             border: none;
             background: transparent;
             cursor: default;
@@ -372,32 +317,41 @@
                 color: inherit;
             }
             .zoom-slider {
-                height: 10px;
-                border: 1px solid @image-controls-slider-border-color;
+                height: 20px;
+                border: 0;
                 max-width: 100%;
-                //Firefox
-                &::-moz-range-thumb {
-                    width: 8px;
-                    height: 26px;
-                    border: none;
-                    background-color: @image-controls-slider-thumb-background;
-                    border-radius: 0;
+                /* FIREFOX */
+                &::-moz-range-track {
+                    height: 3px;
+                    border-radius: 2px;
+                    background-color: var(--fg-default);
                 }
-                //Chrome
-                -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
-                background: transparent; /* Otherwise white in Chrome */
+                &::-moz-range-thumb {
+                    width: 12px;
+                    height: 12px;
+                    border: none;
+                    background-color: var(--fg-default);
+                    border-radius: 50%;
+                }
+                /* CHROME */
+                -webkit-appearance: none;
+                background: transparent;
                 &:focus {
-                    outline: none; /* Removes the blue border. You should probably do some kind of focus styling for accessibility reasons though. */
+                    outline: none;
                 }
                 &::-webkit-slider-thumb {
                     -webkit-appearance: none;
-                    width: 8px;
-                    height: 26px;
+                    width: 12px;
+                    height: 12px;
                     border: none;
-                    background-color: @image-controls-slider-thumb-background;
-                    border-radius: 0;
+                    background-color: var(--fg-default);
+                    border-radius: 50%;
+                    margin-top: -4.5px;
                 }
                 &::-webkit-slider-runnable-track {
+                    height: 3px;
+                    border-radius: 2px;
+                    background-color: var(--fg-default);
                 }
             }
         }
@@ -407,12 +361,13 @@
         padding: 0;
         display: none !important;
     }
+    /* SHARE IMAGE AREA */
     .share-image-area {
         .btn.btn--full {
-            color: @white;
+            color: var(--fg-on-inverse);
         }
         a {
-            color: @blue;
+            color: var(--fg-link);
         }
         &__controls {
             margin-top: 10px;
@@ -430,11 +385,13 @@
     }
 }
 
+/* ACTIONS NAV ICONS */
 .image-controls__actions-nav .image-controls__icon,
 .image-controls__actions-additional .image-controls__icon {
-    color: @image-controls-icon-color;
+    color: var(--fg-default);
 }
 
+/* ICONS */
 .image-controls__icon {
     display: inline-flex;
     align-items: center;
@@ -444,8 +401,8 @@
 }
 
 .image-controls__icon-svg {
-    width: 28px;
-    height: 28px;
+    width: @image-controls-icon-size;
+    height: @image-controls-icon-size;
     display: inline-block;
     line-height: 0;
     color: inherit;
@@ -453,9 +410,10 @@
     fill: none;
 }
 
+/* ACTION ICONS */
 .image-controls__action .image-controls__icon-svg {
-    width: 28px;
-    height: 28px;
+    width: @image-controls-icon-size;
+    height: @image-controls-icon-size;
     flex-shrink: 0;
 }
 
@@ -471,18 +429,7 @@
     }
 }
 
-.tooltip_clipboard {
-    display: none;
-    position: absolute;
-    z-index: 10000;
-    background-color: rgb(68, 68, 68);
-    color: #f1f2f3;
-    padding: 3px;
-    vertical-align: middle;
-    border-radius: 10px;
-    font-size: @fontSmall;
-}
-
+/* RTL */
 @{RTL} {
     .image-controls {
         direction: rtl;
@@ -500,14 +447,7 @@
     }
 }
 
-/* FIREFOX CORRECTION */
-@-moz-document url-prefix() {
-    .image-controls__action.switch-pages .image-switchPages {
-        width: 21px;
-    }
-}
-
-/* BREAKPOINT FOR LARGE DESKTOP */
+/* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
 }
 
@@ -546,7 +486,7 @@
                 width: 74px;
             }
             &.zoom-slider-wrapper {
-                .mx-hidden;
+                .mx-hidden();
             }
         }
     }

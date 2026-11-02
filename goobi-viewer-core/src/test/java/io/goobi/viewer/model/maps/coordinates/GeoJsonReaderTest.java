@@ -2,11 +2,14 @@ package io.goobi.viewer.model.maps.coordinates;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import mil.nga.sf.geojson.Geometry;
 import mil.nga.sf.geojson.Point;
 import mil.nga.sf.geojson.Polygon;
 
+@Execution(ExecutionMode.CONCURRENT)
 class GeoJsonReaderTest {
 
     private static final String POLYGON =

@@ -3,25 +3,74 @@
    style declarations for userBookmarksSendList.xhtml
    ==============================================================*/
 /* USER BOOKMARK SEND LIST */
-/* BLOCK */
 .user-bookmark-send-list {
-    /* ELEMENT */
-    &__form {
-        padding: 30px 15px;
-        border: 1px solid @middlegray;
-        form {
-            width: 80%;
-            margin: 0 auto;
+    /* HEAD */
+    &__head {
+        margin-bottom: 2.4rem;
+        padding-bottom: 1.6rem;
+        border-bottom: 1px solid var(--border-default);
+        h1 {
+            margin-bottom: 0;
         }
     }
-    .control-label {
-        font-weight: normal;
+    &__intro {
+        max-width: 65ch;
+        margin-top: 0.8rem;
+        margin-bottom: 0;
+        color: var(--fg-secondary);
+        font-size: var(--font-size-body-small);
     }
-    .form-control {
-        height: 32px;
+
+    /* PANEL */
+    &__panel {
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-container);
+        box-shadow: var(--shadow-surface);
     }
-    &__action {
-        text-align: right;
+
+    /* FIELDS */
+    &__field {
+        padding: 1.6rem 2rem;
+        & + .user-bookmark-send-list__field {
+            border-top: 1px solid var(--border-subtle);
+        }
+    }
+    &__label {
+        display: block;
+        margin-bottom: 0.6rem;
+        color: var(--fg-heading);
+        font-weight: 600;
+    }
+    &__question {
+        margin-bottom: 0.6rem;
+        color: var(--fg-secondary);
+        font-size: var(--font-size-body-small);
+    }
+    &__messages {
+        display: block;
+        margin-top: 0.6rem;
+        margin-bottom: 0;
+        padding-left: 0;
+        list-style: none;
+    }
+    &__message {
+        font-size: var(--font-size-caption);
+        &.-danger {
+            color: var(--fg-danger);
+        }
+    }
+
+    /* ACTIONS */
+    &__panel-foot {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        padding: 1.4rem 2rem;
+        background-color: var(--bg-subtle);
+        border-top: 1px solid var(--border-default);
+        border-radius: 0 0 var(--radius-container) var(--radius-container);
     }
 }
 
@@ -39,4 +88,11 @@
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
+    .user-bookmark-send-list {
+        &__field,
+        &__panel-foot {
+            padding-left: 1.4rem;
+            padding-right: 1.4rem;
+        }
+    }
 }

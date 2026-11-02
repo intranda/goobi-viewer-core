@@ -1,13 +1,9 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
     template="/resources/themes/#{navigationHelper.theme}/template.html">
     <composite:interface>
         <composite:attribute
@@ -68,7 +64,6 @@
                                                             value="#{val.getDisplayValue(navigationHelper.locale)}"
                                                             escape="false" />
                                                     </span>
-
                                                     <div class="clearfix" />
                                                 </ui:repeat>
                                             </dd>
@@ -83,7 +78,6 @@
                                                             value="#{val.getDisplayValue(navigationHelper.locale)}"
                                                             escape="false" />
                                                     </span>
-
                                                     <div class="clearfix" />
                                                 </ui:repeat>
                                             </dd>
@@ -125,7 +119,6 @@
                 <div class="tpl-overviewpage-legacy__description-title">
                     <h1>#{msg.viewOverviewDescription}</h1>
                 </div>
-
                 <div class="tpl-overviewpage-legacy__description-text">
                     <h:outputText
                         escape="false"
@@ -138,7 +131,6 @@
                 <div class="tpl-overviewpage-legacy__literature-title">
                     <h1>#{msg.viewOverviewPublication_publication}</h1>
                 </div>
-
                 <div class="tpl-overviewpage-legacy__literature-text">
                     <h:outputText
                         escape="false"
@@ -157,18 +149,19 @@
             </ui:fragment>
         </div>
 
+        <!-- NORMDATA SCRIPT -->
         <script type="text/javascript">
             var normdataConfig = {
-    path: '#{request.contextPath}',
-    lang: {
-        popoverTitle: '#{msg.normdataPopoverTitle}',
-        popoverClose: '#{msg.normdataPopoverClose}',
-        showNormdata: '#{msg.normdataExpand}',
-    },
-    elemWrapper: $('#metadataElementWrapper'),
-};
+                path: '#{request.contextPath}',
+                lang: {
+                    popoverTitle: '#{msg.normdataPopoverTitle}',
+                    popoverClose: '#{msg.normdataPopoverClose}',
+                    showNormdata: '#{msg.normdataExpand}',
+                },
+                elemWrapper: $('#metadataElementWrapper'),
+            };
 
-viewerJS.normdata.init(normdataConfig);
+            viewerJS.normdata.init(normdataConfig);
         </script>
     </composite:implementation>
 </ui:composition>

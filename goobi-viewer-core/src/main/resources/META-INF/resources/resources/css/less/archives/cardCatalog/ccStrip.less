@@ -1,0 +1,111 @@
+/* ==============================================================
+   Card Catalog: Strip
+   style declarations for archiveCardCatalogView.xhtml (thumbnail strip, thumbnails, strip errors)
+   ==============================================================*/
+
+.archives-cardcatalog {
+    &__strip {
+        position: relative;
+        display: flex;
+        flex: 0 0 170px;
+        flex-direction: column;
+        gap: 8px;
+        padding: 8px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        overflow-anchor: none;
+        overscroll-behavior: contain;
+        border-inline-end: 1px solid var(--border-strong);
+    }
+
+    &__strip-thumb {
+        flex: 0 0 auto;
+        padding: 0;
+        color: inherit;
+        text-align: center;
+        background: none;
+        border: 2px solid transparent;
+        border-radius: var(--radius-container-small);
+        overflow: hidden;
+        cursor: pointer;
+
+        &:hover,
+        &:active,
+        &:focus-visible {
+            color: var(--fg-default);
+            border-color: var(--border-brand);
+        }
+
+        &.-current {
+            border-color: var(--border-brand);
+        }
+
+        img {
+            display: block;
+        }
+
+        img,
+        .archives-cardcatalog__no-image {
+            width: 100%;
+            height: auto;
+            max-height: 180px;
+            aspect-ratio: var(--_archives-cardcatalog-card-ratio, 3 / 2);
+            object-fit: contain;
+            background: var(--bg-subtle);
+        }
+    }
+
+    &__strip-position {
+        display: block;
+        color: var(--fg-secondary);
+        font-size: var(--font-size-caption);
+    }
+
+    &__strip-error {
+        flex: 0 0 100%;
+        padding: 8px;
+        color: var(--fg-default);
+        font-size: var(--font-size-caption);
+        background: var(--bg-surface);
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius-container-small);
+    }
+
+    &__strip-retry {
+        display: block;
+        margin-top: 6px;
+        padding: 4px 8px;
+        color: var(--fg-brand);
+        background: var(--bg-surface);
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius-button);
+        cursor: pointer;
+
+        &:hover,
+        &:active,
+        &:focus-visible {
+            color: var(--fg-brand);
+            border-color: var(--border-brand);
+        }
+    }
+}
+
+@media screen and (max-width: @mediumBreakpoint) {
+    .archives-cardcatalog {
+        &__strip {
+            flex-basis: auto;
+            flex-direction: row;
+            overflow-x: auto;
+            overflow-y: hidden;
+            border-bottom: 1px solid var(--border-strong);
+            border-inline-end: 0;
+        }
+
+        &__strip-thumb img,
+        &__strip-thumb .archives-cardcatalog__no-image {
+            width: auto;
+            height: 100px;
+            max-height: none;
+        }
+    }
+}

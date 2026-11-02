@@ -3,11 +3,8 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-    xmlns:templateComponent="http://xmlns.jcp.org/jsf/composite/themes/ubkassel/components">
-    <!-- interface options -->
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    <!-- INTERFACE -->
     <composite:interface>
         <composite:attribute
             name="normal"
@@ -23,10 +20,10 @@
             default="1.2em" />
     </composite:interface>
 
-    <!-- component content -->
+    <!-- CONTENT -->
     <composite:implementation>
-        <!-- barrierfree style declarations -->
-        <!-- font size -->
+        <!-- ACCESSIBILITY STYLES -->
+        <!-- FONT SIZE -->
         <h:panelGroup rendered="#{navigationHelper.statusMap['barrierFreeFontNormal'] == 'true'}">
             <style>body { font-size: #{cc.attrs.normal}; }</style>
         </h:panelGroup>
@@ -37,11 +34,12 @@
             <style>body { font-size: #{cc.attrs.double}; }</style>
         </h:panelGroup>
 
+        <!-- FONT SIZE FORM -->
         <h:form
             id="barrierFreeForm"
             prependId="false">
             <ul>
-                <!-- normal font size -->
+                <!-- NORMAL FONT SIZE -->
                 <li class="barrierfree-one #{navigationHelper.statusMap['barrierFreeFontNormal'] == 'true' ? 'active' : ''}">
                     <h:commandLink value="A">
                         <f:setPropertyActionListener
@@ -59,7 +57,7 @@
                     </h:commandLink>
                 </li>
 
-                <!-- one half of font size -->
+                <!-- ONE AND A HALF FONT SIZE -->
                 <li class="barrierfree-onehalf #{navigationHelper.statusMap['barrierFreeFontOnehalf'] == 'true' ? 'active' : ''}">
                     <h:commandLink value="A">
                         <f:setPropertyActionListener
@@ -77,7 +75,7 @@
                     </h:commandLink>
                 </li>
 
-                <!-- double font size -->
+                <!-- DOUBLE FONT SIZE -->
                 <li class="barrierfree-two #{navigationHelper.statusMap['barrierFreeFontDouble'] == 'true' ? 'active' : ''}">
                     <h:commandLink value="A">
                         <f:setPropertyActionListener

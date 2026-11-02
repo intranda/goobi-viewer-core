@@ -3,9 +3,8 @@
    style declarations for widget_searchField.xhtml
    ==============================================================*/
 /* WIDGET SEARCHFIELD */
-/* BLOCK */
 .widget-searchfield {
-    /* ELEMENT */
+    /* FORM GROUP */
     .form-group {
         width: 100%;
         margin: 0;
@@ -17,40 +16,25 @@
                 flex: 1 1 auto;
                 input {
                     width: 100%;
-                    &.focused {
-                        opacity: 1;
-                    }
                 }
-            }
-            input {
             }
         }
     }
+    /* INPUT GROUP ADDON */
     .input-group-addon {
         padding: 0;
         border-radius: 0;
-        input {
-            width: 30px;
-            height: 30px;
-            margin: 0;
-            padding: 0;
-            border: none;
-            background-image: url('@{images}/icons/icon-search.svg');
-            background-repeat: no-repeat;
-            background-position: center center;
-            background-size: 20px;
-            background-color: transparent;
-        }
         button {
             margin: 0;
             padding: 5px 15px;
-            color: @white;
+            color: var(--fg-on-inverse);
             border: none;
             display: flex;
             align-items: center;
             justify-content: center;
         }
     }
+    /* SUBMIT */
     &__submit {
         min-width: 32px;
         display: flex;
@@ -58,18 +42,7 @@
     }
 }
 
-/* CHROME POSITIONING HACK */
-@media screen and (-webkit-min-device-pixel-ratio: 0) {
-    .widget-searchfield {
-        .input-group-addon {
-            input {
-                position: relative;
-                top: 1px;
-            }
-        }
-    }
-}
-
+/* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
 }
 

@@ -40,6 +40,8 @@ var viewerJS = (function (viewer) {
                 console.log('Initializing: viewerJS.changeLocalMenu.init');
             }
 
+            this.initLocalToggle();
+
             $('.change-local-menu__button').each(function () {
                 var $button = $(this);
                 var $list = $('#' + $button.attr('aria-controls'));
@@ -127,6 +129,33 @@ var viewerJS = (function (viewer) {
                         $button.has(e.target).length === 0
                     ) {
                         closeMenu(false);
+                    }
+                });
+            });
+        },
+
+        /**
+         * Toggles the plain language list (composite component changeLocal) via a
+         * [data-toggle="local"] button, e.g. in the crowdsourcing header. The list
+         * is rendered next to the button inside the same wrapper and hidden by CSS.
+         */
+        initLocalToggle: function () {
+            var $buttons = $('[data-toggle="local"]');
+
+            $buttons.on('click', function (event) {
+                event.stopPropagation();
+                var $button = $(this);
+                $button.toggleClass('in');
+                $button.parent().find('.change-local').fadeToggle('fast');
+            });
+
+            // close the list by clicking anywhere else
+            $(document).on('click', function (event) {
+                $buttons.each(function () {
+                    var $wrapper = $(this).parent();
+                    if ($wrapper.has(event.target).length === 0) {
+                        $(this).removeClass('in');
+                        $wrapper.find('.change-local').hide();
                     }
                 });
             });

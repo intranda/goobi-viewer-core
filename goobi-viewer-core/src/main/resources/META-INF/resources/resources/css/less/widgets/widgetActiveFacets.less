@@ -3,9 +3,8 @@
    style declarations for searchFacets/activeFacetsBadges.xhtml
    ==============================================================*/
 
-/* BLOCK */
 .active-facets-badges {
-    /* ELEMENTS */
+    /* LIST */
     &__list {
         display: flex;
         flex-wrap: wrap;
@@ -34,13 +33,13 @@
         height: 28px;
         padding-block: 0;
         padding-inline: 12px 6px;
-        font-size: @fontMedium;
+        font-size: var(--font-size-body-small);
         font-weight: 500;
         line-height: normal;
-        color: var(--active-facets-badge-color);
-        background: var(--active-facets-badge-background);
-        border: 1px solid var(--active-facets-badge-border);
-        border-radius: var(--active-facets-badge-radius);
+        color: var(--_afb-color, var(--fg-on-brand));
+        background: var(--_afb-bg, var(--bg-brand));
+        border: 1px solid var(--_afb-border, transparent);
+        border-radius: var(--_afb-radius, var(--radius-button));
         text-decoration: none;
         transition:
             border-color 0.1s ease-in,
@@ -48,15 +47,15 @@
 
         &:hover,
         &:focus {
-            --active-facets-badge-background: var(--active-facets-badge-background-hover);
-            color: var(--active-facets-badge-color);
-            border-color: var(--active-facets-badge-color);
-            box-shadow: var(--active-facets-badge-shadow-hover);
+            --_afb-bg: var(--_afb-bg-hover, var(--bg-brand-hover));
+            color: var(--_afb-color, var(--fg-on-brand));
+            border-color: var(--_afb-color, var(--fg-on-brand));
+            box-shadow: 0 1px 3px rgb(from var(--shadow-color) r g b / 12%);
             text-decoration: none;
 
             .active-facets-badges__badge-remove {
-                color: var(--active-facets-badge-contrast);
-                background: var(--active-facets-badge-color);
+                color: var(--_afb-contrast, var(--fg-brand));
+                background: var(--_afb-color, var(--fg-on-brand));
             }
         }
 
@@ -66,6 +65,7 @@
         }
     }
 
+    /* BADGE */
     &__badge-label {
         overflow: hidden;
         text-overflow: ellipsis;
@@ -76,7 +76,7 @@
         flex: 0 0 auto;
         font-weight: 400;
         white-space: nowrap;
-        color: var(--active-facets-badge-muted);
+        color: var(--_afb-muted, rgb(from var(--fg-on-brand) r g b / 85%));
     }
 
     &__badge-remove {
@@ -86,7 +86,7 @@
         flex: 0 0 auto;
         width: 20px;
         height: 20px;
-        color: var(--active-facets-badge-muted);
+        color: var(--_afb-muted, rgb(from var(--fg-on-brand) r g b / 85%));
         border-radius: 50%;
         transition:
             background-color 0.1s ease-in,
@@ -102,6 +102,7 @@
 
 /* WIDGET EMBEDDING */
 .widget-active-facets {
+    /* TOPBAR */
     &__topbar {
         display: flex;
         align-items: center;
@@ -109,11 +110,12 @@
         gap: 10px;
     }
 
+    /* RESET */
     &__reset {
         display: inline-flex;
         align-items: center;
         flex: 0 0 auto;
-        color: var(--widget-icon-color-topbar);
+        color: var(--fg-brand);
         text-decoration: none;
 
         .icon-text {
@@ -122,14 +124,8 @@
 
         &:hover,
         &:focus {
-            color: var(--widget-icon-color-topbar);
+            color: var(--fg-brand);
             text-decoration: none;
-
-            .widget-active-facets__reset-label {
-                max-width: 200px;
-                margin-inline-start: 4px;
-                opacity: 1;
-            }
         }
     }
 
@@ -137,18 +133,6 @@
         display: block;
         width: 16px;
         height: 16px;
-    }
-
-    &__reset-label {
-        max-width: 0;
-        overflow: hidden;
-        white-space: nowrap;
-        font-size: @fontSmall;
-        opacity: 0;
-        transition:
-            max-width 0.2s ease-in-out,
-            opacity 0.15s ease-in-out,
-            margin 0.2s ease-in-out;
     }
 }
 
@@ -162,12 +146,6 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-    .widget-active-facets__reset:hover .widget-active-facets__reset-label,
-    .widget-active-facets__reset:focus .widget-active-facets__reset-label {
-        max-width: 0;
-        margin-inline-start: 0;
-        opacity: 0;
-    }
 }
 
 /* BREAKPOINT FOR SMARTPHONES */

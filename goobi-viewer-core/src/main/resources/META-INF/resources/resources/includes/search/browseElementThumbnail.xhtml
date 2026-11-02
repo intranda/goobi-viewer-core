@@ -1,14 +1,8 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
     <ui:param
         name="browseElement"
         value="#{browseElement != null ? browseElement : null}" />
@@ -56,6 +50,17 @@
                         alt="Thumbnail" />
                 </div>
             </h:outputLink>
+        </figure>
+    </ui:fragment>
+
+    <!-- PLACEHOLDER: NO IMAGE EXISTS (ACCESS DENIED IS HANDLED ABOVE VIA data-viewer-access-denied-url) -->
+    <ui:fragment rendered="#{!browseElement.showThumbnail}">
+        <figure class="search-list__hit-thumbnail search-list__hit-thumbnail--placeholder">
+            <h:outputLink
+                value="#{navigationHelper.applicationUrl}#{browseElement.url}"
+                title="#{browseElement.label}"
+                tabindex="-1"
+                aria-hidden="true" />
         </figure>
     </ui:fragment>
 </ui:composition>

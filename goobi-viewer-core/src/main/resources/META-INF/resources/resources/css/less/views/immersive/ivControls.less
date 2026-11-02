@@ -4,6 +4,7 @@
    ==============================================================*/
 
 .immersive {
+    /* TOOLBAR */
     &__toolbar {
         position: absolute;
         z-index: 100;
@@ -12,31 +13,31 @@
         align-items: center;
         gap: 2px;
         padding: 4px;
+    }
 
-        &-left {
-            top: 0;
-            bottom: 0;
-            left: 0;
+    &__toolbar-left {
+        top: 0;
+        bottom: 0;
+        left: 0;
+        gap: 6px;
+        width: @immersive-rail-width;
+        padding: 10px 0 0;
+        border-right: 1px solid var(--border-default);
+        background-color: var(--bg-elevated);
+
+        .immersive__toolbar-group {
             gap: 6px;
-            width: @immersive-rail-width;
-            padding: 10px 0 0;
-            border-right: 1px solid @immersive-divider;
-            background-color: @immersive-rail-bg;
 
-            .immersive__toolbar-group {
-                gap: 6px;
-
-                & + .immersive__toolbar-group {
-                    padding-top: 6px;
-                }
+            & + .immersive__toolbar-group {
+                padding-top: 6px;
             }
         }
+    }
 
-        &-right {
-            top: @immersive-edge-inset;
-            right: @immersive-edge-inset;
-            .mx-immersive-floating();
-        }
+    &__toolbar-right {
+        top: @immersive-edge-inset;
+        right: @immersive-edge-inset;
+        .mx-immersive-floating();
     }
 
     &__toolbar-group {
@@ -48,7 +49,7 @@
 
         & + & {
             padding-top: 2px;
-            border-top: 1px solid @immersive-divider;
+            border-top: 1px solid var(--border-default);
         }
     }
 
@@ -56,6 +57,7 @@
         flex: 1;
     }
 
+    /* BACK */
     &__back {
         text-decoration: none;
 
@@ -64,19 +66,20 @@
         }
     }
 
+    /* TOOL BUTTONS */
     &__tool-btn {
         .mx-immersive-icon-button();
     }
 
     &__tool-btn.-active,
     &__tool-btn[aria-pressed='true'] {
-        background-color: ~'rgba(var(--immersive-accent-rgb), 0.16)';
-        color: @immersive-accent;
-        box-shadow: inset 0 0 0 2px @immersive-accent;
+        background-color: rgb(from var(--fg-brand) r g b / 0.16);
+        color: var(--fg-brand);
+        box-shadow: inset 0 0 0 2px var(--fg-brand);
 
         &:hover {
-            color: @immersive-accent;
-            background-color: ~'rgba(var(--immersive-accent-rgb), 0.24)';
+            color: var(--fg-brand);
+            background-color: rgb(from var(--fg-brand) r g b / 0.24);
         }
     }
 
@@ -86,38 +89,8 @@
 
         &:hover {
             background-color: transparent;
-            color: @immersive-chrome-fg;
+            color: var(--fg-default);
         }
-    }
-
-    &__btn-toc {
-    }
-
-    &__btn-fulltext {
-    }
-
-    &__btn-search {
-    }
-
-    &__btn-metadata {
-    }
-
-    &__btn-download {
-    }
-
-    &__btn-share {
-    }
-
-    &__btn-cite {
-    }
-
-    &__btn-double-page {
-    }
-
-    &__btn-overview {
-    }
-
-    &__btn-fullscreen {
     }
 
     &__tool-icon {

@@ -43,6 +43,7 @@ import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.PhysicalResource;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -316,26 +317,53 @@ public final class MetadataTools {
     }
 
     /**
-     * generateRIS.
+     * generateRIS. For anchors, the number of volumes (NV) is the live count of the anchor's volumes rather than the stored NUMVOLUMES field, so it
+     * is current even if the anchor has not been re-indexed since a volume was added or removed.
      *
      * @param se structural element to generate RIS output for.
      * @return the RIS-formatted bibliographic reference string for the given structure element, or null if se is null
+     * @should use live volume count for anchors
      */
     public static String generateRIS(StructElement se) {
         if (se == null) {
             return null;
         }
 
-        return generateRIS(se.getDocStructType(), se.getMetadataFields());
+        Long numVolumes = null;
+        if (se.isAnchor()) {
+            try {
+                numVolumes = SearchHelper.getVolumeCount(se.getPi());
+            } catch (PresentationException | IndexUnreachableException e) {
+                logger.warn("Could not count volumes for anchor '{}', omitting NV from RIS export: {}", se.getPi(), e.getMessage());
+            }
+        }
+
+        return generateRIS(se.getDocStructType(), se.getMetadataFields(), numVolumes);
     }
 
     /**
-     * 
+     * Generates RIS without a number of volumes (NV) entry.
+     *
      * @param docstructType logical document structure type (e.g. "monograph", "article")
      * @param metadataFields map of metadata field names to their values
      * @return Generated RIS string; null of no docstructType given
      */
     public static String generateRIS(String docstructType, Map<String, List<String>> metadataFields) {
+        return generateRIS(docstructType, metadataFields, null);
+    }
+
+    /**
+     * Generates RIS from the given metadata fields. The stored NUMVOLUMES field is ignored; the number of volumes (NV) is taken from
+     * <code>numVolumes</code> instead, which callers compute live for anchors.
+     *
+     * @param docstructType logical document structure type (e.g. "monograph", "article")
+     * @param metadataFields map of metadata field names to their values
+     * @param numVolumes number of volumes to export as NV; null to omit NV
+     * @return Generated RIS string; null of no docstructType given
+     * @should ignore stored NUMVOLUMES field
+     * @should add NV entry for given volume count
+     */
+    public static String generateRIS(String docstructType, Map<String, List<String>> metadataFields, Long numVolumes) {
         if (docstructType == null) {
             return null;
         }
@@ -398,9 +426,6 @@ public final class MetadataTools {
                 case "NUMPAGES":
                     risTag = "SP";
                     break;
-                case "NUMVOLUMES":
-                    risTag = "NV";
-                    break;
                 case "PI_TOPSTRUCT":
                     risTag = "CN";
                     break;
@@ -427,6 +452,9 @@ public final class MetadataTools {
 
         }
 
+        if (numVolumes != null) {
+            result.append("NV  - ").append(numVolumes).append("\r\n");
+        }
         result.append("ER  - \r\n");
 
         return result.toString();

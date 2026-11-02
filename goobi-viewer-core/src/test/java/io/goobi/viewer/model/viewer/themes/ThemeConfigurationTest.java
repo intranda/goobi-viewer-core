@@ -75,6 +75,8 @@ class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
         ThemeConfiguration theme = new ThemeConfiguration(THEME_NAME);
         theme.setLabel(THEME_LABEL);
         theme.getLogo().setMediaItem(logoItem);
+        theme.getDarkLogo().setMediaItem(iconItem);
+        theme.getDarkFullscreenLogo().setMediaItem(logoItem);
         theme.getIcon().setMediaItem(iconItem);
         theme.setStyleSheet(STYLESHEET);
         theme.getSocialMediaLink(SocialMediaService.facebook).setLinkUrl(FACEBOOK_LINK);
@@ -84,6 +86,8 @@ class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
         assertNotNull(DataManager.getInstance().getDao().addTheme(theme));
         ThemeConfiguration loadedTheme = DataManager.getInstance().getDao().getTheme(THEME_NAME);
         assertNotNull(loadedTheme);
+        assertEquals(iconItem, loadedTheme.getDarkLogo().getMediaItem());
+        assertEquals(logoItem, loadedTheme.getDarkFullscreenLogo().getMediaItem());
 
         assertEquals(THEME_NAME, loadedTheme.getName());
         assertEquals(THEME_LABEL, loadedTheme.getLabel());
@@ -121,6 +125,9 @@ class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
         assertEquals(null, loadedTheme.getSocialMediaLink(SocialMediaService.twitter).getLinkUrl());
 
         ThemeConfiguration editableTheme = new ThemeConfiguration(loadedTheme);
+        assertNotNull(editableTheme.getDarkLogo());
+        assertFalse(editableTheme.getDarkLogo().hasMediaItem());
+        editableTheme.getDarkLogo().setMediaItem(iconItem);
         editableTheme.setLabel(THEME_LABEL_ALT);
         editableTheme.getSocialMediaLink(SocialMediaService.facebook).setLinkUrl(FACEBOOK_LINK_ALT);
         editableTheme.getSocialMediaLink(SocialMediaService.twitter).setLinkUrl(TWTTER_LINK);
@@ -135,6 +142,8 @@ class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
         assertEquals(TWTTER_LINK, loadedTheme2.getSocialMediaLink(SocialMediaService.twitter).getLinkUrl());
         assertEquals(logoItem, loadedTheme2.getLogo().getMediaItem());
         assertEquals(iconItem, loadedTheme2.getIcon().getMediaItem());
+        assertEquals(iconItem, loadedTheme2.getDarkLogo().getMediaItem());
+        assertFalse(loadedTheme2.getDarkFullscreenLogo().hasMediaItem());
 
         DataManager.getInstance().getDao().deleteTheme(theme);
 
@@ -144,6 +153,25 @@ class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
      * @verifies remove theme after deletion
      * @see IDAO#deleteTheme
      */
+    /**
+     * @verifies create empty dark logo holders and copy them
+     * @see ThemeConfiguration#ThemeConfiguration(ThemeConfiguration)
+     */
+    @Test
+    void constructor_shouldProvideAndCopyDarkLogos() {
+        ThemeConfiguration theme = new ThemeConfiguration(THEME_NAME);
+        assertNotNull(theme.getDarkLogo());
+        assertNotNull(theme.getDarkFullscreenLogo());
+        assertFalse(theme.getDarkLogo().hasMediaItem());
+        theme.getDarkLogo().setMediaItem(logoItem);
+        theme.getDarkFullscreenLogo().setMediaItem(iconItem);
+
+        ThemeConfiguration copy = new ThemeConfiguration(theme);
+        assertEquals(logoItem, copy.getDarkLogo().getMediaItem());
+        assertEquals(iconItem, copy.getDarkFullscreenLogo().getMediaItem());
+        assertNotSame(theme.getDarkLogo(), copy.getDarkLogo());
+    }
+
     @Test
     void deleteTheme_shouldRemoveThemeAfterDeletion() throws DAOException {
         ThemeConfiguration theme = new ThemeConfiguration(THEME_NAME);

@@ -53,7 +53,7 @@
                     h3 {
                         margin: 0;
                         text-overflow: ellipsis;
-                        color: @white;
+                        color: var(--fg-on-inverse);
                         overflow: hidden;
                     }
                 }
@@ -93,7 +93,7 @@
                 width: 100%;
                 p {
                     margin: 7px 0;
-                    font-size: @fontNormal;
+                    font-size: var(--font-size-body);
                     a {
                         display: block;
                         margin: 2% 0;
@@ -115,7 +115,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgb(from var(--shadow-color) r g b / 50%);
     z-index: 999;
     .rcg-lightbox-body {
         position: absolute;
@@ -124,8 +124,9 @@
         width: 80%;
         max-width: 960px;
         max-height: 90%;
-        border: 10px solid @white;
-        background-color: @white;
+        border: 10px solid var(--bg-surface);
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         overflow: hidden;
         z-index: 999;
         .rcg-lightbox-close {
@@ -136,9 +137,9 @@
             height: 28px;
             line-height: 26px;
             text-align: center;
-            border: 2px solid @darkgray;
+            border: 2px solid var(--border-contrast);
             border-radius: 50%;
-            background-color: @white;
+            background-color: var(--bg-surface);
             cursor: pointer;
             .icon {
                 top: 0;
@@ -160,7 +161,7 @@
             left: 0;
             min-height: 50px;
             padding: 14px;
-            background-color: @white;
+            background-color: var(--bg-surface);
             p {
                 margin: 0;
             }

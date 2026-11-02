@@ -25,6 +25,13 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_USER_AVATAR_IMAGE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_USER_AVATAR_IMAGE_IIIF;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Optional;
+
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -40,6 +47,8 @@ import io.goobi.viewer.model.security.user.User;
  */
 public class LocalUserAvatar implements UserAvatar {
 
+    private static final Logger logger = LogManager.getLogger(LocalUserAvatar.class);
+
     private final Long userId;
     private final Long updated;
 
@@ -49,33 +58,50 @@ public class LocalUserAvatar implements UserAvatar {
 
     }
 
+    /**
+     * @should return avatar api url if image uploaded
+     * @should return default avatar url if no image uploaded
+     */
     @Override
     public String getIconUrl(int size, HttpServletRequest request) {
+        // the REST path serves an uploaded file only; without one it answers 404 and the browser
+        // renders a broken image, so show the placeholder the "default" option uses
+        Optional<Path> avatarFile = getAvatarFile();
+        if (avatarFile.isEmpty()) {
+            return new DefaultUserAvatar().getIconUrl(size, request);
+        }
+
         return DataManager.getInstance()
                 .getRestApiManager()
                 .getDataApiManager()
-                .map(urls -> getImageUrl(urls, this.userId, size))
-                .orElse("");
-
+                .map(urls -> getImageUrl(urls, size, getDisplayFormat(avatarFile.get())))
+                .filter(StringUtils::isNotEmpty)
+                .orElseGet(() -> new DefaultUserAvatar().getIconUrl(size, request));
     }
 
-    private String getImageUrl(AbstractApiUrlManager urls, Long userId, int size) {
-        try {
-            String sizeString = "!" + size + "," + size;
-            String format = UserAvatarResource.getAvatarFileSuffix(userId);
-            String displayFormat = format;
-            ImageFileFormat fileFormat = ImageFileFormat.getImageFileFormatFromFileExtension(format);
-            if (fileFormat != null) {
-                displayFormat = ImageFileFormat.getMatchingTargetFormat(fileFormat).getFileExtension();                
-            }
-            
-            return urls.path(USERS_USER_AVATAR_IMAGE, USERS_USER_AVATAR_IMAGE_IIIF)
-                    .params(userId, Region.FULL_IMAGE, sizeString, 0, "default", displayFormat)
-                    .query("updated", this.updated)
-                    //                    .query("timestamp", System.currentTimeMillis())
-                    .build();
-        } catch (IOException e) {
-            return "";
+    private Optional<Path> getAvatarFile() {
+        if (this.userId == null) {
+            return Optional.empty();
         }
+        try {
+            return UserAvatarResource.getUserAvatarFile(this.userId);
+        } catch (IOException e) {
+            logger.error("Error reading local avatar file of user {}: {}", this.userId, e.toString());
+            return Optional.empty();
+        }
+    }
+
+    private static String getDisplayFormat(Path avatarFile) {
+        String suffix = FilenameUtils.getExtension(avatarFile.getFileName().toString());
+        ImageFileFormat fileFormat = ImageFileFormat.getImageFileFormatFromFileExtension(suffix);
+
+        return fileFormat != null ? ImageFileFormat.getMatchingTargetFormat(fileFormat).getFileExtension() : suffix;
+    }
+
+    private String getImageUrl(AbstractApiUrlManager urls, int size, String displayFormat) {
+        return urls.path(USERS_USER_AVATAR_IMAGE, USERS_USER_AVATAR_IMAGE_IIIF)
+                .params(this.userId, Region.FULL_IMAGE, "!" + size + "," + size, 0, "default", displayFormat)
+                .query("updated", this.updated)
+                .build();
     }
 }

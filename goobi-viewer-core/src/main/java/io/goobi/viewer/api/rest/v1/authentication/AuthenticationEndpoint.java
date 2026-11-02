@@ -28,7 +28,6 @@ import java.net.URISyntaxException;
 import java.security.PublicKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,6 +59,7 @@ import io.goobi.viewer.api.rest.model.LoginRequest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SecurityManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -72,7 +72,6 @@ import io.goobi.viewer.model.security.authentication.HttpHeaderProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserToken;
-import io.goobi.viewer.controller.DateTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -430,10 +429,11 @@ public class AuthenticationEndpoint {
                     + " the login is rejected with 403") @QueryParam("error") String error,
             @Parameter(description = "Authorization code issued by the OpenID provider; exchanged for an ID token. Either code or"
                     + " id_token must be present") @QueryParam("code") String authCode,
-            @Parameter(description = "ID token passed directly by the provider (implicit flow); used instead of exchanging a code")
-            @QueryParam("id_token") String accessToken,
+            @Parameter(
+                    description = "ID token passed directly by the provider (implicit flow); used instead of exchanging a code") @QueryParam("id_token") String accessToken,
             @Parameter(description = "State value from the authorization request; must match the state registered for the"
-                    + " OpenID provider that started the login") @QueryParam("state") String state) throws IOException {
+                    + " OpenID provider that started the login") @QueryParam("state") String state)
+            throws IOException {
         logger.trace("openIdLoginGET");
         //        for (String key : servletRequest.getParameterMap().keySet()) {
         //            logger.trace("{}:{}", key, servletRequest.getParameterMap().get(key));
@@ -547,7 +547,7 @@ public class AuthenticationEndpoint {
             }
 
             // now check if the nonce is the same as in the old session
-            String sessionNonce = (String) servletRequest.getSession().getAttribute("openIDNonce");
+            String sessionNonce = (String) Optional.ofNullable(servletRequest.getSession(false)).map(s -> s.getAttribute("openIDNonce")).orElse(null);
             String tokenNonce = jwt.getClaim("nonce").asString();
             if (sessionNonce == null || tokenNonce == null || !sessionNonce.equals(tokenNonce)) {
                 logger.error("nonce missing or does not match. Not logging user in");
@@ -588,8 +588,8 @@ public class AuthenticationEndpoint {
      * @param token encoded JWT ID token to verify
      * @param jwksUri URL of the JWKS endpoint for public key retrieval
      * @param issuer expected issuer claim value
-     * @param clientId expected audience claim value (this relying party's client ID); must be pinned inside the verifier
-     *            per RFC 7519 §4.1.3 so cross-RP token replay is blocked and array-valued aud claims are handled correctly
+     * @param clientId expected audience claim value (this relying party's client ID); must be pinned inside the verifier per RFC 7519 §4.1.3 so
+     *            cross-RP token replay is blocked and array-valued aud claims are handled correctly
      * @return {@link DecodedJWT}
      */
     static DecodedJWT verifyOpenIdToken(String token, String jwksUri, String issuer, String clientId) {
@@ -666,7 +666,7 @@ public class AuthenticationEndpoint {
      * @return true if allowed; false otherwise
      */
     boolean isRedirectUrlAllowed(String redirectUrl) {
-        Optional<NavigationHelper> nh = BeanUtils.getBeanFromSession(servletRequest.getSession(), "navigationHelper", NavigationHelper.class);
+        Optional<NavigationHelper> nh = BeanUtils.getBeanFromSession(servletRequest.getSession(false), "navigationHelper", NavigationHelper.class);
         String applicationUrl = nh.map(NavigationHelper::getApplicationUrl).orElse(null);
         return NetTools.isRedirectUrlAllowed(redirectUrl, applicationUrl);
     }

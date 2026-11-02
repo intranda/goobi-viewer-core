@@ -21,7 +21,6 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +49,7 @@ class ArchiveMetadataBeanTest {
         SolrEADParser parser = new SolrEADParser();
         parser.updateAssociatedRecordMap();
         SolrDocument doc = new SolrDocument(Map.of("MD_TITLE", "Mein Titel", SolrConstants.IDDOC, "0"));
-        ArchiveEntry entry = parser.loadNode(1, 0, doc, Collections.emptySet(), false);
+        ArchiveEntry entry = parser.loadNode(1, 0, doc, false);
         MetadataParameter param = new MetadataParameter();
         param.setKey("MD_TITLE");
         param.setType(MetadataParameterType.FIELD);

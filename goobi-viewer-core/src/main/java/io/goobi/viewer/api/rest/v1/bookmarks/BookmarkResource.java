@@ -118,7 +118,7 @@ public class BookmarkResource {
         if (currentUser != null) {
             builder = new UserBookmarkResourceBuilder(currentUser);
         } else {
-            HttpSession session = servletRequest.getSession();
+            HttpSession session = servletRequest.getSession(false);
             builder = new SessionBookmarkResourceBuilder(session);
         }
     }
@@ -133,7 +133,7 @@ public class BookmarkResource {
             logger.warn("Error getting user from authorization token", e);
         }
         if (user == null) {
-            UserBean bean = BeanUtils.getUserBeanFromSession(request.getSession());
+            UserBean bean = BeanUtils.getUserBeanFromSession(request.getSession(false));
             if (bean != null) {
                 user = bean.getUser();
             }
@@ -144,10 +144,10 @@ public class BookmarkResource {
     /**
      * Returns the bookmark lists of the current user, or the single session list of an anonymous request.
      *
-     * <p>Which lists exist depends on the request: for a logged-in user all persisted lists are returned, for an
-     * anonymous request a single list is created in the HTTP session on first access. That session list has neither an
-     * id nor a share key, so it cannot be addressed or shared like a stored list; if it is not empty when the same
-     * session logs in, it is taken over into that account as a regular bookmark list.
+     * <p>
+     * Which lists exist depends on the request: for a logged-in user all persisted lists are returned, for an anonymous request a single list is
+     * created in the HTTP session on first access. That session list has neither an id nor a share key, so it cannot be addressed or shared like a
+     * stored list; if it is not empty when the same session logs in, it is taken over into that account as a regular bookmark list.
      *
      * @return the bookmark lists visible to the current request
      * @throws DAOException if the lists of a logged-in user cannot be read from the database
@@ -170,9 +170,10 @@ public class BookmarkResource {
     /**
      * Creates a new bookmark list for the current user.
      *
-     * <p>Anonymous session requests always fail with 409, since a session can hold only a single bookmark list.
-     * Logged-in users get a new persisted list; if no name is given in the request body, one is generated
-     * automatically, and a name already used by one of the user's lists is rejected with 400.
+     * <p>
+     * Anonymous session requests always fail with 409, since a session can hold only a single bookmark list. Logged-in users get a new persisted
+     * list; if no name is given in the request body, one is generated automatically, and a name already used by one of the user's lists is rejected
+     * with 400.
      *
      * @param dto the bookmark list to create; only the optional {@code name} field is used
      * @return the created bookmark list, with a {@code Location} header pointing to it if it has an id
@@ -219,14 +220,14 @@ public class BookmarkResource {
     /**
      * Returns the bookmark list with the given id.
      *
-     * <p>For a logged-in user, the list is returned if it is public or owned by the requesting user; a private
-     * list owned by someone else results in 403, a non-existent id in 404. For an anonymous request the id is
-     * ignored and the session's single bookmark list is returned, creating it if needed.
+     * <p>
+     * For a logged-in user, the list is returned if it is public or owned by the requesting user; a private list owned by someone else results in
+     * 403, a non-existent id in 404. For an anonymous request the id is ignored and the session's single bookmark list is returned, creating it if
+     * needed.
      *
      * @param id the id of the bookmark list
      * @return the bookmark list with the given id
-     * @throws RestApiException if the bookmark list does not exist, or exists but is neither public nor owned by
-     *     the current user
+     * @throws RestApiException if the bookmark list does not exist, or exists but is neither public nor owned by the current user
      */
     @GET
     @Path(USERS_BOOKMARKS_LIST)
@@ -255,14 +256,13 @@ public class BookmarkResource {
     /**
      * Applies a partial update to the bookmark list with the given id.
      *
-     * <p>Only a non-blank {@code name} or {@code description} and a present {@code isPublic} are applied; the share
-     * key and ownership cannot be patched here. A blank {@code name} or {@code description} in the request body is
-     * silently ignored rather than clearing the field. Anonymous session requests always fail with 409, since the
-     * session bookmark list cannot be updated.
+     * <p>
+     * Only a non-blank {@code name} or {@code description} and a present {@code isPublic} are applied; the share key and ownership cannot be patched
+     * here. A blank {@code name} or {@code description} in the request body is silently ignored rather than clearing the field. Anonymous session
+     * requests always fail with 409, since the session bookmark list cannot be updated.
      *
      * @param id the id of the bookmark list
-     * @param patch the attributes to change; a blank {@code name}/{@code description} or an absent {@code isPublic}
-     *     is left unchanged
+     * @param patch the attributes to change; a blank {@code name}/{@code description} or an absent {@code isPublic} is left unchanged
      * @return the updated bookmark list
      * @throws IllegalRequestException if the request body is missing, or a logged-in user does not own the list
      */
@@ -316,9 +316,9 @@ public class BookmarkResource {
     /**
      * Deletes the bookmark list with the given id.
      *
-     * <p>For a logged-in user this removes their persisted list with the given id, or fails with 404 if no such
-     * list is owned by the user. For an anonymous request the id is ignored and the session's bookmark list is
-     * always cleared and immediately replaced with a new empty one.
+     * <p>
+     * For a logged-in user this removes their persisted list with the given id, or fails with 404 if no such list is owned by the user. For an
+     * anonymous request the id is ignored and the session's bookmark list is always cleared and immediately replaced with a new empty one.
      *
      * @param id the id of the bookmark list
      * @return a success message confirming the deletion
@@ -348,9 +348,10 @@ public class BookmarkResource {
     /**
      * Adds a bookmark for the given record to the bookmark list with the given id.
      *
-     * <p>A {@code logId} of {@code "-"} is treated as "no structural element". Adding an item already present in
-     * the list fails with 409. Whether an unresolvable {@code pi} results in 404 or 400 depends on the builder: a
-     * logged-in user's list reports 404, the anonymous session list reports 400.
+     * <p>
+     * A {@code logId} of {@code "-"} is treated as "no structural element". Adding an item already present in the list fails with 409. Whether an
+     * unresolvable {@code pi} results in 404 or 400 depends on the builder: a logged-in user's list reports 404, the anonymous session list reports
+     * 400.
      *
      * @param id the id of the bookmark list
      * @param item the bookmark to add; only {@code pi}, {@code logId} and {@code order} are used
@@ -401,8 +402,9 @@ public class BookmarkResource {
     /**
      * Returns the bookmark with the given id from the bookmark list with the given id.
      *
-     * <p>Access to the containing list follows the same rules as the plain bookmark-list lookup. The bookmark is
-     * then looked up among the list's items by id; if none matches, the request fails with 404.
+     * <p>
+     * Access to the containing list follows the same rules as the plain bookmark-list lookup. The bookmark is then looked up among the list's items
+     * by id; if none matches, the request fails with 404.
      *
      * @param listId the id of the bookmark list
      * @param bookmarkId the id of the bookmark
@@ -440,9 +442,9 @@ public class BookmarkResource {
     /**
      * Deletes the bookmark with the given id from the bookmark list with the given id.
      *
-     * <p>Access to the containing list follows the same rules as the plain bookmark-list lookup. The bookmark is
-     * first located within the list by id (404 if absent), then removed by matching its record, structural
-     * element and page rather than by its own id.
+     * <p>
+     * Access to the containing list follows the same rules as the plain bookmark-list lookup. The bookmark is first located within the list by id
+     * (404 if absent), then removed by matching its record, structural element and page rather than by its own id.
      *
      * @param listId the id of the bookmark list
      * @param bookmarkId the id of the bookmark
@@ -482,9 +484,10 @@ public class BookmarkResource {
     /**
      * Returns the bookmark list with the given id as a IIIF Presentation 2.1.1 collection.
      *
-     * <p>For a logged-in user, only lists owned by that user are considered here; unlike the plain bookmark-list
-     * endpoint, a public list owned by someone else is not accessible through this operation and results in 404.
-     * For an anonymous request the id is ignored and the session's bookmark list is returned as a collection.
+     * <p>
+     * For a logged-in user, only lists owned by that user are considered here; unlike the plain bookmark-list endpoint, a public list owned by
+     * someone else is not accessible through this operation and results in 404. For an anonymous request the id is ignored and the session's bookmark
+     * list is returned as a collection.
      *
      * @param id the id of the bookmark list
      * @return the bookmark list as a IIIF Presentation 2.1.1 collection
@@ -516,9 +519,10 @@ public class BookmarkResource {
     /**
      * Returns the bookmark list with the given id as a Mirador viewer configuration.
      *
-     * <p>For a logged-in user, only lists owned by that user are considered here; unlike the plain bookmark-list
-     * endpoint, a public list owned by someone else is not accessible through this operation and results in 404.
-     * For an anonymous request the id is ignored and the session's bookmark list is returned.
+     * <p>
+     * For a logged-in user, only lists owned by that user are considered here; unlike the plain bookmark-list endpoint, a public list owned by
+     * someone else is not accessible through this operation and results in 404. For an anonymous request the id is ignored and the session's bookmark
+     * list is returned.
      *
      * @param id the id of the bookmark list
      * @return the Mirador-compatible JSON configuration for the bookmark list
@@ -552,16 +556,16 @@ public class BookmarkResource {
     /**
      * Returns the bookmark list with the given id as an RSS feed in XML format.
      *
-     * <p>Access to the list follows the same rules as the plain bookmark-list lookup, so a public list owned by
-     * another user is accessible here. The feed is generated from a Solr query matching the list's items, so
-     * entries reflect the current index state of those records rather than a snapshot of the list.
+     * <p>
+     * Access to the list follows the same rules as the plain bookmark-list lookup, so a public list owned by another user is accessible here. The
+     * feed is generated from a Solr query matching the list's items, so entries reflect the current index state of those records rather than a
+     * snapshot of the list.
      *
      * @param id the id of the bookmark list
      * @param language language for RSS metadata
      * @param maxStr limit for results to return
      * @return the RSS feed for the bookmark list as XML
-     * @throws RestApiException if the bookmark list does not exist, or exists but is neither public nor owned by
-     *     the current user
+     * @throws RestApiException if the bookmark list does not exist, or exists but is neither public nor owned by the current user
      */
     @GET
     @Path(USERS_BOOKMARKS_LIST_RSS)
@@ -596,16 +600,16 @@ public class BookmarkResource {
     /**
      * Returns the bookmark list with the given id as an RSS feed in JSON format.
      *
-     * <p>Access to the list follows the same rules as the plain bookmark-list lookup, so a public list owned by
-     * another user is accessible here. The feed is generated from a Solr query matching the list's items, so
-     * entries reflect the current index state of those records rather than a snapshot of the list.
+     * <p>
+     * Access to the list follows the same rules as the plain bookmark-list lookup, so a public list owned by another user is accessible here. The
+     * feed is generated from a Solr query matching the list's items, so entries reflect the current index state of those records rather than a
+     * snapshot of the list.
      *
      * @param id the id of the bookmark list
      * @param language language for RSS metadata
      * @param maxStr limit for results to return
      * @return the RSS channel for the bookmark list
-     * @throws RestApiException if the bookmark list does not exist, or exists but is neither public nor owned by
-     *     the current user
+     * @throws RestApiException if the bookmark list does not exist, or exists but is neither public nor owned by the current user
      */
     @GET
     @Path(USERS_BOOKMARKS_LIST_RSS_JSON)
@@ -640,8 +644,9 @@ public class BookmarkResource {
     /**
      * Returns all bookmark lists marked as public, regardless of the requesting user.
      *
-     * <p>The result is returned in the order the database provides it in and is not sorted by update date, unlike
-     * {@link #getOwnedBookmarkLists()} which sorts the current user's lists by most recent update descending.
+     * <p>
+     * The result is returned in the order the database provides it in and is not sorted by update date, unlike {@link #getOwnedBookmarkLists()} which
+     * sorts the current user's lists by most recent update descending.
      *
      * @return all publicly visible bookmark lists stored in the database
      * @throws DAOException if the lists cannot be read from the database
@@ -665,8 +670,8 @@ public class BookmarkResource {
     /**
      * Returns the bookmark list identified by the given share key, independent of the current user or session.
      *
-     * <p>The list is looked up solely by its share key, independent of the current user or session; a key matching no
-     * list at all results in 404.
+     * <p>
+     * The list is looked up solely by its share key, independent of the current user or session; a key matching no list at all results in 404.
      *
      * @param key the share key assigned to the bookmark list
      * @return the bookmark list matching the share key
@@ -694,8 +699,8 @@ public class BookmarkResource {
     /**
      * Returns the bookmark list identified by the given share key as a Mirador viewer configuration.
      *
-     * <p>The list is looked up solely by its share key, independent of the current user or session; a key matching no
-     * list at all results in 404.
+     * <p>
+     * The list is looked up solely by its share key, independent of the current user or session; a key matching no list at all results in 404.
      *
      * @param key the share key assigned to the bookmark list
      * @return the Mirador-compatible JSON configuration for the shared bookmark list
@@ -724,8 +729,8 @@ public class BookmarkResource {
     /**
      * Returns the bookmark list identified by the given share key as a IIIF Presentation 2.1.1 collection.
      *
-     * <p>The list is looked up solely by its share key, independent of the current user or session; a key matching no
-     * list at all results in 404.
+     * <p>
+     * The list is looked up solely by its share key, independent of the current user or session; a key matching no list at all results in 404.
      *
      * @param key the share key assigned to the bookmark list
      * @return the bookmark list as a IIIF Presentation 2.1.1 collection
@@ -793,9 +798,10 @@ public class BookmarkResource {
     /**
      * Returns the bookmark list identified by the given share key as an RSS feed in JSON format.
      *
-     * <p>The list is looked up solely by its share key, independent of the current user or session; a key matching no
-     * list at all results in 404. The feed itself is generated from a Solr query matching the list's items, so entries
-     * reflect the current index state of those records rather than a snapshot of the list.
+     * <p>
+     * The list is looked up solely by its share key, independent of the current user or session; a key matching no list at all results in 404. The
+     * feed itself is generated from a Solr query matching the list's items, so entries reflect the current index state of those records rather than a
+     * snapshot of the list.
      *
      * @param key the share key assigned to the bookmark list
      * @param language language for RSS metadata
@@ -832,9 +838,10 @@ public class BookmarkResource {
     /**
      * Returns the bookmark list identified by the given share key as an RSS feed in XML format.
      *
-     * <p>The list is looked up solely by its share key, independent of the current user or session; a key matching no
-     * list at all results in 404. The feed itself is generated from a Solr query matching the list's items, so entries
-     * reflect the current index state of those records rather than a snapshot of the list.
+     * <p>
+     * The list is looked up solely by its share key, independent of the current user or session; a key matching no list at all results in 404. The
+     * feed itself is generated from a Solr query matching the list's items, so entries reflect the current index state of those records rather than a
+     * snapshot of the list.
      *
      * @param key the share key assigned to the bookmark list
      * @param language language for RSS metadata

@@ -9,9 +9,9 @@
         z-index: 2000;
     }
     .record_geomap_popover {
-        font-size: 10px;
+        font-size: var(--font-size-caption);
         h3 {
-            font-size: 12px;
+            font-size: var(--font-size-caption);
         }
     }
     &__featurelist {
@@ -21,9 +21,10 @@
         left: 0;
         width: 200px;
         height: 100%;
-        background-color: white;
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         opacity: 0.8;
-        font-size: 12px;
+        font-size: var(--font-size-caption);
         z-index: 500;
         .custom-map {
             &__sidebar-inner-wrapper {
@@ -41,7 +42,8 @@
     &__options_wrapper {
         width: 100%;
         z-index: 500;
-        background-color: white;
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         li {
             display: flex;
             gap: 20px;
@@ -53,12 +55,12 @@
     background-clip: padding-box;
     border-radius: 20px;
     &-blue {
-        background-color: #144a4d;
-        color: white;
+        background-color: var(--color-map-marker);
+        color: var(--fg-on-inverse);
     }
     &-red {
-        background-color: #ff8a1d;
-        color: black;
+        background-color: var(--color-map-marker-alt);
+        color: var(--fg-black);
     }
     div {
         width: 30px;
@@ -67,7 +69,7 @@
         margin-top: 5px;
         text-align: center;
         border-radius: 15px;
-        font-size: 16px;
+        font-size: 16px; // Fixed icon/marker geometry; independent of text scale.
         font-weight: bold;
         span {
             line-height: 30px;
@@ -81,7 +83,7 @@
             &.extra-marker-svg {
                 .fa {
                     &.fa-circle {
-                        font-size: 12px;
+                        font-size: 12px; // Fixed icon/marker geometry; independent of text scale.
                         width: 32px;
                         top: 1px;
                     }

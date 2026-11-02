@@ -2,26 +2,67 @@
    Forms
    style declarations for forms
    ==============================================================*/
-/* INPUT PLACEHOLDER */
-::-webkit-input-placeholder {
-    color: @placeholder;
-}
-/* Mozilla Firefox 4 to 18 */
-:-moz-placeholder {
-    color: @placeholder;
-    opacity: 1;
-}
-/* Mozilla Firefox 19+ */
-::-moz-placeholder {
-    color: @placeholder;
-    opacity: 1;
-}
-/* Internet Explorer 10-11 */
-:-ms-input-placeholder {
-    color: @placeholder;
+/* PUBLIC CONTROLS GROW WITH THEIR TEXT, THE BACKEND KEEPS BOOTSTRAP */
+:where(html:not(:has(#admin))) {
+    input,
+    select,
+    textarea,
+    button {
+        font-family: inherit;
+    }
+
+    .form-control,
+    .custom-select,
+    .input-group-text,
+    .input-group-addon {
+        font-size: var(--font-size-body);
+        line-height: var(--line-height-body);
+    }
+
+    .form-control,
+    .custom-select {
+        height: auto;
+        min-height: calc(1em * var(--line-height-body) + 0.75rem + 2px);
+    }
+
+    .form-control-sm,
+    .custom-select-sm,
+    .input-group-sm > .form-control,
+    .input-group-sm > .custom-select,
+    .input-group-sm > .input-group-prepend > .input-group-text,
+    .input-group-sm > .input-group-append > .input-group-text {
+        font-size: var(--font-size-body-small);
+        height: auto;
+    }
+
+    .form-control-lg,
+    .custom-select-lg,
+    .input-group-lg > .form-control,
+    .input-group-lg > .custom-select,
+    .input-group-lg > .input-group-prepend > .input-group-text,
+    .input-group-lg > .input-group-append > .input-group-text {
+        font-size: var(--font-size-body-large);
+        height: auto;
+    }
 }
 
-/* iOS Webkit Hack to prevent input zoom in */
+::-webkit-input-placeholder {
+    color: var(--fg-placeholder);
+}
+/* INPUT PLACEHOLDER */
+:-moz-placeholder {
+    color: var(--fg-placeholder);
+    opacity: 1;
+}
+::-moz-placeholder {
+    color: var(--fg-placeholder);
+    opacity: 1;
+}
+:-ms-input-placeholder {
+    color: var(--fg-placeholder);
+}
+
+/* IOS WEBKIT: NO INPUT ZOOM */
 @media only screen and (-webkit-min-device-pixel-ratio: 2) {
     select,
     textarea,
@@ -44,6 +85,22 @@
     input[type='time'],
     input[type='url'],
     input[type='week'] {
-        font-size: @fontNormal !important;
+        font-size: var(--font-size-body) !important;
     }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
 }

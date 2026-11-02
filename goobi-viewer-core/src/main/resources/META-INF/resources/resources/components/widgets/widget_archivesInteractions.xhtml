@@ -1,20 +1,19 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:jsf="http://xmlns.jcp.org/jsf">
     <composite:interface />
 
     <composite:implementation>
-        <!-- (ADMIN) WIDGET FOR ARCHIVE INTERACTIONS -->
+        <!-- ADMIN WIDGET -->
         <h:panelGroup rendered="#{userBean.loggedIn and userBean.admin}">
             <div
                 id="widgetArchivesInteractions"
                 class="widget-admin widget-archives-interactions">
                 <h:form
+                    styleClass="widget__form-wrapper"
                     id="widgetArchivesInteractionsStandardForm"
                     prependId="false">
                     <div class="widget-admin__topbar widget-archives-interactions__topbar">
@@ -50,6 +49,22 @@
                                         #{msg.archives__widget__action_edit_archive}
                                     </a>
                                 </li>
+                            </h:panelGroup>
+
+                            <!-- RECORD NOTES -->
+                            <h:panelGroup rendered="#{userBean.admin}">
+                                <li>
+                                    <a href="#{request.contextPath}/admin/cms/recordnotes/new/?pi=#{archiveBean.currentArchive.resourceId}">#{msg.cms__record_notes__add_note}</a>
+                                </li>
+                                <ui:repeat
+                                    var="note"
+                                    value="#{cmsRecordNotesBean.getNotesForRecord(archiveBean.currentResource)}">
+                                    <li>
+                                        <a href="#{request.contextPath}/admin/cms/recordnotes/edit/#{note.id}">
+                                            #{msg.cms__record_notes_edit__title}: #{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}
+                                        </a>
+                                    </li>
+                                </ui:repeat>
                             </h:panelGroup>
 
                             <!-- DELETE ARCHIVE -->

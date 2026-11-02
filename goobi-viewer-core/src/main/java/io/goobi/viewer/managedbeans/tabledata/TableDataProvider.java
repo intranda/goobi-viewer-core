@@ -180,6 +180,9 @@ public class TableDataProvider<T> implements Serializable {
             this.source.resetTotalNumberOfRecords();
             this.lastFilterString = filterString;
         }
+        if (this.currentPage > 0) {
+            this.currentPage = Math.min(this.currentPage, getLastPageNumber());
+        }
         return Optional.ofNullable(this.source.getEntries(currentPage * entriesPerPage, entriesPerPage, sortField, sortOrder, getAsMap(filters)));
     }
 

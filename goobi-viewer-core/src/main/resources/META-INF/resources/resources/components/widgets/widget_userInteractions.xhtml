@@ -14,6 +14,7 @@
                 id="widgetUserInteractions"
                 class="widget widget-user-interactions">
                 <h:form
+                    styleClass="widget__form-wrapper"
                     id="widgetUserInteractionsStandardForm"
                     prependId="false">
                     <h2>#{msg.menuUser_workInteractions}</h2>
@@ -30,8 +31,7 @@
 
                         <!-- TODO rendered=#{docstruct in allowed docType:} -->
                         <!-- TODO record already added to Transkribus -->
-                        <h:panelGroup
-                            rendered="#{configurationBean.transkribusEnabled and activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS'}">
+                        <h:panelGroup rendered="#{configurationBean.transkribusEnabled and activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS'}">
                             <li>
                                 <a
                                     href="#"

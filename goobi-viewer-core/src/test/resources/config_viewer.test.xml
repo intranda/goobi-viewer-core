@@ -1600,6 +1600,7 @@
             <node name="video"  icon="video" />
             <node name="other"  icon="file" />
         </nodeTypes>
+        <cardCatalog registerThreshold="2000" zoomFactor="4" listPageSize="10" fullViewThreshold="12" registerChunkSize="50" />
     </archives>
     
     

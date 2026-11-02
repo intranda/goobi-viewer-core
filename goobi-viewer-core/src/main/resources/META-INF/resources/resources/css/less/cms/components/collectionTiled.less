@@ -10,7 +10,7 @@
     &__tile {
         height: 250px;
         margin-bottom: 15px;
-        border: 1px solid @lightgray;
+        border: 1px solid var(--border-default);
         overflow: hidden;
     }
     &__header,
@@ -19,7 +19,7 @@
     &__header {
         height: 57px;
         padding: 15px;
-        border-bottom: 1px solid @lightgray;
+        border-bottom: 1px solid var(--border-default);
         overflow: hidden;
         display: flex;
         align-items: center;
@@ -27,7 +27,7 @@
         a {
             display: block;
             max-height: 27px;
-            font-size: @fontLarge;
+            font-size: var(--font-size-body-large);
             text-overflow: ellipsis;
             overflow: hidden;
         }
@@ -71,13 +71,15 @@
         justify-content: center;
         max-width: 100%;
         padding: 30px 25px;
-        background-color: @lightgray;
+        background-color: var(--bg-subtle);
+        color: var(--fg-default);
         text-align: center;
         text-decoration: none;
         &:hover,
         &:focus-visible {
             text-decoration: none;
-            background-color: @middlegray;
+            background-color: var(--bg-selected);
+            color: var(--fg-selected);
         }
     }
     &__image {
@@ -89,10 +91,10 @@
         display: flex;
     }
     &__label {
-        font-size: @fontNormal;
+        font-size: var(--font-size-body);
         font-weight: 600;
         line-height: 26px;
-        color: @black;
+        color: var(--fg-default);
         word-wrap: anywhere;
     }
 }

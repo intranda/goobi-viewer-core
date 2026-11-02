@@ -1,6 +1,7 @@
 /* ==============================================================
    General styling
    ==============================================================*/
+/* HTML */
 html {
     width: 100vw;
     font-size: 62.5%;
@@ -10,116 +11,112 @@ html {
     }
 }
 
+/* BODY */
 body {
-    font-family: @fontFamily;
-    font-size: @fontNormal;
+    font-family: var(--font-family);
+    font-size: var(--font-size-body);
+    line-height: var(--line-height-body);
 
-    // Styling for fucussed elements
+    /* KEYBOARD FOCUS */
     &.using-keyboard :focus-visible {
-        .mx-focus-visible !important;
+        .mx-focus-visible() !important;
     }
 }
 
+/* RTL */
 @{RTL} body {
     text-align: right;
     text-decoration-skip-ink: auto;
 }
 
+/* HEADING ROLES ARE INDEPENDENT OF THE DOCUMENT OUTLINE */
 h1,
 h2,
 h3,
 h4,
 h5,
+h6,
 .h1,
 .h2,
 .h3,
 .h4,
-.h5 {
+.h5,
+.h6 {
+    line-height: var(--line-height-heading);
 }
 
 h1,
 .h1 {
-    font-size: 2.8rem;
+    font-size: var(--font-size-heading-large);
 }
-
-h1,
-.h1 {
-    font-size: 2.1rem;
-}
-
 h2,
 .h2 {
-    font-size: 1.8rem;
+    font-size: var(--font-size-heading-medium);
 }
-
 h3,
 .h3 {
-    font-size: 1.8rem;
+    font-size: var(--font-size-heading-small);
 }
-
 h4,
+.h4 {
+    font-size: var(--font-size-body-large);
+}
 h5,
-.h4,
 .h5 {
-    font-size: @fontNormal;
+    font-size: var(--font-size-body);
+}
+h6,
+.h6 {
+    font-size: var(--font-size-body-small);
 }
 
-p {
+/* PROSE: OWN READING SIZE AND LINE LENGTH */
+.content-component__text,
+.content-component__htmltext,
+.content-component__split-text-content,
+.tpl-generic__text {
+    font-size: var(--font-size-prose);
+    line-height: var(--line-height-prose);
+    overflow-wrap: break-word;
+
+    p,
+    ul,
+    ol {
+        max-width: var(--text-measure);
+    }
+}
+.content-component__text {
+    max-width: var(--text-measure);
 }
 
+/* SMALL TEXT */
+small,
+.small {
+    font-size: var(--font-size-caption);
+    line-height: var(--line-height-body);
+}
+
+/* PREFORMATTED TEXT */
 pre {
     padding: 1rem;
     font-family: monospace;
     border-radius: 0.4rem;
-    border: 1px solid @gray;
-    background-color: @lightgray;
+    border: 1px solid var(--border-contrast);
+    background-color: var(--bg-subtle);
+    color: var(--fg-default);
 }
 
+/* NAVIGATION LISTS */
 nav ul {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-ul {
-}
-
-ol {
-}
-
-ul,
-ol {
-}
-
-a {
-    &:hover {
-    }
-    &:active {
-    }
-    &:focus {
-    }
-}
-
+/* TABLES */
 table,
 .table {
     width: 100%;
-}
-
-#ajaxloader_image {
-    width: 100%;
-    height: 100%;
-    background-color: #fff;
-    display: none;
-}
-
-#ajaxloader_image img {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    padding-top: -50px;
-    padding-left: -50px;
-    width: 100px;
-    height: 100px;
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */

@@ -2,12 +2,9 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:t="http://myfaces.apache.org/tomahawk"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:util="http://goobi.io/util"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <composite:interface>
@@ -17,8 +14,7 @@
     </composite:interface>
 
     <composite:implementation>
-        <!-- sidebar editor -->
-
+        <!-- SIDEBAR EDITOR -->
         <h:panelGroup
             id="sidebarEditorWrapper"
             styleClass="sidebar-editor"
@@ -29,7 +25,6 @@
                     id="selectedWidgetsGroup"
                     class="sidebar-editor__left">
                     <h3>#{msg.cms_pageSidebar}</h3>
-
                     <div class="sidebar-editor__left-inner">
                         <ui:repeat
                             var="element"
@@ -50,7 +45,6 @@
                                             icon="chevron-up"
                                             svgClass="icon icon-xxl" />
                                     </button>
-
                                     <button
                                         data-toggle="tooltip"
                                         data-placement="top"
@@ -63,7 +57,6 @@
                                             svgClass="icon icon-xxl" />
                                         <f:ajax render="sidebar_editor_component:selectedWidgetsGroup" />
                                     </button>
-
                                     <button
                                         data-toggle="tooltip"
                                         data-placement="top"
@@ -76,7 +69,6 @@
                                             svgClass="icon icon-xxl" />
                                         <f:ajax render="sidebar_editor_component:selectedWidgetsGroup" />
                                     </button>
-
                                     <button
                                         class="btn btn--clean sidebar-editor__move-down -deactivated"
                                         type="button"
@@ -87,7 +79,6 @@
                                             svgClass="icon icon-xxl" />
                                     </button>
                                 </div>
-
                                 <util:icon-text
                                     icon="#{element.contentType.iconName}"
                                     text="#{element.title.textOrDefault}"
@@ -103,7 +94,6 @@
                                 </span>
 
                                 <!-- ITEM EDIT AND DELETE -->
-                                <!-- 											<div jsf:id="widgetEditLink" rendered="#{element.canEdit()}" > -->
                                 <div class="sidebar-editor__widget-item-actions-wrapper">
                                     <ui:fragment rendered="#{element.canEdit()}">
                                         <a
@@ -124,13 +114,11 @@
                         </ui:repeat>
                     </div>
                 </h:panelGroup>
-
                 <h:panelGroup
                     layout="block"
                     id="availableWidgetsGroup"
                     class="sidebar-editor__right">
                     <h3>#{msg.cms_menu_availableComponents}</h3>
-
                     <div class="sidebar-editor__right-inner">
                         <ui:repeat
                             var="widget"
@@ -149,7 +137,6 @@
                                         jsf:value="#{cmsPageEditBean.sidebarWidgets[widget]}">
                                         <f:ajax event="change" />
                                     </input>
-
                                     <label
                                         class="sidebar-editor__choose-widget-item-label"
                                         for="scales#{status.index}">
@@ -175,7 +162,6 @@
                             value="#{selectedWidgets}">
                             <h:selectBooleanCheckbox value="#{selectedWidgets[widget]}" />
                         </ui:repeat>
-
                         <button
                             class="btn btn--default sidebar-editor__add-widgets-button"
                             jsf:action="#{cc.attrs.page.addToSidebar(cmsPageEditBean.getAndResetSelectedWidgets())}">
@@ -187,7 +173,7 @@
             </h:panelGroup>
         </h:panelGroup>
 
-        <!-- choose standard sidebar for current page -->
+        <!-- STANDARD SIDEBAR FOR THIS PAGE -->
         <div class="sidebar-editor__choose-standard">
             <h:selectBooleanCheckbox
                 id="checkboxUseDefaultSidebar"

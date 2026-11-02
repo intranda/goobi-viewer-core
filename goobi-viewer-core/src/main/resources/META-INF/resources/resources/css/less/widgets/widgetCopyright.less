@@ -2,18 +2,21 @@
    Widget Copyright Information
    style declarations for widget_copyrightInfo.xhtml
    ==============================================================*/
-// WIDGET STYLE
+/* WIDGET */
 .widget-copyright {
+    /* BODY */
     &__body {
         border: none;
     }
 
+    /* DOT */
     &__dot {
-        color: white;
-        font-size: 30px;
+        color: var(--fg-on-inverse);
+        font-size: 30px; // Fixed icon/marker geometry; independent of text scale.
         display: flex;
     }
 
+    /* CONTAINER */
     &__container {
         display: flex;
         gap: 0 10px;
@@ -26,8 +29,6 @@
                     -webkit-mask: url('../../icons/outline/lock-open.svg') center/100% 100% no-repeat;
                 }
             }
-            .widget-copyright__dot-wrapper {
-            }
         }
         &.-yellow {
             .widget-copyright__status-icon {
@@ -35,8 +36,6 @@
                     mask: url('../../icons/outline/lock.svg') center/100% 100% no-repeat;
                     -webkit-mask: url('../../icons/outline/lock.svg') center/100% 100% no-repeat;
                 }
-            }
-            .widget-copyright__dot-wrapper {
             }
         }
         &.-red {
@@ -46,8 +45,6 @@
                     -webkit-mask: url('../../icons/outline/lock.svg') center/100% 100% no-repeat;
                 }
             }
-            .widget-copyright__dot-wrapper {
-            }
         }
         img,
         svg {
@@ -56,14 +53,16 @@
             opacity: 1;
         }
     }
+    /* ICONS */
     &__icons {
         display: flex;
         flex-wrap: wrap;
         gap: 8px 4px;
     }
+    /* STATUS ICON */
     &__status-icon {
         display: flex;
-        color: @black;
+        color: var(--fg-default);
         &:before {
             content: '';
             display: inline-flex;
@@ -73,23 +72,27 @@
             background-color: currentColor;
         }
     }
+    /* ADDITIONAL INFORMATION */
     &__additional-information {
         display: none;
     }
+    /* ACCESS LICENCE INFO */
     &__access-licence-info {
         padding-top: 10px;
         margin-bottom: 15px;
         h3 {
             margin-bottom: 0;
-            font-size: 1.4rem;
+            font-size: var(--font-size-body-small);
         }
     }
+    /* COPYRIGHT */
     &__copyright {
         h3 {
             margin-bottom: 0;
-            font-size: 1.4rem;
+            font-size: var(--font-size-body-small);
         }
     }
+    /* HIDDEN INFORMATION */
     &__hidden-information {
         a {
             display: inline;

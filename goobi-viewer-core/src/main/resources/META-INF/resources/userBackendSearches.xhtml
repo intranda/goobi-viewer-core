@@ -6,7 +6,6 @@
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     template="/resources/themes/#{navigationHelper.theme}/template.html"
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
     <ui:define name="metadata">
@@ -34,7 +33,7 @@
         <div
             id="mySearches"
             class="my-searches">
-            <!-- WARNING IF NO SEARCHES EXISTS -->
+            <!-- NO SEARCHES -->
             <c:choose>
                 <c:when test="#{userDataBean.getNumSearches(userBean.user) == 0}">
                     <div
@@ -67,6 +66,7 @@
                                             value="#{msg.show}"
                                             escape="true" />
                                     </h:commandLink>
+
                                     <!-- NEW HITS NOTIFICATION -->
                                     <ui:fragment rendered="#{search.newHitsNotification}">
                                         <button
@@ -84,6 +84,7 @@
                                             #{msg.user__mySearches__notifications_on}
                                         </button>
                                     </ui:fragment>
+
                                     <!-- DELETE SEARCH BUTTON -->
                                     <button
                                         type="button"
@@ -93,6 +94,7 @@
                                         title="#{msg.delete}">
                                         #{msg.delete}
                                     </button>
+
                                     <!-- DELETE SEARCH MODAL -->
                                     <div
                                         class="modal fade my-searches__delete-modal"
@@ -136,8 +138,8 @@
                                             data-dismiss="modal" />
                                     </div>
                                 </div>
-                                <!-- end my-searches__table__actions -->
                             </h:column>
+
                             <!-- DATE -->
                             <h:column>
                                 <f:facet name="header">
@@ -157,21 +159,21 @@
         </div>
         <script type="text/javascript">
             $(document).ready(function () {
-    var btnCount = 0;
-    $.each($('.my-searches__delete-button'), function () {
-        $(this).attr('data-target', '#deleteSearchModal-' + btnCount);
-        btnCount++;
-    });
+                var btnCount = 0;
+                $.each($('.my-searches__delete-button'), function () {
+                    $(this).attr('data-target', '#deleteSearchModal-' + btnCount);
+                    btnCount++;
+                });
 
-    var modalCount = 0;
-    $.each($('.my-searches__delete-modal'), function () {
-        $(this).attr('id', 'deleteSearchModal-' + modalCount);
-        $(this)
-            .find('.modal-title')
-            .attr('id', 'deleteSearchModalLabel-' + modalCount);
-        modalCount++;
-    });
-});
+                var modalCount = 0;
+                $.each($('.my-searches__delete-modal'), function () {
+                    $(this).attr('id', 'deleteSearchModal-' + modalCount);
+                    $(this)
+                        .find('.modal-title')
+                        .attr('id', 'deleteSearchModalLabel-' + modalCount);
+                    modalCount++;
+                });
+            });
         </script>
     </ui:define>
 

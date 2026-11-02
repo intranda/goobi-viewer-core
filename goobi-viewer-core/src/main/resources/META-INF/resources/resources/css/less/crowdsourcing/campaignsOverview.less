@@ -1,153 +1,196 @@
 /* ==============================================================
-   Crowdsourcing 
-   global style declarations for crowdsourcing_layout.xhtml
+   Crowdsourcing Campaigns Overview
+   style declarations for crowdsourcingCampaignsOverview.xhtml
    ==============================================================*/
 .crowdsourcing-campaigns-overview {
-    display: flex;
-    flex-direction: column;
+    /* LIST */
+    > form {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
 
+    /* CAMPAIGN */
     &__campaign {
         display: flex;
-        align-items: stretch;
-        justify-content: space-evenly;
-        flex-wrap: wrap;
-        margin: 5px 0;
-        border: 2px solid @middlegray;
-        background: white;
-        padding: 10px;
-
-        > div {
-            padding: 5px;
-        }
-
+        overflow: hidden;
+        background: var(--bg-surface);
+        color: var(--fg-default);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-container);
+        box-shadow: var(--shadow-surface);
         &__image {
-            width: 25%;
-            flex-shrink: 0;
-            display: flex;
-            align-items: flex-start;
-            flex-direction: column;
-
+            position: relative;
+            flex: 0 0 clamp(16rem, 32%, 30rem);
+            min-height: 22rem;
             img {
-                max-width: 100%;
-                // max-height: 300px;
-            }
-        }
-
-        &__text {
-            display: flex;
-            width: 50%;
-            flex-direction: column;
-        }
-		
-
-
-        &__actions {
-            width: 25%;
-            display: flex;
-			gap: 8px;
-            flex-direction: column;
-            margin-left: auto;
-			margin-top: 5px;
-            a {
+                position: absolute;
+                inset: 0;
                 width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            &.-placeholder {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: var(--bg-subtle);
+                color: var(--fg-muted);
             }
         }
-
-        &__statistics { 
-			margin-top: 10px;
-            width: 100%;
+        &__body {
             display: flex;
-			flex-direction: column;
-            &__message {
-                padding: 10px;
-                font-size: 1.8em;
+            flex: 1 1 auto;
+            flex-direction: column;
+            gap: 1.6rem;
+            min-width: 0;
+            padding: 2rem 2.4rem;
+        }
+        &__text {
+            &__title {
+                margin: 0 0 0.6rem;
+                color: var(--fg-heading);
+                font-size: var(--font-size-heading-medium);
+            }
+            &__description {
+                max-width: var(--text-measure);
+                color: var(--fg-secondary);
             }
         }
-
-        .campaign-statistics {
-			&__item { 
-				display: flex;
-				gap: 5px;
-				flex-wrap: wrap; 
-			}
-            &__text {
-                dl {
-                    grid-template-columns: 50% 50%;
-                    dt {
-                        &:after {
-                        }
-                    }
-                    dd {
-                    }
-                }
+        &__statistics {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            &__message {
+                color: var(--fg-secondary);
+                font-size: var(--font-size-body-small);
             }
-
-            &__bar {
-                overflow: hidden;
-                progressBar {
-                }
-                .goobi-progress-bar-wrapper {
-                    background: #e9ecef;
-                    .goobi-progress-bar {
-                        display: flex;
-                        flex-direction: row-reverse;
-						height: 20px;
-                        &__bar {
-							height: 20px;
-                            &.finished {
-                                background-color: #28a745;
-                            }
-                            &.review {
-                                background-color: #ffc107;
-                            }
-                        }
-                    }
-                }
+        }
+        &__actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: auto;
+            padding-top: 0.8rem;
+            &:not(:has(> *)) {
+                display: none;
             }
         }
     }
+
+    /* PROGRESS */
+    &__progress {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+    &__progress-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+    &__progress-label {
+        color: var(--fg-secondary);
+        font-size: var(--font-size-body-small);
+    }
+    &__progress-value {
+        color: var(--fg-heading);
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+    }
+    &__progress-bar {
+        .goobi-progress-bar-wrapper {
+            overflow: hidden;
+            background: var(--bg-subtle);
+            border-radius: var(--radius-container-small);
+        }
+        .goobi-progress-bar {
+            display: flex;
+            height: 0.8rem;
+        }
+        .goobi-progress-bar__bar {
+            &.finished {
+                background-color: var(--bg-success);
+            }
+            &.review {
+                background-color: rgb(from var(--bg-success) r g b / 40%);
+            }
+        }
+    }
+
+    /* DETAILS */
+    &__details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem 2rem;
+        margin: 0;
+        font-size: var(--font-size-body-small);
+    }
+    &__detail {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 0.4rem;
+        dt {
+            order: 2;
+            color: var(--fg-secondary);
+            font-weight: 400;
+        }
+        dd {
+            order: 1;
+            margin: 0;
+            color: var(--fg-default);
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+        &.-finished::before,
+        &.-review::before {
+            content: '';
+            flex: none;
+            align-self: center;
+            width: 0.8rem;
+            height: 0.8rem;
+            border-radius: 50%;
+        }
+        &.-finished::before {
+            background-color: var(--bg-success);
+        }
+        &.-review::before {
+            background-color: rgb(from var(--bg-success) r g b / 40%);
+        }
+    }
 }
- 
+
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
-    .crowdsourcing-campaigns-overview__campaign__image {
-        width: 100%;
-    }
-    .crowdsourcing-campaigns-overview__campaign__image img {
-        max-width: 100%;
-    }
-
-    .campaign-statistics__bar .goobi-progress-bar-wrapper .goobi-progress-bar {
-        display: flex;
-        overflow: hidden;
-    }
 }
+
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {
 }
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-    .crowdsourcing-campaigns-overview__campaign__text h2 {
-        width: 100%;
-    }
-    .crowdsourcing-campaigns-overview__campaign__image {
-        width: 100%;
-    }
-    .crowdsourcing-campaigns-overview__campaign__image img {
-        max-width: 100%;
-    }
-    .crowdsourcing-campaigns-overview__campaign__actions {
-        width: 100%;
-    }
-    .crowdsourcing-campaigns-overview__campaign__text {
-        width: 100%;
+    .crowdsourcing-campaigns-overview__campaign {
+        flex-direction: column;
+        &__image {
+            flex-basis: auto;
+            min-height: 0;
+            aspect-ratio: 2 / 1;
+            &.-placeholder {
+                display: none;
+            }
+        }
+        &__body {
+            padding: 1.6rem;
+        }
     }
 }
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
-    .crowdsourcing-campaigns-overview__campaign .campaign-statistics__text dl {
-        grid-template-columns: 80% 20%;
+    .crowdsourcing-campaigns-overview__campaign__actions {
+        flex-direction: column;
     }
 }

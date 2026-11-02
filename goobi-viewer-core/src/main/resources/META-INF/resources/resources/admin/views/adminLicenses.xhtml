@@ -5,8 +5,6 @@
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
@@ -29,9 +27,7 @@
                     <div class="admin__title-bar">
                         <h1 class="admin__title">#{msg.admin__licenses}</h1>
                     </div>
-
                     <viewerComponent:adminBreadcrumbs />
-
                     <div class="admin__content-inner-content">
                         <h:form
                             id="adminLicenseTypesForm"
@@ -67,7 +63,6 @@
                                     </ui:repeat>
                                 </div>
                             </ui:fragment>
-
                             <div class="admin__entry-list">
                                 <!-- INDIVIDUAL LICENSES -->
                                 <ui:repeat
@@ -79,16 +74,15 @@
                                             <div class="row">
                                                 <h2 class="col-12">#{licenseType.name}</h2>
                                             </div>
-                                            <!-- DESCRIPTION + OPEN ACCESS + MOVING WALL + PDF QUOTA AND CONCURRENT VIEW NOTICE -->
+
+                                            <!-- DESCRIPTION, OPEN ACCESS, MOVING WALL, PDF QUOTA, CONCURRENT VIEWS -->
                                             <div class="row admin__boxed-entry-description">
                                                 <ui:fragment rendered="#{not empty licenseType.description}">
                                                     <p class="col-12 mb-1">#{licenseType.description}</p>
                                                 </ui:fragment>
-
                                                 <ui:fragment rendered="#{licenseType.redirect == true}">
                                                     <p class="col-12 mb-1">#{msg.admin__license_redirect_enabled_description}</p>
                                                 </ui:fragment>
-
                                                 <ui:fragment rendered="#{licenseType.openAccess}">
                                                     <p class="col-12 mb-1">#{msg.admin__license_open_access_activated_info}</p>
                                                 </ui:fragment>
@@ -115,11 +109,13 @@
                                                     </p>
                                                 </ui:fragment>
                                             </div>
+
                                             <!-- DATA -->
                                             <dl class="row">
                                                 <!-- NUMBER OF RECORDS -->
                                                 <dt class="col-sm-4">#{msg.admin__licenses_record_number}:</dt>
                                                 <dd class="col-sm-8">#{adminLicenseBean.getRecordCountForLicenseType(licenseType)}</dd>
+
                                                 <!-- CMS PAGES -->
                                                 <ui:fragment rendered="#{!licenseType.displayRecordSearchLink}">
                                                     <dt class="col-sm-4">#{msg.admin__licenses_cms_pages}:</dt>
@@ -135,6 +131,7 @@
                                                         </ui:repeat>
                                                     </dd>
                                                 </ui:fragment>
+
                                                 <!-- OVERRIDDEN LICENSE TYPES -->
                                                 <ui:fragment rendered="#{not empty licenseType.overriddenLicenseTypes}">
                                                     <dt class="col-sm-4">#{msg.admin__license_overriding__overridden_licenses}:</dt>
@@ -151,6 +148,7 @@
                                                         </ui:repeat>
                                                     </dd>
                                                 </ui:fragment>
+
                                                 <!-- LICENSE TYPES OVERRIDING THIS ONE -->
                                                 <ui:fragment rendered="#{not empty licenseType.licenseTypesOverridingThis}">
                                                     <dt class="col-sm-4">#{msg.admin__license_overriding__licenses_overriding_this}:</dt>
@@ -167,16 +165,10 @@
                                                         </ui:repeat>
                                                     </dd>
                                                 </ui:fragment>
-
                                                 <ui:fragment rendered="#{adminLicenseBean.isLicenseTypeInUse(licenseType)}">
                                                     <dt class="col-sm-4">#{msg.admin__license_licensee}:</dt>
                                                     <dd class="col-sm-8">
-                                                        <!--
-                                                            As of 2026.01, rights holders are stored in License.licensees
-                                                            (List<LicenseRightsHolder>) instead of the deprecated direct
-                                                            user/userGroup/ipRange/client fields on License. Iterate over
-                                                            licensees so newly configured rights holders are displayed.
-                                                        -->
+                                                        <!-- RIGHTS HOLDERS FROM LICENSE.LICENSEES (SINCE 2026.01) -->
                                                         <ui:repeat
                                                             var="license"
                                                             value="#{adminLicenseBean.getLicenses(licenseType)}">
@@ -233,7 +225,6 @@
                                                         </ui:repeat>
                                                     </dd>
                                                 </ui:fragment>
-
                                                 <ui:fragment rendered="#{not empty licenseType.redirectUrl and licenseType.redirect == true}">
                                                     <dt class="col-sm-4">#{msg.admin__license_functions_redirect}:</dt>
                                                     <dd class="col-sm-8">
@@ -287,7 +278,6 @@
                         </h:form>
                     </div>
                 </h:panelGroup>
-
                 <ui:fragment rendered="#{!navigationHelper.solrIndexOnline}">
                     <div
                         class="alert alert-danger"

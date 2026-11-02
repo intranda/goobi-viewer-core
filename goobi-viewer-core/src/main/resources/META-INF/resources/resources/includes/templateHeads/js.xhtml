@@ -1,26 +1,9 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:jsf="http://xmlns.jcp.org/jsf">
-    <!-- ===============================
-        BASE LIBRARIES + CORE MODULES
-    ================================ -->
-    <!--
-        `jsPaths` contains one array for each javascript library,
-        each array contains
-        - an identifier that allows excluding libraries from viewer theme template files
-        - an array of templates to exclude (or empty),
-        - a path to the library file:
-        [
-          name,
-          [don't, render, library, here ],
-          path/to/lib
-        ]
-    -->
-
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <!-- BASE LIBRARIES AND CORE MODULES -->
+    <!-- JSPATHS ENTRY: NAME, EXCLUDED TEMPLATES, PATH -->
     <c:set
         var="jsPaths"
         value="#{[
@@ -201,8 +184,6 @@
     <c:forEach
         var="path"
         items="#{jsPaths}">
-        <!-- include file, if it is not explicitly excluded -->
-        <!-- (either above, or in the excludeJS variable, which can be set in template files) -->
         <c:if test="#{!path[1].contains(templateName) and !excludeJS.contains(path[0])}">
             <script
                 type="text/javascript"
@@ -210,28 +191,28 @@
         </c:if>
     </c:forEach>
 
+    <!-- VIEWER CONFIG BASE PATH -->
     <script type="text/javascript">
         (function assignViewerConfigBasePath() {
-    var contextPath = '#{request.contextPath}';
-    if (!contextPath || contextPath.length === 0) {
-        contextPath = '/';
-    }
-    if (contextPath.charAt(contextPath.length - 1) !== '/') {
-        contextPath += '/';
-    }
+            var contextPath = '#{request.contextPath}';
+            if (!contextPath || contextPath.length === 0) {
+                contextPath = '/';
+            }
+            if (contextPath.charAt(contextPath.length - 1) !== '/') {
+                contextPath += '/';
+            }
 
-    window.viewerConfig = window.viewerConfig || {};
-    if (!window.viewerConfig.iconBasePath) {
-        window.viewerConfig.iconBasePath = contextPath;
-    }
-    if (!window.viewerConfig.contextPath) {
-        window.viewerConfig.contextPath = contextPath;
-    }
-})();
+            window.viewerConfig = window.viewerConfig || {};
+            if (!window.viewerConfig.iconBasePath) {
+                window.viewerConfig.iconBasePath = contextPath;
+            }
+            if (!window.viewerConfig.contextPath) {
+                window.viewerConfig.contextPath = contextPath;
+            }
+        })();
     </script>
 
     <!-- SHOW AVAILABLE LIBS AND SCRIPTS IN CONSOLE -->
-    <!-- an easy way to log library names to the console, just pass `showCSS` to the excludeCSS variable in a template file -->
     <c:if test="#{excludeJS.contains('showJS')}">
         <c:forEach
             var="path"

@@ -2,7 +2,6 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:util="http://goobi.io/util">
     <composite:interface>
@@ -16,7 +15,6 @@
         <ui:param
             name="collection"
             value="#{cc.attrs.collection}" />
-
         <h:form
             id="collectionTiledForm"
             prependId="false">
@@ -40,7 +38,7 @@
                                                 title="#{msg[browseDcElement.label]}" />
                                         </a>
 
-                                        <!-- COLLECTION ARCHIVE DOWNLOAD (logged-in users only) -->
+                                        <!-- COLLECTION ARCHIVE DOWNLOAD, LOGGED IN ONLY -->
                                         <h:panelGroup rendered="#{userBean.loggedIn and collectionArchiveBean.isAvailable(browseDcElement)}">
                                             <div class="collection-tiled__archive-download">
                                                 <a
@@ -104,7 +102,7 @@
                                                 title="#{msg[browseDcElement.label]}" />
                                         </a>
 
-                                        <!-- COLLECTION ARCHIVE DOWNLOAD (logged-in users only) -->
+                                        <!-- COLLECTION ARCHIVE DOWNLOAD, LOGGED IN ONLY -->
                                         <h:panelGroup rendered="#{userBean.loggedIn and collectionArchiveBean.isAvailable(browseDcElement)}">
                                             <div class="collection-tiled__archive-download">
                                                 <a
@@ -160,10 +158,11 @@
             </div>
         </h:form>
 
+        <!-- TILED VIEW SCRIPT -->
         <script type="text/javascript">
             $(function () {
-    $('[data-toggle="popover"]').popover();
-});
+                $('[data-toggle="popover"]').popover();
+            });
         </script>
     </composite:implementation>
 </ui:composition>

@@ -1,0 +1,140 @@
+/* ==============================================================
+   Palette
+   every colour literal, role inputs and component colours
+   ==============================================================*/
+
+.gv-palette() {
+    /* ---------- ROLE INPUTS ---------- */
+
+    /* NEUTRAL RAMP */
+    --color-neutral-0: #fff;
+    --color-neutral-50: #f6fafd;
+    --color-neutral-100: #f1f4f7;
+    --color-neutral-150: #ebeef1;
+    --color-neutral-200: #e2e6e9;
+    --color-neutral-300: #cfd2d5;
+    --color-neutral-350: #b5c3cf;
+    --color-neutral-400: #9ea1a4;
+    --color-neutral-450: #909da9;
+    --color-neutral-500: #74777a;
+    --color-neutral-550: #66686b;
+    --color-neutral-600: #4e5053;
+    --color-neutral-700: #3c4852;
+    --color-neutral-800: #2a3640;
+    --color-neutral-850: #202b35;
+    --color-neutral-900: #15212a;
+    --color-neutral-950: #07151e;
+    --color-neutral-1000: #000;
+
+    /* BRAND */
+    --color-brand: @blue;
+    --color-brand-400: oklch(from var(--color-brand) 0.72 min(c, 0.12) h);
+
+    /* ACCENT, HIGHLIGHT, FOCUS */
+    --color-accent: #f59f00;
+    --color-accent-300: #ffd073;
+    --color-accent-400: #feae1a;
+    --color-accent-700: #875100;
+    --color-highlight: #ffd500;
+    --color-focus: @colorOutline;
+    --color-focus-300: oklch(from var(--color-focus) 0.72 min(c, 0.12) h);
+
+    /* STATUS */
+    --color-success: #007600;
+    --color-success-dark: #80d68a;
+    --color-success-text: #155724;
+    --color-success-text-dark: #a3deb5;
+    --color-success-surface: #d4edda;
+    --color-success-surface-dark: #183c29;
+    --color-success-border: #397947;
+    --color-success-border-dark: #6fac7c;
+    --color-success-hover: #abd9b5;
+    --color-success-hover-dark: #245238;
+    --color-success-strong: #087f0d;
+    --color-danger: #b33226;
+    --color-danger-dark: #ffaaa9;
+    --color-danger-text: #721c24;
+    --color-danger-text-dark: #f5b6be;
+    --color-danger-surface: #f8d7da;
+    --color-danger-surface-dark: #3b2027;
+    --color-danger-border: #a04450;
+    --color-danger-border-dark: #cb7c8d;
+    --color-danger-hover: #e3abb2;
+    --color-danger-hover-dark: #57303a;
+    --color-danger-strong: #b8271c;
+    --color-warning-text: #875100;
+    --color-warning-text-dark: #ffd073;
+    --color-warning-surface: #fed44c;
+    --color-warning-border-dark: #c6a45a;
+    --color-warning-strong: #9b5d00;
+    --color-info-strong: #008295;
+    --color-info-strong-dark: #006e80;
+
+    /* ENTITIES */
+    --color-entity-person-700: #0064c2;
+    --color-entity-person-300: #70bbff;
+    --color-entity-location-700: #964800;
+    --color-entity-location-300: #ffb366;
+    --color-entity-institution-700: #226f07;
+    --color-entity-institution-300: #8bd46a;
+
+    /* ---------- COMPONENT COLOURS ---------- */
+
+    /* OCR OVERLAYS */
+    --color-ocr-block: light-dark(#aa4499, #cc79a7);
+    --color-ocr-line: light-dark(#0072b2, #56b4e9);
+    --color-ocr-word: light-dark(#b34700, #e69f00);
+    --color-on-ocr-word: light-dark(var(--color-neutral-0), var(--color-neutral-1000));
+
+    /* CHARTS */
+    --color-chart-ner: light-dark(#8a0808, #f48d8d);
+    --color-chart-chronology: light-dark(#c85999, #eb9aca);
+
+    /* IMAGE REGION, IMAGE FRAME, MAP, BADGES */
+    --color-region: light-dark(#c92b29, #ffaaa9);
+    --color-image-frame: light-dark(var(--color-neutral-0), var(--color-brand-400));
+    --color-map-marker: #144a4d;
+    --color-map-marker-alt: #ff8a1d;
+    --color-rss: #f08422;
+    --color-toast: #1b2330;
+    --color-scroll-marker: #a3f97c;
+
+    /* DOCUMENT MARKINGS */
+    --color-document-highlight: #b400aa;
+    --color-document-highlight-current: #006400;
+    --color-document-selection: #0000ff;
+    --color-document-focus: #ff0000;
+    --color-document-notation: #d2042d;
+
+    /* LOGIN */
+    --color-login-card: light-dark(#fff, #15212a);
+    --color-login-ink: light-dark(#1d2022, #dceaf7);
+    --color-login-field-line: light-dark(#74777a, #626f7a);
+    --color-login-label: light-dark(#66686b, #909da9);
+    --color-login-box-line: light-dark(#cfd2d5, rgb(from #fff r g b / 30%));
+    --color-login-aside: light-dark(#07151e, #3c4852);
+    --color-login-tile: rgb(from #fff r g b / 14%);
+    --color-login-tile-strong: rgb(from #fff r g b / 24%);
+
+    /* ERROR PAGES: ONE FIXED LIGHT LOOK IN EVERY THEME AND COLOUR MODE, A THEME OVERRIDES THESE EXPLICITLY */
+    --color-error-page: #fff;
+    --color-error-card: #fff;
+    --color-error-well: #f1f4f7;
+    --color-error-well-strong: #ebeef1;
+    --color-error-ink: #15212a;
+    --color-error-ink-soft: #4e5053;
+    --color-error-ink-muted: #66686b;
+    --color-error-line: #e2e6e9;
+    --color-error-line-strong: #cfd2d5;
+    --color-error-warning: #ffd500;
+    --color-error-danger: #a04450;
+    --color-error-link: oklch(from #015999 0.5 min(c, 0.2) h);
+    --color-error-link-strong: oklch(from #015999 0.42 min(c, 0.2) h);
+    --color-error-button: #015999;
+    --color-error-button-strong: oklch(from #015999 calc(l - 0.06) c h);
+    --color-error-button-deep: oklch(from #015999 calc(l - 0.12) c h);
+    --color-on-error-button: #fff;
+
+    /* MAINTENANCE BANNER */
+    --color-maintenance-link-strong: #323537;
+}

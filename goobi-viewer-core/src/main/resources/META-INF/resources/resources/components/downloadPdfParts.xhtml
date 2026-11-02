@@ -12,7 +12,6 @@
             id="downloadPdfParts"
             class="download-pdf-parts">
             <p>#{msg.downloadPdfPartsText}</p>
-
             <h:form id="downloadPdfPartsForm">
                 <div class="row">
                     <!-- FROM -->
@@ -31,6 +30,7 @@
                             </h:selectOneMenu>
                         </div>
                     </div>
+
                     <!-- TO -->
                     <div class="col-2 download-pdf-parts__to">
                         <label for="selectPageTo">#{msg.downloadPdfPartsTo}:</label>
@@ -47,7 +47,8 @@
                             </h:selectOneMenu>
                         </div>
                     </div>
-                    <!-- Download -->
+
+                    <!-- DOWNLOAD -->
                     <div class="col-2 download-pdf-parts__download">
                         <h:outputLink
                             styleClass="btn btn--icon"

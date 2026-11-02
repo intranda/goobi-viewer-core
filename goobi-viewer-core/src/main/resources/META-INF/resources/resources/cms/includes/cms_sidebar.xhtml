@@ -1,22 +1,19 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <div id="sidebarGroup">
         <c:if test="#{cmsBean.currentPage.published or userBean.hasAdminBackendAccess}">
-            <!-- WORK: isCmsWorkPageContext() checks currentWorkPi (set by URL injection before JSF lifecycle)
-                 AND currentPage.relatedPI (from DB, session-safe). No checked exceptions, safe for c:if. -->
+            <!-- WORK PAGE, ISCMSWORKPAGECONTEXT() IS SAFE FOR C:IF -->
             <c:if test="#{cmsBean.cmsWorkPageContext}">
                 <viewerComponent:record_sidebar />
             </c:if>
 
-            <!-- NO WORK: plain CMS page — follow useDefaultSidebar setting -->
+            <!-- NO WORK, FOLLOWS USEDEFAULTSIDEBAR -->
             <c:if test="#{!cmsBean.cmsWorkPageContext}">
                 <!-- CUSTOM SIDEBAR -->
                 <c:if test="#{!cmsBean.currentPage.useDefaultSidebar}">

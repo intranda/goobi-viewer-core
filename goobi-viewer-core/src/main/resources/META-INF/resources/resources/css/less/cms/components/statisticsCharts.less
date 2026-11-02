@@ -7,8 +7,8 @@
 .content-component__statistics-chart,
 .content-component__statistics-list {
     padding: 10px;
-    border: var(--border);
-    background-color: var(--bg-content-box);
+    border: 1px solid var(--border-subtle);
+    background-color: var(--bg-surface);
 }
 
 .statistics-chart {
@@ -94,8 +94,8 @@
     // Subtitle right above the list explains what the bare numbers mean (e.g. that the score is
     // a count of saved contributions, not edits-over-time). Injected by renderMostActiveUsers.
     &__subtitle {
-        font-size: 0.85rem;
-        color: var(--text-muted, #666);
+        font-size: var(--font-size-caption);
+        color: var(--fg-muted);
         margin-bottom: 0.5rem;
     }
 
@@ -106,22 +106,23 @@
 
     li {
         padding: 0.5rem 0;
-        border-bottom: 1px solid var(--border-color, #ddd);
+        border-bottom: 1px solid var(--border-default);
     }
 
     .progress {
-        background: var(--progress-bg, #eee);
-        height: 0.5rem;
+        background: var(--bg-subtle);
+        height: auto;
+        min-height: 0.5rem;
         border-radius: 0.25rem;
         overflow: hidden;
         margin-top: 0.25rem;
 
         .bar {
-            background: var(--progress-bar, #4a90d9);
+            background: var(--bg-brand);
             height: 100%;
-            color: #fff;
-            font-size: 0.7rem;
-            line-height: 0.5rem;
+            color: var(--fg-on-brand);
+            font-size: var(--font-size-caption);
+            line-height: var(--line-height-body);
             padding-left: 0.25rem;
         }
     }

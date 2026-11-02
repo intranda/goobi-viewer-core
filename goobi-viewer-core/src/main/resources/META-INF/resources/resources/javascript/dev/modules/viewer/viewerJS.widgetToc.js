@@ -56,6 +56,27 @@ var viewerJS = (function (viewer) {
                     return;
                 }
 
+                var toggleAll = e.target.closest('[data-action="toggle-all"]');
+                if (toggleAll) {
+                    var wasExpanded = toggleAll.getAttribute('aria-expanded') === 'true';
+                    if (wasExpanded) {
+                        _collapseAll(container);
+                    } else {
+                        _expandAll(container);
+                    }
+                    toggleAll.setAttribute('aria-expanded', wasExpanded ? 'false' : 'true');
+                    var label = wasExpanded ? toggleAll.dataset.labelExpand : toggleAll.dataset.labelCollapse;
+                    if (label) {
+                        toggleAll.setAttribute('aria-label', label);
+                        // bootstrap caches the initial title in data-original-title, so both need updating
+                        toggleAll.setAttribute('title', label);
+                        if (toggleAll.hasAttribute('data-original-title')) {
+                            toggleAll.setAttribute('data-original-title', label);
+                        }
+                    }
+                    return;
+                }
+
                 if (e.target.closest('[data-action="expand-all"]')) {
                     _expandAll(container);
                     return;

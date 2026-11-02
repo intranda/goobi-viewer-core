@@ -26,16 +26,16 @@
         position: relative;
         padding: 10px;
         line-height: normal;
-        font-size: 0.8125rem;
-        color: @middlegray;
+        font-size: var(--font-size-caption);
+        color: var(--fg-muted);
         h3,
         p {
             max-width: calc(~'100% - 135px');
         }
         h3 {
             margin: 0;
-            font-size: 0.9375rem;
-            color: @middlegray;
+            font-size: var(--font-size-caption);
+            color: var(--fg-muted);
         }
         p {
             margin: 0;
@@ -48,7 +48,7 @@
         max-width: 135px;
         z-index: 20;
         ul {
-            .mx-list-reset;
+            .mx-list-reset();
             display: flex;
             flex-wrap: wrap;
             align-items: center;
@@ -63,13 +63,13 @@
         button {
             width: 12px;
             height: 12px;
-            border: 1px solid @middlegray;
+            border: 1px solid var(--border-strong);
             border-radius: 50%;
-            background-color: @middlegray;
+            background-color: var(--bg-selected);
             cursor: pointer;
             &.active {
-                border-color: @blue;
-                background-color: @blue;
+                border-color: var(--bg-brand);
+                background-color: var(--bg-brand);
             }
         }
     }

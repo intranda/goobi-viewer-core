@@ -3,27 +3,22 @@
    style declarations for loginNavigation.xhtml
    ==============================================================*/
 /* LOGIN NAVIGATION */
-/* BLOCK */
 .login-navigation {
-    .mx-list-reset;
+    .mx-list-reset();
     position: relative;
+    /* LIST */
     &__list {
-        .mx-list-reset;
+        .mx-list-reset();
     }
+    /* TOGGLE BUTTON */
     &__toggle-button {
         display: flex;
         align-items: center;
     }
-    /* ELEMENT */
-    /* NOT LOGGED IN */
-    [data-login='false'] {
-    }
     /* LOGGED IN */
     [data-login='true'] {
         button[data-toggle='user-dropdown'] {
-            font-size: @fontMedium;
-            span {
-            }
+            font-size: var(--font-size-body-small);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -54,138 +49,183 @@
                 right: 0;
                 width: 260px;
                 padding: 0.35rem 0;
-                font-size: @fontMedium;
-                background: @login-nav-background;
-                border: 1px solid @login-nav-dropdown-border-color;
-                box-shadow: 0 18px 36px rgba(0, 0, 0, 0.18);
+                font-size: var(--font-size-body-small);
+                background: var(--bg-elevated);
+                border: 1px solid var(--border-default);
+                box-shadow: 0 18px 36px rgb(from var(--shadow-color) r g b / 18%);
                 border-radius: 0.85rem;
                 overflow: hidden;
                 z-index: 2020;
-                color: @login-nav-text-color;
+                color: var(--fg-default);
                 li {
                     margin: 0;
                 }
             }
             &__user-dropdown-item {
-                font-size: @fontMedium;
+                font-size: var(--font-size-body-small);
                 &:hover {
-                    background-color: @login-nav-background-hover;
+                    background-color: var(--bg-hover);
+                }
+                &.-group-start {
+                    margin-block-start: 0.8rem;
+                    padding-block-start: 0.8rem;
+                    border-block-start: 1px solid var(--border-subtle);
                 }
             }
             &__user-dropdown-item-link {
-                display: inline-flex;
+                display: flex;
                 align-items: center;
                 gap: 1rem;
                 width: 100%;
                 padding: 0.7rem 1.2rem 0.7rem 1.5rem;
                 line-height: 1;
                 text-decoration: none;
-                color: @login-nav-text-color;
+                color: var(--fg-default);
                 transition:
                     color 0.2s ease,
                     padding-left 0.18s ease,
                     background-color 0.2s ease;
             }
             &__user-dropdown-item-link:hover {
-                color: @login-nav-text-color-hover;
+                color: var(--fg-default);
                 padding-left: 1.8rem;
-                background-color: @login-nav-background-hover;
+                .login-navigation__user-dropdown-item-icon-text svg,
+                .login-navigation__user-dropdown-item-caret {
+                    color: var(--fg-default);
+                }
             }
             &__user-dropdown-item-text {
                 white-space: nowrap;
-                color: @login-nav-text-color;
-                transition: color 0.2s ease;
             }
+            /* ICON AND CARET STAY QUIET UNTIL HOVER */
             &__user-dropdown-item-icon-text {
                 svg {
-                    color: @login-nav-icon-color;
+                    color: var(--fg-secondary);
                     transition: color 0.2s ease;
                 }
             }
-            &__user-dropdown-item-link:hover &__user-dropdown-item-icon-text svg {
-                color: @login-nav-icon-color-hover;
-            }
             &__user-dropdown-item-caret {
                 margin-left: auto;
-                color: @login-nav-icon-color;
+                color: var(--fg-muted);
+                transition: color 0.2s ease;
             }
             /* BOOKMARK DROPDOWN */
             &__bookmarks-dropdown {
-                .mx-list-reset;
+                .mx-list-reset();
                 display: block;
             }
             &__bookmarks-small-list {
                 display: none;
-                padding: 0.5rem 1rem 0.5rem 1.5rem;
-                background-color: @login-nav-bookmarks-background;
+                position: relative;
+                margin: 0;
+                padding: 0;
+                list-style: none;
+                &::before {
+                    content: '';
+                    position: absolute;
+                    inset-block: 0.4rem;
+                    inset-inline-start: 2.4rem;
+                    border-inline-start: 1px solid var(--border-subtle);
+                }
             }
             &__bookmarks-entry {
                 display: flex;
-                justify-content: space-between;
-                padding: 0.3rem 0;
-                font-size: 1.4rem;
+                align-items: center;
+                gap: 0.4rem;
+                padding-inline-end: 1.2rem;
+                &:hover,
+                &:focus-within {
+                    background-color: var(--bg-hover);
+                    .login-navigation__bookmarks-action {
+                        width: 2rem;
+                        border-width: 1px;
+                        opacity: 1;
+                    }
+                }
+            }
+            &__bookmarks-link,
+            &__bookmarks-overview-link {
+                display: flex;
+                flex: 1 1 auto;
+                align-items: center;
+                gap: 1rem;
+                min-width: 0;
+                padding-block: 0.5rem;
+                padding-inline: 4.3rem 0.8rem;
+                font-size: var(--font-size-body-small);
+                line-height: 1;
+                text-decoration: none;
+                &:hover,
+                &:focus-visible {
+                    text-decoration: none;
+                }
+            }
+            &__bookmarks-link {
+                color: var(--fg-secondary);
+                &:hover {
+                    color: var(--fg-default);
+                }
+            }
+            &__bookmarks-action {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                flex: none;
+                width: 0;
+                height: 2rem;
+                overflow: hidden;
+                color: var(--fg-muted);
+                border: 0 solid var(--border-strong);
+                border-radius: var(--radius-container-small);
+                opacity: 0;
+                &:hover,
+                &:focus-visible {
+                    color: var(--fg-on-brand);
+                    background: var(--bg-brand);
+                    border-color: var(--bg-brand);
+                }
+                @media (hover: none) {
+                    width: 2rem;
+                    border-width: 1px;
+                    opacity: 1;
+                }
+            }
+            &__bookmarks-action-icon {
+                width: 1.4rem;
+                height: 1.4rem;
             }
             &__bookmarks-name {
-                flex-grow: 1;
-                a {
-                    white-space: nowrap;
-                    width: 100%;
-                    max-width: 155px;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
-            }
-            &__bookmarks-name a,
-            &__bookmarks-icon-list .fa,
-            &__bookmarks-icon-list svg,
-            &__bookmarks-icon-list {
-                color: @login-nav-bookmarks-text-color;
-                a {
-                    margin-right: 0;
-                    color: @login-nav-bookmarks-text-color;
-                }
-                &:hover {
-                    color: @login-nav-bookmarks-text-color-hover;
-                }
-            }
-            &__bookmarks-icon-list,
-            &__bookmarks-icon-list a {
-                display: flex;
-                text-decoration: none;
-                align-items: center;
-                gap: 0.7rem;
-            }
-            &__bookmarks-icon-list a {
-                transition: color 0.2s ease;
-            }
-            &__bookmarks-icon-list svg {
-                width: 1.8rem;
-                height: 1.8rem;
-                stroke: currentColor;
-                transition:
-                    stroke 0.2s ease,
-                    transform 0.2s ease;
-            }
-            &__bookmarks-icon-list a:hover svg {
-                transform: scale(1.08);
+                flex: 1 1 auto;
+                min-width: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
             &__bookmarks-counter {
-                padding: 0 0.3rem;
-                font-size: 1.2rem;
-                color: #fff;
-                border-radius: 2px;
-                background-color: @login-nav-bookmarks-counter-background;
-                align-self: center;
+                flex: none;
+                min-width: 2ch;
+                margin-inline-start: 0.4rem;
+                color: var(--fg-muted);
+                font-size: var(--font-size-body-small);
+                font-variant-numeric: tabular-nums;
+                text-align: end;
             }
             &__bookmarks-overview-link {
-                margin-left: auto;
-                color: @login-nav-bookmarks-text-color;
+                padding-inline-end: 0;
+                color: var(--fg-secondary);
                 &:hover {
-                    color: @login-nav-bookmarks-text-color-hover;
+                    color: var(--fg-default);
                 }
             }
+            &__bookmarks-overview-icon {
+                flex: none;
+                width: 1.4rem;
+                height: 1.4rem;
+                margin-inline-start: auto;
+                color: var(--fg-muted);
+            }
             &__bookmarks-trigger {
-                .mx-no-style-button;
+                .mx-no-style-button();
                 width: 100%;
             }
             &__mini-avatar {
@@ -197,6 +237,7 @@
     }
 }
 
+/* RTL */
 @{RTL} {
     .login-navigation {
         [data-login='true'] {
@@ -205,15 +246,8 @@
                     right: unset;
                     left: 0;
                 }
-                &__bookmarks-icon-list {
-                    a {
-                        margin-left: 0.7rem;
-                        margin-right: unset;
-                    }
-                }
-                &__user-dropdown-item-icon {
-                    padding-left: 0;
-                    padding-right: 1.5rem;
+                &__bookmarks-overview-link svg {
+                    transform: scaleX(-1);
                 }
             }
         }

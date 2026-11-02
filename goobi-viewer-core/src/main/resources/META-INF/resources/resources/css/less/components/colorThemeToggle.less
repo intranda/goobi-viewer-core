@@ -1,6 +1,6 @@
 /* ==============================================================
    colorThemeToggle
-   style declarations for 
+   style declarations for colorThemeToggle.xhtml
    ==============================================================*/
 
 .color-theme-switch {
@@ -13,20 +13,24 @@
 }
 
 .color-theme-switch-light {
-    display: none;
+    display: var(--display-dark-only);
 }
 .color-theme-switch-dark {
-    display: flex;
+    display: var(--display-light-only);
 }
 
-@media (prefers-color-scheme: dark) {
-    .color-theme-switch-dark {
-        display: none;
-    }
-    .color-theme-switch-light {
-        display: flex;
-    }
-    .color-theme-switch-dark.hide {
-        display: hide;
-    }
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
 }

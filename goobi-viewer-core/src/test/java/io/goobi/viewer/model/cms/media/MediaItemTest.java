@@ -29,12 +29,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 
 /**
  * Unit tests for {@link MediaItem}.
  */
+@Execution(ExecutionMode.CONCURRENT)
 class MediaItemTest {
 
     /**

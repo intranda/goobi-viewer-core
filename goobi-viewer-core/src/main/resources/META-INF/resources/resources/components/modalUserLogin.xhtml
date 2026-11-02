@@ -1,14 +1,10 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <composite:interface>
         <composite:attribute
@@ -22,7 +18,7 @@
             value="#{alwaysVisible != null ? alwaysVisible:false}"
             name="alwaysVisible" />
 
-        <!-- Modal User Login -->
+        <!-- USER LOGIN MODAL -->
         <div
             id="#{cc.attrs.id}"
             class="modal user-login-modal #{alwaysVisible ? 'show':'fade'}"
@@ -40,7 +36,6 @@
                             <h1 class="modal-title user-login-modal__header-title">#{msg.login__header_title}</h1>
                             <h1 class="modal-title user-login-modal__header-title-create-account">#{msg.login__create_new_account}</h1>
                         </div>
-
                         <div class="modal-body">
                             <!-- USER LOGIN -->
                             <div
@@ -91,7 +86,6 @@
                                     <!-- USER LOGIN BODY LOGIN TYPE -->
                                     <div class="user-login-modal__body-login-type-wrapper">
                                         <!-- USER LOGIN DETAILS -->
-
                                         <h:form
                                             id="userLoginForm"
                                             prependId="false">
@@ -200,13 +194,11 @@
                                                                     value="#{msg.login}" />
                                                             </h:commandButton>
 
+                                                            <!-- NEW ACCOUNT -->
                                                             <h:panelGroup rendered="#{userBean.userRegistrationEnabled}">
                                                                 <div
                                                                     id="userLoginCreateAccount"
                                                                     class="user-login-modal__new-account">
-                                                                    <!-- 																<h3> -->
-                                                                    <!-- 																	<span>#{msg.login__new_to_goobi_viewer}</span> -->
-                                                                    <!-- 																</h3> -->
                                                                     <button
                                                                         type="button"
                                                                         class="btn btn--clean user-login-modal__new-account-submit"
@@ -221,21 +213,16 @@
                                                 </div>
                                             </ui:fragment>
                                             <script>
-                                                // MOVE PLACEHOLDER OUT OF INPUT AFTER TEXT ENTERED
-                                                $('.user-login-modal__form-control').on(
-                                                    'input change keyup blur load',
-                                                    function () {
-                                                        if ($(this).val().length > 0) {
-                                                            $(this).addClass('-valueEntered');
-                                                        } else {
-                                                            $(this).removeClass('-valueEntered');
-                                                        }
+                                                $('.user-login-modal__form-control').on('input change keyup blur load', function () {
+                                                    if ($(this).val().length > 0) {
+                                                        $(this).addClass('-valueEntered');
+                                                    } else {
+                                                        $(this).removeClass('-valueEntered');
                                                     }
-                                                );
+                                                });
 
                                                 $(document).ready(function () {
                                                     $('.user-login-modal__form-control').each(function () {
-                                                        //console.log($(this).val());
                                                         if ($(this).val().length > 0) {
                                                             $(this).addClass('-valueEntered');
                                                         } else {
@@ -251,7 +238,6 @@
                                             id="loginTypeRetrieveAccount"
                                             class="user-login-modal__body-login-type retrieve">
                                             <p>#{msg.login__retrieve_account_description}</p>
-
                                             <h:form id="loginTypeRetrieveAccountForm">
                                                 <div class="form-group form-row no-gutters no-gutters">
                                                     <label
@@ -279,9 +265,7 @@
                                                             name="aria-label"
                                                             value="#{msg.submit}" />
                                                     </h:commandButton>
-
                                                     <br />
-
                                                     <button
                                                         type="button"
                                                         class="btn btn--link"
@@ -311,7 +295,6 @@
                                                             styleClass="col-12 col-lg-9 form-control"
                                                             value="#{userBean.lastName}" />
                                                     </div>
-
                                                     <div class="form-group form-row no-gutters">
                                                         <label
                                                             for="#{cc.attrs.id}:userCreateAccountEMail"
@@ -331,7 +314,6 @@
                                                                 value="new-username" />
                                                         </h:inputText>
                                                     </div>
-
                                                     <div class="form-group form-row no-gutters">
                                                         <label
                                                             for="#{cc.attrs.id}:userCreateAccountPW1"
@@ -351,7 +333,6 @@
                                                                 value="new-password" />
                                                         </h:inputSecret>
                                                     </div>
-
                                                     <div class="form-group form-row no-gutters">
                                                         <label
                                                             for="#{cc.attrs.id}:userCreateAccountPW2"
@@ -370,7 +351,6 @@
                                                                 value="new-password" />
                                                         </h:inputSecret>
                                                     </div>
-
                                                     <ui:fragment rendered="#{captchaBean.securityQuestion != null}">
                                                         <div class="form-group form-row no-gutters">
                                                             <label
@@ -395,7 +375,6 @@
                                                             </div>
                                                         </div>
                                                     </ui:fragment>
-
                                                     <ui:fragment rendered="#{termsOfUseBean.isTermsOfUseActive()}">
                                                         <div class="form-group form-row no-gutters user-login-modal__terms">
                                                             <div class="col-12 mb-2 user-login-modal__terms-title">
@@ -403,16 +382,11 @@
                                                             </div>
                                                             <div class="col-12 mb-1 pr-0">
                                                                 <!-- FAKE TEXTBOX SO HTML CAN BE USED -->
-
                                                                 <div class="user-login-modal__terms-text">
                                                                     <h:outputText
                                                                         value="#{termsOfUseBean.getDescription()}"
                                                                         escape="false" />
                                                                 </div>
-
-                                                                <!-- 															<textarea class="user-login-modal__terms-text mb-3" -->
-                                                                <!-- 																readonly="true"> -->
-                                                                <!-- 															</textarea> -->
                                                             </div>
                                                             <div
                                                                 id="createAccountAcceptTerms"
@@ -438,9 +412,7 @@
                                                                 name="aria-label"
                                                                 value="#{msg.login__create_new_account}" />
                                                         </h:commandButton>
-
                                                         <br />
-
                                                         <button
                                                             type="button"
                                                             class="btn btn--link"
@@ -507,6 +479,7 @@
                             </div>
                         </ui:fragment>
 
+                        <!-- KEYBOARD ANIMATION -->
                         <div class="user-login-modal__keyboard">
                             <div class="user-login-modal__keyboard-space-button" />
                             <div class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-1" />
@@ -527,9 +500,8 @@
                             <div class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-16" />
                         </div>
                         <script>
-                            // JUST VISUAL EFFECT - NO FUNCTION
+                            // VISUAL EFFECT ONLY
                             $('.user-login-modal input').focus(function () {
-                                // retrigger animation
                                 $(
                                     '.user-login-modal__keyboard-single-key-3, .user-login-modal__keyboard-single-key-6, .user-login-modal__keyboard-single-key-9, .user-login-modal__keyboard-single-key-12, .user-login-modal__keyboard-single-key-14'
                                 ).removeClass('-keyPressAnimation');
@@ -540,7 +512,6 @@
                                 }, 20);
                             });
 
-                            // MOVE PLACEHOLDER OUT OF INPUT AFTER TEXT ENTERED
                             $('.user-login-modal__form-control').on('change keyup blur', function () {
                                 if ($(this).val().length > 0) {
                                     $(this).addClass('-valueEntered');

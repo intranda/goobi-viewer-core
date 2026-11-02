@@ -3,11 +3,7 @@
    style declarations for cms_template_11_masonry.xhtml
    ==============================================================*/
 /* TPL MASONRY */
-/* BLOCK */
 .tpl-masonry {
-    h1 {
-    }
-    /* ELEMENT */
     &__text {
         margin-bottom: 15px;
     }
@@ -19,14 +15,11 @@
             opacity: 1;
         }
     }
-
     .grid-sizer {
         width: calc(~'33.333333% - 4px');
     }
     .grid-item {
         width: calc(~'33.333333% - 12px');
-    }
-    .grid-item {
         margin-bottom: 6px;
         overflow: hidden;
         img {
@@ -53,8 +46,8 @@
         left: 0;
         width: 100%;
         padding: 5px;
-        color: @white;
-        background-color: rgba(0, 0, 0, 0.65);
+        color: var(--fg-on-inverse);
+        background-color: rgb(from var(--bg-scrim) r g b / 65%);
         transition: all 0.3s ease-in;
         z-index: 10;
     }
@@ -67,14 +60,14 @@
         opacity: 0;
         h2 {
             margin: 0 0 10px 0;
-            font-size: 1.8rem;
+            font-size: var(--font-size-heading-small);
         }
         a {
             display: block;
             padding: 0 10px;
-            font-size: @fontXLarge;
+            font-size: var(--font-size-heading-small);
             text-align: right;
-            color: @white;
+            color: var(--fg-on-inverse);
         }
         .fa {
             margin-left: 10px;
@@ -86,7 +79,6 @@
 }
 
 /* MODIFICATION */
-
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
 }

@@ -3,16 +3,11 @@
    style declarations for cms_template_22_faqSingle.xhtml
    ==============================================================*/
 /* FAQ SINGLE */
-/* BLOCK */
 .tpl-faq-single {
-    /* ELEMENT */
-    &__title {
-    }
     &__content {
         padding: 10px;
-        background-color: @white;
-    }
-    &__text {
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
     }
     &__image {
         img {
@@ -20,7 +15,7 @@
         }
         figcaption {
             font-style: italic;
-            font-size: 1.2rem;
+            font-size: var(--font-size-caption);
         }
     }
 }

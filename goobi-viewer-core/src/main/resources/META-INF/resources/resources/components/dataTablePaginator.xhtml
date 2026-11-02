@@ -3,12 +3,10 @@
     xmlns:util="http://goobi.io/util"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:component="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:jsf="http://xmlns.jcp.org/jsf">
-    <!-- interface options -->
+    <!-- INTERFACE -->
     <composite:interface>
         <composite:attribute
             name="tableValues"
@@ -23,7 +21,7 @@
             default="dataTablePaginator" />
     </composite:interface>
 
-    <!-- component content -->
+    <!-- CONTENT -->
     <composite:implementation>
         <nav
             id="#{cc.attrs.paginatorId}"

@@ -53,6 +53,7 @@
                             </div>
                         </ui:fragment>
 
+                        <!-- FACET DROPDOWN -->
                         <ui:fragment rendered="#{field.type eq 'FACET_DROPDOWN'}">
                             <div
                                 class="search-quick-filters__field"
@@ -95,6 +96,7 @@
                 </ui:repeat>
             </div>
 
+            <!-- FILTER ROW -->
             <div class="search-quick-filters__row">
                 <ui:repeat
                     value="#{search.quickFilterFields}"
@@ -142,8 +144,9 @@
             </div>
         </div>
 
+        <!-- BOTTOM ROW -->
         <div class="search-quick-filters__bottom-row">
-            <!-- Search scope: which Solr fields the query targets (replaces the former checkbox group). -->
+            <!-- SEARCH SCOPE -->
             <ui:fragment rendered="#{search.searchFilters.size() gt 1}">
                 <div class="search-quick-filters__search-scope search-standard__filter-select">
                     <span class="search-quick-filters__field-label">#{msg.limitSearch}</span>
@@ -175,7 +178,7 @@
                 </div>
             </ui:fragment>
 
-            <!-- Reset link hidden; redundant with the status bar reset outside the panel -->
+            <!-- HIDDEN RESET LINK -->
             <div
                 class="search-quick-filters__actions"
                 data-quickfilter-actions="true"
@@ -188,28 +191,29 @@
                     #{msg['search__quick_filter__reset']}
                 </a>
             </div>
-        </div>
 
-        <div
-            class="search-quick-filters__status-bar -inner"
-            data-quickfilter-status="true"
-            data-quickfilter-status-label-singular="#{msg['search__quick_filter__active_filter_singular']}"
-            data-quickfilter-status-label-plural="#{msg['search__quick_filter__active_filter_plural']}"
-            style="display:none;">
+            <!-- STATUS BAR -->
             <div
-                class="search-quick-filters__status-info"
-                data-quickfilter-status-tooltip="true"
-                tabindex="0">
-                <util:icon icon="adjustments-horizontal" />
-                <span data-quickfilter-status-text="true" />
+                class="search-quick-filters__status-bar -inner"
+                data-quickfilter-status="true"
+                data-quickfilter-status-label-singular="#{msg['search__quick_filter__active_filter_singular']}"
+                data-quickfilter-status-label-plural="#{msg['search__quick_filter__active_filter_plural']}"
+                style="display:none;">
+                <div
+                    class="search-quick-filters__status-info"
+                    data-quickfilter-status-tooltip="true"
+                    tabindex="0">
+                    <util:icon icon="adjustments-horizontal" />
+                    <span data-quickfilter-status-text="true" />
+                </div>
+                <a
+                    href="#"
+                    class="search-quick-filters__status-reset"
+                    data-quickfilter-status-reset="true">
+                    <util:icon icon="x" />
+                    #{msg['search__quick_filter__reset']}
+                </a>
             </div>
-            <a
-                href="#"
-                class="search-quick-filters__status-reset"
-                data-quickfilter-status-reset="true">
-                <util:icon icon="x" />
-                #{msg['search__quick_filter__reset']}
-            </a>
         </div>
     </div>
 </ui:composition>

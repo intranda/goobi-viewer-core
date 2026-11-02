@@ -2,12 +2,11 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
-    <!-- interface options -->
+    <!-- INTERFACE -->
     <composite:interface />
 
-    <!-- component content -->
+    <!-- CONTENT -->
     <composite:implementation>
         <div
             id="bornDigital"
@@ -75,7 +74,7 @@
                                         <span>#{msg[page.mimeType]}</span>
                                     </div>
                                     <div class="born-digital__item-download-last">
-                                        <!-- Ticket required for download -->
+                                        <!-- TICKET REQUIRED -->
                                         <ui:fragment rendered="#{page.downloadTicketRequired}">
                                             <button
                                                 class="btn btn--full"
@@ -84,7 +83,8 @@
                                                 #{msg.action__born_digital__unlock}
                                             </button>
                                         </ui:fragment>
-                                        <!-- Download allowed -->
+
+                                        <!-- DOWNLOAD ALLOWED -->
                                         <ui:fragment rendered="#{!page.downloadTicketRequired}">
                                             <a
                                                 class="born-digital__item__download btn btn--full"
@@ -99,6 +99,7 @@
                         </div>
                     </ui:fragment>
 
+                    <!-- EXTERNAL RESOURCES -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.hasExternalResources and activeDocumentBean.viewManager.accessPermissionExternalResources}">
                         <div class="download-external-resource__wrapper">
                             <div class="download-external-resource__heading">#{msg.bornDigital_external_resources}</div>

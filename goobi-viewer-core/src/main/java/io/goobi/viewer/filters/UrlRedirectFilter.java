@@ -73,23 +73,47 @@ public class UrlRedirectFilter implements Filter {
         try {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-            // Important: If prefetching requests are not refused here, the status of the backend beans (ActiveDocumentBean in particular)
-            // will point to the prefetched page rather than the actual current page
-            if (isPrefetchingRequest(httpRequest)) {
-                HttpServletResponse httpResponse = (HttpServletResponse) response;
-                httpResponse.setHeader("Cache-Control", "no-store");
-                httpResponse.setStatus(HttpServletResponse.SC_NO_CONTENT);
-                return;
-            }
+            if (httpRequest.getSession(false) != null) {
 
-            Optional<ViewerPath> currentPath = ViewerPathBuilder.createPath(httpRequest);
-            if (currentPath.isPresent()) {
-                // logger.trace("currentPath: {}", currentPath.get());
+                // Permanently redirect explicit calls of index.(x)html to the root url, so that the configured CMS start page is shown
+                // and search engines only index a single start page url
+                if (isIndexFileRequest(httpRequest)) {
+                    String target = httpRequest.getContextPath() + "/";
+                    if (StringUtils.isNotEmpty(httpRequest.getQueryString())) {
+                        target += "?" + httpRequest.getQueryString();
+                    }
+                    logger.debug("Redirecting {} to {}", httpRequest.getRequestURI(), target);
+                    HttpServletResponse httpResponse = (HttpServletResponse) response;
+                    httpResponse.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+                    httpResponse.setHeader("Location", target);
+                    return;
+                }
 
-                ViewHistory.setCurrentView(currentPath.get(), httpRequest.getSession());
-                if (!ViewerPathBuilder.startsWith(currentPath.get().getPagePath(), "cms") && currentPath.get().getCmsPage() != null) {
-                    if (currentPath.get().getCmsPage().isMayContainUrlParameters()
-                            || StringUtils.isBlank(currentPath.get().getParameterPath().toString().replaceAll("/?\\d+/?", ""))) {
+                Optional<ViewerPath> currentPath = ViewerPathBuilder.createPath(httpRequest);
+                if (currentPath.isPresent()) {
+                    // logger.trace("currentPath: {}", currentPath.get());
+                    // Important: If prefetching requests are not refused here, the status of the backend beans (ActiveDocumentBean in particular)
+                    // will point to the prefetched page rather than the actual current page
+                    if (isPrefetchingRequest(httpRequest)) {
+                        HttpServletResponse httpResponse = (HttpServletResponse) response;
+                        httpResponse.setHeader("Cache-Control", "no-store");
+                        httpResponse.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                        return;
+                    }
+
+                    ViewHistory.setCurrentView(currentPath.get(), httpRequest.getSession(false));
+                    if (!ViewerPathBuilder.startsWith(currentPath.get().getPagePath(), "cms") && currentPath.get().getCmsPage() != null) {
+                        if (currentPath.get().getCmsPage().isMayContainUrlParameters()
+                                || StringUtils.isBlank(currentPath.get().getParameterPath().toString().replaceAll("/?\\d+/?", ""))) {
+                            ViewerPath cmsPagePath = new ViewerPath(currentPath.get());
+                            cmsPagePath.setPagePath(URI.create(currentPath.get().getCmsPage().getRelativeUrlPath(false)));
+                            logger.debug("Forwarding {} to {}", currentPath.get(), cmsPagePath.getCombinedUrl());
+                            RequestDispatcher d = request.getRequestDispatcher(cmsPagePath.getCombinedUrl());
+                            d.forward(request, response);
+                            return;
+                        }
+                    } else if (!ViewerPathBuilder.startsWith(currentPath.get().getPagePath(), "campaigns")
+                            && currentPath.get().getCampaign() != null) {
                         ViewerPath cmsPagePath = new ViewerPath(currentPath.get());
                         cmsPagePath.setPagePath(URI.create(currentPath.get().getCmsPage().getRelativeUrlPath(false)));
                         logger.debug("Forwarding {} to {}", currentPath.get(), cmsPagePath.getCombinedUrl());
@@ -97,13 +121,6 @@ public class UrlRedirectFilter implements Filter {
                         d.forward(request, response);
                         return;
                     }
-                } else if (!ViewerPathBuilder.startsWith(currentPath.get().getPagePath(), "campaigns") && currentPath.get().getCampaign() != null) {
-                    ViewerPath cmsPagePath = new ViewerPath(currentPath.get());
-                    cmsPagePath.setPagePath(URI.create(currentPath.get().getCmsPage().getRelativeUrlPath(false)));
-                    logger.debug("Forwarding {} to {}", currentPath.get(), cmsPagePath.getCombinedUrl());
-                    RequestDispatcher d = request.getRequestDispatcher(cmsPagePath.getCombinedUrl());
-                    d.forward(request, response);
-                    return;
                 }
             }
         } catch (DAOException e) {
@@ -111,6 +128,25 @@ public class UrlRedirectFilter implements Filter {
         }
 
         chain.doFilter(request, response);
+    }
+
+    /**
+     * Checks whether the originally requested url (not an internal forward or welcome-file resolution) points directly at the start page file.
+     *
+     * @param httpRequest HTTP servlet request to check
+     * @return true if the request is a GET/HEAD call whose request uri is {@code <contextPath>/index.html} or {@code <contextPath>/index.xhtml}
+     */
+    static boolean isIndexFileRequest(HttpServletRequest httpRequest) {
+        String method = httpRequest.getMethod();
+        if (!"GET".equalsIgnoreCase(method) && !"HEAD".equalsIgnoreCase(method)) {
+            return false;
+        }
+        String uri = httpRequest.getRequestURI();
+        String contextPath = httpRequest.getContextPath();
+        if (uri == null || contextPath == null) {
+            return false;
+        }
+        return uri.equals(contextPath + "/index.xhtml") || uri.equals(contextPath + "/index.html");
     }
 
     /**

@@ -69,6 +69,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.cms.CMSArchiveConfig;
 import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
@@ -114,6 +115,8 @@ public class SearchHit implements Comparable<SearchHit> {
     private String altUrl;
     /** Secondary label. */
     private String altLabel;
+    /** Catalog type if altUrl points into an archive with catalog view (affects link wording); null otherwise. */
+    private CMSArchiveConfig.CatalogType altUrlCatalogType = null;
     @JsonIgnore
     private final Locale locale;
     private final List<SearchHit> children = new ArrayList<>();
@@ -359,7 +362,7 @@ public class SearchHit implements Comparable<SearchHit> {
             String fulltext = null;
             HttpServletRequest request = BeanUtils.getRequest();
             if (request != null
-                    && AccessConditionUtils.checkAccess(request.getSession(), "text", browseElement.getPi(), teiFilename,
+                    && AccessConditionUtils.checkAccess(request.getSession(false), "text", browseElement.getPi(), teiFilename,
                             NetTools.getIpAddress(request), false).isGranted()) {
                 fulltext = DataFileTools.loadTei((String) doc.getFieldValue(SolrConstants.PI), lang);
             }
@@ -595,9 +598,10 @@ public class SearchHit implements Comparable<SearchHit> {
                 if (!Files.isRegularFile(file)) {
                     throw new FileNotFoundException("File not found: " + file.toAbsolutePath().toAbsolutePath().toString());
                 }
-                
+
                 boolean access =
-                        AccessConditionUtils.checkAccess(request.getSession(), "text", pi, plaintextFilename, NetTools.getIpAddress(request), false)
+                        AccessConditionUtils
+                                .checkAccess(request.getSession(false), "text", pi, plaintextFilename, NetTools.getIpAddress(request), false)
                                 .isGranted();
                 if (access) {
                     fulltext = DataFileTools.loadFulltext(null, plaintextFilename, false);
@@ -610,9 +614,9 @@ public class SearchHit implements Comparable<SearchHit> {
                 if (!Files.isRegularFile(file)) {
                     throw new FileNotFoundException("File not found: " + file.toAbsolutePath().toAbsolutePath().toString());
                 }
-                
+
                 boolean access =
-                        AccessConditionUtils.checkAccess(request.getSession(), "text", pi, altoFilename, NetTools.getIpAddress(request), false)
+                        AccessConditionUtils.checkAccess(request.getSession(false), "text", pi, altoFilename, NetTools.getIpAddress(request), false)
                                 .isGranted();
                 if (access) {
                     if (StringUtils.isNotEmpty(authorityIdentifier)) {
@@ -709,12 +713,10 @@ public class SearchHit implements Comparable<SearchHit> {
         return browseElement;
     }
 
-    
     public long getHitNumber() {
         return hitNumber;
     }
 
-    
     public void setHitNumber(long hitNumber) {
         this.hitNumber = hitNumber;
     }
@@ -931,22 +933,26 @@ public class SearchHit implements Comparable<SearchHit> {
         return url;
     }
 
-    
     public String getAltUrl() {
         return altUrl;
     }
 
-    
     public void setAltUrl(String altUrl) {
         this.altUrl = altUrl;
     }
 
-    
     public String getAltLabel() {
         return altLabel;
     }
 
-    
+    public CMSArchiveConfig.CatalogType getAltUrlCatalogType() {
+        return altUrlCatalogType;
+    }
+
+    public void setAltUrlCatalogType(CMSArchiveConfig.CatalogType altUrlCatalogType) {
+        this.altUrlCatalogType = altUrlCatalogType;
+    }
+
     public void setAltLabel(String altLabel) {
         this.altLabel = altLabel;
     }
@@ -1052,7 +1058,7 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Getter for unit tests.
      * 
-
+     * 
      */
     String getAuthorityDataIdentifier() {
         return authorityDataIdentifier;

@@ -1,4 +1,4 @@
-<!-- Widget to display facets of a field independently from a current search -->
+<!-- FIELD FACETS WITHOUT A CURRENT SEARCH -->
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
@@ -12,12 +12,14 @@
             type="io.goobi.viewer.model.cms.widget.CustomSidebarWidget"
             required="true" />
     </composite:interface>
+
     <composite:implementation>
         <ui:fragment rendered="#{not empty cc.attrs.widget.facetField}">
             <div
                 id="searchListFacetsWrapper"
                 class="widget-search-facets #{cc.attrs.widget.styleClass}">
                 <h:form
+                    styleClass="widget__form-wrapper"
                     id="searchListFacetsForm"
                     prependId="false">
                     <!-- DRILL DOWN -->
@@ -34,6 +36,7 @@
                                 data-heading="searchFacetFilter">
                                 #{msg[field.concat('_DD')]}
                             </h3>
+
                             <!-- FILTER FACETS -->
                             <ui:fragment rendered="#{configurationBean.isFacetFieldDisplayValueFilter(field)}">
                                 <div
@@ -64,9 +67,7 @@
                                 </div>
                             </ui:fragment>
                         </div>
-
                         <p class="sr-only">#{msg.a11y__widget_facets_reloaded}</p>
-
                         <div class="widget__body widget-search-facets__body">
                             <ul class="widget-search-facets__list">
                                 <!-- ACTIVE FACETS -->
@@ -122,12 +123,13 @@
                                             </span>
                                             <span class="widget-search-facets__list-item-text">
                                                 <span class="widget-search-facets__list-item-label">#{msg[facet.label]}</span>
-                                                <span class="widget-search-facets__list-item-count">(#{facet.count})</span>
+                                                <span class="widget-search-facets__list-item-count">#{facet.count}</span>
                                             </span>
                                             <f:passThroughAttribute
                                                 name="aria-label"
                                                 value="#{msg[field.concat('_DD')]}: #{msg[facet.label]} (#{facet.count})" />
                                         </h:outputLink>
+
                                         <!-- NEGATIVE (EXCLUDE) SELECTION -->
                                         <h:outputLink
                                             styleClass="widget-search-facets__list-item-control-link"

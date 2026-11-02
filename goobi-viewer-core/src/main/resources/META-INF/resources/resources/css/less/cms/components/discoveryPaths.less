@@ -1,0 +1,212 @@
+.cms-discovery-paths {
+    --_discovery-paths-type-fluid: 7.2vw;
+    --_discovery-paths-transition-duration: 280ms;
+    --_discovery-paths-edge: var(--bg-surface);
+
+    color: var(--fg-default);
+    background-color: var(--_discovery-paths-edge);
+    border-bottom: 1px solid var(--border-default);
+
+    &__inner {
+        max-width: var(--page-max-width, 192rem);
+        margin-inline: auto;
+        padding: clamp(6.4rem, 7vw, 11.2rem) var(--page-gutter, 2.4rem);
+    }
+
+    &__introduction {
+        text-align: center;
+    }
+
+    &__eyebrow {
+        margin: 0 0 0.8rem;
+        color: var(--fg-secondary);
+        font-size: var(--font-size-caption);
+        letter-spacing: 0.1em;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+
+    &__heading {
+        max-width: 54ch;
+        margin: 0 auto;
+        color: var(--fg-secondary);
+        font-family: var(--font-family);
+        font-size: var(--font-size-body-small);
+        font-weight: 500;
+        letter-spacing: 0.12em;
+        line-height: 1.5;
+        text-transform: uppercase;
+        text-wrap: balance;
+        overflow-wrap: anywhere;
+    }
+
+    &__stage {
+        max-width: 136rem;
+        margin: clamp(4rem, 4.5vw, 6.4rem) auto 0;
+    }
+
+    &__statement {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 0.22em 0.6em;
+        margin: 0;
+        padding: 0;
+        font-family: var(--font-family-display);
+        font-size: clamp(calc(var(--font-size-heading-large) * 1.3125), var(--_discovery-paths-type-fluid), calc(var(--font-size-heading-large) * 3.5));
+        font-variation-settings:
+            'opsz' 96,
+            'SOFT' 20,
+            'WONK' 0;
+        font-weight: 400;
+        letter-spacing: -0.055em;
+        line-height: 1.12;
+        list-style: none;
+    }
+
+    &__phrase {
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+
+        &:nth-child(3) {
+            flex-basis: 100%;
+        }
+    }
+
+    &__link {
+        display: inline-block;
+        max-width: 100%;
+        padding-block: 0.12em;
+        color: var(--fg-heading);
+        text-decoration: none;
+        transition: color var(--_discovery-paths-transition-duration) ease;
+
+        &:hover,
+        &:focus-visible {
+            color: var(--fg-brand);
+            text-decoration: underline;
+            text-decoration-thickness: 0.025em;
+            text-underline-offset: 0.12em;
+        }
+
+        &:focus-visible {
+            .mx-focus-visible();
+            outline-offset: 0.8rem;
+        }
+    }
+
+    &__title {
+        min-width: 0;
+        max-width: 100%;
+        overflow-wrap: anywhere;
+        text-wrap: balance;
+    }
+
+    &__phrase:nth-child(2) .cms-discovery-paths__title {
+        font-style: italic;
+    }
+
+    &__phrase:nth-child(2) .cms-discovery-paths__link {
+        color: var(--fg-brand);
+        text-decoration: underline;
+        text-decoration-thickness: 0.025em;
+        text-underline-offset: 0.12em;
+    }
+
+    &__phrase:nth-child(2) .cms-discovery-paths__link:hover,
+    &__phrase:nth-child(2) .cms-discovery-paths__link:focus-visible {
+        color: var(--fg-link-hover);
+    }
+
+    &__captions {
+        display: grid;
+        justify-items: center;
+        margin-block-start: clamp(3.2rem, 4vw, 5.6rem);
+    }
+
+    &__description,
+    &__prompt {
+        grid-area: 1 / 1;
+        width: 100%;
+        max-width: 54ch;
+        margin: 0;
+        color: var(--fg-secondary);
+        font-family: var(--font-family);
+        font-size: var(--font-size-body);
+        font-weight: 400;
+        font-style: normal;
+        letter-spacing: normal;
+        line-height: var(--line-height-prose);
+        text-align: center;
+        text-wrap: balance;
+        overflow-wrap: anywhere;
+        transition: opacity var(--_discovery-paths-transition-duration) ease;
+    }
+
+    &__description {
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    &__stage:has([data-discovery-path-number='1']:focus-visible) [data-discovery-description='1'],
+    &__stage:has([data-discovery-path-number='2']:focus-visible) [data-discovery-description='2'],
+    &__stage:has([data-discovery-path-number='3']:focus-visible) [data-discovery-description='3'],
+    &__stage:not(:has(.cms-discovery-paths__link:focus-visible)):has([data-discovery-path-number='1']:hover) [data-discovery-description='1'],
+    &__stage:not(:has(.cms-discovery-paths__link:focus-visible)):has([data-discovery-path-number='2']:hover) [data-discovery-description='2'],
+    &__stage:not(:has(.cms-discovery-paths__link:focus-visible)):has([data-discovery-path-number='3']:hover) [data-discovery-description='3'] {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    &__stage:has(.cms-discovery-paths__link:hover) .cms-discovery-paths__prompt,
+    &__stage:has(.cms-discovery-paths__link:focus-visible) .cms-discovery-paths__prompt {
+        visibility: hidden;
+        opacity: 0;
+    }
+}
+
+@media screen and (max-width: @smallBreakpoint) {
+    .cms-discovery-paths {
+        --_discovery-paths-type-fluid: 10vw;
+
+        &__inner {
+            padding-block: 5.6rem;
+        }
+
+        &__stage {
+            margin-block-start: 3.2rem;
+        }
+
+        &__statement {
+            gap: 1.6rem;
+            font-size: clamp(var(--font-size-heading-large), var(--_discovery-paths-type-fluid), calc(var(--font-size-heading-large) * 1.75));
+        }
+
+        &__phrase {
+            width: 100%;
+        }
+
+        &__link {
+            min-height: 4.4rem;
+        }
+
+        &__description {
+            max-width: 38ch;
+            font-size: var(--font-size-body-small);
+        }
+
+        &__prompt {
+            font-size: var(--font-size-body-small);
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cms-discovery-paths {
+        --_discovery-paths-transition-duration: 0ms;
+    }
+}

@@ -644,6 +644,45 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchBean#generateAdvancedSearchMainQuery()
+     * @verifies include both range bounds in query info
+     */
+    @Test
+    void generateAdvancedSearchMainQuery_shouldIncludeBothRangeBoundsInQueryInfo() {
+        searchBean.resetAdvancedSearchParameters();
+
+        // CALENDAR_DAY is searched as a range even without range/datepicker config (e.g. calendar TocView search)
+        SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+        item.setOperator(SearchItemOperator.AND);
+        item.setField(SolrConstants.CALENDAR_DAY);
+        item.setValue("01.01.1995");
+        item.setValue2("31.12.1995");
+
+        searchBean.generateAdvancedSearchMainQuery();
+        String info = searchBean.getAdvancedSearchQueryInfo();
+        Assertions.assertTrue(info.contains("[01.01.1995 - 31.12.1995]"), info);
+    }
+
+    /**
+     * @see SearchBean#generateAdvancedSearchMainQuery()
+     * @verifies include both range bounds in query info for NOT item
+     */
+    @Test
+    void generateAdvancedSearchMainQuery_shouldIncludeBothRangeBoundsInQueryInfoForNOTItem() {
+        searchBean.resetAdvancedSearchParameters();
+
+        SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+        item.setOperator(SearchItemOperator.NOT);
+        item.setField(SolrConstants.CALENDAR_DAY);
+        item.setValue("01.01.1995");
+        item.setValue2("31.12.1995");
+
+        searchBean.generateAdvancedSearchMainQuery();
+        String info = searchBean.getAdvancedSearchQueryInfo();
+        Assertions.assertTrue(info.contains("[01.01.1995 - 31.12.1995]"), info);
+    }
+
+    /**
      * @see SearchBean#generateAdvancedSearchMainQuery(boolean)
      * @verifies add multiple facets for the same field correctly
      */

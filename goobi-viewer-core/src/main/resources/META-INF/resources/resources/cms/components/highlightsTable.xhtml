@@ -1,9 +1,6 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:t="http://myfaces.apache.org/tomahawk"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
@@ -28,8 +25,8 @@
                             tableValues="#{cc.attrs.dataProvider}"
                             paginatorId="dataTablePaginator_#{cc.clientId}" />
                     </div>
+
                     <!-- FILTER -->
-                    <!-- TO DO AK: Functionality search in columns/filter -->
                     <div class="admin__table-filter">
                         <viewerComponent:dataTableColumnFilter
                             key="admin__highlights__search"
@@ -64,9 +61,6 @@
                         role="columnheader">
                         #{msg.admin__highlights__table_until}
                     </div>
-                    <!-- 	                                <div class="col-2 d-flex justify-content-center" role="columnheader"> -->
-                    <!-- 	                                	#{msg.admin__highlights__table_active} -->
-                    <!-- 	                                </div> -->
                 </div>
 
                 <!-- INDIVIDUAL ROWS -->
@@ -85,7 +79,6 @@
                                     title="#{object.data.recordIdentifier}"
                                     src="#{object.getImageURI(160, 160)}" />
                             </div>
-
                             <div
                                 class="admin__table-data"
                                 role="gridcell">
@@ -153,16 +146,6 @@
                                 <ui:fragment rendered="#{empty object.data.dateEnd}">-</ui:fragment>
                             </span>
                         </div>
-
-                        <!-- IS ACTIVE? -->
-                        <!-- 	                                    <div class="col-2 d-flex justify-content-center" role="gridcell"> -->
-                        <!-- 	                                        <ui:fragment rendered="#{object.data.enabled}"> -->
-                        <!-- 	                                        	<span class="sr-only">#{msg.yes}</span><i class="fa fa-check" aria-hidden="true"></i> -->
-                        <!-- 	                                        </ui:fragment> -->
-                        <!-- 	                                        <ui:fragment rendered="#{!object.data.enabled}"> -->
-                        <!-- 	                                        	<span class="sr-only">#{msg.no}</span> -->
-                        <!-- 	                                        </ui:fragment> -->
-                        <!-- 	                                  </div> -->
                     </div>
                 </ui:repeat>
             </div>
@@ -180,12 +163,11 @@
                 viewerJS.dataTable.init(dataTableConfig);
             });
 
-            // Create no entries found message
             if ($('#tableWrapper_#{cc.clientId} .admin__table-entry').length == 0) {
-                $('#tableWrapper_#{cc.clientId}.admin__table-content').append('
-            <br />
-            <p>#{msg.hitsZero}</p>
-            ');
+                $('#tableWrapper_#{cc.clientId}.admin__table-content').append(
+                    document.createElement('br'),
+                    $(document.createElement('p')).text(#{navigationHelper.getTranslationsAsJson(['hitsZero'])}.hitsZero)
+                );
             }
         </script>
     </composite:implementation>

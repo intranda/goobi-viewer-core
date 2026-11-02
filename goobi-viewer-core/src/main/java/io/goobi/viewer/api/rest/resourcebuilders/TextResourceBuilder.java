@@ -105,8 +105,8 @@ public class TextResourceBuilder {
     }
 
     /**
-     * Aggregate plain-text endpoint: concatenates the plain-text representation of every page of
-     * a record. Guarded against OOM via {@link Configuration#getMaxAggregateFulltextSize()}.
+     * Aggregate plain-text endpoint: concatenates the plain-text representation of every page of a record. Guarded against OOM via
+     * {@link Configuration#getMaxAggregateFulltextSize()}.
      *
      * @should throw IllegalRequestException if aggregate fulltext size exceeds limit
      */
@@ -134,17 +134,15 @@ public class TextResourceBuilder {
     }
 
     /**
-     * String-list counterpart to {@link #sumFileSizesOrThrow(String, List, long, String)}: sums
-     * an UTF-16 byte upper bound (length() * 2 + 4 for the {@code "\n\n"} separator) and throws
-     * if the running total exceeds the limit.
+     * String-list counterpart to {@link #sumFileSizesOrThrow(String, List, long, String)}: sums an UTF-16 byte upper bound (length() * 2 + 4 for the
+     * {@code "\n\n"} separator) and throws if the running total exceeds the limit.
      *
      * Package-private for direct unit testing.
      *
      * @param pi persistent identifier (used only in the error message)
      * @param pages page-text Strings to sum
      * @param limit maximum allowed total bytes
-     * @param zipFallback short suffix of the streaming alternative endpoint, e.g.
-     *            {@code "plaintext.zip"}
+     * @param zipFallback short suffix of the streaming alternative endpoint, e.g. {@code "plaintext.zip"}
      * @return total in bytes if the limit was not exceeded
      * @throws IllegalRequestException if the running total exceeds {@code limit}
      * @should throw IllegalRequestException when sum exceeds limit
@@ -154,7 +152,7 @@ public class TextResourceBuilder {
             throws IllegalRequestException {
         long total = 0;
         for (String page : pages) {
-            total += (long) page.length() * 2 + 4;   // *2 for UTF-16, +4 for "\n\n" separator
+            total += (long) page.length() * 2 + 4; // *2 for UTF-16, +4 for "\n\n" separator
             if (total > limit) {
                 throw new IllegalRequestException(String.format(
                         "Aggregate text size for record %s exceeds the configured limit of %d bytes (%d pages)."
@@ -237,13 +235,11 @@ public class TextResourceBuilder {
     }
 
     /**
-     * Aggregate ALTO endpoint: returns concatenated ALTO XML for all pages of a record. Note: the
-     * result is NOT well-formed XML (multiple XML declarations and root <code>&lt;alto&gt;</code>
-     * elements). Use {@link #getAltoAsZip(String, HttpServletRequest)} for parsable output.
+     * Aggregate ALTO endpoint: returns concatenated ALTO XML for all pages of a record. Note: the result is NOT well-formed XML (multiple XML
+     * declarations and root <code>&lt;alto&gt;</code> elements). Use {@link #getAltoAsZip(String, HttpServletRequest)} for parsable output.
      *
-     * Guarded against OOM via {@link Configuration#getMaxAggregateAltoSize()}: rejects requests
-     * whose summed page-file size exceeds the configured cap with HTTP 400 (via
-     * {@link IllegalRequestException}).
+     * Guarded against OOM via {@link Configuration#getMaxAggregateAltoSize()}: rejects requests whose summed page-file size exceeds the configured
+     * cap with HTTP 400 (via {@link IllegalRequestException}).
      *
      * @should throw IllegalRequestException if aggregate ALTO size exceeds limit
      */
@@ -279,19 +275,16 @@ public class TextResourceBuilder {
     }
 
     /**
-     * Sums the on-disk size of the given file paths and throws as soon as the running total
-     * exceeds the limit. Used by the aggregate ALTO endpoint to fail fast before allocating
-     * the concatenated response.
+     * Sums the on-disk size of the given file paths and throws as soon as the running total exceeds the limit. Used by the aggregate ALTO endpoint to
+     * fail fast before allocating the concatenated response.
      *
-     * Package-private for direct unit testing — exercising this path through the public method
-     * requires Solr fixtures with FILENAME_ALTO entries that the embedded test index does not
-     * carry for the bundled records.
+     * Package-private for direct unit testing — exercising this path through the public method requires Solr fixtures with FILENAME_ALTO entries that
+     * the embedded test index does not carry for the bundled records.
      *
      * @param pi persistent identifier (used only in the error message)
      * @param files files to sum
      * @param limit maximum allowed total bytes
-     * @param zipFallback short suffix of the streaming alternative endpoint, e.g.
-     *            {@code "alto.zip"} or {@code "plaintext.zip"}
+     * @param zipFallback short suffix of the streaming alternative endpoint, e.g. {@code "alto.zip"} or {@code "plaintext.zip"}
      * @return total size in bytes if the limit was not exceeded
      * @throws IOException on IO failure reading file metadata
      * @throws IllegalRequestException if the running total exceeds {@code limit}
@@ -657,25 +650,24 @@ public class TextResourceBuilder {
             logger.debug("{}: {} ALTO files found, {} need conversion ({} skipped due to existing plaintext)",
                     pi, altoFiles.size(), altoFilesToConvert.size(), altoFiles.size() - altoFilesToConvert.size());
             altoFilesToConvert.forEach(p -> {
-                        try {
-                            String text = ALTOTools.getFulltext(p, StringTools.DEFAULT_ENCODING);
-                            ret.put(Paths.get(p.toString().replaceAll("(?i)\\.(alto|xml)", ".txt")), text);
-                        } catch (IOException e) {
-                            logger.error("Error reading file {}", p, e);
-                        }
-                    });
+                try {
+                    String text = ALTOTools.getFulltext(p, StringTools.DEFAULT_ENCODING);
+                    ret.put(Paths.get(p.toString().replaceAll("(?i)\\.(alto|xml)", ".txt")), text);
+                } catch (IOException e) {
+                    logger.error("Error reading file {}", p, e);
+                }
+            });
         }
 
         return ret;
     }
 
     /**
-     * Fetches the accessible file paths for a record by querying Solr for canonical filenames,
-     * evaluating access conditions in memory (one batch Solr query total), and resolving each
-     * bare filename to a filesystem {@link java.nio.file.Path}.
+     * Fetches the accessible file paths for a record by querying Solr for canonical filenames, evaluating access conditions in memory (one batch Solr
+     * query total), and resolving each bare filename to a filesystem {@link java.nio.file.Path}.
      *
-     * <p>Files present in Solr but absent from disk are silently skipped.
-     * Legacy filenames on disk that are absent from Solr are never returned.
+     * <p>
+     * Files present in Solr but absent from disk are silently skipped. Legacy filenames on disk that are absent from Solr are never returned.
      *
      * @param pi persistent identifier of the record
      * @param filenameField Solr field to query, e.g. {@code SolrConstants.FILENAME_ALTO}
@@ -720,7 +712,7 @@ public class TextResourceBuilder {
         List<java.nio.file.Path> files = new ArrayList<>();
         // Resolve the current user once for all access checks in this method to avoid
         // repeated expensive session attribute scans (findInstanceInSessionAttributes) per file.
-        User currentUser = AccessConditionUtils.retrieveUserFromContext(request != null ? request.getSession() : null);
+        User currentUser = AccessConditionUtils.retrieveUserFromContext(request != null ? request.getSession(false) : null);
 
         if (folder != null && Files.isDirectory(folder)) {
             try (Stream<java.nio.file.Path> paths = Files.list(folder)
@@ -728,7 +720,7 @@ public class TextResourceBuilder {
                     .filter(p -> {
                         try {
                             return AccessConditionUtils
-                                    .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null,
+                                    .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession(false) : null,
                                             p.getParent().getFileName().toString(), p.getFileName().toString(),
                                             IPrivilegeHolder.PRIV_VIEW_FULLTEXT, NetTools.getIpAddress(request), currentUser)
                                     .isGranted();
@@ -749,7 +741,7 @@ public class TextResourceBuilder {
                     .filter(p -> {
                         try {
                             return AccessConditionUtils
-                                    .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null,
+                                    .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession(false) : null,
                                             p.getParent().getFileName().toString(), p.getFileName().toString(),
                                             IPrivilegeHolder.PRIV_VIEW_FULLTEXT, NetTools.getIpAddress(request), currentUser)
                                     .isGranted();

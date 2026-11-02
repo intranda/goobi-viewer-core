@@ -3,44 +3,19 @@
    style declarations for widget_citation.xhtml
    ==============================================================*/
 
-#widgetCitation {
-}
 .widget-citation {
-    &__topbar {
-    }
-    &__title {
-    }
+    /* SUBTITLE */
     &__subtitle {
         margin-bottom: 6px;
     }
+    /* LICENSE TEXT */
     &__license-text {
         margin-bottom: 15px;
         a {
             display: inline !important;
         }
     }
-    &__subtitle {
-    }
-    &__page-downloads {
-        a,
-        form,
-        button {
-        }
-        .badge {
-            &:hover,
-            &:active,
-            &:focus {
-            }
-        }
-    }
-    &__work-downloads {
-        a {
-        }
-        .badge {
-        }
-    }
-    &__work-download-ris {
-    }
+    /* CITERECOMMENDATION */
     &__citerecommendation-dropdown {
         width: 100%;
         margin-bottom: 1.2rem;
@@ -49,7 +24,7 @@
         display: flex;
         margin-bottom: 1.4rem;
         .widget-citation__citerecommendation-quote-icon {
-            color: @middlegray;
+            color: var(--fg-muted);
             padding-right: 0.5rem;
             align-self: flex-start;
         }
@@ -59,7 +34,7 @@
     }
     &__citerecommendation-copy-text {
         cursor: pointer;
-        color: @black;
+        color: var(--fg-default);
         text-decoration: none;
         user-select: none;
         background: none;
@@ -68,12 +43,12 @@
         &:active,
         &:focus {
             text-decoration: none;
-            color: @black;
+            color: var(--fg-default);
         }
     }
     &__citerecommendation-text-info {
         width: 100%;
-        font-size: 11px;
+        font-size: var(--font-size-caption);
     }
 }
 

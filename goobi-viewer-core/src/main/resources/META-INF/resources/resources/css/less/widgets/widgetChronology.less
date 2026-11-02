@@ -3,26 +3,28 @@
    style declarations for widget_chronology.xhtml
    ==============================================================*/
 /* WIDGET CHRONOLOGY */
-/* BLOCK */
 .widget-chronology-slider {
     overflow: hidden;
-    color: @black;
+    color: var(--fg-default);
+    /* TOPBAR */
     &__topbar {
         flex: 0 0 100%;
         display: flex;
     }
+    /* BODY */
     &__body {
         display: grid;
         grid-template-columns: 1fr 1fr;
     }
-    /* transparent to the grid layout above, so its children (start/end) keep
-       occupying their own grid columns as if this wrapper didn't exist */
+    /* GRID-TRANSPARENT GROUP */
     &__group {
         display: contents;
     }
+    /* DESCRIPTION TEXT */
     &__description-text {
         grid-column: 1 / 3;
     }
+    /* ITEMS */
     &__item {
         &.chronology-slider-label,
         &.chronology-slider-actions {
@@ -34,11 +36,8 @@
         }
         &.chronology-slider-actions {
             gap: 10px;
-        }
-
-        &.chronology-slider-actions {
             ul {
-                .mx-list-reset;
+                .mx-list-reset();
                 display: flex;
                 justify-content: flex-end;
             }
@@ -48,8 +47,6 @@
             img {
                 width: 20px;
                 height: 20px;
-            }
-            [data-reset='chrono-slider'] {
             }
         }
         &.chronology-slider-action-loader,
@@ -64,15 +61,9 @@
                 visibility: visible;
             }
         }
-        &.chronology-slider-action-loader {
-        }
-        &.chronology-slider-action-reset {
-        }
         &.chronology-slider-start,
         &.chronology-slider-end {
-            font-size: @fontMedium;
-        }
-        &.chronology-slider-start {
+            font-size: var(--font-size-body-small);
         }
         &.chronology-slider-end {
             text-align: right;
@@ -83,10 +74,6 @@
         }
     }
     &__item-input {
-        /* &::selection {
-	    	background: rgba(201, 102, 102, 0.6);
-	    	color: white;
-		} */
         background: transparent;
         width: 4em;
         border: 1px solid transparent;
@@ -94,25 +81,24 @@
         text-align: inherit;
         padding: 0.3rem;
         &:focus {
-            background-color: rgba(0, 0, 0, 0.06);
+            background-color: rgb(from var(--bg-scrim) r g b / 6%);
         }
     }
+    /* ACTION RESET BUTTON */
     &__action-reset-button {
-        font-size: 1.2rem;
+        font-size: var(--font-size-caption);
         border: none;
         background: none;
         padding: 0;
     }
-}
-
-.widget-chronology-slider {
+    /* SLIDER */
     &__slider {
         height: 1rem;
         border: none;
         border-radius: 5px;
-        border-color: @lightgray;
+        border-color: var(--border-default);
         background-image: none;
-        background-color: @lightgray;
+        background-color: var(--bg-subtle);
         .ui-slider-range,
         .ui-slider-handle {
             border-radius: 4px;
@@ -122,32 +108,35 @@
             }
         }
         .ui-slider-range {
-            border-color: @blue;
-            background-color: @blue;
+            border-color: var(--border-brand);
+            background-color: var(--fg-brand);
         }
         .ui-slider-handle {
             width: 1rem;
             height: 1rem;
             top: 0;
             margin: 0;
-            border-color: @gray;
-            background-color: @middlegray;
+            border-color: var(--border-contrast);
+            background-color: var(--bg-selected);
             cursor: pointer;
         }
     }
 }
 
+/* CHRONOLOGY SLIDER */
 .chronology-slider {
+    /* SLIDER */
     .widget-chronology-slider__slider {
         border: none;
     }
+    /* INPUT ROW */
     &__input-wrapper {
         display: flex;
         margin-top: 10px;
         align-items: center;
         input {
             width: 40px;
-            font-size: 12px;
+            font-size: var(--font-size-caption);
         }
     }
     &__input-start,
@@ -157,38 +146,35 @@
         padding: 0.3rem;
         height: unset;
     }
-    &__input-start {
-    }
-    &__input-end {
-    }
+    /* OK BUTTON */
     &__ok-button {
         min-width: unset;
         margin-left: 15px;
     }
+    /* BETWEEN YEAR SYMBOL */
     &__between-year-symbol {
         margin: 0 5px;
     }
+    /* GRAPH */
     &__graph {
         height: 150px;
-        &-line {
-            color: rgba(200, 89, 153, 1);
-        }
-        &-area {
-            color: rgba(200, 89, 153, 0.3);
-        }
-        &-range {
-            color: @blue;
-            background-color: @blue;
-            opacity: 0.1;
-        }
+    }
+    &__graph-line {
+        color: var(--color-chart-chronology);
+    }
+    &__graph-area {
+        color: rgb(from var(--color-chart-chronology) r g b / 30%);
+    }
+    &__graph-range {
+        color: var(--fg-brand);
+        background-color: var(--fg-brand);
+        opacity: 0.1;
     }
 }
 
+/* RTL */
 @{RTL} .widget-chronology-slider {
     &__item {
-        &.chronology-slider-label,
-        &.chronology-slider-actions {
-        }
         &.chronology-slider-label {
             margin-right: unset;
             margin-left: auto;

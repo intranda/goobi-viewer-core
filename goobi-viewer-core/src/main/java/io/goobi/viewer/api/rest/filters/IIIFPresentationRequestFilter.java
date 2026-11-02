@@ -122,7 +122,8 @@ public class IIIFPresentationRequestFilter implements ContainerRequestFilter {
      * @throws ServiceNotAllowedException
      */
     private void filterForAccessConditions(String pi, String logId) throws ServiceNotAllowedException {
-        logger.trace("filterForAccessConditions: {}", servletRequest.getSession().getId());
+        logger.trace("filterForAccessConditions: {}",
+                Optional.ofNullable(servletRequest.getSession(false)).map(s -> s.getId()).orElse("[no session]"));
 
         boolean access = false;
         try {

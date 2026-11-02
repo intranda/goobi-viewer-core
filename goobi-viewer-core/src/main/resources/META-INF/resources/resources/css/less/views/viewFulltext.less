@@ -3,28 +3,28 @@
    style declarations for viewFulltext.xhtml 
    ==============================================================*/
 /* VIEW FULLTEXT */
-/* BLOCK */
 .view-fulltext {
-    /* ELEMENT */
-    &__wrapper {
-    }
+    /* BOX */
     &__box {
         pre {
             padding: 10px;
-            border: 1px solid @middlegray;
+            border: 1px solid var(--border-strong);
             border-radius: 0;
-            background-color: @lightgray;
+            background-color: var(--bg-subtle);
+            color: var(--fg-default);
             white-space: pre-wrap;
             & > br:first-child {
                 display: none;
             }
         }
     }
+    /* CONTENT */
     &__content {
         padding: 10px;
-        border: 1px solid #ccc;
+        border: 1px solid var(--border-strong);
         border-radius: 0;
-        background-color: #eee;
+        background-color: var(--bg-subtle);
+        color: var(--fg-default);
         & > :first-child {
             margin-top: 0;
         }
@@ -32,20 +32,22 @@
             max-width: 100%;
         }
     }
+    /* POPOVER BUTTON */
     &__popover-button {
         display: flex;
         align-items: center;
         gap: 8px;
-        color: #222;
+        color: var(--fg-default);
         vertical-align: baseline;
         background: transparent;
         padding: 0;
         border: none;
         &:hover {
-            color: #222;
+            color: var(--fg-default);
             text-decoration: none;
         }
     }
+    /* ENTITY ACTION BUTTON */
     &__entity-action-button {
         background: transparent;
         display: inline;
@@ -57,6 +59,7 @@
     }
 }
 
+/* POPOVER */
 .view-fulltext__popover-button {
     display: inline-flex;
     align-items: center;
@@ -68,32 +71,32 @@
     height: 1rem;
 }
 
-// ENTITY COLORING
+/* ENTITY COLORING */
 [data-entity-type='person'] {
-    color: #0174df;
+    color: var(--fg-entity-person);
     &:hover,
     &:focus,
     &:active {
-        color: #0174df;
+        color: var(--fg-entity-person);
     }
 }
 
 [data-entity-type='location'] {
-    color: #ff8000;
+    color: var(--fg-entity-location);
     &:hover,
     &:focus,
     &:active {
-        color: #ff8000;
+        color: var(--fg-entity-location);
     }
 }
 
 [data-entity-type='corporation'],
 [data-entity-type='institution'] {
-    color: #298a08;
+    color: var(--fg-entity-institution);
     &:hover,
     &:focus,
     &:active {
-        color: #298a08;
+        color: var(--fg-entity-institution);
     }
 }
 

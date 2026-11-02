@@ -8,22 +8,25 @@
     margin-left: auto;
     margin-right: auto;
 
+    /* VIEWER */
     &__viewer {
         position: relative;
         height: 80vh;
         margin: 15px;
-        background-color: @immersive-canvas-bg;
-        border: 1px solid @immersive-chrome-border-color;
+        background-color: var(--bg-sunken);
+        border: 1px solid var(--border-default);
         border-radius: 12px;
-        box-shadow: @immersive-chrome-shadow;
+        box-shadow: var(--shadow-elevated);
         overflow: hidden;
     }
 
+    /* CANVAS */
     &__canvas {
         width: 100%;
         height: 100%;
     }
 
+    /* IMAGE MAP */
     &__image-map {
         width: 100%;
         height: 100%;
@@ -34,6 +37,7 @@
         }
     }
 
+    /* STAGE LOADER */
     &__stage-loader {
         position: absolute;
         inset: 0;
@@ -52,6 +56,7 @@
         }
     }
 
+    /* IMAGE DENIED */
     &__image-denied {
         position: absolute;
         inset: 0;
@@ -60,7 +65,7 @@
         justify-content: center;
         padding: 24px;
         text-align: center;
-        color: @immersive-canvas-fg;
+        color: var(--fg-default);
     }
 
     &__image-denied-inner {
@@ -72,9 +77,10 @@
     }
 
     &__image-denied-text {
-        font-size: @fontLarge;
+        font-size: var(--font-size-body-large);
     }
 
+    /* PAGE DENIED */
     &__page-denied {
         position: absolute;
         inset: 0;
@@ -84,8 +90,8 @@
         justify-content: center;
         padding: 24px;
         text-align: center;
-        background-color: @immersive-canvas-bg;
-        color: @immersive-canvas-fg;
+        background-color: var(--bg-sunken);
+        color: var(--fg-default);
 
         &[hidden] {
             display: none;
@@ -107,10 +113,11 @@
     }
 
     &__page-denied-text {
-        font-size: @fontLarge;
+        font-size: var(--font-size-body-large);
         opacity: 0.85;
     }
 
+    /* XFADE */
     &__xfade {
         position: absolute;
         inset: 0;
@@ -120,6 +127,7 @@
         z-index: 2;
     }
 
+    /* CONTENT */
     &__content {
         margin-top: 32px;
     }
@@ -152,6 +160,6 @@
 @media screen and (max-width: @xSmallBreakpoint) {
     .immersive__viewer {
         margin: 4px;
-        border-radius: @immersive-radius-lg;
+        border-radius: var(--radius-container);
     }
 }

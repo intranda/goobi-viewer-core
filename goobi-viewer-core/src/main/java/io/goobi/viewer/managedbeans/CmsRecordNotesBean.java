@@ -22,16 +22,25 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.TextNode;
+import org.jsoup.select.NodeTraversor;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.PrettyUrlTools;
@@ -43,6 +52,7 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.CMSArchiveConfig;
 import io.goobi.viewer.model.cms.recordnotes.CMSMultiRecordNote;
 import io.goobi.viewer.model.cms.recordnotes.CMSRecordNote;
 import io.goobi.viewer.model.cms.recordnotes.CMSSingleRecordNote;
@@ -71,11 +81,16 @@ public class CmsRecordNotesBean implements Serializable {
 
     public static final String PI_TITLE_FILTER = "PI_OR_TITLE";
 
+    /** Note text variables, also URL-encoded because rich text editors may store them that way inside link targets. */
+    private static final Pattern NOTE_VARIABLE = Pattern.compile("\\{(PAGE_URL|IMAGE_URL)\\}|%7B(PAGE_URL|IMAGE_URL)%7D", Pattern.CASE_INSENSITIVE);
+
     @Inject
     private ImageDeliveryBean images;
 
     @Inject
     private NavigationHelper navigationHelper;
+    @Inject
+    private ActiveDocumentBean activeDocumentBean;
 
     private TableDataProvider<CMSRecordNote> dataProvider;
 
@@ -156,11 +171,15 @@ public class CmsRecordNotesBean implements Serializable {
     /**
      *
      * @param note Note whose related record URL is requested
-     * @return Record URL
+     * @return Record URL, or the archive URL for a note of an archive
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @should return the archive url for a note of an archive
      */
     public String getRecordUrl(CMSSingleRecordNote note) throws PresentationException, IndexUnreachableException {
+        if (isArchiveNote(note)) {
+            return navigationHelper.getApplicationUrl() + "archives/" + note.getRecordPi() + "/";
+        }
         if (note != null) {
             if (note.getSolrDoc() == null) {
                 note.setSolrDoc(
@@ -224,6 +243,35 @@ public class CmsRecordNotesBean implements Serializable {
         //            lazyModelPages.addFilter("CMSCategory", "name");
     }
 
+    /**
+     * @param note Note to check
+     * @return true if the note belongs to an archive instead of a record
+     * @should return true only for single notes whose identifier is an archive
+     */
+    public boolean isArchiveNote(CMSRecordNote note) {
+        return note instanceof CMSSingleRecordNote n && StringUtils.isNotBlank(n.getRecordPi())
+                && DataManager.getInstance().getArchiveManager().getArchive(n.getRecordPi()) != null;
+    }
+
+    /**
+     * @param note Note of an archive
+     * @return URL of the tile image of the archive, or an empty string if it has none
+     * @throws DAOException
+     * @should return an empty string if the archive has no tile image
+     */
+    public String getArchiveImageUrl(CMSRecordNote note) throws DAOException {
+        if (note instanceof CMSSingleRecordNote n) {
+            return DataManager.getInstance()
+                    .getDao()
+                    .getCmsArchiveConfigForArchive(n.getRecordPi())
+                    .filter(CMSArchiveConfig::hasMediaItem)
+                    .map(config -> config.getMediaItem().getIconURI())
+                    .map(Object::toString)
+                    .orElse("");
+        }
+        return "";
+    }
+
     public List<CMSRecordNote> getNotesForRecord(String pi) throws DAOException {
         List<CMSRecordNote> notes = new ArrayList<>();
         notes.addAll(DataManager.getInstance().getDao().getRecordNotesForPi(pi, true));
@@ -239,5 +287,105 @@ public class CmsRecordNotesBean implements Serializable {
     public String getSearchUrlForNote(CMSMultiRecordNote note) {
         String query = BeanUtils.escapeCriticalUrlChracters(note.getQueryForSearch());
         return PrettyUrlTools.getAbsolutePageUrl("newSearch5", "-", query, "1", "-", "-");
+    }
+
+    /**
+     * Prepares a note text for display: "page" resolves its variables for the page shown in the record view, "client" keeps them for the browser
+     * and any other context has no values for them.
+     *
+     * @param text note text as HTML
+     * @param context variable context of the rendering view
+     * @return the note text to display, or null if the note needs a variable value the context does not have
+     * @should keep variables for the client and hide notes with variables elsewhere when values are missing
+     */
+    public String resolveNoteText(String text, String context) {
+        if ("client".equals(context) || text == null || !NOTE_VARIABLE.matcher(text).find()) {
+            return text;
+        }
+        String pageUrl = "";
+        String imageUrl = "";
+        if ("page".equals(context) && activeDocumentBean != null && activeDocumentBean.getViewManager() != null) {
+            try {
+                if (activeDocumentBean.getViewManager().getCurrentPage() != null) {
+                    pageUrl = activeDocumentBean.getPageUrl();
+                    imageUrl = activeDocumentBean.getViewManager().getCurrentImageUrl();
+                }
+            } catch (IndexUnreachableException | DAOException | ViewerConfigurationException e) {
+                logger.warn("Could not resolve note variables for the current page: {}", e.getMessage());
+            }
+        }
+        return resolveNoteVariables(text, pageUrl, imageUrl);
+    }
+
+    /**
+     * Replaces {PAGE_URL} and {IMAGE_URL} in a note text. In a link target, values after the query mark are URL-encoded. Text without variables is
+     * returned unchanged.
+     *
+     * @param text note text as HTML
+     * @param pageUrl URL of the current page; may be blank
+     * @param imageUrl URL of the current image; may be blank
+     * @return the note text with its variables resolved, or null if one of its variables has no value
+     * @should resolve variables in link targets and text
+     * @should resolve url encoded variables in link targets
+     * @should return null if a variable has no value
+     * @should return text without variables unchanged
+     */
+    public String resolveNoteVariables(String text, String pageUrl, String imageUrl) {
+        if (text == null || !NOTE_VARIABLE.matcher(text).find()) {
+            return text;
+        }
+        Map<String, String> values = Map.of("PAGE_URL", StringUtils.trimToEmpty(pageUrl), "IMAGE_URL", StringUtils.trimToEmpty(imageUrl));
+        Matcher matcher = NOTE_VARIABLE.matcher(text);
+        while (matcher.find()) {
+            if (values.get(variableName(matcher)).isEmpty()) {
+                return null;
+            }
+        }
+        Document doc = Jsoup.parseBodyFragment(text);
+        doc.outputSettings().prettyPrint(false);
+        for (Element link : doc.select("a[href]")) {
+            link.attr("href", replaceNoteVariables(link.attr("href"), values, true));
+        }
+        NodeTraversor.traverse((node, depth) -> {
+            if (node instanceof TextNode textNode && NOTE_VARIABLE.matcher(textNode.getWholeText()).find()) {
+                textNode.text(replaceNoteVariables(textNode.getWholeText(), values, false));
+            }
+        }, doc.body());
+        return doc.body().html();
+    }
+
+    private static String variableName(Matcher matcher) {
+        return (matcher.group(1) != null ? matcher.group(1) : matcher.group(2)).toUpperCase();
+    }
+
+    /**
+     * @return the value with its variables replaced; inside a link target, values after the query mark are URL-encoded
+     */
+    private static String replaceNoteVariables(String value, Map<String, String> values, boolean linkTarget) {
+        int query = linkTarget ? value.indexOf('?') : -1;
+        Matcher matcher = NOTE_VARIABLE.matcher(value);
+        StringBuilder sb = new StringBuilder();
+        while (matcher.find()) {
+            String replacement = values.get(variableName(matcher));
+            if (query >= 0 && matcher.start() > query) {
+                replacement = encodeUriComponent(replacement);
+            }
+            matcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+
+    /**
+     * @return the value encoded like JavaScript's encodeURIComponent, so server and browser build identical links
+     */
+    private static String encodeUriComponent(String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8)
+                .replace("+", "%20")
+                .replace("%21", "!")
+                .replace("%27", "'")
+                .replace("%28", "(")
+                .replace("%29", ")")
+                .replace("%7E", "~");
     }
 }

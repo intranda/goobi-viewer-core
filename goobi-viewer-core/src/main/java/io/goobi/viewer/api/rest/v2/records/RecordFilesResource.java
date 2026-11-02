@@ -110,9 +110,9 @@ public class RecordFilesResource {
     /**
      * Returns the ALTO document for a single page.
      *
-     * <p>The file is looked up first in the crowdsourced ALTO folder and, if not found there, in the record's regular ALTO folder, so
-     * corrections made through crowdsourcing take precedence over the originally indexed file. Access requires the fulltext view
-     * permission for the requested page.
+     * <p>
+     * The file is looked up first in the crowdsourced ALTO folder and, if not found there, in the record's regular ALTO folder, so corrections made
+     * through crowdsourcing take precedence over the originally indexed file. Access requires the fulltext view permission for the requested page.
      *
      * @param filename filename of the alto document
      * @return the ALTO document as an XML string
@@ -146,9 +146,9 @@ public class RecordFilesResource {
     /**
      * Returns the plain text content of a single page.
      *
-     * <p>The text is looked up first in the crowdsourced plaintext folder and then in the regular plaintext folder; if neither contains a
-     * matching file, the page's ALTO file is converted to plain text on the fly instead. Access requires the fulltext view permission for
-     * the requested page.
+     * <p>
+     * The text is looked up first in the crowdsourced plaintext folder and then in the regular plaintext folder; if neither contains a matching file,
+     * the page's ALTO file is converted to plain text on the fly instead. Access requires the fulltext view permission for the requested page.
      *
      * @param filename filename containing the text
      * @return the plain text content of the page
@@ -180,14 +180,14 @@ public class RecordFilesResource {
     /**
      * Returns the fulltext of a single page converted to TEI format.
      *
-     * <p>The plain text of the page (falling back to a converted ALTO file, as for the plaintext endpoint) is wrapped in a generated TEI
-     * header built from the record's indexed metadata. Access requires the fulltext view permission for the requested page.
+     * <p>
+     * The plain text of the page (falling back to a converted ALTO file, as for the plaintext endpoint) is wrapped in a generated TEI header built
+     * from the record's indexed metadata. Access requires the fulltext view permission for the requested page.
      *
      * @param filename filename containing the text
      * @return the page fulltext as a TEI XML document
      * @throws ServiceNotAllowedException if the fulltext view permission is not granted
-     * @throws ContentNotFoundException if no record is found for the given identifier, or if no plaintext or ALTO file exists for the
-     *             filename
+     * @throws ContentNotFoundException if no record is found for the given identifier, or if no plaintext or ALTO file exists for the filename
      */
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_TEI)
@@ -214,11 +214,12 @@ public class RecordFilesResource {
     /**
      * Returns a source metadata file (e.g. METS/LIDO) of the record.
      *
-     * <p>The requested filename is sanitized to strip any path components and restricted to letters, digits, spaces and the characters
-     * {@code . , - _ ! ( ) '} before being resolved beneath the record's configured source folder; any other name is rejected. Rejection
-     * happens as an {@code IllegalArgumentException} that is neither caught here nor mapped, so the caller sees an undeclared 500 rather
-     * than the 400 the v1 endpoint returns. The content type is determined from the file name; if it cannot be determined, the response
-     * falls back to the declared octet stream type. Access requires the download-original-content privilege for the record.
+     * <p>
+     * The requested filename is sanitized to strip any path components and restricted to letters, digits, spaces and the characters
+     * {@code . , - _ ! ( ) '} before being resolved beneath the record's configured source folder; any other name is rejected. Rejection happens as
+     * an {@code IllegalArgumentException} that is neither caught here nor mapped, so the caller sees an undeclared 500 rather than the 400 the v1
+     * endpoint returns. The content type is determined from the file name; if it cannot be determined, the response falls back to the declared octet
+     * stream type. Access requires the download-original-content privilege for the record.
      *
      * @param filename source file name
      * @return the source file content as a binary stream
@@ -255,7 +256,7 @@ public class RecordFilesResource {
 
         String mimeType = "appplication/octet-stream";
         try {
-            mimeType = new MediaResourceHelper(config).setContentHeaders(servletResponse, sanitizedFileName, path);
+            mimeType = new MediaResourceHelper(config).setContentHeaders(servletRequest, servletResponse, sanitizedFileName, path, false);
         } catch (IOException e) {
             logger.error("Failed to probe file content type");
         }
@@ -271,9 +272,10 @@ public class RecordFilesResource {
     /**
      * Returns the CMDI metadata document for a record file.
      *
-     * <p>The requested language defaults to the current user's locale if not given. The record's CMDI folder is searched for a file whose
-     * name matches "{@code _<isoCode>.xml}" for that language's ISO-3 code, falling back to the ISO-2 code if no ISO-3 match exists.
-     * Access requires the fulltext view permission for the given filename.
+     * <p>
+     * The requested language defaults to the current user's locale if not given. The record's CMDI folder is searched for a file whose name matches
+     * "{@code _<isoCode>.xml}" for that language's ISO-3 code, falling back to the ISO-2 code if no ISO-3 match exists. Access requires the fulltext
+     * view permission for the given filename.
      *
      * @param filename image file name for cmdi
      * @param lang language for CMDI
@@ -327,7 +329,8 @@ public class RecordFilesResource {
     private void checkFulltextAccessConditions(String pi, String filename) throws ServiceNotAllowedException {
         boolean access = false;
         try {
-            access = AccessConditionUtils.checkAccess(servletRequest.getSession(), "text", pi, filename, NetTools.getIpAddress(servletRequest), false)
+            access = AccessConditionUtils
+                    .checkAccess(servletRequest.getSession(false), "text", pi, filename, NetTools.getIpAddress(servletRequest), false)
                     .isGranted();
         } catch (IndexUnreachableException | DAOException e) {
             logger.error(String.format("Cannot check fulltext access for pi %s and file %s: %s", pi, filename, e.toString()));

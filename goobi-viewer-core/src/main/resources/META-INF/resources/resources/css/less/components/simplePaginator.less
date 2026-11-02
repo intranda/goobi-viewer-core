@@ -3,13 +3,11 @@
    style declarations for simplePaginator.xhtml
    ==============================================================*/
 /* NUMERIC PAGINATOR */
-/* BLOCK */
 .numeric-paginator {
+    margin: 15px 0;
     &.-rtl {
         direction: rtl;
     }
-    margin: 15px 0;
-    /* ELEMENT */
     ul {
         display: flex;
         justify-content: center;
@@ -19,8 +17,8 @@
     }
     li {
         min-width: 32px;
-        height: 32px;
-        border: 1px solid @middlegray;
+        min-height: 32px;
+        border: 1px solid var(--border-strong);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -29,8 +27,8 @@
     a,
     span {
         display: block;
-        line-height: 30px;
-        padding: 0 2px;
+        line-height: var(--line-height-body);
+        padding: 0.3rem 2px;
         text-align: center;
         width: 100%;
     }
@@ -40,26 +38,22 @@
         &:hover,
         &:active,
         &:focus {
-            background-color: @lightgray;
+            background-color: var(--bg-subtle);
         }
-    }
-    span {
     }
     &.-active {
         a,
         span,
         button {
-            background-color: @middlegray;
+            background-color: var(--bg-selected);
+            color: var(--fg-selected);
         }
     }
-    &__dots {
-        a,
-        span {
-        }
-    }
+    /* ACTIVE */
     &__active {
         font-weight: 700;
     }
+    /* NAVIGATE */
     &__navigate {
         button {
             border: none;
@@ -68,8 +62,8 @@
         }
         &.-active {
             span {
-                background-color: var(--ci-color1);
-                color: var(--bg-content-box);
+                background-color: var(--bg-brand);
+                color: var(--fg-on-brand);
             }
         }
         &.inactive {
@@ -77,43 +71,12 @@
             a {
                 pointer-events: none;
                 i {
-                    color: black;
+                    color: var(--fg-default);
                 }
             }
         }
     }
-    &__navigate-text {
-        border: none;
-        display: flex;
-    }
-    &__page-number {
-        &-label {
-            display: flex;
-            align-items: center;
-            span {
-                display: inline;
-                background: transparent;
-            }
-        }
-        &-input {
-            display: none;
-            input {
-                min-width: 0;
-                max-width: 100%;
-                padding-top: 3px;
-                padding-left: 3px;
-            }
-        }
-    }
-    &__navigate-first-svg,
-    &__navigate-last-svg,
-    &__navigate-next-svg,
-    &__navigate-prev-svg {
-        svg {
-            width: 22px;
-            height: 22px;
-        }
-    }
+    /* ICON */
     &__icon-svg {
         width: 16px;
         height: 16px;
@@ -148,7 +111,6 @@
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
     .numeric-paginator {
-        /* ELEMENT */
         li {
             margin-right: -1px;
         }

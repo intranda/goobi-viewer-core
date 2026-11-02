@@ -6,8 +6,6 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <composite:interface>
         <composite:attribute
@@ -32,7 +30,6 @@
                     tabindex="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'views') ? '0' : ''}"
                     role="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'views') ? 'button' : ''}">
                     <h2 class="widget__title widget-views__title">#{cc.attrs.widgetTitle}</h2>
-
                     <div class="widget__topbar-icons-container">
                         <div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
                             <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
@@ -44,14 +41,12 @@
                     </div>
                 </div>
             </ui:fragment>
-
             <ui:fragment rendered="#{cc.attrs.collapsible == true}">
                 <div
                     tabindex="0"
                     role="button"
                     class="widget__topbar widget-views__topbar #{cc.attrs.collapsible ? 'collapsible' : ''}">
                     <h2 class="widget__title">#{cc.attrs.widgetTitle}</h2>
-
                     <div class="widget__topbar-icons-container">
                         <util:icon
                             icon="chevron-down"
@@ -60,14 +55,13 @@
                     </div>
                 </div>
             </ui:fragment>
-
             <div class="widget__body widget-views__body #{configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'views') ? '-collapsed' : ''}">
                 <h:form
                     prependId="false"
                     id="widgetViewsForm"
-                    styleClass="widget-views__form">
+                    styleClass="widget__form-wrapper widget-views__form">
                     <ul class="widget-views__list #{cc.attrs.collapsible ? 'collapsible' : ''}">
-                        <!-- Object -->
+                        <!-- OBJECT -->
                         <h:panelGroup
                             visibility-class="widget-element"
                             rendered="#{configurationBean.sidebarPageLinkVisible and displayConditions.matchRecord('{numPages:1, contentType:[MEDIA]}')}">
@@ -82,7 +76,7 @@
                             </li>
                         </h:panelGroup>
 
-                        <!-- Calendar (hidden when integrated into TOC for anchors) -->
+                        <!-- CALENDAR, HIDDEN FOR ANCHORS WHEN IN THE TOC -->
                         <h:panelGroup
                             visibility-class="widget-element"
                             rendered="#{configurationBean.sidebarCalendarLinkVisible and activeDocumentBean.viewManager.calendarView.display and !activeDocumentBean.anchor}">
@@ -134,7 +128,7 @@
                             </li>
                         </h:panelGroup>
 
-                        <!-- Thumbnails -->
+                        <!-- THUMBNAILS -->
                         <h:panelGroup
                             visibility-class="widget-element"
                             rendered="#{configurationBean.sidebarThumbsLinkVisible and displayConditions.matchRecord('{numPages:2, contentType:[MEDIA]}')}">
@@ -148,7 +142,7 @@
                             </li>
                         </h:panelGroup>
 
-                        <!-- Metadata -->
+                        <!-- METADATA -->
                         <ui:repeat
                             visibility-class="widget-element"
                             rendered="#{configurationBean.sidebarMetadataLinkVisible and displayConditions.matchRecord('{docType: ![group, anchor]}')}"
@@ -173,7 +167,7 @@
                             </li>
                         </ui:repeat>
 
-                        <!-- Full-text -->
+                        <!-- FULLTEXT -->
                         <h:panelGroup
                             visibility-class="widget-element"
                             rendered="#{configurationBean.sidebarFulltextLinkVisible and displayConditions.matchPage('{contentType:[TEXT, ALTO], accessCondition: VIEW_FULLTEXT}')}">
@@ -187,7 +181,7 @@
                             </li>
                         </h:panelGroup>
 
-                        <!-- TEI full-text -->
+                        <!-- TEI FULLTEXT -->
                         <ui:repeat
                             rendered="#{configurationBean.sidebarFulltextLinkVisible and displayConditions.matchRecord('{contentType:[TEI], accessCondition: VIEW_FULLTEXT}')}"
                             var="lang"
@@ -203,7 +197,7 @@
                             </li>
                         </ui:repeat>
 
-                        <!-- External full-text URL -->
+                        <!-- EXTERNAL FULLTEXT URL -->
                         <h:panelGroup
                             visibility-class="widget-element"
                             rendered="#{activeDocumentBean.viewManager.displayExternalFulltextLink}">

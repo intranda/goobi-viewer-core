@@ -452,7 +452,7 @@ public class BookmarkBean implements Serializable {
         if (StringUtils.isEmpty(name)) {
             ((UIInput) toValidate).setValid(false);
             FacesMessage message =
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, ViewerResourceBundle.getTranslation("bookmark listNameFailure", null), null);
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, ViewerResourceBundle.getTranslation("bookmarkListNameFailure", null), null);
             throw new ValidatorException(message);
         }
 

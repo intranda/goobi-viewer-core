@@ -1,17 +1,10 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:o="http://omnifaces.org/ui"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <!-- IMAGE CONTAINER -->
-
     <div
         id="imageContainer"
         class="view-object__image #{!activeDocumentBean.viewManager.currentPage.accessPermissionImage ? '-setBorderTop' : ''} #{activeDocumentBean.viewManager.showImageThumbnailGallery(navigationHelper.currentPageType) and activeDocumentBean.viewManager.imagesCount ge 2 ? '-thumbnailPreviewGallery' : ''}">
@@ -72,6 +65,7 @@
                         value="#{msg.noImage_accessDenied}"
                         escape="false" />
                 </ui:fragment>
+
                 <!-- ACCESS DENIED DESCRIPTION TEXT -->
                 <h:panelGroup
                     styleClass="view-object__access-denied-text"
@@ -97,10 +91,12 @@
             class="view-object__image-mobile-overlay" />
     </div>
 
+    <!-- SHARE POPOVER -->
     <popover id="share-image-area-popup">
         <div class="share-image-area">
             <div class="share-image-area__instructions">#{msg.help__share_image_area__select}</div>
 
+            <!-- SHARE LINKS -->
             <div class="share-image-area__links">
                 <div>#{msg.help__share_image_area__share}</div>
                 <ul>
@@ -125,6 +121,7 @@
                 </ul>
             </div>
 
+            <!-- SHARE CONTROLS -->
             <div class="share-image-area__controls">
                 <button
                     type="button"
@@ -136,6 +133,7 @@
         </div>
     </popover>
 
+    <!-- FILTER POPOVER -->
     <popover id="imageFilterPopover">
         <imageFilters />
     </popover>
@@ -191,7 +189,6 @@
             let replacedPathPart = false;
             for (var i = pathArray.length - 1; i >= 0; i--) {
                 if (/^\d+$/.test(pathArray[i]) && pathArray[i] != pi) {
-                    //this is presumably the page number
                     pathArray[i] = pageNo;
                     replacedPathPart = true;
                     break;
@@ -204,14 +201,11 @@
                 pathArray.push(pageNo);
             }
             url.pathname = pathArray.join('/');
-            //update tab url
-            //alternatively use history.addState to add an entry to the browser history, so navigating back leads to the previous page
             window.history.replaceState(null, '', url.toString());
         }
 
         function initializeSequence(image) {
             if (image.sequence) {
-                //ajax updates
                 image.sequence.onScroll
                     .pipe(
                         rxjs.operators.withLatestFrom(image.sequence.onCurrentImageChange),
@@ -227,7 +221,6 @@
                         }
                     });
 
-                //js updates
                 image.sequence.onCurrentImageChange.subscribe((tileSource) => {
                     const imageId = viewerJS.iiif.getId(tileSource);
                     const pageNo = image.getTileSourceOrderFromId(imageId);
@@ -256,14 +249,12 @@
                     .get('widget_geoMap_')
                     .layers.flatMap((l) => l.markers)
                     .find((marker) => marker.feature?.properties?.documentId == id);
-                //highlight image overlay on hover over map marker with same annotation id
                 if (mapMarker) {
                     mapMarker.on('mouseover', (e) => imageArea.element.focus(true));
                     mapMarker.on('mouseout', (e) => imageArea.element.focus(false));
                     mapFeatureMap.set(imageArea, mapMarker);
                 }
             });
-            //highlight map marker when hovering over image overlay with same annotation id
             image.overlays?.onFocus((overlay, focus) => {
                 let marker = mapFeatureMap.get(overlay);
                 if (focus) {
@@ -274,7 +265,6 @@
             });
         }
 
-        // Focus UGC
         function highlightUGC(image) {
             var hash = window.location.hash;
             if (hash && hash.startsWith('#ugc=')) {
@@ -297,20 +287,15 @@
         function onError(error) {
             console.error('viewObject.xhtml - viewImage.init: Error opening image', error);
             if (imageElement) {
-                imageElement.innerHTML = viewerJS.helper.renderAlert(
-                    'alert-danger',
-                    '#{msg.noImage_fileNotFound}: ' + error,
-                    false
-                );
+                imageElement.innerHTML = viewerJS.helper.renderAlert('alert-danger', '#{msg.noImage_fileNotFound}: ' + error, false);
             }
         }
         zoomableImageLoaded.subscribe((image) => {
-        	window.image = image;
+            window.image = image;
             initializeSequence(image);
 
-            $('.openseadragon-canvas').get(0).focus = () => {
-                //prevent focus on os-div to avoid scrolling down on click
-            };
+            // NO CANVAS FOCUS, PREVENTS SCROLLING ON CLICK
+            $('.openseadragon-canvas').get(0).focus = () => {};
             window.shareImageFragment = new window.ShareImageFragment(image);
             window.shareImageFragment.initImageFragmentLinks();
 
@@ -318,9 +303,7 @@
             if (originClean) {
                 $('.image-controls__option.image-filter button').prop('disabled', false);
                 $('.image-controls__option.image-filter button i').tooltip('disable');
-                $('.image-controls__option.image-filter button')
-                    .attr('title', '#{msg.label__image_filter_toolkit}')
-                    .tooltip('_fixTitle');
+                $('.image-controls__option.image-filter button').attr('title', '#{msg.label__image_filter_toolkit}').tooltip('_fixTitle');
 
                 riot.mount('imageFilters', {
                     image: image.viewer,
@@ -332,14 +315,13 @@
             enableGeoMapHighlighting(image);
         });
 
-        // mobile overlay
         if (window.matchMedia('(max-width: 768px)').matches && page !== 'fullscreen') {
             $('#imageContainerMobileOverlay').show();
         }
-
         //]]>
     </script>
 
+    <!-- STRUCTURE ELEMENTS -->
     <ui:repeat
         var="se"
         value="#{activeDocumentBean.viewManager.containedStructElements}">

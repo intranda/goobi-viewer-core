@@ -4,7 +4,6 @@
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:h="http://xmlns.jcp.org/jsf/html">
     <composite:interface />
@@ -16,7 +15,6 @@
             layout="block">
             <h:form id="widgetAdminForm">
                 <div class="admin-widget__header">#{msg.admin__administration_title}</div>
-
                 <ul>
                     <ui:fragment rendered="#{userBean.admin}">
                         <li class="#{navigationHelper.currentPage == 'adminUsers' ? 'active' : '' or navigationHelper.currentPage == 'adminUser' ? 'active' : ''}">
@@ -168,7 +166,6 @@
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
-
                         <li class="#{navigationHelper.currentPage == 'adminMessageQueue' ? 'active' : ''}">
                             <h:outputLink
                                 id="widgetAdminTasksLink"
@@ -187,7 +184,6 @@
                                 </ui:fragment>
                             </h:outputLink>
                         </li>
-
                         <li class="#{navigationHelper.currentPage == 'adminMaintenanceMode' ? 'active' : ''}">
                             <h:outputLink value="#{request.contextPath}/admin/maintenance/">
                                 <util:icon-text

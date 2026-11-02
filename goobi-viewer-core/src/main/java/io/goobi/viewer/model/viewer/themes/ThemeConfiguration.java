@@ -61,6 +61,12 @@ public class ThemeConfiguration {
     @Column(name = "fullscreen_logo", nullable = true, columnDefinition = "BIGINT")
     @Convert(converter = SimpleMediaHolderConverter.class)
     private SimpleMediaHolder fullscreenLogo;
+    @Column(name = "dark_logo", nullable = true, columnDefinition = "BIGINT")
+    @Convert(converter = SimpleMediaHolderConverter.class)
+    private SimpleMediaHolder darkLogo;
+    @Column(name = "dark_fullscreen_logo", nullable = true, columnDefinition = "BIGINT")
+    @Convert(converter = SimpleMediaHolderConverter.class)
+    private SimpleMediaHolder darkFullscreenLogo;
     @Column(name = "icon", nullable = true, columnDefinition = "BIGINT")
     @Convert(converter = SimpleMediaHolderConverter.class)
     private SimpleMediaHolder icon;
@@ -83,6 +89,8 @@ public class ThemeConfiguration {
         this.footerLinks = Arrays.stream(ThemeLink.InternalService.values()).map(ThemeLink::new).collect(Collectors.toList());
         this.logo = new SimpleMediaHolder();
         this.fullscreenLogo = new SimpleMediaHolder();
+        this.darkLogo = new SimpleMediaHolder();
+        this.darkFullscreenLogo = new SimpleMediaHolder();
         this.icon = new SimpleMediaHolder();
     }
 
@@ -106,6 +114,8 @@ public class ThemeConfiguration {
         this.label = orig.label;
         this.logo = new SimpleMediaHolder(orig.logo.getMediaItem(), orig.logo.getMediaFilter());
         this.fullscreenLogo = new SimpleMediaHolder(orig.fullscreenLogo.getMediaItem(), orig.fullscreenLogo.getMediaFilter());
+        this.darkLogo = copyHolder(orig.darkLogo);
+        this.darkFullscreenLogo = copyHolder(orig.darkFullscreenLogo);
         this.icon = new SimpleMediaHolder(orig.icon.getMediaItem(), orig.icon.getMediaFilter());
         this.styleSheet = orig.styleSheet;
         this.javascript = orig.javascript;
@@ -197,6 +207,21 @@ public class ThemeConfiguration {
 
     public SimpleMediaHolder getFullscreenLogo() {
         return fullscreenLogo;
+    }
+
+    public SimpleMediaHolder getDarkLogo() {
+        return darkLogo;
+    }
+
+    public SimpleMediaHolder getDarkFullscreenLogo() {
+        return darkFullscreenLogo;
+    }
+
+    /**
+     * Copies a media holder; rows written before the dark logos existed are loaded with null holders.
+     */
+    private static SimpleMediaHolder copyHolder(SimpleMediaHolder holder) {
+        return holder == null ? new SimpleMediaHolder() : new SimpleMediaHolder(holder.getMediaItem(), holder.getMediaFilter());
     }
 
     public SimpleMediaHolder getIcon() {

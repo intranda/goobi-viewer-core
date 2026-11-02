@@ -2,115 +2,13 @@
    Styles
    style declarations for styles.xhtml
    ==============================================================*/
-#styles {
-}
-
-/* STYLES */
-/* BLOCK */
-.styles {
-    &__button {
-        display: block;
-        margin: 10px 0;
-        padding: 15px;
-        font-size: @fontLarge;
-        text-align: center;
-        color: @white;
-        background-color: @blue;
-        &:hover,
-        &:focus,
-        &:active {
-            text-decoration: none;
-        }
-    }
-    &__heading {
-        padding-left: 15px;
-        border-top: 1px solid @middlegray;
-        border-right: 3px solid @middlegray;
-        border-bottom: 1px solid @middlegray;
-        border-left: 3px solid @middlegray;
-    }
-    &__spacerheading {
-        padding-left: 10px;
-        border-bottom: 1px solid @middlegray;
-    }
-    &__subheading {
-        padding-left: 10px;
-        border-left: 3px solid @middlegray;
-    }
-    /* ELEMENT */
-    &__logos,
-    &__fonts,
-    &__headings,
-    &__typo,
-    &__buttons,
-    &__helper,
-    &__mixins {
-        margin-bottom: 15px;
-    }
-    &__logos {
-    }
-    &__logo {
-        margin-bottom: 10px;
-        padding: 10px;
-        img {
-            max-width: 100%;
-        }
-        figcaption {
-            padding-top: 10px;
-            font-style: italic;
-            font-size: @fontSmall;
-        }
-    }
-    &__colors {
-    }
-    &__color {
-        margin-bottom: 10px;
-        border: 1px solid @middlegray;
-    }
-    &__color-header {
-        height: 50px;
-        border-bottom: 1px solid @middlegray;
-    }
-    &__color-body {
-        padding: 5px;
-        font-size: @fontSmall;
-        ul {
-            margin: 0;
-            padding: 0;
-            list-style: none;
-        }
-    }
-    &__fonts {
-    }
-    &__headings {
-    }
-    &__typo {
-    }
-    &__helper {
-        h3 {
-        }
-    }
-    &__helper-item {
-        padding: 15px;
-        border-bottom: 1px solid @middlegray;
-    }
-    &__mixins {
-    }
-}
-
-/* MODIFICATION */
-.styles__logo--bw {
-    color: @white;
-    background-color: @black;
-}
-
 /* GEOMAP MARKER */
 .geomap-heatmap-marker div {
     display: table-cell;
     text-align: center;
     vertical-align: middle;
     border-radius: 50%;
-    font-size: 16px;
+    font-size: 16px; // Fixed icon/marker geometry; independent of text scale.
     font-weight: bold;
     padding: 5px;
 }

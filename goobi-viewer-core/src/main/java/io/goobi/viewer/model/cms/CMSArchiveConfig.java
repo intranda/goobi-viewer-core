@@ -39,6 +39,8 @@ import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -53,6 +55,28 @@ import jakarta.persistence.Table;
 public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
 
     private static final long serialVersionUID = -1267723820348788709L;
+
+    /** Kind of catalog shown by the catalog view, with the message keys of its name and of the link into it. */
+    public enum CatalogType {
+        CARD("archives__card_catalog", "archives__open_in_card_catalog"),
+        VOLUME("archives__volume_catalog", "archives__open_in_volume_catalog");
+
+        private final String labelKey;
+        private final String openLabelKey;
+
+        CatalogType(String labelKey, String openLabelKey) {
+            this.labelKey = labelKey;
+            this.openLabelKey = openLabelKey;
+        }
+
+        public String getLabelKey() {
+            return labelKey;
+        }
+
+        public String getOpenLabelKey() {
+            return openLabelKey;
+        }
+    }
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(CMSArchiveConfig.class);
@@ -86,6 +110,15 @@ public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
     @JoinColumn(name = "header_media_item_id")
     private CMSMediaItem headerImage;
 
+    /** If true, the archive page renders the catalog view instead of the archive tree. */
+    @Column(name = "card_catalog", nullable = false, columnDefinition = "boolean default false")
+    private boolean cardCatalog = false;
+
+    /** Rows from before the catalog type existed have null here and count as card catalogs. */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "catalog_type")
+    private CatalogType catalogType = CatalogType.CARD;
+
     public CMSArchiveConfig() {
     }
 
@@ -111,9 +144,27 @@ public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
         this.description = new TranslatedText(orig.description);
         this.tileImage = orig.tileImage;
         this.headerImage = orig.headerImage;
+        this.cardCatalog = orig.cardCatalog;
+        this.catalogType = orig.catalogType;
     }
 
-    
+    public boolean isCardCatalog() {
+        return cardCatalog;
+    }
+
+    public void setCardCatalog(boolean cardCatalog) {
+        this.cardCatalog = cardCatalog;
+    }
+
+    public CatalogType getCatalogType() {
+        return catalogType != null ? catalogType : CatalogType.CARD;
+    }
+
+    public void setCatalogType(CatalogType catalogType) {
+        this.catalogType = catalogType;
+    }
+
+
     public Long getId() {
         return id;
     }

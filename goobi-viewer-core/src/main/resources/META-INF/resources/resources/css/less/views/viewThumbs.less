@@ -3,10 +3,9 @@
    style declarations for viewThumbs.xhtml 
    ==============================================================*/
 /* VIEW THUMBS */
-/* BLOCK */
 .view-thumbs {
     margin-bottom: 15px;
-    /* ELEMENT */
+    /* THUMBNAILS */
     &__thumbnails {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
@@ -19,17 +18,16 @@
             direction: rtl;
         }
     }
+    /* THUMBNAIL */
     &__thumbnail {
         padding: 5px;
-        border: 1px solid @lightgray;
+        border: 1px solid var(--border-default);
         transition: background-color 0.15s ease;
         &:hover {
-            background-color: rgba(0, 0, 0, 0.045);
+            background-color: rgb(from var(--bg-scrim) r g b / 4.5%);
         }
     }
     &__thumbnail-image {
-        a {
-        }
         img {
             display: block;
             max-width: 100%;
@@ -52,6 +50,7 @@
     }
 }
 
+/* RTL */
 @{RTL} {
     .view-thumbs {
         &__thumbnails {

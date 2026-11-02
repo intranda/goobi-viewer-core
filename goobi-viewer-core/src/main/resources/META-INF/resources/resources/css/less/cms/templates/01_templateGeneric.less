@@ -3,9 +3,7 @@
    style declarations for cms_template_01_generic.xhtml
    ==============================================================*/
 /* GENERIC */
-/* BLOCK */
 .tpl-generic {
-    /* ELEMENT */
     &__content {
         margin-bottom: 20px;
     }
@@ -16,17 +14,15 @@
         figcaption {
             padding: 5px 0;
             font-style: italic;
-            font-size: @fontMedium;
-            color: @middlegray;
+            font-size: var(--font-size-body-small);
+            color: var(--fg-muted);
         }
-    }
-    &__text {
     }
     /* SOLR-QUERY */
     .solr-query-collection {
         margin-top: 20px;
         padding-top: 20px;
-        border-top: 1px solid @middlegray;
+        border-top: 1px solid var(--border-strong);
     }
 }
 
@@ -44,8 +40,4 @@
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
-    .tpl-generic__image {
-        width: 100%;
-        margin: 0 0 10px 0;
-    }
 }

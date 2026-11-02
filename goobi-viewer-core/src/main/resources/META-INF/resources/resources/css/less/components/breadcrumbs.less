@@ -3,12 +3,13 @@
    style declarations for breadcrumbs.xhtml
    ==============================================================*/
 /* BREADCRUMBS */
-/* BLOCK */
 .breadcrumbs {
+    /* WRAPPER */
     &__wrapper {
         margin-top: 2rem;
-        font-size: @fontSmall;
+        font-size: var(--font-size-caption);
     }
+    /* LIST */
     &__list {
         display: flex;
         justify-content: flex-start;
@@ -21,11 +22,6 @@
             align-items: center;
         }
     }
-    /* ELEMENTS */
-    ul {
-    }
-    li {
-    }
     a,
     span {
         display: inline-block;
@@ -35,10 +31,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
-    a {
-    }
-    span {
-    }
+    /* STARTTEXT */
     &__starttext {
         a,
         span {
@@ -51,6 +44,7 @@
             padding-left: 5px;
         }
     }
+    /* CRUMB */
     &__crumb {
         display: inline-flex;
         align-items: center;
@@ -64,12 +58,9 @@
         mask: url('../../icons/outline/chevron-right.svg') center/100% 100% no-repeat;
         -webkit-mask: url('../../icons/outline/chevron-right.svg') center/100% 100% no-repeat;
     }
-    &__first-crumb-icon {
-        &:before {
-        }
-    }
 }
 
+/* RTL */
 @{RTL} .breadcrumbs {
     &__crumb + li:before {
         display: none;
@@ -86,6 +77,7 @@
         -webkit-mask: url('../../icons/outline/chevron-left.svg') center/100% 100% no-repeat;
     }
 }
+
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
 }

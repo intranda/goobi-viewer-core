@@ -6802,6 +6802,51 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
+     * @return the total number of cards up to which a from-to register is computed for a card catalog
+     * @should return correct value
+     */
+    public int getCardCatalogRegisterThreshold() {
+        return getLocalInt("archives.cardCatalog[@registerThreshold]", 100000);
+    }
+
+    /**
+     *
+     * @return the number of intervals one card catalog zoom step is divided into
+     * @should return correct value
+     */
+    public int getCardCatalogZoomFactor() {
+        return getLocalInt("archives.cardCatalog[@zoomFactor]", 8);
+    }
+
+    /**
+     *
+     * @return the number of cards one card catalog list step moves up or down
+     * @should return correct value
+     */
+    public int getCardCatalogListPageSize() {
+        return getLocalInt("archives.cardCatalog[@listPageSize]", 16);
+    }
+
+    /**
+     *
+     * @return the interval width at or below which the card catalog switches from zoom mode to full view
+     * @should return correct value
+     */
+    public int getCardCatalogFullViewThreshold() {
+        return getLocalInt("archives.cardCatalog[@fullViewThreshold]", 16);
+    }
+
+    /**
+     *
+     * @return the number of cards covered by one computed card catalog register range
+     * @should return correct value
+     */
+    public int getCardCatalogRegisterChunkSize() {
+        return getLocalInt("archives.cardCatalog[@registerChunkSize]", 100);
+    }
+
+    /**
+     *
      * @return true if user-generated content annotations should be displayed below the image, false otherwise
      */
     public boolean isDisplayUserGeneratedContentBelowImage() {

@@ -3,21 +3,15 @@
    style declarations for viewTimematrix.xhtml
    ==============================================================*/
 .timematrix {
-    h1 {
-    }
     p {
         margin-bottom: 0;
     }
-    h2 {
-    }
+    /* SUBAREA */
     &__subarea {
         display: flex;
         min-height: 2.5rem;
     }
-    &__selection-header {
-        flex: 0 0 50%;
-        max-width: 50%;
-    }
+    /* LOADER */
     &__loader {
         display: flex;
         flex: 0 0 100%;
@@ -29,22 +23,12 @@
             display: block;
         }
     }
-    &__loaderImg {
-        flex: 0 0 50%;
-        max-width: 100%;
-        justify-content: right;
-        img {
-            width: 60%;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            margin-bottom: 1.5rem;
-        }
-    }
+    /* SELECTION */
     &__selection {
         padding: 2rem 2rem 1rem 2rem;
-        border: 1px solid #d5d5d5;
-        background-color: #fff;
+        border: 1px solid var(--border-strong);
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         margin-bottom: 2rem;
         display: flex;
         flex-wrap: wrap;
@@ -54,23 +38,21 @@
         }
         #slider-range {
             height: 1.2rem;
-            border: 1px solid @middlegray;
+            border: 1px solid var(--border-strong);
             margin-bottom: 1rem;
-            .ui-slider-range {
-            }
             .ui-slider-handle {
                 position: absolute;
                 width: 2rem;
                 height: 3rem;
                 top: -1rem;
-                border: 1px solid #3365a9;
-                background-color: #3365a9;
+                border: 1px solid var(--bg-brand);
+                background-color: var(--bg-brand);
                 cursor: pointer;
                 z-index: 998;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                font-size: 20px;
+                font-size: var(--font-size-heading-small);
                 &.top {
                     position: absolute;
                     z-index: 999;
@@ -78,21 +60,10 @@
                 &:focus {
                     outline: none;
                 }
-                .timematrix-slider-bubble-startDate,
-                .timematrix-slider-bubble-endDate {
-                    position: absolute;
-                    left: 50%;
-                    margin-left: -1.7rem;
-                    font-size: @fontMedium;
-                    text-align: center;
-                    color: @black;
-                    height: 100%;
-                    top: -2rem;
-                }
             }
             .ui-slider-handle {
                 margin-left: -0.1rem;
-                color: @white;
+                color: var(--fg-on-inverse);
                 &::before {
                     content: '';
                     position: relative;
@@ -100,7 +71,7 @@
                     width: 2.2rem;
                     height: 2.2rem;
                     margin: 0 auto;
-                    background-color: white;
+                    background-color: var(--fg-on-inverse);
                     mask: url('../../icons/outline/chevron-right.svg') center/contain no-repeat;
                     -webkit-mask: url('../../icons/outline/chevron-right.svg') center/contain no-repeat;
                 }
@@ -116,13 +87,13 @@
         .btn {
             float: right;
             margin: 1.3125rem 0 0 0;
-            margin-right: 0;
             display: none;
         }
         button {
             display: none;
         }
     }
+    /* RANGE INPUT */
     &__selectionRangeInput {
         border: 0;
         pointer-events: none;
@@ -130,12 +101,14 @@
         padding: 0;
         width: 4ch;
     }
+    /* BAR */
     &__bar {
         display: flex;
         justify-content: space-between;
         margin-bottom: 3rem;
         flex-wrap: wrap;
     }
+    /* PERIOD */
     &__period {
         cursor: text;
         span {
@@ -143,13 +116,13 @@
             width: auto;
         }
     }
+    /* HITS FORM */
     &__hitsForm {
         justify-content: flex-end;
         align-items: baseline;
         label,
         input {
             position: relative;
-            border: 0 inset ThreeDLightShadow;
             border: 0;
             margin: 0;
             padding: 0;
@@ -160,6 +133,7 @@
             font-weight: normal;
         }
     }
+    /* HITS INPUT */
     &__hitsInput {
         display: flex;
         justify-content: flex-end;
@@ -169,24 +143,28 @@
         }
         input {
             width: 5ch;
-            border-bottom: 1px solid @lowerblack;
+            border-bottom: 1px solid var(--border-contrast);
         }
     }
+    /* OBJECTS */
     &__objects {
         display: flex;
         flex-wrap: wrap;
         margin: -0.5rem;
     }
 
+    /* CONTENT */
     &__content {
-        border: 1px solid #ccc;
+        border: 1px solid var(--border-strong);
         margin: 0.5rem;
-        background-color: #fff;
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         position: relative;
         text-align: center;
         flex: 0 0 calc(16.6666% - 1rem);
         max-width: calc(16.6666% - 1rem);
     }
+    /* IMAGE */
     &__img {
         height: 15rem;
         overflow: hidden;
@@ -200,14 +178,15 @@
             width: auto;
         }
     }
+    /* TEXT */
     &__text {
         opacity: 0;
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background-color: rgba(0, 0, 0, 0.65);
-        color: #fff;
+        background-color: rgb(from var(--bg-scrim) r g b / 65%);
+        color: var(--fg-on-inverse);
         width: 100%;
         height: 100%;
         transition: all 0.3s ease-in;
@@ -230,7 +209,7 @@
             margin-top: auto;
         }
         a {
-            color: @white;
+            color: var(--fg-on-inverse);
             position: absolute;
             bottom: 0;
             margin-left: auto;
@@ -242,7 +221,7 @@
             &:hover,
             &:focus,
             &:active {
-                color: @white;
+                color: var(--fg-on-inverse);
             }
         }
     }
@@ -250,21 +229,9 @@
         display: block;
         height: 100%;
     }
-    &__footer {
-        padding: 0.5rem 0;
-        background-color: @blue;
-        a {
-            color: @white;
-            &:hover,
-            &:active,
-            &:focus {
-                color: @white;
-                text-decoration: none;
-            }
-        }
-    }
 }
 
+/* RTL */
 @{RTL} {
     .timematrix__selection #slider-range {
         margin-left: 15px;
@@ -295,8 +262,6 @@
         &__content {
             flex: 0 0 calc(25% - 1rem);
             max-width: calc(25% - 1rem);
-        }
-        &__img {
         }
     }
 }

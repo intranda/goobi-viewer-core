@@ -3,21 +3,16 @@
    ==============================================================*/
 
 .widget-record-notes {
-    // show edit link only on hover
+    /* EDIT LINK ON HOVER */
     &:hover {
         .widget-record-notes__action-link {
             opacity: 1;
         }
     }
-    .widget__title {
-    }
+    /* BODY */
     .widget__body {
         a {
             display: inline;
-            &:hover,
-            &:focus,
-            &:active {
-            }
         }
         p {
             margin-bottom: 1rem;
@@ -26,20 +21,18 @@
             }
         }
     }
+    /* ACTION LINK */
     &__action-link {
         transition: opacity 0.2s ease;
         opacity: 0;
         text-align: right;
         a {
             overflow: visible;
-            &:hover,
-            &:focus,
-            &:active {
-            }
         }
     }
 }
 
+/* KEYBOARD USERS */
 .using-keyboard {
     .widget-record-notes__action-link {
         opacity: 1;
