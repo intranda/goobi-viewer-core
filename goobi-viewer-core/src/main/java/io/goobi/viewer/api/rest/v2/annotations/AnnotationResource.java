@@ -215,9 +215,7 @@ public class AnnotationResource {
     @ApiResponse(responseCode = "401", description = "Not logged in — must be authenticated to delete annotations")
     @ApiResponse(responseCode = "403", description = "Not allowed to delete this annotation — it was created by another user")
     @ApiResponse(responseCode = "404", description = "Annotation not found by the given id")
-    public IAnnotation deleteAnnotation(@Parameter(description = "Identifier of the annotation")
-    @PathParam("id")
-    Long id)
+    public IAnnotation deleteAnnotation(@Parameter(description = "Identifier of the annotation") @PathParam("id") Long id)
             throws DAOException, ContentLibException {
         AnnotationConverter converter = new AnnotationConverter(urls);
         CrowdsourcingAnnotation pAnno = DataManager.getInstance().getDao().getAnnotation(id);
@@ -295,7 +293,7 @@ public class AnnotationResource {
         } catch (DAOException e) {
             logger.warn("Error getting user from authorization token", e);
         }
-        UserBean userBean = BeanUtils.getUserBeanFromSession(servletRequest.getSession());
+        UserBean userBean = BeanUtils.getUserBeanFromSession(servletRequest.getSession(false));
         if (userBean != null) {
             return userBean.getUser();
         }

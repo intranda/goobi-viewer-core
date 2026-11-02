@@ -108,7 +108,7 @@ public class UserLoggedInFilter implements ContainerRequestFilter {
     }
 
     public static boolean isUserLoggedIn(HttpServletRequest request) {
-        return BeanUtils.getUserFromSession(request.getSession()) != null;
+        return BeanUtils.getUserFromSession(request.getSession(false)) != null;
     }
 
     public static Optional<UserToken> getUserToken(HttpServletRequest request) throws DAOException {

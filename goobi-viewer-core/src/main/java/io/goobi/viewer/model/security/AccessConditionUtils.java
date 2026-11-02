@@ -495,7 +495,7 @@ public final class AccessConditionUtils {
 
             // Resolve shared context once – reused across all pages to avoid repeated lookups
             List<LicenseType> licenseTypes = DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes();
-            User user = retrieveUserFromContext(request != null ? request.getSession() : null);
+            User user = retrieveUserFromContext(request != null ? request.getSession(false) : null);
             String ipAddress = NetTools.getIpAddress(request);
             Optional<ClientApplication> client = ClientApplicationManager.getClientFromRequest(request);
 
@@ -603,7 +603,7 @@ public final class AccessConditionUtils {
 
             // Resolve shared context once — reused for every page to avoid repeated lookups
             List<LicenseType> licenseTypes = DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes();
-            User user = retrieveUserFromContext(request != null ? request.getSession() : null);
+            User user = retrieveUserFromContext(request != null ? request.getSession(false) : null);
             String ipAddress = NetTools.getIpAddress(request);
             Optional<ClientApplication> client = ClientApplicationManager.getClientFromRequest(request);
 
@@ -677,7 +677,7 @@ public final class AccessConditionUtils {
 
         String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + page.getPi() + " +" + SolrConstants.ORDER + ":" + page.getOrder();
         try {
-            User user = retrieveUserFromContext(request != null ? request.getSession() : null);
+            User user = retrieveUserFromContext(request != null ? request.getSession(false) : null);
             return checkAccessPermission(DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes(), page.getAccessConditions(),
                     privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
         } catch (PresentationException e) {
@@ -708,7 +708,7 @@ public final class AccessConditionUtils {
         String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi + " +" + SolrConstants.ORDER + ":" + pageOrder;
 
         try {
-            User user = retrieveUserFromContext(request != null ? request.getSession() : null);
+            User user = retrieveUserFromContext(request != null ? request.getSession(false) : null);
 
             SolrDocumentList results = DataManager.getInstance()
                     .getSearchIndex()
@@ -748,7 +748,7 @@ public final class AccessConditionUtils {
         }
 
         String attributeName = IPrivilegeHolder.PREFIX_PRIV + privilegeName + "_" + identifier + "_" + logId;
-        AccessPermission ret = (AccessPermission) getSessionPermission(attributeName, request != null ? request.getSession() : null);
+        AccessPermission ret = (AccessPermission) getSessionPermission(attributeName, request != null ? request.getSession(false) : null);
         if (ret != null) {
             // logger.trace("Permission '{}' already in session: {}", attributeName, ret.isGranted()); //NOSONAR Debug
             return ret;
@@ -788,7 +788,7 @@ public final class AccessConditionUtils {
             ret = checkAccessPermissionBySolrDoc(results.get(0), query, privilegeName, request);
 
             // Add permission check outcome to user session
-            addSessionPermission(attributeName, ret, request != null ? request.getSession() : null);
+            addSessionPermission(attributeName, ret, request != null ? request.getSession(false) : null);
 
             return ret;
         } catch (PresentationException e) {
@@ -825,7 +825,7 @@ public final class AccessConditionUtils {
                 }
             }
 
-            User user = retrieveUserFromContext(request != null ? request.getSession() : null);
+            User user = retrieveUserFromContext(request != null ? request.getSession(false) : null);
             return checkAccessPermission(DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes(), requiredAccessConditions,
                     privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), originalQuery);
         } catch (PresentationException e) {
@@ -950,7 +950,7 @@ public final class AccessConditionUtils {
             return new HashMap<>();
         }
         logger.trace("checkAccessPermissionsForPisAndPrivileges({} ids, {} privs)", validIdentifiers.size(), privilegeNames.size());
-        HttpSession session = request != null ? request.getSession() : null;
+        HttpSession session = request != null ? request.getSession(false) : null;
 
         // Step 1: session-cache lookup per (identifier, privilege)
         Map<String, Map<String, Map<String, AccessPermission>>> ret = new HashMap<>();
@@ -1095,7 +1095,7 @@ public final class AccessConditionUtils {
     public static AccessPermission checkContentFileAccessPermission(String identifier, HttpServletRequest request)
             throws IndexUnreachableException, DAOException {
         // logger.trace("checkContentFileAccessPermission: {}", identifier); //NOSONAR Debug
-        HttpSession session = request != null ? request.getSession() : null;
+        HttpSession session = request != null ? request.getSession(false) : null;
         String attributeName = IPrivilegeHolder.PREFIX_PRIV + IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT + "_" + identifier;
         AccessPermission ret = (AccessPermission) getSessionPermission(attributeName, session);
         if (ret != null) {
@@ -1183,7 +1183,7 @@ public final class AccessConditionUtils {
                 }
             }
 
-            User user = retrieveUserFromContext(request != null ? request.getSession() : null);
+            User user = retrieveUserFromContext(request != null ? request.getSession(false) : null);
             return checkAccessPermission(DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes(), requiredAccessConditions,
                     privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
         } catch (PresentationException e) {
@@ -1213,7 +1213,7 @@ public final class AccessConditionUtils {
      */
     public static AccessPermission checkAccessPermission(Set<String> requiredAccessConditions, String privilegeName, String query,
             HttpServletRequest request) throws IndexUnreachableException, PresentationException, DAOException {
-        User user = retrieveUserFromContext(request != null ? request.getSession() : null);
+        User user = retrieveUserFromContext(request != null ? request.getSession(false) : null);
         List<LicenseType> licenseTypes = DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes();
         return checkAccessPermission(licenseTypes, requiredAccessConditions, privilegeName, user,
                 NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
@@ -1344,7 +1344,7 @@ public final class AccessConditionUtils {
             throw new IllegalArgumentException("Illegal filePath value: " + filePath);
         }
 
-        return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null, filePathSplit[1],
+        return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession(false) : null, filePathSplit[1],
                 filePathSplit[2], privilegeType, NetTools.getIpAddress(request), user);
     }
 
@@ -1391,9 +1391,9 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * Checks access permission for the given content file and puts the permission status into the corresponding session map. The required
-     * privileges may depend on the {@link SolrConstants#DOCTYPE DOCTYPE} of the Solr document listing the file, which is determined by the same
-     * query that retrieves the access conditions. All required privileges must be granted.
+     * Checks access permission for the given content file and puts the permission status into the corresponding session map. The required privileges
+     * may depend on the {@link SolrConstants#DOCTYPE DOCTYPE} of the Solr document listing the file, which is determined by the same query that
+     * retrieves the access conditions. All required privileges must be granted.
      *
      * @param session HTTP session for caching permission results
      * @param pi persistent identifier of the record
@@ -1486,7 +1486,7 @@ public final class AccessConditionUtils {
             return AccessPermission.granted();
         }
 
-        User user = retrieveUserFromContext(request != null ? request.getSession() : null);
+        User user = retrieveUserFromContext(request != null ? request.getSession(false) : null);
         if (user != null && user.isSuperuser()) {
             logger.trace("Access granted to admin.");
             return AccessPermission.granted();
@@ -2187,7 +2187,7 @@ public final class AccessConditionUtils {
             request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         }
         return AccessConditionUtils
-                .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null, pi, fileName,
+                .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession(false) : null, pi, fileName,
                         privilegeName, NetTools.getIpAddress(request), user);
     }
 }

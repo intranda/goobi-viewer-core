@@ -118,7 +118,7 @@ public class BookmarkResource {
         if (currentUser != null) {
             builder = new UserBookmarkResourceBuilder(currentUser);
         } else {
-            HttpSession session = servletRequest.getSession();
+            HttpSession session = servletRequest.getSession(false);
             builder = new SessionBookmarkResourceBuilder(session);
         }
     }
@@ -133,7 +133,7 @@ public class BookmarkResource {
             logger.warn("Error getting user from authorization token", e);
         }
         if (user == null) {
-            UserBean bean = BeanUtils.getUserBeanFromSession(request.getSession());
+            UserBean bean = BeanUtils.getUserBeanFromSession(request.getSession(false));
             if (bean != null) {
                 user = bean.getUser();
             }

@@ -46,7 +46,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.solr.common.SolrDocument;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 
@@ -67,7 +66,6 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
-import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.AccessDeniedException;
@@ -75,6 +73,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -82,8 +81,6 @@ import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.record.views.FileType;
-import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -151,7 +148,7 @@ public class RecordFileResource {
     @ApiResponse(responseCode = "404", description = "ALTO file not found")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public String getAlto(@Parameter(description = "Filename of the alto document",
-                    schema = @Schema(pattern = "^[A-Za-z0-9_.-]+$")) @PathParam("filename") String filename)
+            schema = @Schema(pattern = "^[A-Za-z0-9_.-]+$")) @PathParam("filename") String filename)
             throws PresentationException, IndexUnreachableException, ContentNotFoundException, ServiceNotAllowedException {
         checkFulltextAccessConditions(pi, filename);
         if (servletResponse != null) {
@@ -327,7 +324,8 @@ public class RecordFileResource {
                     List<File> fileList = new ArrayList<>();
                     fileList.add(path.toFile());
                     // Only zip files that are genuine descendants of the model folder (guards against symlink/traversal escapes)
-                    FileTools.listFiles(modelFolder, p -> true).stream()
+                    FileTools.listFiles(modelFolder, p -> true)
+                            .stream()
                             .filter(p -> FileTools.isWithin(p, modelFolder))
                             .forEach(p -> fileList.add(p.toFile()));
                     // Derive the zip name from the validated path, not the raw request parameter, to keep the output path untainted
@@ -373,13 +371,13 @@ public class RecordFileResource {
         try {
             MimeType mediaType = MimeType.of(Path.of(filename));
             if (mediaType.isImage()) {
-                return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest.getSession(), pi, filename,
+                return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest.getSession(false), pi, filename,
                         IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES, NetTools.getIpAddress(servletRequest)).isGranted();
             }
         } catch (IOException e) {
             logger.warn("Unable to read mimetype of file {}", filename);
         }
-        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest.getSession(), pi, filename,
+        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest.getSession(false), pi, filename,
                 IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES, NetTools.getIpAddress(servletRequest)).isGranted();
     }
 
@@ -468,7 +466,8 @@ public class RecordFileResource {
     private void checkFulltextAccessConditions(String pi, String filename) throws ServiceNotAllowedException {
         boolean access = false;
         try {
-            access = AccessConditionUtils.checkAccess(servletRequest.getSession(), "text", pi, filename, NetTools.getIpAddress(servletRequest), false)
+            access = AccessConditionUtils
+                    .checkAccess(servletRequest.getSession(false), "text", pi, filename, NetTools.getIpAddress(servletRequest), false)
                     .isGranted();
         } catch (IndexUnreachableException | DAOException e) {
             logger.error(String.format("Cannot check fulltext access for pi %s and file %s: %s", pi, filename, e.toString()));
@@ -479,8 +478,8 @@ public class RecordFileResource {
     }
 
     /**
-     * Throw an AccessDenied error if the request doesn't satisfy the access conditions for downloading externally sourced resource files.
-     * Mirrors {@link io.goobi.viewer.model.viewer.ViewManager#isAccessPermissionExternalResources()}.
+     * Throw an AccessDenied error if the request doesn't satisfy the access conditions for downloading externally sourced resource files. Mirrors
+     * {@link io.goobi.viewer.model.viewer.ViewManager#isAccessPermissionExternalResources()}.
      *
      * @throws ServiceNotAllowedException
      * @throws IndexUnreachableException

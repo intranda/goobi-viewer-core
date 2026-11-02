@@ -328,7 +328,7 @@ public final class SearchHelper {
                     HttpServletRequest request = BeanUtils.getRequest();
                     if (StringUtils.isNotBlank(plaintextFilename)) {
                         boolean access = AccessConditionUtils
-                                .checkAccess(request.getSession(), "text", pi, plaintextFilename, NetTools.getIpAddress(request), false)
+                                .checkAccess(request.getSession(false), "text", pi, plaintextFilename, NetTools.getIpAddress(request), false)
                                 .isGranted();
                         if (access) {
                             fulltext = DataFileTools.loadFulltext(null, plaintextFilename, false);
@@ -338,7 +338,7 @@ public final class SearchHelper {
                     } else if (StringUtils.isNotBlank(altoFilename)) {
                         boolean access =
                                 AccessConditionUtils
-                                        .checkAccess(request.getSession(), "text", pi, altoFilename, NetTools.getIpAddress(request), false)
+                                        .checkAccess(request.getSession(false), "text", pi, altoFilename, NetTools.getIpAddress(request), false)
                                         .isGranted();
                         if (access) {
                             fulltext = DataFileTools.loadFulltext(altoFilename, null, false);
@@ -1275,7 +1275,7 @@ public final class SearchHelper {
                         NetTools.getIpAddress(request),
                         ClientApplicationManager.getClientFromRequest(request), privilege);
         logger.trace("New filter query suffix: {}", filterQuerySuffix);
-        if (request != null) {
+        if (request != null && request.getSession(false) != null) {
             request.getSession().setAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX, filterQuerySuffix);
         } else {
             logger.warn("No HttpServletRequest found, cannot set filter query.");

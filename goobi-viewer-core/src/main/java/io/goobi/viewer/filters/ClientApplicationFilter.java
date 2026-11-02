@@ -17,14 +17,6 @@ package io.goobi.viewer.filters;
 
 import java.io.IOException;
 
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,6 +25,13 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * @author Florian Alpers
@@ -71,7 +70,7 @@ public class ClientApplicationFilter implements Filter {
                     ClientApplication client =
                             DataManager.getInstance().getClientManager().getClientByClientIdentifier(clientIdentifier).orElse(null);
                     if (client != null) {
-                        if (clientManager.registerClientInSession(client, ((HttpServletRequest) request).getSession())) {
+                        if (clientManager.registerClientInSession(client, ((HttpServletRequest) request).getSession(false))) {
                             logger.trace("Registered client {} in http session", client.getName());
                         } else {
                             logger.trace("Client {} attempts to register but client rights are not granted for this client", client.getName());

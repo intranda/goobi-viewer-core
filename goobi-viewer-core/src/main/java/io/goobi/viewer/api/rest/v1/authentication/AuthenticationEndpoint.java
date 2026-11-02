@@ -28,7 +28,6 @@ import java.net.URISyntaxException;
 import java.security.PublicKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,6 +59,7 @@ import io.goobi.viewer.api.rest.model.LoginRequest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SecurityManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -72,7 +72,6 @@ import io.goobi.viewer.model.security.authentication.HttpHeaderProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserToken;
-import io.goobi.viewer.controller.DateTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -524,7 +523,7 @@ public class AuthenticationEndpoint {
             }
 
             // now check if the nonce is the same as in the old session
-            String sessionNonce = (String) servletRequest.getSession().getAttribute("openIDNonce");
+            String sessionNonce = (String) Optional.ofNullable(servletRequest.getSession(false)).map(s -> s.getAttribute("openIDNonce")).orElse(null);
             String tokenNonce = jwt.getClaim("nonce").asString();
             if (sessionNonce == null || tokenNonce == null || !sessionNonce.equals(tokenNonce)) {
                 logger.error("nonce missing or does not match. Not logging user in");
@@ -565,8 +564,8 @@ public class AuthenticationEndpoint {
      * @param token encoded JWT ID token to verify
      * @param jwksUri URL of the JWKS endpoint for public key retrieval
      * @param issuer expected issuer claim value
-     * @param clientId expected audience claim value (this relying party's client ID); must be pinned inside the verifier
-     *            per RFC 7519 §4.1.3 so cross-RP token replay is blocked and array-valued aud claims are handled correctly
+     * @param clientId expected audience claim value (this relying party's client ID); must be pinned inside the verifier per RFC 7519 §4.1.3 so
+     *            cross-RP token replay is blocked and array-valued aud claims are handled correctly
      * @return {@link DecodedJWT}
      */
     static DecodedJWT verifyOpenIdToken(String token, String jwksUri, String issuer, String clientId) {
@@ -643,7 +642,7 @@ public class AuthenticationEndpoint {
      * @return true if allowed; false otherwise
      */
     boolean isRedirectUrlAllowed(String redirectUrl) {
-        Optional<NavigationHelper> nh = BeanUtils.getBeanFromSession(servletRequest.getSession(), "navigationHelper", NavigationHelper.class);
+        Optional<NavigationHelper> nh = BeanUtils.getBeanFromSession(servletRequest.getSession(false), "navigationHelper", NavigationHelper.class);
         String applicationUrl = nh.map(NavigationHelper::getApplicationUrl).orElse(null);
         return NetTools.isRedirectUrlAllowed(redirectUrl, applicationUrl);
     }

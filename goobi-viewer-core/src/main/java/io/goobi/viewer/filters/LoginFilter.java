@@ -23,14 +23,7 @@ package io.goobi.viewer.filters;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,6 +40,13 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.servlets.utils.ServletUtils;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Filters class for redirecting from protected pages that either require a user login or superuser privileges to the login page.
@@ -87,7 +87,7 @@ public class LoginFilter implements Filter {
 
         // logger.trace("request uri: {}", requestURI);
         // logger.trace("Checking session ID {} for user object", httpRequest.getSession().getId());
-        User user = (User) httpRequest.getSession().getAttribute("user");
+        User user = (User) Optional.ofNullable(httpRequest.getSession(false)).map(s -> s.getAttribute("user")).orElse(null);
         if (user == null) {
             logger.debug("No user found, redirecting to login...");
             ((HttpServletResponse) response).sendRedirect(
