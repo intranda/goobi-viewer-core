@@ -238,7 +238,8 @@ public class RecordFilesResource {
     private void checkFulltextAccessConditions(String pi, String filename) throws ServiceNotAllowedException {
         boolean access = false;
         try {
-            access = AccessConditionUtils.checkAccess(servletRequest.getSession(), "text", pi, filename, NetTools.getIpAddress(servletRequest), false)
+            access = AccessConditionUtils
+                    .checkAccess(servletRequest.getSession(false), "text", pi, filename, NetTools.getIpAddress(servletRequest), false)
                     .isGranted();
         } catch (IndexUnreachableException | DAOException e) {
             logger.error(String.format("Cannot check fulltext access for pi %s and file %s: %s", pi, filename, e.toString()));

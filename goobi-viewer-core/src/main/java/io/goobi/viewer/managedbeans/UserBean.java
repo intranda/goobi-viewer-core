@@ -24,16 +24,16 @@ package io.goobi.viewer.managedbeans;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.TimerTask;
-import java.security.SecureRandom;
-import java.util.HexFormat;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -47,6 +47,7 @@ import org.omnifaces.cdi.PushContext;
 import com.ocpsoft.pretty.PrettyContext;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -541,7 +542,7 @@ public class UserBean implements Serializable {
             loggedInProvider = null;
         }
         try {
-            BeanUtils.wipeSessionAttributes(request.getSession());
+            BeanUtils.wipeSessionAttributes(request.getSession(false));
             SearchHelper.updateFilterQuerySuffix(request, IPrivilegeHolder.PRIV_LIST);
             DataManager.getInstance().getBearerTokenManager().purgeExpiredTokens();
         } catch (IndexUnreachableException | PresentationException | DAOException e) {

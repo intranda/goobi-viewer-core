@@ -37,6 +37,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 import io.goobi.viewer.api.rest.v1.tasks.TasksResource;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.job.TaskType;
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,7 +48,8 @@ import jakarta.servlet.http.HttpServletRequest;
  * defining the actual process to use. Parameters of the execution as well as the type itself are determined by a {@link TaskParameter} object given
  * at task creation. Also each task has a status property signaling he current state of the task. A task starts out as {@link TaskStatus#CREATED}.
  *
- * <p>Once processing starts (which may be delayed by the limited thread pool if other tasks are running) the status changes to
+ * <p>
+ * Once processing starts (which may be delayed by the limited thread pool if other tasks are running) the status changes to
  * {@link TaskStatus#STARTED}. After processing ends the task is set to either {@link TaskStatus#COMPLETE} or {@link TaskStatus#ERROR} depending on
  * whether an error occurred which may be recorded in the {@link #exception} property.
  *
@@ -127,7 +129,7 @@ public class Task {
      */
     public void doTask(HttpServletRequest request) {
         logger.debug("Started Task '{}'", this);
-        this.sessionId = Optional.ofNullable(request).map(r -> r.getSession().getId());
+        this.sessionId = Optional.ofNullable(request).map(r -> r.getSession(false)).map(s -> s.getId());
         this.status = TaskStatus.STARTED;
         this.work.accept(request, this);
         if (TaskStatus.ERROR != this.status) {
@@ -167,57 +169,46 @@ public class Task {
         }
     }
 
-    
     public long getId() {
         return id;
     }
 
-    
     public TaskType getType() {
         return type;
     }
 
-    
     public Optional<String> getException() {
         return exception;
     }
 
-    
     public void setException(Optional<String> exception) {
         this.exception = exception;
     }
 
-    
     public Optional<String> getSessionId() {
         return sessionId;
     }
 
-    
     public void setSessionId(Optional<String> sessionId) {
         this.sessionId = sessionId;
     }
 
-    
     public LocalDateTime getTimeCreated() {
         return timeCreated;
     }
 
-    
     public BiConsumer<HttpServletRequest, Task> getWork() {
         return work;
     }
 
-    
     public TaskParameter getParams() {
         return params;
     }
 
-    
     public void setStatus(TaskStatus status) {
         this.status = status;
     }
 
-    
     public TaskStatus getStatus() {
         return status;
     }

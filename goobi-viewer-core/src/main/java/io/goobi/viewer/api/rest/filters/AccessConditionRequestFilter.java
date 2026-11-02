@@ -124,7 +124,7 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
         try {
             if (FilterTools.isThumbnail(request)) {
                 access = AccessConditionUtils
-                        .checkAccessPermissionForThumbnail(request.getSession(), pi, contentFileName, NetTools.getIpAddress(request))
+                        .checkAccessPermissionForThumbnail(request.getSession(false), pi, contentFileName, NetTools.getIpAddress(request))
                         .isGranted();
                 // logger.trace("Checked thumbnail access: {}/{}: {}", pi, contentFileName, access); //NOSONAR Debug
             } else {
@@ -134,7 +134,8 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
                 } else if (StringUtils.isNotBlank(contentFileName)) {
                     // Privileges may depend on the DOCTYPE of the document listing the file, which is resolved by the access check query itself
                     access = AccessConditionUtils
-                            .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request.getSession(), pi, contentFileName, requiredPrivileges,
+                            .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request.getSession(false), pi, contentFileName,
+                                    requiredPrivileges,
                                     NetTools.getIpAddress(request), null)
                             .isGranted();
                 } else {

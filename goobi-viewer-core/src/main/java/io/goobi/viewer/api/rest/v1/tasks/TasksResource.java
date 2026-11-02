@@ -35,6 +35,7 @@ import org.apache.logging.log4j.Logger;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
+import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.filters.AdminLoggedInFilter;
 import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
 import io.goobi.viewer.api.rest.model.PrerenderPdfsRequestParameters;
@@ -52,12 +53,11 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.job.TaskType;
-import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
@@ -75,8 +75,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 /**
- * REST resource for creating and monitoring asynchronous
- * {@link io.goobi.viewer.api.rest.model.tasks.TaskManager} tasks within the viewer, such as PDF pre-rendering.
+ * REST resource for creating and monitoring asynchronous {@link io.goobi.viewer.api.rest.model.tasks.TaskManager} tasks within the viewer, such as
+ * PDF pre-rendering.
  *
  * @author Florian Alpers
  */
@@ -278,7 +278,7 @@ public class TasksResource {
             case ADMIN:
                 return AdminLoggedInFilter.isAdminLoggedIn(request);
             case SESSION:
-                String sessionId = request.getSession().getId();
+                String sessionId = Optional.ofNullable(request.getSession(false)).map(s -> s.getId()).orElse(null);
                 if (sessionId != null) {
                     return jobSessionId.map(id -> id.equals(sessionId)).orElse(false);
                 }

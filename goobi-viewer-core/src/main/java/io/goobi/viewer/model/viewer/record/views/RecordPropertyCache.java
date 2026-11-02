@@ -26,8 +26,6 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,10 +40,11 @@ import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.ViewManager;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * Thread-safe cache that stores per-record and per-page file-type and access-permission lookups
- * to avoid redundant Solr queries and access-condition evaluations within a single request cycle.
+ * Thread-safe cache that stores per-record and per-page file-type and access-permission lookups to avoid redundant Solr queries and access-condition
+ * evaluations within a single request cycle.
  */
 public class RecordPropertyCache {
 
@@ -130,7 +129,7 @@ public class RecordPropertyCache {
 
     private static AccessPermission checkAccessPermissionForPage(PhysicalElement page, String privilege, HttpServletRequest request)
             throws IndexUnreachableException, DAOException {
-        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request.getSession(), page.getPi(),
+        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request.getSession(false), page.getPi(),
                 page.getFileName(),
                 privilege, NetTools.getIpAddress(request));
     }

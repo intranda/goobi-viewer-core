@@ -942,7 +942,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     } else {
                         // Session bookmark list
                         Optional<BookmarkList> obs =
-                                DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession());
+                                DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getSession());
                         if (obs.isPresent()) {
                             itemQuery = obs.get().getFilterQuery();
                         }
@@ -2338,7 +2338,7 @@ public class SearchBean implements SearchInterface, Serializable {
             } else {
                 // Session bookmark list
                 Optional<BookmarkList> bookmarkList =
-                        DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession());
+                        DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getSession());
                 if (bookmarkList.isPresent() && !bookmarkList.get().getItems().isEmpty()) {
                     ret.add(new StringPair(bookmarkList.get().getName(),
                             ViewerResourceBundle.getTranslation("bookmarkList_session", locale)));

@@ -25,6 +25,32 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
+
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
+import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
+import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.dao.IDAO;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.security.clients.ClientApplication;
+import io.goobi.viewer.model.security.clients.ClientApplicationManager;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -123,7 +149,7 @@ public class ClientApplicationsResource {
             // Return 401 (Unauthorized) since the client identifier header is missing authentication credentials.
             throw new WebApplicationException("Missing client identifier in header", Response.Status.UNAUTHORIZED);
         }
-        HttpSession session = servletRequest.getSession();
+        HttpSession session = servletRequest.getSession(false);
         if (session == null) {
             throw new IllegalStateException("No http session available for request");
         }
@@ -176,8 +202,9 @@ public class ClientApplicationsResource {
             // ClientApplication because all writable fields are present in both classes.
             @RequestBody(description = "Client properties to update (only name, description, subnetMask and accessStatus are applied)",
                     required = true,
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ClientApplicationUpdate.class)))
-            ClientApplication update) throws DAOException, ContentNotFoundException {
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ClientApplicationUpdate.class))) ClientApplication update)
+            throws DAOException, ContentNotFoundException {
         try {
 
             ClientApplication databaseClient = dao.getClientApplicationByClientId(clientIdentifier);
@@ -200,15 +227,13 @@ public class ClientApplicationsResource {
     /**
      * Lists all registered {@link ClientApplication}s, optionally paginated.
      *
-     * <p>The default values keep the endpoint backwards-compatible with existing
-     * server-to-server consumers that fetched the unbounded list: when no parameters are
-     * supplied, the full list is returned. Clients that opt in by sending
-     * {@code first} / {@code count} get a paginated slice.
+     * <p>
+     * The default values keep the endpoint backwards-compatible with existing server-to-server consumers that fetched the unbounded list: when no
+     * parameters are supplied, the full list is returned. Clients that opt in by sending {@code first} / {@code count} get a paginated slice.
      *
-     * <p><b>Note:</b> the pagination is currently applied in-memory <i>after</i> the DAO
-     * loads the full result set, so it limits the response payload but does not relieve
-     * the database/heap. A true DoS hardening would require a DAO method with SQL
-     * {@code LIMIT/OFFSET}.
+     * <p>
+     * <b>Note:</b> the pagination is currently applied in-memory <i>after</i> the DAO loads the full result set, so it limits the response payload
+     * but does not relieve the database/heap. A true DoS hardening would require a DAO method with SQL {@code LIMIT/OFFSET}.
      *
      * @param first zero-based index of the first entry to return; must be {@code >= 0}
      * @param count maximum number of entries to return; must be {@code >= 0}
@@ -247,7 +272,8 @@ public class ClientApplicationsResource {
         }
         // isNotAllClients runs before skip/limit because the synthetic "all clients" entry
         // is not a real DB row and would otherwise shift the page offsets seen by consumers.
-        return dao.getAllClientApplications().stream()
+        return dao.getAllClientApplications()
+                .stream()
                 .filter(clientManager::isNotAllClients)
                 .skip(first)
                 .limit(count)

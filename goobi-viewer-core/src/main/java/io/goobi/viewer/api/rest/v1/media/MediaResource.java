@@ -161,7 +161,7 @@ public class MediaResource {
     public void checkAccess(String action, String pi, String contentFilename) throws WebApplicationException {
         boolean access = false;
         try {
-            access = AccessConditionUtils.checkAccess(request.getSession(), action, pi, contentFilename, NetTools.getIpAddress(request), false)
+            access = AccessConditionUtils.checkAccess(request.getSession(false), action, pi, contentFilename, NetTools.getIpAddress(request), false)
                     .isGranted();
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());

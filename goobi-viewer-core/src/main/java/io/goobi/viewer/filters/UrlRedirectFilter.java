@@ -73,23 +73,32 @@ public class UrlRedirectFilter implements Filter {
         try {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-            // Important: If prefetching requests are not refused here, the status of the backend beans (ActiveDocumentBean in particular)
-            // will point to the prefetched page rather than the actual current page
-            if (isPrefetchingRequest(httpRequest)) {
-                HttpServletResponse httpResponse = (HttpServletResponse) response;
-                httpResponse.setHeader("Cache-Control", "no-store");
-                httpResponse.setStatus(HttpServletResponse.SC_NO_CONTENT);
-                return;
-            }
+            if (httpRequest.getSession(false) != null) {
+                Optional<ViewerPath> currentPath = ViewerPathBuilder.createPath(httpRequest);
+                if (currentPath.isPresent()) {
+                    // logger.trace("currentPath: {}", currentPath.get());
+                    // Important: If prefetching requests are not refused here, the status of the backend beans (ActiveDocumentBean in particular)
+                    // will point to the prefetched page rather than the actual current page
+                    if (isPrefetchingRequest(httpRequest)) {
+                        HttpServletResponse httpResponse = (HttpServletResponse) response;
+                        httpResponse.setHeader("Cache-Control", "no-store");
+                        httpResponse.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                        return;
+                    }
 
-            Optional<ViewerPath> currentPath = ViewerPathBuilder.createPath(httpRequest);
-            if (currentPath.isPresent()) {
-                // logger.trace("currentPath: {}", currentPath.get());
-
-                ViewHistory.setCurrentView(currentPath.get(), httpRequest.getSession());
-                if (!ViewerPathBuilder.startsWith(currentPath.get().getPagePath(), "cms") && currentPath.get().getCmsPage() != null) {
-                    if (currentPath.get().getCmsPage().isMayContainUrlParameters()
-                            || StringUtils.isBlank(currentPath.get().getParameterPath().toString().replaceAll("/?\\d+/?", ""))) {
+                    ViewHistory.setCurrentView(currentPath.get(), httpRequest.getSession());
+                    if (!ViewerPathBuilder.startsWith(currentPath.get().getPagePath(), "cms") && currentPath.get().getCmsPage() != null) {
+                        if (currentPath.get().getCmsPage().isMayContainUrlParameters()
+                                || StringUtils.isBlank(currentPath.get().getParameterPath().toString().replaceAll("/?\\d+/?", ""))) {
+                            ViewerPath cmsPagePath = new ViewerPath(currentPath.get());
+                            cmsPagePath.setPagePath(URI.create(currentPath.get().getCmsPage().getRelativeUrlPath(false)));
+                            logger.debug("Forwarding {} to {}", currentPath.get(), cmsPagePath.getCombinedUrl());
+                            RequestDispatcher d = request.getRequestDispatcher(cmsPagePath.getCombinedUrl());
+                            d.forward(request, response);
+                            return;
+                        }
+                    } else if (!ViewerPathBuilder.startsWith(currentPath.get().getPagePath(), "campaigns")
+                            && currentPath.get().getCampaign() != null) {
                         ViewerPath cmsPagePath = new ViewerPath(currentPath.get());
                         cmsPagePath.setPagePath(URI.create(currentPath.get().getCmsPage().getRelativeUrlPath(false)));
                         logger.debug("Forwarding {} to {}", currentPath.get(), cmsPagePath.getCombinedUrl());
@@ -97,13 +106,6 @@ public class UrlRedirectFilter implements Filter {
                         d.forward(request, response);
                         return;
                     }
-                } else if (!ViewerPathBuilder.startsWith(currentPath.get().getPagePath(), "campaigns") && currentPath.get().getCampaign() != null) {
-                    ViewerPath cmsPagePath = new ViewerPath(currentPath.get());
-                    cmsPagePath.setPagePath(URI.create(currentPath.get().getCmsPage().getRelativeUrlPath(false)));
-                    logger.debug("Forwarding {} to {}", currentPath.get(), cmsPagePath.getCombinedUrl());
-                    RequestDispatcher d = request.getRequestDispatcher(cmsPagePath.getCombinedUrl());
-                    d.forward(request, response);
-                    return;
                 }
             }
         } catch (DAOException e) {
