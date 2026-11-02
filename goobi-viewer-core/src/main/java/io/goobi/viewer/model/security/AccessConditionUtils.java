@@ -125,9 +125,6 @@ public final class AccessConditionUtils {
     public static AccessPermission checkAccess(HttpSession session, String action, String pi, String contentFileName, String ipAddress,
             boolean isThumbnail, User user)
             throws IndexUnreachableException, DAOException {
-        if (session == null) {
-            throw new IllegalArgumentException("session may not be null");
-        }
         if (action == null) {
             throw new IllegalArgumentException("action may not be null");
         }
