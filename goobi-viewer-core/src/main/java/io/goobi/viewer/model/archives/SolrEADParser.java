@@ -359,7 +359,8 @@ public class SolrEADParser extends ArchiveParser {
 
     /**
      * Loads the children of the given entry, if not yet loaded. Nodes may be shared between the global archive tree and session copies, so
-     * loading is synchronized on the entry and the child list is published in one step.
+     * loading goes through {@link ArchiveEntry#loadChildrenOnce(ArchiveEntry.ChildrenLoader)}, which serializes it per entry and publishes
+     * the child list in one step.
      *
      * @param entry the parent entry whose children are to be loaded
      * @param loadChildrenRecursively if true, child nodes are loaded recursively
@@ -372,32 +373,16 @@ public class SolrEADParser extends ArchiveParser {
             throw new IllegalArgumentException("entry may not be null");
         }
 
-        synchronized (entry) {
-            if (entry.isChildrenLoaded()) {
-                return false;
-            }
+        return entry.loadChildrenOnce(() -> {
             List<SolrDocument> childDocs = getChildDocs(entry);
-            if (childDocs.isEmpty()) {
-                return false;
-            }
             // logger.trace("Loading {} children of {}", childDocs.size(), entry.getLabel()); //NOSONAR Debug
             List<ArchiveEntry> children = new ArrayList<>(childDocs.size());
             int subHierarchy = entry.getHierarchyLevel() + 1;
-            boolean containsImage = entry.isContainsImage();
             for (SolrDocument c : childDocs) {
-                ArchiveEntry child = loadNode(children.size(), subHierarchy, c, loadChildrenRecursively);
-                child.setParentNode(entry);
-                if (child.isContainsImage()) {
-                    containsImage = true;
-                }
-                children.add(child);
+                children.add(loadNode(children.size(), subHierarchy, c, loadChildrenRecursively));
             }
-            entry.setSubEntryList(children);
-            entry.setContainsImage(containsImage);
-            entry.setChildrenLoaded(true);
-            // logger.trace("Children loaded for {}", entry.getLabel());
-            return true;
-        }
+            return children;
+        });
     }
 
     /**

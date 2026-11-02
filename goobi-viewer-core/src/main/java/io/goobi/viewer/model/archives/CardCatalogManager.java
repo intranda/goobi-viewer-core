@@ -46,6 +46,7 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.model.CachingMap;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -264,22 +265,7 @@ public class CardCatalogManager {
             return Optional.empty();
         }
         int chunkSize = Math.max(1, DataManager.getInstance().getConfiguration().getCardCatalogRegisterChunkSize());
-        return Optional.of(getOrLoadRegisterRanges(drawer, chunkSize));
-    }
-
-    private List<CardCatalogRegisterRange> getOrLoadRegisterRanges(CardCatalogDrawer drawer, int chunkSize)
-            throws PresentationException, IndexUnreachableException {
-        List<CardCatalogRegisterRange> ranges = drawer.getRegisterRanges(chunkSize);
-        if (ranges == null) {
-            synchronized (drawer) {
-                ranges = drawer.getRegisterRanges(chunkSize);
-                if (ranges == null) {
-                    ranges = loadRegisterRanges(drawer, chunkSize);
-                    drawer.setRegisterRanges(chunkSize, ranges);
-                }
-            }
-        }
-        return ranges;
+        return Optional.of(drawer.getOrLoadRegisterRanges(chunkSize, () -> loadRegisterRanges(drawer, chunkSize)));
     }
 
     /**
@@ -299,20 +285,28 @@ public class CardCatalogManager {
             }
             catalogTypesCleared = System.currentTimeMillis();
         }
-        Optional<CMSArchiveConfig.CatalogType> type = catalogTypes.get(pi);
-        if (type == null) {
-            try {
-                type = DataManager.getInstance()
-                        .getDao()
-                        .getCmsArchiveConfigForArchive(pi)
-                        .filter(CMSArchiveConfig::isCardCatalog)
-                        .map(CMSArchiveConfig::getCatalogType);
-            } catch (DAOException e) {
-                logger.warn("Could not load archive configuration for '{}': {}", pi, e.getMessage());
-                type = Optional.empty();
-            }
-            catalogTypes.put(pi, type);
+        return Optional.ofNullable(catalogTypes.get(pi)).orElseGet(() -> loadCatalogType(pi));
+    }
+
+    /**
+     * Loads the catalog type of the archive resource with the given PI from its CMS configuration and caches the result (also if empty).
+     *
+     * @param pi PI of the archive resource
+     * @return the catalog type, or empty if the archive has no catalog view or the configuration could not be loaded
+     */
+    private Optional<CMSArchiveConfig.CatalogType> loadCatalogType(String pi) {
+        Optional<CMSArchiveConfig.CatalogType> type;
+        try {
+            type = DataManager.getInstance()
+                    .getDao()
+                    .getCmsArchiveConfigForArchive(pi)
+                    .filter(CMSArchiveConfig::isCardCatalog)
+                    .map(CMSArchiveConfig::getCatalogType);
+        } catch (DAOException e) {
+            logger.warn("Could not load archive configuration for '{}': {}", pi, e.getMessage());
+            type = Optional.empty();
         }
+        catalogTypes.put(pi, type);
         return type;
     }
 
@@ -340,13 +334,15 @@ public class CardCatalogManager {
             return Optional.empty();
         }
         String parentIddoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC_PARENT);
+        // Neutralize CR/LF/tab in the user-controlled entry ID before logging to prevent log injection (javasecurity:S5145)
+        String safeEntryId = StringTools.stripPatternBreakingChars(entryId);
         for (CardCatalogDrawer drawer : index.getDrawers()) {
             if (drawer.getIddoc().equals(parentIddoc)) {
                 Integer order = getIndexedOrder(doc);
                 if (order != null && order >= 0 && isEntryAt(drawer, order, entryId)) {
                     return Optional.of(new ImmutablePair<>(drawer, order + 1));
                 }
-                logger.warn("Archive order for card '{}' in drawer '{}' is not positional; counting preceding siblings as fallback.", entryId,
+                logger.warn("Archive order for card '{}' in drawer '{}' is not positional; counting preceding siblings as fallback.", safeEntryId,
                         drawer.getId());
                 Optional<Integer> counted = countPrecedingSiblings(drawer, doc);
                 if (counted.isPresent() && isEntryAt(drawer, counted.get(), entryId)) {
@@ -361,7 +357,7 @@ public class CardCatalogManager {
                         }
                     }
                 }
-                logger.warn("Card '{}' not found within the first {} cards of drawer '{}'; giving up.", entryId, scanLimit, drawer.getId());
+                logger.warn("Card '{}' not found within the first {} cards of drawer '{}'; giving up.", safeEntryId, scanLimit, drawer.getId());
                 return Optional.empty();
             }
         }

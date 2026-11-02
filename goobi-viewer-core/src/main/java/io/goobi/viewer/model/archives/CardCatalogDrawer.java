@@ -22,6 +22,10 @@
 package io.goobi.viewer.model.archives;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 
 /**
  * A drawer of a card catalog: an EAD structure node whose children are the individual cards.
@@ -35,7 +39,18 @@ public class CardCatalogDrawer {
     private final String label;
     private final int entryCount;
 
-    private volatile RegisterCache registerCache;
+    private final AtomicReference<RegisterCache> registerCache = new AtomicReference<>();
+
+    /** Guards register computation so concurrent requests for the same drawer compute it only once. */
+    private final Object registerLock = new Object();
+
+    /**
+     * Computes the register ranges of a drawer.
+     */
+    @FunctionalInterface
+    interface RegisterLoader {
+        List<CardCatalogRegisterRange> load() throws PresentationException, IndexUnreachableException;
+    }
 
     private static final class RegisterCache {
 
@@ -78,11 +93,38 @@ public class CardCatalogDrawer {
     }
 
     public List<CardCatalogRegisterRange> getRegisterRanges(int chunkSize) {
-        RegisterCache cache = registerCache;
+        RegisterCache cache = registerCache.get();
         return cache != null && cache.chunkSize == chunkSize ? cache.ranges : null;
     }
 
+    /**
+     * Returns the cached register ranges for the given chunk size, computing them with the given loader if not cached yet.
+     *
+     * @param chunkSize number of cards per register range
+     * @param loader computes the ranges on a cache miss
+     * @return register ranges for the given chunk size
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @should load ranges only once for the same chunk size
+     * @should reload ranges for a different chunk size
+     */
+    List<CardCatalogRegisterRange> getOrLoadRegisterRanges(int chunkSize, RegisterLoader loader)
+            throws PresentationException, IndexUnreachableException {
+        List<CardCatalogRegisterRange> ranges = getRegisterRanges(chunkSize);
+        if (ranges != null) {
+            return ranges;
+        }
+        synchronized (registerLock) {
+            ranges = getRegisterRanges(chunkSize);
+            if (ranges == null) {
+                ranges = loader.load();
+                setRegisterRanges(chunkSize, ranges);
+            }
+            return ranges;
+        }
+    }
+
     void setRegisterRanges(int chunkSize, List<CardCatalogRegisterRange> registerRanges) {
-        this.registerCache = new RegisterCache(chunkSize, registerRanges);
+        this.registerCache.set(new RegisterCache(chunkSize, registerRanges));
     }
 }
