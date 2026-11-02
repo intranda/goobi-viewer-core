@@ -129,6 +129,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_FILES_MEI = "/mei";
 
     public static final String RECORDS_FILES_SOURCE = "/source/{filename}";
+    public static final String RECORDS_FILES_TRANSCRIPT = "/transcript/{filename}";
     public static final String RECORDS_FILES_MEDIA = "/media/{filename}";
     public static final String RECORDS_FILES_AUDIO = "/audio/{mimetype}/{filename}";
     public static final String RECORDS_FILES_VIDEO = "/video/{mimetype}/{filename}";

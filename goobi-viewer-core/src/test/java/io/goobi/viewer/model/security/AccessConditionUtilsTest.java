@@ -521,6 +521,17 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see AccessConditionUtils#generateAccessCheckQuery(String,String)
+     * @verifies use correct field names for json files
+     */
+    @Test
+    void generateAccessCheckQuery_shouldUseCorrectFieldNamesForJsonFiles() {
+        String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "8a9f3800-574f-4e03.json");
+        Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME + ":8a9f3800\\-574f\\-4e03.json.* "
+                + SolrConstants.FILENAME_JSON + ":\"8a9f3800-574f-4e03.json\")", result);
+    }
+
+    /**
+     * @see AccessConditionUtils#generateAccessCheckQuery(String,String)
      * @verifies adapt basic alto file name
      */
     @Test

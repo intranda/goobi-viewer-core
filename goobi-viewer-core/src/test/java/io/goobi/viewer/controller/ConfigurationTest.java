@@ -2637,6 +2637,15 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getTranscriptFolder()
+     * @verifies return correct value
+     */
+    @Test
+    void getTranscriptFolder_shouldReturnCorrectValue() {
+        assertEquals("transcript", DataManager.getInstance().getConfiguration().getTranscriptFolder());
+    }
+
+    /**
      * @see Configuration#getAnnotationFolder()
      * @verifies return correct value
      */

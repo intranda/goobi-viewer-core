@@ -198,6 +198,7 @@ public final class AccessConditionUtils {
      * @should adapt basic alto file name
      * @should escape file name for wildcard search correctly
      * @should work correctly with urls
+     * @should use correct field names for json files
      */
     static String generateAccessCheckQuery(String identifier, String fileName) {
         if (StringUtils.isEmpty(fileName)) {
@@ -274,6 +275,18 @@ public final class AccessConditionUtils {
                         .append("\" ")
                         .append(SolrConstants.FILENAME)
                         .append("_JPEG:\"")
+                        .append(simpleFileName)
+                        .append("\")");
+                break;
+            case "json":
+                // JSON transcripts (e.g. of podcast episodes) are listed in FILENAME_JSON; FILENAME keeps the default behaviour
+                sbQuery.append(" +(")
+                        .append(useFileField)
+                        .append(':')
+                        .append(ClientUtils.escapeQueryChars(simpleFileName))
+                        .append(".* ")
+                        .append(SolrConstants.FILENAME_JSON)
+                        .append(":\"")
                         .append(simpleFileName)
                         .append("\")");
                 break;

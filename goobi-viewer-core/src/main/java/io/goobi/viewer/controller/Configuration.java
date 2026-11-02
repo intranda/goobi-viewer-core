@@ -2790,6 +2790,16 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * getTranscriptFolder.
+     *
+     * @should return correct value
+     * @return the configured folder name for JSON transcript files (e.g. of podcast episodes)
+     */
+    public String getTranscriptFolder() {
+        return getLocalString("transcriptFolder", "transcript");
+    }
+
+    /**
      * getAnnotationFolder.
      *
      * @should return correct value

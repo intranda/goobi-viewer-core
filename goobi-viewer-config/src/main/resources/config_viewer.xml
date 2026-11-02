@@ -62,6 +62,9 @@
     <!-- cmdiFolder: contains CMDI metadata/fulltext files -->
     <cmdiFolder>cmdi</cmdiFolder>
 
+    <!-- transcriptFolder: contains JSON transcript files (e.g. of podcast episodes) -->
+    <transcriptFolder>transcript</transcriptFolder>
+
     <!-- annotationFolder: contains JSON files of annotations for indexing -->
     <annotationFolder>annotations</annotationFolder>
 
