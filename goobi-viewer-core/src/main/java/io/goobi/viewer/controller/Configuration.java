@@ -80,10 +80,10 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.cms.Highlight;
-import io.goobi.viewer.model.export.bagit.ArchiveContentType;
-import io.goobi.viewer.model.export.bagit.CollectionArchiveConfig;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
 import io.goobi.viewer.model.export.ExportFormat;
+import io.goobi.viewer.model.export.bagit.ArchiveContentType;
+import io.goobi.viewer.model.export.bagit.CollectionArchiveConfig;
 import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadOption;
@@ -2800,6 +2800,16 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * getTranscriptFolder.
+     *
+     * @should return correct value
+     * @return the configured folder containing video transcript text files (e.g. of podcast episodes)
+     */
+    public String getVttFolder() {
+        return getLocalString("vttFolder", "vtt");
+    }
+
+    /**
      * getAnnotationFolder.
      *
      * @should return correct value
@@ -5008,9 +5018,9 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Returns the cache policy for dynamic pages.
      *
-     * <p>Accepted values are {@code no-cache} (emit {@code private, no-cache}), {@code no-store}
-     * and {@code off} (emit no header at all). Account-bound paths are always {@code no-store},
-     * regardless of this setting.
+     * <p>
+     * Accepted values are {@code no-cache} (emit {@code private, no-cache}), {@code no-store} and {@code off} (emit no header at all). Account-bound
+     * paths are always {@code no-store}, regardless of this setting.
      *
      * @return configured policy token
      * @should return correct value
@@ -5866,8 +5876,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Returns the effective set of enabled archive content types for a single collection, resolving the {@code <default>} block for the
-     * given field and merging the matching {@code <collection name="…" field="…">} sparse override on top of it.
+     * Returns the effective set of enabled archive content types for a single collection, resolving the {@code <default>} block for the given field
+     * and merging the matching {@code <collection name="…" field="…">} sparse override on top of it.
      *
      * @param field the collection Solr field (e.g. {@code DC}); may not be null
      * @param collectionName the collection name; when null or with no matching override, the pure default is returned
@@ -5988,9 +5998,10 @@ public class Configuration extends AbstractConfiguration {
      * Timeout in seconds for generating a search result export before it is aborted. Read from the {@code timeout} attribute of the
      * {@code <search><export>} element and applied to every export format (Excel, CSV and XSLT-based formats such as RIS).
      *
-     * <p>The setting previously lived at {@code <export><excel><timeout>}, but the dedicated {@code <excel>} element was replaced by
-     * {@code <format name="excel">} during the export config normalization; the timeout therefore moved to the shared {@code <export>}
-     * element so it keeps working and now governs all formats, not just Excel.
+     * <p>
+     * The setting previously lived at {@code <export><excel><timeout>}, but the dedicated {@code <excel>} element was replaced by
+     * {@code <format name="excel">} during the export config normalization; the timeout therefore moved to the shared {@code <export>} element so it
+     * keeps working and now governs all formats, not just Excel.
      *
      * @return the configured export timeout in seconds; 120 if not set
      * @should return correct value

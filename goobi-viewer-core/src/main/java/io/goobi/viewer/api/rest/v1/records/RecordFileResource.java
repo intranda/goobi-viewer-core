@@ -31,6 +31,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PLAINTEXT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_SOURCE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TEI;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TRANSCRIPT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TRANSCRIPT_VTT;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -56,6 +57,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.MediaResourceBinding;
+import io.goobi.viewer.api.rest.resourcebuilders.PodloveTranscriptConverter;
 import io.goobi.viewer.api.rest.bindings.RecordFileDownloadBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.MediaDeliveryService;
@@ -224,6 +226,64 @@ public class RecordFileResource {
         } catch (IllegalArgumentException e) {
             // FileTools.sanitizeFileName rejects illegal characters; report as HTTP 400 like the other file endpoints
             throw new IllegalRequestException("Invalid transcript file name: " + filename);
+        }
+    }
+
+    /**
+     * Returns the WebVTT file of a single page (e.g. of a podcast episode) converted into the transcript format of the Podlove Web Player.
+     *
+     * <p>The file is read from the record's vtt folder. Access requires the fulltext view permission for the page that lists the requested file
+     * name in its FILENAME_VTT field.
+     *
+     * @param filename file name of the WebVTT file
+     * @return the transcript entries as a JSON array string
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if the file name is not a valid vtt file name
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if the fulltext view permission is not granted
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if no vtt file exists for the file name
+     * @should return 400 if file name is not a vtt file
+     * @should return 403 if no page grants access to the file
+     * @should return 404 for path traversal attempt
+     */
+    @GET
+    @jakarta.ws.rs.Path(RECORDS_FILES_TRANSCRIPT_VTT)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records" }, summary = "Get a WebVTT file converted into a Podlove transcript",
+            description = "Returns the WebVTT file (e.g. of a podcast episode) from the record's vtt folder, converted into the transcript format"
+                    + " of the Podlove Web Player. Access requires the fulltext view permission for the page that lists the requested file.")
+    @ApiResponse(responseCode = "200", description = "Podlove transcript entries for the requested page", useReturnTypeSchema = true)
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier or file name (must be a .vtt file)")
+    @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
+    @ApiResponse(responseCode = "404", description = "WebVTT file not found")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable or file is not a valid WebVTT file")
+    public String getVttTranscript(@Parameter(description = "File name of the WebVTT file",
+            schema = @Schema(pattern = "^[A-Za-z0-9_.-]+\\.vtt$")) @PathParam("filename") String filename)
+            throws PresentationException, IndexUnreachableException, ContentNotFoundException, ServiceNotAllowedException,
+            IllegalRequestException {
+        String cleanFileName;
+        try {
+            cleanFileName = Path.of(filename).getFileName().toString();
+        } catch (IllegalArgumentException e) {
+            // InvalidPathException for file names that are not valid paths on this system
+            throw new IllegalRequestException("Invalid vtt file name: " + filename);
+        }
+        if (!"vtt".equalsIgnoreCase(FilenameUtils.getExtension(cleanFileName))) {
+            throw new IllegalRequestException("Invalid vtt file name: " + filename);
+        }
+        checkFulltextAccessConditions(pi, cleanFileName);
+        if (servletResponse != null) {
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
+        }
+        String vtt;
+        try {
+            vtt = builder.getContentAsText(DataManager.getInstance().getConfiguration().getVttFolder(), pi, cleanFileName);
+        } catch (IllegalArgumentException e) {
+            // FileTools.sanitizeFileName rejects illegal characters; report as HTTP 400 like the other file endpoints
+            throw new IllegalRequestException("Invalid vtt file name: " + filename);
+        }
+        try {
+            return PodloveTranscriptConverter.convertVtt(vtt).toString();
+        } catch (IllegalArgumentException e) {
+            throw new PresentationException("Not a valid WebVTT file: " + cleanFileName);
         }
     }
 

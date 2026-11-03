@@ -131,52 +131,63 @@ class PodloveEpisodeResourceBuilderTest {
     }
 
     /**
-     * @see PodloveEpisodeResourceBuilder#getTranscriptFileName(SolrDocument)
+     * @see PodloveEpisodeResourceBuilder#getTranscriptFileName(SolrDocument, String, String)
      * @verifies return file name without path
      */
     @Test
     void getTranscriptFileName_shouldReturnFileNameWithoutPath() {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.FILENAME_JSON, "PPN123/episode.json");
-        Assertions.assertEquals("episode.json", PodloveEpisodeResourceBuilder.getTranscriptFileName(doc));
-
-        doc.setField(SolrConstants.FILENAME_JSON, "episode.json");
-        Assertions.assertEquals("episode.json", PodloveEpisodeResourceBuilder.getTranscriptFileName(doc));
+        doc.setField(PodloveEpisodeResourceBuilder.FIELD_FILENAME_VTT, "episode.vtt");
+        Assertions.assertEquals("episode.json", PodloveEpisodeResourceBuilder.getTranscriptFileName(doc, SolrConstants.FILENAME_JSON, "json"));
+        Assertions.assertEquals("episode.vtt",
+                PodloveEpisodeResourceBuilder.getTranscriptFileName(doc, PodloveEpisodeResourceBuilder.FIELD_FILENAME_VTT, "vtt"));
     }
 
     /**
-     * @see PodloveEpisodeResourceBuilder#getTranscriptFileName(SolrDocument)
+     * @see PodloveEpisodeResourceBuilder#getTranscriptFileName(SolrDocument, String, String)
      * @verifies return null if page has no transcript
      */
     @Test
     void getTranscriptFileName_shouldReturnNullIfPageHasNoTranscript() {
-        Assertions.assertNull(PodloveEpisodeResourceBuilder.getTranscriptFileName(null));
+        Assertions.assertNull(PodloveEpisodeResourceBuilder.getTranscriptFileName(null, SolrConstants.FILENAME_JSON, "json"));
         SolrDocument doc = new SolrDocument();
-        Assertions.assertNull(PodloveEpisodeResourceBuilder.getTranscriptFileName(doc));
+        Assertions.assertNull(PodloveEpisodeResourceBuilder.getTranscriptFileName(doc, SolrConstants.FILENAME_JSON, "json"));
         doc.setField(SolrConstants.FILENAME_JSON, " ");
-        Assertions.assertNull(PodloveEpisodeResourceBuilder.getTranscriptFileName(doc));
+        Assertions.assertNull(PodloveEpisodeResourceBuilder.getTranscriptFileName(doc, SolrConstants.FILENAME_JSON, "json"));
     }
 
     /**
-     * @see PodloveEpisodeResourceBuilder#getTranscriptFileName(SolrDocument)
-     * @verifies return null if file is not a json file
+     * @see PodloveEpisodeResourceBuilder#getTranscriptFileName(SolrDocument, String, String)
+     * @verifies return null if file has wrong extension
      */
     @Test
-    void getTranscriptFileName_shouldReturnNullIfFileIsNotAJsonFile() {
+    void getTranscriptFileName_shouldReturnNullIfFileHasWrongExtension() {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.FILENAME_JSON, "episode.vtt");
-        Assertions.assertNull(PodloveEpisodeResourceBuilder.getTranscriptFileName(doc));
+        Assertions.assertNull(PodloveEpisodeResourceBuilder.getTranscriptFileName(doc, SolrConstants.FILENAME_JSON, "json"));
     }
 
     /**
-     * @see PodloveEpisodeResourceBuilder#buildTranscriptUrl(io.goobi.viewer.api.rest.AbstractApiUrlManager, String, String)
+     * @see PodloveEpisodeResourceBuilder#buildTranscriptUrl(io.goobi.viewer.api.rest.AbstractApiUrlManager, String, String, String)
      * @verifies build transcript endpoint url
      */
     @Test
     void buildTranscriptUrl_shouldBuildTranscriptEndpointUrl() {
         ApiUrls urls = new ApiUrls("https://viewer.goobi.io/api/v1");
         Assertions.assertEquals("https://viewer.goobi.io/api/v1/records/PPN123/files/transcript/episode.json",
-                PodloveEpisodeResourceBuilder.buildTranscriptUrl(urls, "PPN123", "episode.json"));
+                PodloveEpisodeResourceBuilder.buildTranscriptUrl(urls, "PPN123", ApiUrls.RECORDS_FILES_TRANSCRIPT, "episode.json"));
+    }
+
+    /**
+     * @see PodloveEpisodeResourceBuilder#buildTranscriptUrl(io.goobi.viewer.api.rest.AbstractApiUrlManager, String, String, String)
+     * @verifies build vtt transcript endpoint url
+     */
+    @Test
+    void buildTranscriptUrl_shouldBuildVttTranscriptEndpointUrl() {
+        ApiUrls urls = new ApiUrls("https://viewer.goobi.io/api/v1");
+        Assertions.assertEquals("https://viewer.goobi.io/api/v1/records/PPN123/files/transcript/vtt/episode.vtt",
+                PodloveEpisodeResourceBuilder.buildTranscriptUrl(urls, "PPN123", ApiUrls.RECORDS_FILES_TRANSCRIPT_VTT, "episode.vtt"));
     }
 
     /**

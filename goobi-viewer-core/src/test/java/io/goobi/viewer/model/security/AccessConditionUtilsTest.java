@@ -532,6 +532,17 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see AccessConditionUtils#generateAccessCheckQuery(String,String)
+     * @verifies use correct field names for vtt files
+     */
+    @Test
+    void generateAccessCheckQuery_shouldUseCorrectFieldNamesForVttFiles() {
+        String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "8a9f3800-574f-4e03.vtt");
+        Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME + ":8a9f3800\\-574f\\-4e03.vtt.* "
+                + SolrConstants.FILENAME + "_VTT:\"8a9f3800-574f-4e03.vtt\")", result);
+    }
+
+    /**
+     * @see AccessConditionUtils#generateAccessCheckQuery(String,String)
      * @verifies adapt basic alto file name
      */
     @Test

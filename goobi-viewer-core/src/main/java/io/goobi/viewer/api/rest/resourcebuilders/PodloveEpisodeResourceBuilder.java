@@ -23,13 +23,13 @@ package io.goobi.viewer.api.rest.resourcebuilders;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TRANSCRIPT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TRANSCRIPT_VTT;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -79,8 +79,9 @@ import jakarta.servlet.http.HttpServletRequest;
  * <p>
  * The episode is expected to be a top-level record whose first page holds the audio file. Chapters are read from the structure elements of the record
  * that carry a start time in {@link #FIELD_CHAPTER_START}. If the record belongs to a series (referenced in {@link #FIELD_SERIES_ID}), the series
- * group record is used as the podcast show. If the first page lists a JSON transcript in {@link SolrConstants#FILENAME_JSON} and the caller may view
- * the fulltext, the episode references the transcript endpoint, from which the player loads the transcript itself.
+ * group record is used as the podcast show. If the first page lists a WebVTT file in FILENAME_VTT or a JSON transcript in
+ * {@link SolrConstants#FILENAME_JSON} and the caller may view the fulltext, the episode references the matching transcript endpoint, from which the
+ * player loads the transcript itself. WebVTT files are preferred because they contain speakers.
  */
 public class PodloveEpisodeResourceBuilder {
 
@@ -100,6 +101,8 @@ public class PodloveEpisodeResourceBuilder {
     /** Metadata fields whose metadata documents are listed as contributors, in the order of the contributor groups. */
     static final List<String> CONTRIBUTOR_FIELDS = List.of("MD_AUTHOR", "MD_PUBLISHER");
     static final String FIELD_DISPLAY_FORM = "MD_DISPLAYFORM";
+    /** Solr field of a page containing the file name of a WebVTT transcript. */
+    static final String FIELD_FILENAME_VTT = SolrConstants.FILENAME + "_VTT";
     static final String FIELD_FIRST_NAME = "MD_FIRSTNAME";
     static final String FIELD_LAST_NAME = "MD_LASTNAME";
 
@@ -182,11 +185,8 @@ public class PodloveEpisodeResourceBuilder {
         json.put("chapters", buildChapters(loadChapterDocs(pi)));
         json.put("contributors", buildContributors(episode, BeanUtils.getLocale()));
 
-        String transcriptFileName = getTranscriptFileName(loadPageDoc(pi, page.getOrder()));
-        if (transcriptFileName != null && hasPermission(pi, transcriptFileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
-            // Podlove fetches the transcript itself if the value is a URL; access is checked again by the transcript endpoint
-            json.put("transcripts", buildTranscriptUrl(urls, pi, transcriptFileName));
-        }
+        // Podlove fetches the transcript itself if the value is a URL; access is checked again by the transcript endpoints
+        putIfNotBlank(json, "transcripts", getTranscriptUrl(pi, loadPageDoc(pi, page.getOrder())));
 
         return json;
     }
@@ -361,29 +361,53 @@ public class PodloveEpisodeResourceBuilder {
                 .append(':')
                 .append(order)
                 .toString();
-        return DataManager.getInstance().getSearchIndex().getFirstDoc(query, Collections.singletonList(SolrConstants.FILENAME_JSON));
+        return DataManager.getInstance().getSearchIndex().getFirstDoc(query, Arrays.asList(FIELD_FILENAME_VTT, SolrConstants.FILENAME_JSON));
     }
 
     /**
-     * Returns the simple name of the JSON transcript listed in {@link SolrConstants#FILENAME_JSON} of the given page document.
+     * Returns the URL of the transcript endpoint for the given page. A WebVTT file is preferred over a JSON transcript because it contains speakers;
+     * each file is only used if the caller may view its fulltext.
+     *
+     * @param pi persistent identifier of the record
+     * @param pageDoc Solr document of the page
+     * @return transcript URL; null if the page has no accessible transcript
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    private String getTranscriptUrl(String pi, SolrDocument pageDoc) throws IndexUnreachableException, DAOException {
+        String vttFileName = getTranscriptFileName(pageDoc, FIELD_FILENAME_VTT, "vtt");
+        if (vttFileName != null && hasPermission(pi, vttFileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
+            return buildTranscriptUrl(urls, pi, RECORDS_FILES_TRANSCRIPT_VTT, vttFileName);
+        }
+        String jsonFileName = getTranscriptFileName(pageDoc, SolrConstants.FILENAME_JSON, "json");
+        if (jsonFileName != null && hasPermission(pi, jsonFileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
+            return buildTranscriptUrl(urls, pi, RECORDS_FILES_TRANSCRIPT, jsonFileName);
+        }
+        return null;
+    }
+
+    /**
+     * Returns the simple name of the transcript file listed in the given field of the page document.
      *
      * @param pageDoc Solr document of the page
-     * @return transcript file name without path; null if the page has no JSON transcript
+     * @param field Solr field containing the file name
+     * @param extension required file extension
+     * @return transcript file name without path; null if the page has no such transcript
      * @should return file name without path
      * @should return null if page has no transcript
-     * @should return null if file is not a json file
+     * @should return null if file has wrong extension
      */
-    static String getTranscriptFileName(SolrDocument pageDoc) {
+    static String getTranscriptFileName(SolrDocument pageDoc, String field, String extension) {
         if (pageDoc == null) {
             return null;
         }
-        Object value = pageDoc.getFirstValue(SolrConstants.FILENAME_JSON);
+        Object value = pageDoc.getFirstValue(field);
         if (value == null || StringUtils.isBlank(value.toString())) {
             return null;
         }
         String fileName = FilenameUtils.getName(value.toString().trim());
-        if (!"json".equalsIgnoreCase(FilenameUtils.getExtension(fileName))) {
-            logger.warn("Ignoring transcript that is not a JSON file: {}", value);
+        if (!extension.equalsIgnoreCase(FilenameUtils.getExtension(fileName))) {
+            logger.warn("Ignoring transcript in {} that is not a {} file: {}", field, extension, value);
             return null;
         }
         return fileName;
@@ -392,12 +416,14 @@ public class PodloveEpisodeResourceBuilder {
     /**
      * @param urls API URL manager
      * @param pi persistent identifier of the record
-     * @param fileName file name of the JSON transcript
+     * @param endpoint transcript endpoint path below {@link io.goobi.viewer.api.rest.v1.ApiUrls#RECORDS_FILES}
+     * @param fileName file name of the transcript
      * @return URL of the transcript endpoint for the given file
      * @should build transcript endpoint url
+     * @should build vtt transcript endpoint url
      */
-    static String buildTranscriptUrl(AbstractApiUrlManager urls, String pi, String fileName) {
-        return urls.path(RECORDS_FILES, RECORDS_FILES_TRANSCRIPT).params(pi, fileName).build();
+    static String buildTranscriptUrl(AbstractApiUrlManager urls, String pi, String endpoint, String fileName) {
+        return urls.path(RECORDS_FILES, endpoint).params(pi, fileName).build();
     }
 
     /**
