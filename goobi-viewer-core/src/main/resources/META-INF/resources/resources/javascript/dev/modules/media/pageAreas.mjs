@@ -8,7 +8,7 @@ const _config = {
     ],
 };
 
-const _debug = true;
+const _debug = false;
 
 export default class PageAreas {
     constructor(config, image) {
@@ -87,7 +87,7 @@ export default class PageAreas {
         activeAreas.forEach((activeArea, index) => {
             const area = this.drawArea(activeArea, index, imageView);
             areasOnCanvas.push(area?.overlay?.bounds);
-			console.log("add active area ", area, areasOnCanvas);
+			if (_debug) console.log("add active area ", area, areasOnCanvas);
             let scrollPosition = window.sessionStorage.getItem('scrollPosition');
             $(document).scrollTop(parseInt(scrollPosition));
             window.sessionStorage.removeItem('scrollPosition');

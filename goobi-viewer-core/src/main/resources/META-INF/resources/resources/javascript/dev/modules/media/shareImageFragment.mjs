@@ -22,6 +22,8 @@
  * @module viewerJS.shareImageFragment
  */
 
+const _debug = false;
+
 export default class ShareImageFragment {
     constructor(image) {
         this.active = false;
@@ -87,10 +89,10 @@ export default class ShareImageFragment {
                 var pageUrl =
                     window.location.origin + window.location.pathname + window.location.search + '#xywh=' + areaString;
                 var imageUrl = this.getRegionUrl(area);
-                console.log('set area data ', pageUrl, imageUrl);
+                if (_debug) console.log('set area data ', pageUrl, imageUrl);
                 $('[data-fragment-link="page"]').attr('data-copy-share-image', pageUrl);
                 $('[data-fragment-link="iiif"]').attr('data-copy-share-image', imageUrl);
-                console.log('area share ', $('[data-fragment-link="iiif"]'));
+                if (_debug) console.log('area share ', $('[data-fragment-link="iiif"]'));
                 this.$links.show();
                 this.$instructions.hide();
                 this.initImageFragmentLinks(areaString);
