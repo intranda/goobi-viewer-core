@@ -23,13 +23,16 @@ package io.goobi.viewer.api.rest.resourcebuilders;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.solr.common.SolrDocument;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.model.metadata.ComplexMetadata;
 import io.goobi.viewer.solr.SolrConstants;
 
 class PodloveEpisodeResourceBuilderTest {
@@ -174,6 +177,88 @@ class PodloveEpisodeResourceBuilderTest {
         ApiUrls urls = new ApiUrls("https://viewer.goobi.io/api/v1");
         Assertions.assertEquals("https://viewer.goobi.io/api/v1/records/PPN123/files/transcript/episode.json",
                 PodloveEpisodeResourceBuilder.buildTranscriptUrl(urls, "PPN123", "episode.json"));
+    }
+
+    /**
+     * @see PodloveEpisodeResourceBuilder#buildContributor(ComplexMetadata, String, String, Locale)
+     * @verifies build contributor with group
+     */
+    @Test
+    void buildContributor_shouldBuildContributorWithGroup() {
+        SolrDocument doc = personDoc("MD_AUTHOR");
+        doc.setField(SolrConstants.IDDOC, "123");
+        doc.setField(PodloveEpisodeResourceBuilder.FIELD_LAST_NAME, "Lohmann");
+        doc.setField(PodloveEpisodeResourceBuilder.FIELD_FIRST_NAME, "Ludwig");
+
+        JSONObject contributor =
+                PodloveEpisodeResourceBuilder.buildContributor(ComplexMetadata.getFromSolrDoc(doc), "MD_AUTHOR", "Autor", Locale.GERMAN);
+
+        Assertions.assertNotNull(contributor);
+        Assertions.assertEquals("123", contributor.getString("id"));
+        Assertions.assertEquals("Ludwig Lohmann", contributor.getString("name"));
+        Assertions.assertFalse(contributor.has("avatar"));
+        JSONObject group = contributor.getJSONObject("group");
+        Assertions.assertEquals("MD_AUTHOR", group.getString("id"));
+        Assertions.assertEquals("md_author", group.getString("slug"));
+        Assertions.assertEquals("Autor", group.getString("title"));
+    }
+
+    /**
+     * @see PodloveEpisodeResourceBuilder#buildContributor(ComplexMetadata, String, String, Locale)
+     * @verifies return null if name is missing
+     */
+    @Test
+    void buildContributor_shouldReturnNullIfNameIsMissing() {
+        Assertions.assertNull(
+                PodloveEpisodeResourceBuilder.buildContributor(ComplexMetadata.getFromSolrDoc(personDoc("MD_AUTHOR")), "MD_AUTHOR", "Autor",
+                        Locale.GERMAN));
+    }
+
+    /**
+     * @see PodloveEpisodeResourceBuilder#getContributorName(ComplexMetadata, Locale)
+     * @verifies prefer display form
+     */
+    @Test
+    void getContributorName_shouldPreferDisplayForm() {
+        SolrDocument doc = personDoc("MD_AUTHOR");
+        doc.setField(PodloveEpisodeResourceBuilder.FIELD_DISPLAY_FORM, "Maria-Christina Piwowarski");
+        doc.setField(PodloveEpisodeResourceBuilder.FIELD_LAST_NAME, "Piwowarski");
+        doc.setField(SolrConstants.MD_VALUE, "Piwowarski, Maria-Christina");
+        Assertions.assertEquals("Maria-Christina Piwowarski",
+                PodloveEpisodeResourceBuilder.getContributorName(ComplexMetadata.getFromSolrDoc(doc), Locale.GERMAN));
+    }
+
+    /**
+     * @see PodloveEpisodeResourceBuilder#getContributorName(ComplexMetadata, Locale)
+     * @verifies combine first and last name
+     */
+    @Test
+    void getContributorName_shouldCombineFirstAndLastName() {
+        SolrDocument doc = personDoc("MD_AUTHOR");
+        doc.setField(PodloveEpisodeResourceBuilder.FIELD_LAST_NAME, "blauschwarzberlin");
+        doc.setField(SolrConstants.MD_VALUE, "something else");
+        Assertions.assertEquals("blauschwarzberlin",
+                PodloveEpisodeResourceBuilder.getContributorName(ComplexMetadata.getFromSolrDoc(doc), Locale.GERMAN));
+    }
+
+    /**
+     * @see PodloveEpisodeResourceBuilder#getContributorName(ComplexMetadata, Locale)
+     * @verifies fall back to metadata value
+     */
+    @Test
+    void getContributorName_shouldFallBackToMetadataValue() {
+        SolrDocument doc = personDoc("MD_PUBLISHER");
+        doc.setField(SolrConstants.MD_VALUE, "Staatsbibliothek zu Berlin");
+        Assertions.assertEquals("Staatsbibliothek zu Berlin",
+                PodloveEpisodeResourceBuilder.getContributorName(ComplexMetadata.getFromSolrDoc(doc), Locale.GERMAN));
+    }
+
+    private static SolrDocument personDoc(String field) {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.DOCTYPE, "METADATA");
+        doc.setField(SolrConstants.LABEL, field);
+        doc.setField(SolrConstants.METADATATYPE, "PERSON");
+        return doc;
     }
 
     private static SolrDocument chapterDoc(String title, String start) {

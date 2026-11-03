@@ -256,25 +256,16 @@ public final class AccessConditionUtils {
                         .append(simpleFileName)
                         .append("\")");
                 break;
-            case "tif", "tiff":
+            case "tif", "tiff", "jpg", "jpeg", "png", "gif", "jp2":
+                // Image files are usually listed in FILENAME, but records whose main file is not an image (e.g. podcast episodes with a cover
+                // image) list them in the format specific field only
                 sbQuery.append(" +(")
                         .append(useFileField)
                         .append(":\"")
                         .append(simpleFileName)
                         .append("\" ")
-                        .append(SolrConstants.FILENAME)
-                        .append("_TIFF:\"")
-                        .append(simpleFileName)
-                        .append("\")");
-                break;
-            case "jpg", "jpeg":
-                sbQuery.append(" +(")
-                        .append(useFileField)
+                        .append(getImageFileNameField(extension))
                         .append(":\"")
-                        .append(simpleFileName)
-                        .append("\" ")
-                        .append(SolrConstants.FILENAME)
-                        .append("_JPEG:\"")
                         .append(simpleFileName)
                         .append("\")");
                 break;
@@ -290,9 +281,6 @@ public final class AccessConditionUtils {
                         .append(simpleFileName)
                         .append("\")");
                 break;
-            case "png":
-            case "gif":
-            case "jp2":
             case "obj":
             case "gltf":
             case "glb":
@@ -310,6 +298,20 @@ public final class AccessConditionUtils {
         }
 
         return sbQuery.toString();
+    }
+
+    /**
+     * Returns the Solr field that holds image files of the given format, e.g. FILENAME_PNG for png files.
+     *
+     * @param extension lower case file extension of an image file
+     * @return name of the format specific file name field
+     */
+    private static String getImageFileNameField(String extension) {
+        return switch (extension) {
+            case "tif" -> SolrConstants.FILENAME + "_TIFF";
+            case "jpg" -> SolrConstants.FILENAME + "_JPEG";
+            default -> SolrConstants.FILENAME + "_" + extension.toUpperCase();
+        };
     }
 
     /**

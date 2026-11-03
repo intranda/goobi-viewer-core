@@ -572,11 +572,13 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         }
         {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.png");
-            Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.png\"", result);
+            Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME + ":\"00000001.png\" "
+                    + SolrConstants.FILENAME + "_PNG:\"00000001.png\")", result);
         }
         {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.jp2");
-            Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.jp2\"", result);
+            Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME + ":\"00000001.jp2\" "
+                    + SolrConstants.FILENAME + "_JP2:\"00000001.jp2\")", result);
         }
         {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.jpg");
@@ -585,7 +587,8 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         }
         {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.gif");
-            Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.gif\"", result);
+            Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME + ":\"00000001.gif\" "
+                    + SolrConstants.FILENAME + "_GIF:\"00000001.gif\")", result);
         }
     }
 
@@ -630,7 +633,8 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void generateAccessCheckQuery_shouldWorkCorrectlyWithUrls() throws Exception {
         String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "file:///opt/digiverso/viewer/cms_media/bild4.png");
-        Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"bild4.png\"", result);
+        Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME + ":\"bild4.png\" "
+                + SolrConstants.FILENAME + "_PNG:\"bild4.png\")", result);
     }
 
     /**

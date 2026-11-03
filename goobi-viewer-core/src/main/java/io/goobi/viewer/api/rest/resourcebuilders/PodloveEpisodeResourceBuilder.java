@@ -28,10 +28,12 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,6 +59,9 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.metadata.ComplexMetadata;
+import io.goobi.viewer.model.metadata.ComplexMetadataContainer;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -90,7 +95,13 @@ public class PodloveEpisodeResourceBuilder {
     /** Solr field containing the start time of a chapter within the episode audio. */
     public static final String FIELD_CHAPTER_START = "MD_TIME_START";
     /** Solr field of an episode containing the PI of the series (podcast) it belongs to. */
-    public static final String FIELD_SERIES_ID = SolrConstants.PREFIX_GROUPID + "SERIES";
+    public static final String FIELD_SERIES_ID = SolrConstants.PREFIX_GROUPID + "PODCAST";
+
+    /** Metadata fields whose metadata documents are listed as contributors, in the order of the contributor groups. */
+    static final List<String> CONTRIBUTOR_FIELDS = List.of("MD_AUTHOR", "MD_PUBLISHER");
+    static final String FIELD_DISPLAY_FORM = "MD_DISPLAYFORM";
+    static final String FIELD_FIRST_NAME = "MD_FIRSTNAME";
+    static final String FIELD_LAST_NAME = "MD_LASTNAME";
 
     private static final int POSTER_SIZE = 500;
     private static final Pattern PATTERN_CLOCK_TIME = Pattern.compile("^(?:(\\d+):)?(\\d{1,2}):(\\d{1,2})(?:\\.(\\d{1,3}))?$");
@@ -151,6 +162,8 @@ public class PodloveEpisodeResourceBuilder {
             showJson.put("title", getTitle(show));
             putIfNotBlank(showJson, "poster", getPoster(show));
             putIfNotBlank(showJson, "link", getLink(show));
+            putIfNotBlank(showJson, "subtitle", show.getMetadataValue("MD_SUBTITLE"));
+            putIfNotBlank(showJson, "summary", show.getMetadataValue("MD_SUMMARY"));
             json.put("show", showJson);
         }
 
@@ -159,7 +172,15 @@ public class PodloveEpisodeResourceBuilder {
         if (hasPermission(pi, page.getFileName(), IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES)) {
             json.put("files", audio);
         }
+
+        //metadata
+        putIfNotBlank(json, "publicationDate", buildMetadataField(doc, "MD_YEARPUBLISH", "\\d{4}-\\d{2}-\\d{2}"));
+        putIfNotBlank(json, "duration", buildMetadataField(doc, "MD_SIZESOURCEPRINT", "\\d{2}:\\d{2}(:\\d{2})?"));
+        putIfNotBlank(json, "subtitle", buildMetadataField(doc, "MD_SUBTITLE", ""));
+        putIfNotBlank(json, "summary", buildMetadataField(doc, "MD_SUMMARY", ""));
+
         json.put("chapters", buildChapters(loadChapterDocs(pi)));
+        json.put("contributors", buildContributors(episode, BeanUtils.getLocale()));
 
         String transcriptFileName = getTranscriptFileName(loadPageDoc(pi, page.getOrder()));
         if (transcriptFileName != null && hasPermission(pi, transcriptFileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
@@ -168,6 +189,89 @@ public class PodloveEpisodeResourceBuilder {
         }
 
         return json;
+    }
+
+    /**
+     * Creates Podlove contributors from the metadata documents of the given episode. Each field in {@link #CONTRIBUTOR_FIELDS} becomes a contributor
+     * group titled with the translated field name.
+     *
+     * @param episode episode record
+     * @param locale locale for group titles and metadata values
+     * @return Podlove contributors
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    private static JSONArray buildContributors(StructElement episode, Locale locale) throws PresentationException, IndexUnreachableException {
+        ComplexMetadataContainer mdDocs = episode.getMetadataDocuments();
+        JSONArray ret = new JSONArray();
+        if (mdDocs == null) {
+            return ret;
+        }
+        for (String field : CONTRIBUTOR_FIELDS) {
+            List<ComplexMetadata> metadata = mdDocs.getMetadata(field);
+            if (metadata.isEmpty()) {
+                continue;
+            }
+            String groupTitle = ViewerResourceBundle.getTranslation(field, locale);
+            for (ComplexMetadata md : metadata) {
+                JSONObject contributor = buildContributor(md, field, groupTitle, locale);
+                if (contributor != null) {
+                    ret.put(contributor);
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Creates a single Podlove contributor. The player only lists contributors that belong to a group, so the metadata field is used as group.
+     * No avatar is set because persons have no images.
+     *
+     * @param md metadata document of the person
+     * @param field metadata field, used as group id
+     * @param groupTitle displayed title of the group
+     * @param locale locale for metadata values
+     * @return Podlove contributor; null if no name could be determined
+     * @should build contributor with group
+     * @should return null if name is missing
+     */
+    static JSONObject buildContributor(ComplexMetadata md, String field, String groupTitle, Locale locale) {
+        String name = getContributorName(md, locale);
+        if (StringUtils.isBlank(name)) {
+            return null;
+        }
+        JSONObject group = new JSONObject();
+        group.put("id", field);
+        group.put("slug", field.toLowerCase());
+        group.put("title", StringUtils.isNotBlank(groupTitle) ? groupTitle : field);
+
+        JSONObject contributor = new JSONObject();
+        contributor.put("id", StringUtils.isNotBlank(md.getId()) ? md.getId() : field + "_" + name);
+        contributor.put("name", name);
+        contributor.put("group", group);
+        return contributor;
+    }
+
+    /**
+     * @param md metadata document of a person or corporation
+     * @param locale locale for metadata values
+     * @return display form, else first and last name, else the plain metadata value; empty string if none exists
+     * @should prefer display form
+     * @should combine first and last name
+     * @should fall back to metadata value
+     */
+    static String getContributorName(ComplexMetadata md, Locale locale) {
+        String displayForm = md.getFirstValue(FIELD_DISPLAY_FORM, locale);
+        if (StringUtils.isNotBlank(displayForm)) {
+            return displayForm.trim();
+        }
+        // MD_VALUE of persons is usually "Last name, First name", so the name parts are preferred
+        String name = StringUtils.normalizeSpace(md.getFirstValue(FIELD_FIRST_NAME, locale) + " " + md.getFirstValue(FIELD_LAST_NAME, locale));
+        if (StringUtils.isNotBlank(name)) {
+            return name;
+        }
+        return StringUtils.trimToEmpty(md.getFirstValue(SolrConstants.MD_VALUE, locale));
     }
 
     /**
@@ -352,6 +456,28 @@ public class PodloveEpisodeResourceBuilder {
         chapters.sort(Comparator.comparing(c -> c.getString("start")));
 
         return new JSONArray(chapters);
+    }
+
+    /**
+     * Return the first value of the given solrField in doc which matches the filterRegex (empty regex always matches). If no value was found, return
+     * an empty string
+     * 
+     * @param doc The solr document containing the values
+     * @param solrField The name of the solr field
+     * @param filterRegex a regex which must match allowed values. If null or empty, it is assumed to always match
+     * @return The values as string
+     */
+    static String buildMetadataField(SolrDocument doc, String solrField, String filterRegex) {
+        Collection<Object> values = doc.getFieldValues(solrField);
+        if (values != null && !values.isEmpty()) {
+            String stringValue = values.stream()
+                    .map(Object::toString)
+                    .filter(v -> StringUtils.isBlank(filterRegex) ? true : v.matches(filterRegex))
+                    .findFirst()
+                    .orElse("");
+            return stringValue;
+        }
+        return "";
     }
 
     /**
