@@ -21,10 +21,14 @@
  */
 package io.goobi.viewer.api.rest.resourcebuilders;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TRANSCRIPT;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -32,6 +36,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -69,7 +74,8 @@ import jakarta.servlet.http.HttpServletRequest;
  * <p>
  * The episode is expected to be a top-level record whose first page holds the audio file. Chapters are read from the structure elements of the record
  * that carry a start time in {@link #FIELD_CHAPTER_START}. If the record belongs to a series (referenced in {@link #FIELD_SERIES_ID}), the series
- * group record is used as the podcast show.
+ * group record is used as the podcast show. If the first page lists a JSON transcript in {@link SolrConstants#FILENAME_JSON} and the caller may view
+ * the fulltext, the episode references the transcript endpoint, from which the player loads the transcript itself.
  */
 public class PodloveEpisodeResourceBuilder {
 
@@ -125,7 +131,7 @@ public class PodloveEpisodeResourceBuilder {
         if (page == null || page.getMediaType() == null || !page.getMediaType().isAudio()) {
             throw new ContentNotFoundException("No audio found for PI: " + pi);
         }
-        if (!hasPermission(pi, page, IPrivilegeHolder.PRIV_VIEW_AUDIO)) {
+        if (!hasPermission(pi, page.getFileName(), IPrivilegeHolder.PRIV_VIEW_AUDIO)) {
             throw new ServiceNotAllowedException("Listening to audio not allowed for PI: " + pi);
         }
 
@@ -150,10 +156,16 @@ public class PodloveEpisodeResourceBuilder {
 
         JSONArray audio = buildAudio(pi, page);
         json.put("audio", audio);
-        if (hasPermission(pi, page, IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES)) {
+        if (hasPermission(pi, page.getFileName(), IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES)) {
             json.put("files", audio);
         }
         json.put("chapters", buildChapters(loadChapterDocs(pi)));
+
+        String transcriptFileName = getTranscriptFileName(loadPageDoc(pi, page.getOrder()));
+        if (transcriptFileName != null && hasPermission(pi, transcriptFileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
+            // Podlove fetches the transcript itself if the value is a URL; access is checked again by the transcript endpoint
+            json.put("transcripts", buildTranscriptUrl(urls, pi, transcriptFileName));
+        }
 
         return json;
     }
@@ -220,6 +232,68 @@ public class PodloveEpisodeResourceBuilder {
         }
 
         return new StructElement(doc);
+    }
+
+    /**
+     * Loads the transcript related fields of the page with the given order.
+     *
+     * @param pi persistent identifier of the record
+     * @param order order of the page
+     * @return Solr document of the page; null if not found
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    private static SolrDocument loadPageDoc(String pi, int order) throws PresentationException, IndexUnreachableException {
+        String query = new StringBuilder().append('+')
+                .append(SolrConstants.PI_TOPSTRUCT)
+                .append(":\"")
+                .append(pi)
+                .append("\" +")
+                .append(SolrConstants.DOCTYPE)
+                .append(':')
+                .append(DocType.PAGE)
+                .append(" +")
+                .append(SolrConstants.ORDER)
+                .append(':')
+                .append(order)
+                .toString();
+        return DataManager.getInstance().getSearchIndex().getFirstDoc(query, Collections.singletonList(SolrConstants.FILENAME_JSON));
+    }
+
+    /**
+     * Returns the simple name of the JSON transcript listed in {@link SolrConstants#FILENAME_JSON} of the given page document.
+     *
+     * @param pageDoc Solr document of the page
+     * @return transcript file name without path; null if the page has no JSON transcript
+     * @should return file name without path
+     * @should return null if page has no transcript
+     * @should return null if file is not a json file
+     */
+    static String getTranscriptFileName(SolrDocument pageDoc) {
+        if (pageDoc == null) {
+            return null;
+        }
+        Object value = pageDoc.getFirstValue(SolrConstants.FILENAME_JSON);
+        if (value == null || StringUtils.isBlank(value.toString())) {
+            return null;
+        }
+        String fileName = FilenameUtils.getName(value.toString().trim());
+        if (!"json".equalsIgnoreCase(FilenameUtils.getExtension(fileName))) {
+            logger.warn("Ignoring transcript that is not a JSON file: {}", value);
+            return null;
+        }
+        return fileName;
+    }
+
+    /**
+     * @param urls API URL manager
+     * @param pi persistent identifier of the record
+     * @param fileName file name of the JSON transcript
+     * @return URL of the transcript endpoint for the given file
+     * @should build transcript endpoint url
+     */
+    static String buildTranscriptUrl(AbstractApiUrlManager urls, String pi, String fileName) {
+        return urls.path(RECORDS_FILES, RECORDS_FILES_TRANSCRIPT).params(pi, fileName).build();
     }
 
     /**
@@ -344,9 +418,9 @@ public class PodloveEpisodeResourceBuilder {
         return date.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
 
-    private boolean hasPermission(String pi, PhysicalElement page, String privilege) throws IndexUnreachableException, DAOException {
+    private boolean hasPermission(String pi, String fileName, String privilege) throws IndexUnreachableException, DAOException {
         return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession(false) : null, pi,
-                page.getFileName(), privilege, request != null ? NetTools.getIpAddress(request) : null).isGranted();
+                fileName, privilege, request != null ? NetTools.getIpAddress(request) : null).isGranted();
     }
 
     private static String getTitle(StructElement element) {
