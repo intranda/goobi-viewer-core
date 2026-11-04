@@ -382,6 +382,10 @@ const depsPathsJS = [
             '*/player/**/*',
             '!*/player/**/*.map',
             '!*/player/report.html',
+            // Subscribe button, lazy-loaded by the player when "subscribe-button" is configured
+            '*/button/**/*',
+            '!*/button/**/*.map',
+            '!*/button/report.html',
         ],
         flatten: false,
         dest: `${jsLibsDir}podlove-player/`,

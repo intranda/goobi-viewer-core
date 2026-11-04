@@ -32,7 +32,7 @@
                      under the cursor to another chapter and makes the layout flicker. Compare the template with variant-xl when updating the player. -->
                 <div
                     id="podcastPlayer"
-                    class="view-object-content__audio"
+                    class="view-object-content__podlove__player"
                     data-template="#{request.contextPath}/resources/includes/object/podcast-player-template.html?#{navigationHelper.buildVersion}" />
                 <script>
                     (function () {
@@ -49,6 +49,15 @@
                                 sharePlaytime: true
                             }
                         };
+                        // RSS feed of the show (legal deposit copy, blocked from directories). Only clients that subscribe by feed URL are
+                        // offered; directory clients such as Apple Podcasts or Spotify would point to a listing that does not exist for this feed.
+                        const showPi = "#{activeDocumentBean.viewManager.topStructElement.getMetadataValue('GROUPID_PODCAST')}";
+                        if (showPi) {
+                            config["subscribe-button"] = {
+                                feed: restApiUrl + "/records/" + encodeURIComponent(showPi) + "/podcast/feed.rss",
+                                clients: [{ id: "rss" }, { id: "antenna-pod" }, { id: "podcast-addict" }]
+                            };
+                        }
                         if (typeof podlovePlayer === "undefined") {
                             console.error("Podlove player library not loaded");
                             return;

@@ -103,6 +103,10 @@ public class PodloveEpisodeResourceBuilder {
     static final String FIELD_DISPLAY_FORM = "MD_DISPLAYFORM";
     /** Solr field of a page containing the file name of a WebVTT transcript. */
     static final String FIELD_FILENAME_VTT = SolrConstants.FILENAME + "_VTT";
+    static final String FIELD_YEAR_PUBLISH = "MD_YEARPUBLISH";
+    static final String FIELD_DURATION = "MD_SIZESOURCEPRINT";
+    static final String FIELD_SUBTITLE = "MD_SUBTITLE";
+    static final String FIELD_SUMMARY = "MD_SUMMARY";
     static final String FIELD_FIRST_NAME = "MD_FIRSTNAME";
     static final String FIELD_LAST_NAME = "MD_LASTNAME";
 
@@ -145,7 +149,7 @@ public class PodloveEpisodeResourceBuilder {
         if (page == null || page.getMediaType() == null || !page.getMediaType().isAudio()) {
             throw new ContentNotFoundException("No audio found for PI: " + pi);
         }
-        if (!hasPermission(pi, page.getFileName(), IPrivilegeHolder.PRIV_VIEW_AUDIO)) {
+        if (!hasPermission(request, pi, page.getFileName(), IPrivilegeHolder.PRIV_VIEW_AUDIO)) {
             throw new ServiceNotAllowedException("Listening to audio not allowed for PI: " + pi);
         }
 
@@ -165,22 +169,22 @@ public class PodloveEpisodeResourceBuilder {
             showJson.put("title", getTitle(show));
             putIfNotBlank(showJson, "poster", getPoster(show));
             putIfNotBlank(showJson, "link", getLink(show));
-            putIfNotBlank(showJson, "subtitle", show.getMetadataValue("MD_SUBTITLE"));
-            putIfNotBlank(showJson, "summary", show.getMetadataValue("MD_SUMMARY"));
+            putIfNotBlank(showJson, "subtitle", show.getMetadataValue(FIELD_SUBTITLE));
+            putIfNotBlank(showJson, "summary", show.getMetadataValue(FIELD_SUMMARY));
             json.put("show", showJson);
         }
 
-        JSONArray audio = buildAudio(pi, page);
+        JSONArray audio = buildAudio(urls, pi, page);
         json.put("audio", audio);
-        if (hasPermission(pi, page.getFileName(), IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES)) {
+        if (hasPermission(request, pi, page.getFileName(), IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES)) {
             json.put("files", audio);
         }
 
         //metadata
-        putIfNotBlank(json, "publicationDate", buildMetadataField(doc, "MD_YEARPUBLISH", "\\d{4}-\\d{2}-\\d{2}"));
-        putIfNotBlank(json, "duration", buildMetadataField(doc, "MD_SIZESOURCEPRINT", "\\d{2}:\\d{2}(:\\d{2})?"));
-        putIfNotBlank(json, "subtitle", buildMetadataField(doc, "MD_SUBTITLE", ""));
-        putIfNotBlank(json, "summary", buildMetadataField(doc, "MD_SUMMARY", ""));
+        putIfNotBlank(json, "publicationDate", buildMetadataField(doc, FIELD_YEAR_PUBLISH, "\\d{4}-\\d{2}-\\d{2}"));
+        putIfNotBlank(json, "duration", buildMetadataField(doc, FIELD_DURATION, "\\d{2}:\\d{2}(:\\d{2})?"));
+        putIfNotBlank(json, "subtitle", buildMetadataField(doc, FIELD_SUBTITLE, ""));
+        putIfNotBlank(json, "summary", buildMetadataField(doc, FIELD_SUMMARY, ""));
 
         json.put("chapters", buildChapters(loadChapterDocs(pi)));
         json.put("contributors", buildContributors(episode, BeanUtils.getLocale()));
@@ -277,11 +281,12 @@ public class PodloveEpisodeResourceBuilder {
     /**
      * Creates one audio source per available mime type of the given page.
      *
+     * @param urls API URL manager used to build the audio file URLs
      * @param pi persistent identifier of the record
      * @param page page holding the audio file
-     * @return Podlove audio sources
+     * @return audio sources with url, mimeType, size and title
      */
-    private JSONArray buildAudio(String pi, PhysicalElement page) {
+    static JSONArray buildAudio(AbstractApiUrlManager urls, String pi, PhysicalElement page) {
         MediaHandler mediaHandler = new MediaHandler(urls);
         // Several formats may map to the same mime type (e.g. mp3 and mpeg); only the first one is used
         Map<String, String> formatsByMimeType = new LinkedHashMap<>();
@@ -376,11 +381,11 @@ public class PodloveEpisodeResourceBuilder {
      */
     private String getTranscriptUrl(String pi, SolrDocument pageDoc) throws IndexUnreachableException, DAOException {
         String vttFileName = getTranscriptFileName(pageDoc, FIELD_FILENAME_VTT, "vtt");
-        if (vttFileName != null && hasPermission(pi, vttFileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
+        if (vttFileName != null && hasPermission(request, pi, vttFileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
             return buildTranscriptUrl(urls, pi, RECORDS_FILES_TRANSCRIPT_VTT, vttFileName);
         }
         String jsonFileName = getTranscriptFileName(pageDoc, SolrConstants.FILENAME_JSON, "json");
-        if (jsonFileName != null && hasPermission(pi, jsonFileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
+        if (jsonFileName != null && hasPermission(request, pi, jsonFileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
             return buildTranscriptUrl(urls, pi, RECORDS_FILES_TRANSCRIPT, jsonFileName);
         }
         return null;
@@ -570,17 +575,27 @@ public class PodloveEpisodeResourceBuilder {
         return date.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
 
-    private boolean hasPermission(String pi, String fileName, String privilege) throws IndexUnreachableException, DAOException {
+    /**
+     * @param request current request; may be null
+     * @param pi persistent identifier of the record
+     * @param fileName name of the file to check
+     * @param privilege privilege to check
+     * @return true if the request has the given privilege for the file
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    static boolean hasPermission(HttpServletRequest request, String pi, String fileName, String privilege)
+            throws IndexUnreachableException, DAOException {
         return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession(false) : null, pi,
                 fileName, privilege, request != null ? NetTools.getIpAddress(request) : null).isGranted();
     }
 
-    private static String getTitle(StructElement element) {
+    static String getTitle(StructElement element) {
         String title = element.getMetadataValue(FIELD_TITLE);
         return StringUtils.isNotBlank(title) ? title : element.getLabel();
     }
 
-    private static String getPoster(StructElement element) {
+    static String getPoster(StructElement element) {
         try {
             return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(element, POSTER_SIZE, POSTER_SIZE);
         } catch (RuntimeException e) {
@@ -589,7 +604,7 @@ public class PodloveEpisodeResourceBuilder {
         }
     }
 
-    private static String getLink(StructElement element) {
+    static String getLink(StructElement element) {
         try {
             return element.getUrl();
         } catch (RuntimeException e) {

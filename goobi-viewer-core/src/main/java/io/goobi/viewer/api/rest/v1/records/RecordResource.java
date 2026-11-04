@@ -35,6 +35,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_METADATA_SOURCE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_NER_TAGS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PLAINTEXT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PLAINTEXT_ZIP;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PODCAST_FEED;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PODLOVE_EPISODE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RIS_FILE;
@@ -86,6 +87,7 @@ import io.goobi.viewer.api.rest.model.ner.DocumentReference;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentation2ResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.NERBuilder;
+import io.goobi.viewer.api.rest.resourcebuilders.PodcastFeedResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.PodloveEpisodeResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
@@ -1028,6 +1030,35 @@ public class RecordResource {
     public String getPodloveEpisode()
             throws ContentNotFoundException, ServiceNotAllowedException, PresentationException, IndexUnreachableException, DAOException {
         return new PodloveEpisodeResourceBuilder(urls, servletRequest).build(pi).toString();
+    }
+
+    /**
+     * Returns the RSS feed (with iTunes elements) of a podcast show. The feed serves the legal deposit mandate and is blocked from podcast
+     * directories.
+     *
+     * <p>No {@code @AccessConditionBinding}: the show is a GROUP document without pages; access is checked by the builder.
+     *
+     * @return RSS 2.0 feed
+     * @throws ContentNotFoundException if no podcast show with this PI exists
+     * @throws ServiceNotAllowedException if the show is not accessible for the request
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    @GET
+    @jakarta.ws.rs.Path(RECORDS_PODCAST_FEED)
+    @Produces({ PodcastFeedResourceBuilder.MEDIA_TYPE_RSS })
+    @Operation(tags = { "records" }, summary = "Get the RSS feed of a podcast show",
+            description = "Returns an RSS 2.0 feed with iTunes elements containing all episodes of the podcast show the caller may listen to."
+                    + " The feed is blocked from podcast directories (itunes:block, podcast:block).")
+    @ApiResponse(responseCode = "200", description = "RSS feed", content = @Content(mediaType = PodcastFeedResourceBuilder.MEDIA_TYPE_RSS))
+    @ApiResponse(responseCode = "403", description = "Access to this podcast is not allowed")
+    @ApiResponse(responseCode = "404", description = "No podcast show found for the given identifier")
+    public Response getPodcastFeed()
+            throws ContentNotFoundException, ServiceNotAllowedException, PresentationException, IndexUnreachableException, DAOException {
+        String feedUrl = urls.path(RECORDS_RECORD, RECORDS_PODCAST_FEED).params(pi).build();
+        String xml = new PodcastFeedResourceBuilder(urls, servletRequest).build(pi, feedUrl);
+        return Response.ok(xml, PodcastFeedResourceBuilder.MEDIA_TYPE_RSS + "; charset=UTF-8").build();
     }
 
     /**

@@ -75,6 +75,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_COMMENTS_COMMENT = "/comments/{id}";
     public static final String RECORDS_JSON = "/json/{template}";
     public static final String RECORDS_PODLOVE_EPISODE = "/podlove/episode.json";
+    public static final String RECORDS_PODCAST_FEED = "/podcast/feed.rss";
     public static final String RECORDS_METADATA_SOURCE = "/metadata/source";
     public static final String RECORDS_MANIFEST = "/manifest";
     public static final String RECORDS_MANIFEST_AUTOCOMPLETE = "/manifest/autocomplete";
