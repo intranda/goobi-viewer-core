@@ -421,6 +421,8 @@ public class ActiveDocumentBean implements Serializable {
      * @should throw RecordNotFoundException if listing not allowed by default
      * @should load records that have been released via moving wall
      * @should set toc on view manager after update
+     * @should retrieve updated iddoc if cached iddoc no longer exists
+     * @should throw RecordDeletedException if updated iddoc belongs to trace document
      */
     public void update() throws PresentationException, IndexUnreachableException, RecordNotFoundException, RecordDeletedException, DAOException,
             ViewerConfigurationException, IDDOCNotFoundException, NumberFormatException, RecordLimitExceededException {
@@ -474,12 +476,14 @@ public class ActiveDocumentBean implements Serializable {
 
                 // Exit here if record is not found or has been deleted
                 if (!topStructElement.isExists()) {
+                    // A non-existent IDDOC yields an element without metadata (and thus without PI), so prefer the requested identifier
+                    String lookupPi = StringUtils.isNotEmpty(lastReceivedIdentifier) ? lastReceivedIdentifier : topStructElement.getPi();
                     logger.info("IDDOC for the current record '{}' ({}) no longer seems to exist, attempting to retrieve an updated IDDOC...",
-                            topStructElement.getPi(), topDocumentIddoc);
-                    topDocumentIddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(topStructElement.getPi());
+                            lookupPi, topDocumentIddoc);
+                    topDocumentIddoc = StringUtils.isNotEmpty(lookupPi)
+                            ? DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(lookupPi) : null;
                     if (topDocumentIddoc == null) {
-                        logger.warn("New IDDOC for the current record '{}' could not be found. Perhaps this record has been deleted?",
-                                topStructElement.getPi());
+                        logger.warn("New IDDOC for the current record '{}' could not be found. Perhaps this record has been deleted?", lookupPi);
                         reset();
                         try {
                             throw new RecordNotFoundException(lastReceivedIdentifier);
@@ -487,7 +491,10 @@ public class ActiveDocumentBean implements Serializable {
                             lastReceivedIdentifier = null;
                         }
                     }
-                } else if (topStructElement.isDeleted()) {
+                    // Reload with the updated IDDOC so that the checks below and the ViewManager use the actual document
+                    topStructElement = new StructElement(topDocumentIddoc);
+                }
+                if (topStructElement.isDeleted()) {
                     logger.debug("Record '{}' is deleted and only available as a trace document.", topStructElement.getPi());
                     reset();
                     throw new RecordDeletedException(topStructElement.getPi());
