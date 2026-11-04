@@ -55,7 +55,7 @@
                         if (showPi) {
                             config["subscribe-button"] = {
                                 feed: restApiUrl + "/records/" + encodeURIComponent(showPi) + "/podcast/feed.rss",
-                                clients: [{ id: "rss" }, { id: "antenna-pod" }, { id: "podcast-addict" }]
+                                clients: [{ id: "rss" }]
                             };
                         }
                         if (typeof podlovePlayer === "undefined") {

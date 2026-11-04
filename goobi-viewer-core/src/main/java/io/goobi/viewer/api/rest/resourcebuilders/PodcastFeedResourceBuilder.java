@@ -36,14 +36,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
 import org.jdom2.Verifier;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
@@ -58,18 +58,20 @@ import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.PhysicalElement;
+import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrSearchIndex;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Builds the RSS 2.0 feed (with iTunes elements) of a podcast show.
  *
  * <p>
- * The feed serves the legal deposit mandate of the library. It is blocked from podcast directories ({@code itunes:block}, {@code podcast:block}),
- * the official listing remains the producers' own feed.
+ * The feed serves the legal deposit mandate of the library. It is blocked from podcast directories ({@code itunes:block}, {@code podcast:block}), the
+ * official listing remains the producers' own feed.
  */
 public class PodcastFeedResourceBuilder {
 
@@ -78,19 +80,11 @@ public class PodcastFeedResourceBuilder {
     /** Media type of RSS feeds. */
     public static final String MEDIA_TYPE_RSS = "application/rss+xml";
 
-    static final String FIELD_LANGUAGE = "MD_LANGUAGE";
-    static final String FIELD_AUTHOR = "MD_AUTHOR";
-    static final String FIELD_OWNER = "MD_OWNER";
-    static final String FIELD_TOPIC = "MD_TOPIC";
-    static final String FIELD_EXPLICIT = "MD_EXPLICIT";
-
     static final Namespace NS_ITUNES = Namespace.getNamespace("itunes", "http://www.itunes.com/dtds/podcast-1.0.dtd");
     static final Namespace NS_ATOM = Namespace.getNamespace("atom", "http://www.w3.org/2005/Atom");
     static final Namespace NS_PODCAST = Namespace.getNamespace("podcast", "https://podcastindex.org/namespace/1.0");
 
     private static final List<String> PREFERRED_ENCLOSURE_TYPES = List.of("audio/mpeg", "audio/mp4", "audio/x-m4a", "audio/m4a");
-
-    private static final String PATTERN_ISO_DATE = "\\d{4}-\\d{2}-\\d{2}";
 
     /**
      * Channel data of the feed.
@@ -188,17 +182,21 @@ public class PodcastFeedResourceBuilder {
     private static Channel buildChannelData(StructElement show, String feedUrl) {
         String title = PodloveEpisodeResourceBuilder.getTitle(show);
         String summary = show.getMetadataValue(PodloveEpisodeResourceBuilder.FIELD_SUMMARY);
-        List<String> authors = show.getMetadataValues(FIELD_AUTHOR);
+        List<String> authors = show.getMetadataValues(PodloveEpisodeResourceBuilder.FIELD_AUTHOR);
         return new Channel(title, PodloveEpisodeResourceBuilder.getLink(show), feedUrl, StringUtils.isNotBlank(summary) ? summary : title,
-                show.getMetadataValue(PodloveEpisodeResourceBuilder.FIELD_SUBTITLE), toFeedLanguage(show.getMetadataValue(FIELD_LANGUAGE)), authors,
-                show.getMetadataValue(FIELD_OWNER), authors.isEmpty() ? null : String.join(", ", authors), show.getMetadataValues(FIELD_TOPIC),
-                isExplicit(show.getMetadataValue(FIELD_EXPLICIT)));
+                show.getMetadataValue(PodloveEpisodeResourceBuilder.FIELD_SUBTITLE),
+                toFeedLanguage(show.getMetadataValue(PodloveEpisodeResourceBuilder.FIELD_LANGUAGE)), authors,
+                show.getMetadataValue(PodloveEpisodeResourceBuilder.FIELD_OWNER), authors.isEmpty() ? null : String.join(", ", authors),
+                show.getMetadataValues(PodloveEpisodeResourceBuilder.FIELD_TOPIC),
+                isExplicit(show.getMetadataValue(PodloveEpisodeResourceBuilder.FIELD_EXPLICIT)));
     }
 
     private List<Item> loadItems(String showPi) throws PresentationException, IndexUnreachableException, DAOException {
         String query = SearchHelper.buildFinalQuery(
                 "+" + PodloveEpisodeResourceBuilder.FIELD_SERIES_ID + ":\"" + showPi + "\" +" + SolrConstants.ISWORK + ":true", false, request, null);
-        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(query);
+        SolrDocumentList docs = DataManager.getInstance()
+                .getSearchIndex()
+                .search(query, SolrSearchIndex.MAX_HITS, List.of(new StringPair("GROUPORDER_PODCAST", "desc")), null);
         List<Item> ret = new ArrayList<>(docs.size());
         for (SolrDocument doc : docs) {
             StructElement episode = new StructElement(doc);
@@ -219,8 +217,8 @@ public class PodcastFeedResourceBuilder {
     }
 
     /**
-     * Decides whether an episode is part of the feed. Provisional rule: episodes the request may not listen to are left out entirely. This may
-     * change to "include, but with a blocked link"; keep the decision in this method.
+     * Decides whether an episode is part of the feed. Provisional rule: episodes the request may not listen to are left out entirely. This may change
+     * to "include, but with a blocked link"; keep the decision in this method.
      *
      * @param pi persistent identifier of the episode
      * @param page page holding the audio file
@@ -245,7 +243,7 @@ public class PodcastFeedResourceBuilder {
                 episode.getMetadataValue(PodloveEpisodeResourceBuilder.FIELD_SUBTITLE), getPublicationDate(doc), source.getString("url"),
                 source.optLong("size", 0), source.getString("mimeType"),
                 formatDuration(episode.getMetadataValue(PodloveEpisodeResourceBuilder.FIELD_DURATION)),
-                PodloveEpisodeResourceBuilder.getPoster(episode), isExplicit(episode.getMetadataValue(FIELD_EXPLICIT)));
+                PodloveEpisodeResourceBuilder.getPoster(episode), isExplicit(episode.getMetadataValue(PodloveEpisodeResourceBuilder.FIELD_EXPLICIT)));
     }
 
     /**
@@ -312,7 +310,9 @@ public class PodcastFeedResourceBuilder {
      * @should return null if no date
      */
     static LocalDateTime getPublicationDate(SolrDocument doc) {
-        String yearPublish = PodloveEpisodeResourceBuilder.buildMetadataField(doc, PodloveEpisodeResourceBuilder.FIELD_YEAR_PUBLISH, PATTERN_ISO_DATE);
+        String yearPublish =
+                PodloveEpisodeResourceBuilder.buildMetadataField(doc, PodloveEpisodeResourceBuilder.FIELD_YEAR_PUBLISH,
+                        PodloveEpisodeResourceBuilder.PATTERN_ISO_DATE);
         if (StringUtils.isNotBlank(yearPublish)) {
             try {
                 return LocalDate.parse(yearPublish).atStartOfDay();
@@ -320,7 +320,7 @@ public class PodcastFeedResourceBuilder {
                 // fall through
             }
         }
-        String datePublish = PodloveEpisodeResourceBuilder.buildMetadataField(doc, PodloveEpisodeResourceBuilder.FIELD_PUBLICATION_DATE, null);
+        String datePublish = PodloveEpisodeResourceBuilder.buildMetadataField(doc, PodloveEpisodeResourceBuilder.FIELD_PUBLICATION_DATE);
         if (StringUtils.isNotBlank(datePublish)) {
             LocalDateTime date = DateTools.parseDateFromString(datePublish);
             if (date != null) {
@@ -458,8 +458,8 @@ public class PodcastFeedResourceBuilder {
     }
 
     /**
-     * Removes characters that are not allowed in XML (e.g. control characters from imported metadata), which would otherwise make JDOM fail
-     * the whole feed.
+     * Removes characters that are not allowed in XML (e.g. control characters from imported metadata), which would otherwise make JDOM fail the whole
+     * feed.
      *
      * @param text text to clean; may be null
      * @return text without illegal XML characters

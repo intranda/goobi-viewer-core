@@ -85,6 +85,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetPdfAction;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.SinglePdfRequest;
 import de.unigoettingen.sub.commons.util.PathConverter;
+import io.goobi.viewer.api.rest.resourcebuilders.PodloveEpisodeResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
@@ -409,10 +410,11 @@ public class ViewManager implements Serializable {
     /**
      * Returns the docstruct type that governs calendar applicability for the given record.
      *
-     * <p>Calendar applicability follows the parent record's docstruct (e.g. "Newspaper"), not the issue's or volume's own docstruct
-     * ("NewspaperIssue" etc.). Anchor children carry that parent in {@code anchorStructElement}; records tied to their parent by a
-     * {@code GROUPID_*} field alone have no anchor struct element, so the group record is looked up in the index instead. Anchors and group
-     * records are themselves the parent and use their own docstruct.
+     * <p>
+     * Calendar applicability follows the parent record's docstruct (e.g. "Newspaper"), not the issue's or volume's own docstruct ("NewspaperIssue"
+     * etc.). Anchor children carry that parent in {@code anchorStructElement}; records tied to their parent by a {@code GROUPID_*} field alone have
+     * no anchor struct element, so the group record is looked up in the index instead. Anchors and group records are themselves the parent and use
+     * their own docstruct.
      *
      * @param topStructElement top struct element of the record; may not be null
      * @param anchorStructElement anchor struct element, or null if the record is not an anchor child
@@ -1286,11 +1288,10 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * Returns the number of volumes belonging to this anchor record. The value is queried live from Solr (the current
-     * count of ISWORK records referencing this anchor via PI_PARENT) rather than read from the anchor's stored
-     * NUMVOLUMES field, so it is correct even if the anchor has not been re-indexed since a volume was added or removed.
-     * The result is cached for the lifetime of this ViewManager instance (one query per opened record). Non-anchor
-     * records always return 0.
+     * Returns the number of volumes belonging to this anchor record. The value is queried live from Solr (the current count of ISWORK records
+     * referencing this anchor via PI_PARENT) rather than read from the anchor's stored NUMVOLUMES field, so it is correct even if the anchor has not
+     * been re-indexed since a volume was added or removed. The result is cached for the lifetime of this ViewManager instance (one query per opened
+     * record). Non-anchor records always return 0.
      *
      * @return the current number of volumes; 0 for non-anchor records
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -3111,6 +3112,11 @@ public class ViewManager implements Serializable {
         return this.getMediaType().isWebArchive()
                 || StringUtils.isNotBlank(this.topStructElement.getMetadataValue(SolrConstants.MD_WEBARCHIVE_IDENTIFIER));
 
+    }
+
+    public boolean isPodcastEpisode() {
+        return this.topStructElement != null
+                && PodloveEpisodeResourceBuilder.DOCSTRCT_PODCAST_EPISODE.equalsIgnoreCase(this.topStructElement.getDocStructType());
     }
 
     public Long getPageCountWithAlto() throws IndexUnreachableException, PresentationException {

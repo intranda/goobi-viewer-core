@@ -134,10 +134,10 @@
                     <!-- VIEW AUDIO -->
                     <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.audio}">
                         <ui:insert name="viewAudio">
-                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.docStructType == 'Podcastfolge'}">
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.podcastEpisode}">
                                 <ui:include src="/resources/includes/object/podcast.xhtml" />
                             </ui:fragment>
-                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.docStructType != 'Podcastfolge'}">
+                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.podcastEpisode}">
                                 <ui:include src="/resources/includes/object/audio.xhtml" />
                             </ui:fragment>
                         </ui:insert>

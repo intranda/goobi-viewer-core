@@ -97,6 +97,8 @@ public class PodloveEpisodeResourceBuilder {
     public static final String FIELD_CHAPTER_START = "MD_TIME_START";
     /** Solr field of an episode containing the PI of the series (podcast) it belongs to. */
     public static final String FIELD_SERIES_ID = SolrConstants.PREFIX_GROUPID + "PODCAST";
+    /** DOC STRUCT type of an audio record which represents a podcast episode and should therefore be presented by a podlove player */
+    public static final String DOCSTRCT_PODCAST_EPISODE = "Podcastfolge";
 
     /** Metadata fields whose metadata documents are listed as contributors, in the order of the contributor groups. */
     static final List<String> CONTRIBUTOR_FIELDS = List.of("MD_AUTHOR", "MD_PUBLISHER");
@@ -106,13 +108,20 @@ public class PodloveEpisodeResourceBuilder {
     static final String FIELD_YEAR_PUBLISH = "MD_YEARPUBLISH";
     static final String FIELD_DURATION = "MD_SIZESOURCEPRINT";
     static final String FIELD_SUBTITLE = "MD_SUBTITLE";
-    static final String FIELD_SUMMARY = "MD_SUMMARY";
+    static final String FIELD_SUMMARY = "MD_ABSTRACT";
     static final String FIELD_FIRST_NAME = "MD_FIRSTNAME";
     static final String FIELD_LAST_NAME = "MD_LASTNAME";
 
-    private static final int POSTER_SIZE = 500;
-    private static final Pattern PATTERN_CLOCK_TIME = Pattern.compile("^(?:(\\d+):)?(\\d{1,2}):(\\d{1,2})(?:\\.(\\d{1,3}))?$");
-    private static final Pattern PATTERN_SECONDS = Pattern.compile("^\\d+(?:\\.\\d+)?$");
+    static final String FIELD_LANGUAGE = "MD_LANGUAGE";
+    static final String FIELD_AUTHOR = "MD_AUTHOR";
+    static final String FIELD_OWNER = "MD_OWNER";
+    static final String FIELD_TOPIC = "MD_TOPIC";
+    static final String FIELD_EXPLICIT = "MD_EXPLICIT";
+
+    static final int POSTER_SIZE = 500;
+    static final Pattern PATTERN_ISO_DATE = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
+    static final Pattern PATTERN_CLOCK_TIME = Pattern.compile("^(?:(\\d+):)?(\\d{1,2}):(\\d{1,2})(?:\\.(\\d{1,3}))?$");
+    static final Pattern PATTERN_SECONDS = Pattern.compile("^\\d+(?:\\.\\d+)?$");
 
     private final AbstractApiUrlManager urls;
     private final HttpServletRequest request;
@@ -181,10 +190,10 @@ public class PodloveEpisodeResourceBuilder {
         }
 
         //metadata
-        putIfNotBlank(json, "publicationDate", buildMetadataField(doc, FIELD_YEAR_PUBLISH, "\\d{4}-\\d{2}-\\d{2}"));
-        putIfNotBlank(json, "duration", buildMetadataField(doc, FIELD_DURATION, "\\d{2}:\\d{2}(:\\d{2})?"));
-        putIfNotBlank(json, "subtitle", buildMetadataField(doc, FIELD_SUBTITLE, ""));
-        putIfNotBlank(json, "summary", buildMetadataField(doc, FIELD_SUMMARY, ""));
+        putIfNotBlank(json, "publicationDate", buildMetadataField(doc, FIELD_YEAR_PUBLISH, PATTERN_ISO_DATE));
+        putIfNotBlank(json, "duration", buildMetadataField(doc, FIELD_DURATION, PATTERN_CLOCK_TIME));
+        putIfNotBlank(json, "subtitle", buildMetadataField(doc, FIELD_SUBTITLE));
+        putIfNotBlank(json, "summary", buildMetadataField(doc, FIELD_SUMMARY));
 
         json.put("chapters", buildChapters(loadChapterDocs(pi)));
         json.put("contributors", buildContributors(episode, BeanUtils.getLocale()));
@@ -229,8 +238,8 @@ public class PodloveEpisodeResourceBuilder {
     }
 
     /**
-     * Creates a single Podlove contributor. The player only lists contributors that belong to a group, so the metadata field is used as group.
-     * No avatar is set because persons have no images.
+     * Creates a single Podlove contributor. The player only lists contributors that belong to a group, so the metadata field is used as group. No
+     * avatar is set because persons have no images.
      *
      * @param md metadata document of the person
      * @param field metadata field, used as group id
@@ -495,15 +504,27 @@ public class PodloveEpisodeResourceBuilder {
      * 
      * @param doc The solr document containing the values
      * @param solrField The name of the solr field
-     * @param filterRegex a regex which must match allowed values. If null or empty, it is assumed to always match
      * @return The values as string
      */
-    static String buildMetadataField(SolrDocument doc, String solrField, String filterRegex) {
+    static String buildMetadataField(SolrDocument doc, String solrField) {
+        return buildMetadataField(doc, solrField, null);
+    }
+
+    /**
+     * Return the first value of the given solrField in doc which matches the filterRegex (empty regex always matches). If no value was found, return
+     * an empty string
+     * 
+     * @param doc The solr document containing the values
+     * @param solrField The name of the solr field
+     * @param filterRegex a regex pattern which must match allowed values. If null it is assumed to always match
+     * @return The values as string
+     */
+    static String buildMetadataField(SolrDocument doc, String solrField, Pattern filterRegex) {
         Collection<Object> values = doc.getFieldValues(solrField);
         if (values != null && !values.isEmpty()) {
             String stringValue = values.stream()
                     .map(Object::toString)
-                    .filter(v -> StringUtils.isBlank(filterRegex) ? true : v.matches(filterRegex))
+                    .filter(v -> filterRegex == null ? true : filterRegex.matcher(v).matches())
                     .findFirst()
                     .orElse("");
             return stringValue;
