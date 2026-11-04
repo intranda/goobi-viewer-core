@@ -35,6 +35,7 @@ import jakarta.faces.context.FacesContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,6 +46,7 @@ import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
 import io.goobi.viewer.exceptions.IllegalUrlParameterException;
+import io.goobi.viewer.exceptions.RecordDeletedException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.viewer.PageType;
@@ -52,6 +54,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.model.viewer.record.relatedgroups.GroupMemberDetail;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -332,6 +335,51 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertFalse(DataManager.getInstance().getConfiguration().isFullAccessForLocalhost());
 
         Assertions.assertThrows(RecordNotFoundException.class, () -> adb.update());
+    }
+
+    /**
+     * @see ActiveDocumentBean#update()
+     * @verifies retrieve updated iddoc if cached iddoc no longer exists
+     */
+    @Test
+    void update_shouldRetrieveUpdatedIddocIfCachedIddocNoLongerExists() throws Exception {
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        // Simulate a record that has been re-indexed after its IDDOC was resolved
+        adb.topDocumentIddoc = "nonexistent-iddoc";
+        adb.setImageToShow("1");
+
+        adb.update();
+        Assertions.assertNotNull(adb.getViewManager());
+        assertEquals(PI_KLEIUNIV, adb.getViewManager().getPi());
+        assertEquals(iddocKleiuniv, adb.topDocumentIddoc);
+        assertEquals(iddocKleiuniv, adb.getViewManager().getTopStructElementIddoc());
+    }
+
+    /**
+     * @see ActiveDocumentBean#update()
+     * @verifies throw RecordDeletedException if updated iddoc belongs to trace document
+     */
+    @Test
+    void update_shouldThrowRecordDeletedExceptionIfUpdatedIddocBelongsToTraceDocument() throws Exception {
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.topDocumentIddoc = "nonexistent-iddoc";
+        adb.setImageToShow("1");
+
+        SolrDocument traceDoc = new SolrDocument();
+        traceDoc.setField(SolrConstants.IDDOC, "trace-iddoc");
+        traceDoc.setField(SolrConstants.PI, PI_KLEIUNIV);
+        traceDoc.setField(SolrConstants.DATEDELETED, System.currentTimeMillis());
+
+        SolrSearchIndex originalIndex = DataManager.getInstance().getSearchIndex();
+        SolrSearchIndex indexSpy = Mockito.spy(originalIndex);
+        Mockito.doReturn("trace-iddoc").when(indexSpy).getIddocFromIdentifier(PI_KLEIUNIV);
+        Mockito.doReturn(traceDoc).when(indexSpy).getFirstDoc(SolrConstants.IDDOC + ":trace-iddoc", null);
+        DataManager.getInstance().injectSearchIndex(indexSpy);
+        try {
+            Assertions.assertThrows(RecordDeletedException.class, () -> adb.update());
+        } finally {
+            DataManager.getInstance().injectSearchIndex(originalIndex);
+        }
     }
 
     /**
