@@ -26,11 +26,14 @@
             <!-- PODLOVE PLAYER -->
             <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionAudio}">
                 <script src="#{request.contextPath}/resources/javascript/libs/podlove-player/embed.js?#{navigationHelper.buildVersion}" />
-                <!-- The player renders itself into an iframe, the variant selects the bundled layout template -->
+                <!-- The player renders itself into an iframe. The layout template podcast-player-template.html is a copy of the bundled
+                     "xl" variant (@podlove/web-player 5.13.0) with "flex-shrink-0" on the poster column and "min-w-0" on the player column.
+                     Without them, hovering the progress bar over a chapter with a long title shrinks the poster, which moves the progress bar
+                     under the cursor to another chapter and makes the layout flicker. Compare the template with variant-xl when updating the player. -->
                 <div
                     id="podcastPlayer"
                     class="view-object-content__audio"
-                    data-variant="xl" />
+                    data-template="#{request.contextPath}/resources/includes/object/podcast-player-template.html?#{navigationHelper.buildVersion}" />
                 <script>
                     (function () {
                         const restApiUrl = "#{configurationBean.restApiUrlV1}".replace(/\/$/, "");
