@@ -10,6 +10,13 @@
     <ui:param
         name="showBookmarkIcon"
         value="#{showBookmarkIcon != null ? showBookmarkIcon : false}" />
+    <ui:param
+        name="hitIndex"
+        value="#{hitIndex != null ? hitIndex : ''}" />
+    <!-- ID OF THE TITLE, REFERENCED BY THE OPTION BUTTONS -->
+    <ui:param
+        name="titleId"
+        value="searchHitTitle_#{browseElement.pi}_#{hitIndex}" />
     <div class="search-list__hit-inner-structure">
         <div class="search-list__hit-thumb-wrapper">
             <!-- THUMBNAIL -->
@@ -28,23 +35,27 @@
                     <!-- PDF DOWNLOAD, SMALL AND FULL -->
                     <ui:fragment rendered="#{!configurationBean.generatePdfInMessageQueue and browseElement.hasPrerenderedPagePdfs}">
                         <a
+                            id="#{titleId}_pdfSmall"
                             href="#{browseElement.pdfDownloadLinkSmall}"
                             class="btn btn--icon search-list__hit-options-button search-list__hit-options-button-download"
                             data-toggle="tooltip"
                             data-placement="top"
                             title="#{msg.label__pdf_download_record} (#{msg.label__pdf_download_small})"
                             aria-label="#{msg.label__pdf_download_record} (#{msg.label__pdf_download_small})"
+                            aria-labelledby="#{titleId}_pdfSmall #{titleId}"
                             target="_blank"
                             rel="nofollow noopener">
                             <util:icon icon="download" />
                         </a>
                         <a
+                            id="#{titleId}_pdfFull"
                             href="#{browseElement.pdfDownloadLinkFull}"
                             class="btn btn--icon search-list__hit-options-button search-list__hit-options-button-download"
                             data-toggle="tooltip"
                             data-placement="top"
                             title="#{msg.label__pdf_download_record} (#{msg.label__pdf_download_full})"
                             aria-label="#{msg.label__pdf_download_record} (#{msg.label__pdf_download_full})"
+                            aria-labelledby="#{titleId}_pdfFull #{titleId}"
                             target="_blank"
                             rel="nofollow noopener">
                             <util:icon icon="download" />
@@ -54,12 +65,14 @@
                     <!-- PDF DOWNLOAD, SINGLE LINK -->
                     <ui:fragment rendered="#{!configurationBean.generatePdfInMessageQueue and !browseElement.hasPrerenderedPagePdfs}">
                         <a
+                            id="#{titleId}_pdf"
                             href="#{browseElement.pdfDownloadLink}"
                             class="btn btn--icon search-list__hit-options-button search-list__hit-options-button-download"
                             data-toggle="tooltip"
                             data-placement="top"
                             title="#{msg.action__search_hit_download_pdf}"
                             aria-label="#{msg.action__search_hit_download_pdf}"
+                            aria-labelledby="#{titleId}_pdf #{titleId}"
                             target="_blank"
                             rel="nofollow noopener">
                             <util:icon icon="download" />
@@ -69,6 +82,7 @@
                     <!-- PDF DOWNLOAD, QUEUE -->
                     <ui:fragment rendered="#{configurationBean.generatePdfInMessageQueue}">
                         <button
+                            id="#{titleId}_pdfQueue"
                             type="button"
                             class="btn btn--icon search-list__hit-options-button search-list__hit-options-button-download"
                             data-toggle="modal"
@@ -78,7 +92,8 @@
                             data-trigger="bstooltip"
                             data-placement="top"
                             title="#{msg.action__search_hit_download_pdf}"
-                            aria-label="#{msg.action__search_hit_download_pdf}">
+                            aria-label="#{msg.action__search_hit_download_pdf}"
+                            aria-labelledby="#{titleId}_pdfQueue #{titleId}">
                             <util:icon icon="download" />
                         </button>
                     </ui:fragment>
@@ -87,6 +102,7 @@
                 <!-- COPY LINK TO CLIPBOARD BUTTON -->
                 <ui:fragment rendered="#{not empty browseElement.defaultCitationLinkUrl}">
                     <button
+                        id="#{titleId}_link"
                         type="button"
                         class="btn btn--icon search-list__hit-options-button
 							search-list__hit-options-button-clipboard"
@@ -94,7 +110,8 @@
                         data-toggle="tooltip"
                         data-placement="top"
                         title="#{msg.action__search_hit_copy_link}"
-                        aria-label="#{msg.action__search_hit_copy_link}">
+                        aria-label="#{msg.action__search_hit_copy_link}"
+                        aria-labelledby="#{titleId}_link #{titleId}">
                         <util:icon icon="link" />
                     </button>
                 </ui:fragment>
@@ -103,6 +120,7 @@
                 <ui:fragment rendered="#{not empty browseElement.citationStringPlain}">
                     <div class="dropdown search-list__hit-citation-dropdown-wrapper">
                         <button
+                            id="#{titleId}_cite"
                             type="button"
                             class="btn btn--icon search-list__hit-options-button search-list__hit-options-button-citation dropdown-toggle"
                             data-toggle="dropdown"
@@ -111,7 +129,8 @@
                             aria-haspopup="true"
                             aria-expanded="false"
                             title="#{msg.action__search_hit_copy_cite}"
-                            aria-label="#{msg.action__search_hit_copy_cite}">
+                            aria-label="#{msg.action__search_hit_copy_cite}"
+                            aria-labelledby="#{titleId}_cite #{titleId}">
                             <util:icon icon="quote" />
                         </button>
                         <div class="dropdown-menu dropdown-menu-right search-list__hit-citation-dropdown">
@@ -146,6 +165,7 @@
                 <ui:fragment rendered="#{not empty configurationBean.enabledSearchExportFormats}">
                     <div class="dropdown search-list__hit-export-dropdown-wrapper">
                         <button
+                            id="#{titleId}_export"
                             type="button"
                             class="btn btn--icon search-list__hit-options-button
 							search-list__hit-export-dropdown-toggle dropdown-toggle"
@@ -155,7 +175,8 @@
                             aria-haspopup="true"
                             aria-expanded="false"
                             title="#{msg.action__search_hit_export}"
-                            aria-label="#{msg.action__search_hit_export}">
+                            aria-label="#{msg.action__search_hit_export}"
+                            aria-labelledby="#{titleId}_export #{titleId}">
                             <util:icon icon="file-export" />
                         </button>
                         <div class="dropdown-menu dropdown-menu-right search-list__hit-export-dropdown">
@@ -177,12 +198,14 @@
                 <!-- ADD TO BOOKMARKS BUTTON (ICON) -->
                 <ui:fragment rendered="#{configurationBean.bookmarksEnabled}">
                     <button
+                        id="#{titleId}_bookmark"
                         type="button"
                         class="btn btn--icon search-list__thumb-bookmark
 							search-list__hit-options-button bookmark-toggle__button
 							search-list__hit-options-button-bookmark"
                         data-pi="#{browseElement.pi}"
                         aria-label="#{msg.bookmarkList_addToBookmarkList}"
+                        aria-labelledby="#{titleId}_bookmark #{titleId}"
                         role="switch"
                         aria-checked="false"
                         data-target="bookmarkToggle"
@@ -225,7 +248,9 @@
                 <div
                     class="search-list__hit-title #{browseElement.showThumbnail ? '' : '-noThumbnail'} #{configurationBean.displaySearchHitNumbers ? '-hitNumber' : ''} #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
                     <!-- HIT NUMBER -->
-                    <h2 class="search-list__hit-title-heading">
+                    <h2
+                        id="#{titleId}"
+                        class="search-list__hit-title-heading">
                         <a
                             class="search-list__hit-title-link"
                             href="#{navigationHelper.applicationUrl}#{browseElement.url}"

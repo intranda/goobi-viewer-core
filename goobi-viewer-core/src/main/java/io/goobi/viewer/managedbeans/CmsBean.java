@@ -1884,7 +1884,17 @@ public class CmsBean implements Serializable {
         return templateManager;
     }
 
+    /**
+     * @return all hit list views available to the generic search component (everything except {@link HitListView#GRID_EXTENDED})
+     */
     public Collection<HitListView> getPossibleHitListViews() {
+        return EnumSet.complementOf(EnumSet.of(HitListView.GRID_EXTENDED));
+    }
+
+    /**
+     * @return all hit list views available to the search hit list component
+     */
+    public Collection<HitListView> getPossibleRecordListViews() {
         return EnumSet.allOf(HitListView.class);
     }
 
