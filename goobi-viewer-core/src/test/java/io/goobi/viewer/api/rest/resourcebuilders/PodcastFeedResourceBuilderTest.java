@@ -52,7 +52,8 @@ class PodcastFeedResourceBuilderTest extends AbstractTest {
 
     private static Channel channel() {
         return new Channel("Show", "https://viewer/show", "https://viewer/api/v1/records/SHOW/podcast/feed.rss", "Wir sprechen über Bücher",
-                "Aus der Stabi", "de", Arrays.asList("A", "B"), "info@example.org", "A, B", Arrays.asList("Arts", "Books", "Bücher"), false);
+                "Aus der Stabi", "de", Arrays.asList("A", "B"), "info@example.org", "A, B", Arrays.asList("Arts", "Books", "Bücher"),
+                "https://viewer/poster/SHOW.png", false);
     }
 
     private static Item item(String pi, String title, LocalDateTime pubDate) {
@@ -214,7 +215,7 @@ class PodcastFeedResourceBuilderTest extends AbstractTest {
         Assertions.assertEquals("Yes", ch.getChildText("block", ITUNES));
         Assertions.assertEquals("yes", ch.getChildText("block", PODCAST));
         Assertions.assertEquals("episodic", ch.getChildText("type", ITUNES));
-        Assertions.assertNull(ch.getChild("image", ITUNES));
+        Assertions.assertEquals("https://viewer/poster/SHOW.png", ch.getChild("image", ITUNES).getAttributeValue("href"));
         Assertions.assertNull(ch.getChild("image"));
     }
 
@@ -250,7 +251,7 @@ class PodcastFeedResourceBuilderTest extends AbstractTest {
     @Test
     void buildDocument_shouldOmitEmptyOptionalElements() throws Exception {
         Channel channel = new Channel("Show", "https://viewer/show", "https://viewer/feed.rss", "Show", null, null, Collections.emptyList(), null,
-                null, Collections.emptyList(), false);
+                null, Collections.emptyList(), null, false);
         Item item = new Item("EP1", "Folge 1", "https://viewer/EP1", "Summary", null, null, "https://viewer/a.mp3", 1L, "audio/mpeg", null, null,
                 false);
         Element ch = render(channel, List.of(item)).getChild("channel");
@@ -258,6 +259,7 @@ class PodcastFeedResourceBuilderTest extends AbstractTest {
         Assertions.assertTrue(ch.getChildren("category", ITUNES).isEmpty());
         Assertions.assertNull(ch.getChild("author", ITUNES));
         Assertions.assertNull(ch.getChild("owner", ITUNES));
+        Assertions.assertNull(ch.getChild("image", ITUNES));
         Element it = ch.getChild("item");
         Assertions.assertNull(it.getChild("subtitle", ITUNES));
         Assertions.assertNull(it.getChild("image", ITUNES));
