@@ -611,7 +611,7 @@ public class ViewManager implements Serializable {
      */
     private String getImageInfo(PhysicalElement page, PageType pageType) {
         try {
-            ImageInformation info = imageDeliveryBean.getImages().getImageInformation(page, pageType);
+            ImageInformation info = imageDeliveryBean.getImages().getImageInformation(page, getTopStructElement(), pageType);
             if (info.getWidth() * info.getHeight() == 0) {
                 String filePath = page.getFilepath();
                 if (ImageHandler.isExternalUrl(filePath) && ImageHandler.isImageUrl(filePath, false)) {

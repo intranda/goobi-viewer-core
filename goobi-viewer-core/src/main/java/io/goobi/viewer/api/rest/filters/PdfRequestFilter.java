@@ -280,10 +280,10 @@ public class PdfRequestFilter implements ContainerRequestFilter {
             return false;
         }
         try {
-            Map<String, Set<String>> quotaMap = (Map<String, Set<String>>) request.getSession().getAttribute(ATTRIBUTE_PDF_QUOTA);
+            Map<String, Set<String>> quotaMap = (Map<String, Set<String>>) request.getSession(false).getAttribute(ATTRIBUTE_PDF_QUOTA);
             if (quotaMap == null) {
                 quotaMap = new HashMap<>();
-                request.getSession().setAttribute(ATTRIBUTE_PDF_QUOTA, quotaMap);
+                request.getSession(false).setAttribute(ATTRIBUTE_PDF_QUOTA, quotaMap);
             }
             if (quotaMap.get(pi) == null) {
                 quotaMap.put(pi, new HashSet<>());

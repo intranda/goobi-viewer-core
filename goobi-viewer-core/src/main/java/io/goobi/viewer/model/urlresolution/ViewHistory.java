@@ -105,7 +105,7 @@ public final class ViewHistory {
      * @param currentPath The path to store
      */
     public static void setCurrentView(ViewerPath currentPath, HttpSession session) {
-        if (!isIgnoredView(currentPath.getPagePath())) {
+        if (session != null && !isIgnoredView(currentPath.getPagePath())) {
             ViewerPath previousPath = (ViewerPath) session.getAttribute(CURRENT_URL);
             session.setAttribute(CURRENT_URL, currentPath);
             // logger.trace("Set session attribute {} to {}", CURRENT_URL, currentPath);

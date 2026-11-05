@@ -78,19 +78,19 @@ export default class Voyager3dView {
         const tempElement = document.createElement('div');
         tempElement.innerHTML = story;
 
-        console.log('appending ', ...tempElement.children, ' to ', this.container);
+        if (_debug) console.log('appending ', ...tempElement.children, ' to ', this.container);
         this.container.append(...tempElement.children);
 
         const voyager = document.getElementById(this.config.story);
         voyager.addEventListener('model-load', (e) => {
-            console.log('loaded ', e);
+            if (_debug) console.log('loaded ', e);
             show(voyager);
         });
     }
 
     showLoadSizeText() {
         const size = this.getTotalSize(this.sceneData);
-        if (_debug) ('object size is ', size, 'byte');
+        if (_debug) console.log('object size is ', size, 'byte');
         const sizeText = document.querySelector(this.config.sizeText);
         if (size && sizeText) {
             sizeText.innerHTML = (size / 1000 / 1000).toFixed(2) + ' MB';

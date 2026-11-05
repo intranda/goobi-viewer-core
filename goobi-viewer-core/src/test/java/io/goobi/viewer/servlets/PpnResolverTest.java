@@ -24,12 +24,19 @@ package io.goobi.viewer.servlets;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 class PpnResolverTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -77,5 +84,38 @@ class PpnResolverTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
         Assertions.assertEquals(PpnResolver.ERRTXT_ILLEGAL_IDENTIFIER + ": a:b", response.getErrorMessage());
 
+    }
+
+    /**
+     * @see PpnResolver#doGet(HttpServletRequest, HttpServletResponse)
+     * @verifies return 410 if record deleted
+     */
+    @Test
+    void doGet_shouldReturn410IfRecordDeleted() throws Exception {
+        // The test index contains no trace documents, so simulate one
+        SolrDocument traceDoc = new SolrDocument();
+        traceDoc.setField(SolrConstants.IDDOC, "trace-iddoc");
+        traceDoc.setField(SolrConstants.PI, "TRACE_PI");
+        traceDoc.setField(SolrConstants.DATEDELETED, System.currentTimeMillis());
+        SolrDocumentList hits = new SolrDocumentList();
+        hits.add(traceDoc);
+        hits.setNumFound(1);
+
+        SolrSearchIndex originalIndex = DataManager.getInstance().getSearchIndex();
+        SolrSearchIndex indexSpy = Mockito.spy(originalIndex);
+        Mockito.doReturn(hits).when(indexSpy).search(ArgumentMatchers.startsWith("+" + SolrConstants.PI + ":\"TRACE_PI\""));
+        DataManager.getInstance().injectSearchIndex(indexSpy);
+        try {
+            MockHttpServletRequest request = new MockHttpServletRequest();
+            request.setParameter("id", "TRACE_PI");
+            MockHttpServletResponse response = new MockHttpServletResponse();
+
+            PpnResolver resolver = new PpnResolver();
+            resolver.doGet(request, response);
+            Assertions.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
+            Assertions.assertEquals("/error/", response.getForwardedUrl());
+        } finally {
+            DataManager.getInstance().injectSearchIndex(originalIndex);
+        }
     }
 }

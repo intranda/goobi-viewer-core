@@ -445,6 +445,7 @@ const RENAMED_TOKENS = new Map([
     ['--color-warning-surface-dark', null],
     ['--fg-on-accent', null],
     ['--fg-on-highlight', null],
+    ['--search-list-hit-options-direction', null],
 ]);
 const THEME_BUCKETS = ['light', 'dark', 'base', 'palette', 'root'];
 const VERDICT_ORDER = ['unknown', 'renamed', 'folded', 'keep', 'pair', 'redundant'];

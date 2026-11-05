@@ -21,6 +21,10 @@
  */
 package io.goobi.viewer.model.archives;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -69,6 +73,58 @@ class ArchiveEntryTest extends AbstractSolrEnabledTest {
         Assertions.assertEquals(orig.getLogId(), copy.getLogId());
         Assertions.assertEquals(1, copy.getAccessConditions().size());
         Assertions.assertEquals(orig.getAccessConditions().get(0), copy.getAccessConditions().get(0));
+    }
+
+    /**
+     * @see ArchiveEntry#ArchiveEntry(ArchiveEntry, ArchiveEntry)
+     * @verifies copy children loaded flag
+     */
+    @Test
+    void ArchiveEntry_shouldCopyChildrenLoadedFlag() {
+        ArchiveEntry loaded = new ArchiveEntry(0, 0, null);
+        loaded.getSubEntryList().add(new ArchiveEntry(0, 1, null));
+        loaded.setChildrenLoaded(true);
+        ArchiveEntry loadedCopy = new ArchiveEntry(loaded, null);
+        Assertions.assertTrue(loadedCopy.isChildrenLoaded());
+        Assertions.assertEquals(1, loadedCopy.getSubEntryList().size());
+
+        Assertions.assertFalse(new ArchiveEntry(new ArchiveEntry(0, 0, null), null).isChildrenLoaded());
+    }
+
+    /**
+     * @see ArchiveEntry#loadChildrenOnce(ArchiveEntry.ChildrenLoader)
+     * @verifies load children only once
+     */
+    @Test
+    void loadChildrenOnce_shouldLoadChildrenOnlyOnce() throws Exception {
+        ArchiveEntry entry = new ArchiveEntry(0, 0, null);
+        ArchiveEntry child = new ArchiveEntry(0, 1, null);
+        child.setContainsImage(true);
+        AtomicInteger calls = new AtomicInteger();
+        ArchiveEntry.ChildrenLoader loader = () -> {
+            calls.incrementAndGet();
+            return new ArrayList<>(List.of(child));
+        };
+
+        Assertions.assertTrue(entry.loadChildrenOnce(loader));
+        Assertions.assertFalse(entry.loadChildrenOnce(loader));
+        Assertions.assertEquals(1, calls.get());
+        Assertions.assertTrue(entry.isChildrenLoaded());
+        Assertions.assertEquals(List.of(child), entry.getSubEntryList());
+        Assertions.assertEquals(entry, child.getParentNode());
+        Assertions.assertTrue(entry.isContainsImage());
+    }
+
+    /**
+     * @see ArchiveEntry#loadChildrenOnce(ArchiveEntry.ChildrenLoader)
+     * @verifies not mark entry as loaded if loader returns no children
+     */
+    @Test
+    void loadChildrenOnce_shouldNotMarkEntryAsLoadedIfLoaderReturnsNoChildren() throws Exception {
+        ArchiveEntry entry = new ArchiveEntry(0, 0, null);
+        Assertions.assertFalse(entry.loadChildrenOnce(ArrayList::new));
+        Assertions.assertFalse(entry.isChildrenLoaded());
+        Assertions.assertTrue(entry.getSubEntryList().isEmpty());
     }
 
     /**

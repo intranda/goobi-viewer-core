@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +37,7 @@ import org.apache.solr.common.SolrDocument;
 
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
@@ -52,8 +55,8 @@ public class ArchiveEntry implements Serializable {
     // parent node
     private ArchiveEntry parentNode;
     // list contains all child elements
-    // volatile: on-demand loading publishes the complete child list of nodes that may be shared between sessions in one step
-    private volatile List<ArchiveEntry> subEntryList = new ArrayList<>();
+    // atomic reference: on-demand loading publishes the complete child list of nodes that may be shared between sessions in one step
+    private final AtomicReference<List<ArchiveEntry>> subEntryList = new AtomicReference<>(new ArrayList<>());
 
     // order number of the current element within the current hierarchy
     private Integer orderNumber;
@@ -90,7 +93,18 @@ public class ArchiveEntry implements Serializable {
 
     private boolean childrenFound = false;
 
-    private volatile boolean childrenLoaded = false;
+    private final AtomicBoolean childrenLoaded = new AtomicBoolean(false);
+
+    /** Guards on-demand child loading. Object[] rather than Object so that the entry stays serializable. */
+    private final Object[] childrenLock = new Object[0];
+
+    /**
+     * Loads the children of an entry.
+     */
+    @FunctionalInterface
+    public interface ChildrenLoader {
+        List<ArchiveEntry> load() throws PresentationException, IndexUnreachableException;
+    }
 
     /**
      *
@@ -109,6 +123,7 @@ public class ArchiveEntry implements Serializable {
      * @param orig the entry to copy all fields from
      * @param parent the parent node in the cloned tree
      * @should clone entry correctly
+     * @should copy children loaded flag
      */
     public ArchiveEntry(ArchiveEntry orig, ArchiveEntry parent) {
         this.parentNode = parent;
@@ -129,28 +144,31 @@ public class ArchiveEntry implements Serializable {
             this.getAccessConditions().add(accessCondition);
         }
 
-        this.subEntryList = orig.subEntryList.stream().map(e -> new ArchiveEntry(e, this)).collect(Collectors.toList());
+        // Read the loaded flag before the child list: loading publishes the list before setting the flag, so a copy
+        // can never be marked as loaded while missing its children
+        boolean loaded = orig.isChildrenLoaded();
+        this.subEntryList.set(orig.getSubEntryList().stream().map(e -> new ArchiveEntry(e, this)).collect(Collectors.toList()));
 
         this.searchHit = orig.searchHit;
         this.displaySearch = orig.displaySearch;
         this.doc = orig.doc;
         this.childrenFound = orig.childrenFound;
-        this.childrenLoaded = orig.childrenLoaded;
+        this.childrenLoaded.set(loaded);
     }
 
     public void addSubEntry(ArchiveEntry other) {
-        subEntryList.add(other);
+        getSubEntryList().add(other);
         other.setParentNode(this);
     }
 
     public void removeSubEntry(ArchiveEntry other) {
-        subEntryList.remove(other);
+        getSubEntryList().remove(other);
         reOrderElements();
     }
 
     public void reOrderElements() {
         int order = 0;
-        for (ArchiveEntry entry : subEntryList) {
+        for (ArchiveEntry entry : getSubEntryList()) {
             entry.setOrderNumber(order++);
         }
     }
@@ -164,8 +182,9 @@ public class ArchiveEntry implements Serializable {
         // logger.trace("getAsFlatList"); //NOSONAR Debug
         List<ArchiveEntry> list = new LinkedList<>(); // LinkedList more efficient to create here due to the recursion
         list.add(this);
-        if (ignoreDisplayChildren && subEntryList != null && !subEntryList.isEmpty()) {
-            for (ArchiveEntry ds : subEntryList) {
+        List<ArchiveEntry> children = getSubEntryList();
+        if (ignoreDisplayChildren && children != null && !children.isEmpty()) {
+            for (ArchiveEntry ds : children) {
                 list.addAll(ds.getAsFlatList(ignoreDisplayChildren));
                 // logger.trace("ID: {}, level: {}, label: {}", ds.getId(), ds.getHierarchyLevel(), ds.getLabel()); //NOSONAR Debug
             }
@@ -174,7 +193,7 @@ public class ArchiveEntry implements Serializable {
     }
 
     public boolean isHasChildren() {
-        return isChildrenFound() || !subEntryList.isEmpty();
+        return isChildrenFound() || !getSubEntryList().isEmpty();
     }
 
     public void updateHierarchy() {
@@ -185,7 +204,7 @@ public class ArchiveEntry implements Serializable {
             hierarchyLevel = parentNode.getHierarchyLevel() + 1;
         }
 
-        for (ArchiveEntry child : subEntryList) {
+        for (ArchiveEntry child : getSubEntryList()) {
             child.updateHierarchy();
         }
     }
@@ -204,7 +223,7 @@ public class ArchiveEntry implements Serializable {
             }
         }
         if (keepChildrenVisible) {
-            for (ArchiveEntry child : this.subEntryList) {
+            for (ArchiveEntry child : getSubEntryList()) {
                 child.setDisplaySearch(true, true);
             }
         }
@@ -214,8 +233,9 @@ public class ArchiveEntry implements Serializable {
         // logger.trace("resetFoundList: {}", id); //NOSONAR Debug
         displaySearch = false;
         searchHit = false;
-        if (subEntryList != null) {
-            for (ArchiveEntry ds : subEntryList) {
+        List<ArchiveEntry> children = getSubEntryList();
+        if (children != null) {
+            for (ArchiveEntry ds : children) {
                 ds.resetFoundList();
             }
         }
@@ -225,8 +245,9 @@ public class ArchiveEntry implements Serializable {
         List<ArchiveEntry> list = new LinkedList<>();
         if (displaySearch) {
             list.add(this);
-            if (subEntryList != null) {
-                for (ArchiveEntry child : subEntryList) {
+            List<ArchiveEntry> children = getSubEntryList();
+            if (children != null) {
+                for (ArchiveEntry child : children) {
                     list.addAll(child.getSearchList());
                 }
             }
@@ -241,7 +262,7 @@ public class ArchiveEntry implements Serializable {
     public void shiftHierarchy(int offset) {
         this.hierarchyLevel += offset;
         if (isHasChildren()) {
-            for (ArchiveEntry sub : subEntryList) {
+            for (ArchiveEntry sub : getSubEntryList()) {
                 sub.shiftHierarchy(offset);
             }
         }
@@ -273,12 +294,12 @@ public class ArchiveEntry implements Serializable {
 
     
     public List<ArchiveEntry> getSubEntryList() {
-        return subEntryList;
+        return subEntryList.get();
     }
 
     
     public void setSubEntryList(List<ArchiveEntry> subEntryList) {
-        this.subEntryList = subEntryList;
+        this.subEntryList.set(subEntryList);
     }
 
     
@@ -380,7 +401,7 @@ public class ArchiveEntry implements Serializable {
     public void setDisplaySearch(boolean displaySearch, boolean recursive) {
         this.displaySearch = displaySearch;
         if (recursive) {
-            for (ArchiveEntry child : this.subEntryList) {
+            for (ArchiveEntry child : getSubEntryList()) {
                 child.setDisplaySearch(displaySearch, recursive);
             }
         }
@@ -542,12 +563,46 @@ public class ArchiveEntry implements Serializable {
 
     
     public boolean isChildrenLoaded() {
-        return childrenLoaded;
+        return childrenLoaded.get();
     }
 
     
     public void setChildrenLoaded(boolean childrenLoaded) {
-        this.childrenLoaded = childrenLoaded;
+        this.childrenLoaded.set(childrenLoaded);
+    }
+
+    /**
+     * Loads the children of this entry with the given loader, unless they are already loaded. Nodes may be shared between the global
+     * archive tree and session copies, so loading is serialized per entry and the child list is published in one step.
+     *
+     * @param loader supplies the child entries
+     * @return true if children were loaded by this call; false if they were already loaded or the loader found none
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @should load children only once
+     * @should not mark entry as loaded if loader returns no children
+     */
+    public boolean loadChildrenOnce(ChildrenLoader loader) throws PresentationException, IndexUnreachableException {
+        synchronized (childrenLock) {
+            if (isChildrenLoaded()) {
+                return false;
+            }
+            List<ArchiveEntry> children = loader.load();
+            if (children.isEmpty()) {
+                return false;
+            }
+            boolean image = containsImage;
+            for (ArchiveEntry child : children) {
+                child.setParentNode(this);
+                if (child.isContainsImage()) {
+                    image = true;
+                }
+            }
+            setSubEntryList(children);
+            setContainsImage(image);
+            childrenLoaded.set(true);
+            return true;
+        }
     }
 
     @Override

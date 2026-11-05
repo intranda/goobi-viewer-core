@@ -73,8 +73,23 @@ public class UrlRedirectFilter implements Filter {
         try {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-            if (httpRequest.getSession(false) != null) {
+            // Permanently redirect explicit calls of index.(x)html to the root url, so that the configured CMS start page is shown
+            // and search engines only index a single start page url
+            if (isIndexFileRequest(httpRequest)) {
+                String target = httpRequest.getContextPath() + "/";
+                if (StringUtils.isNotEmpty(httpRequest.getQueryString())) {
+                    target += "?" + httpRequest.getQueryString();
+                }
+                logger.debug("Redirecting {} to {}", httpRequest.getRequestURI(), target);
+                HttpServletResponse httpResponse = (HttpServletResponse) response;
+                httpResponse.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+                httpResponse.setHeader("Location", target);
+                return;
+            }
 
+            Optional<ViewerPath> currentPath = ViewerPathBuilder.createPath(httpRequest);
+            if (currentPath.isPresent()) {
+                // logger.trace("currentPath: {}", currentPath.get());
                 // Important: If prefetching requests are not refused here, the status of the backend beans (ActiveDocumentBean in particular)
                 // will point to the prefetched page rather than the actual current page
                 if (isPrefetchingRequest(httpRequest)) {
@@ -84,37 +99,10 @@ public class UrlRedirectFilter implements Filter {
                     return;
                 }
 
-                // Permanently redirect explicit calls of index.(x)html to the root url, so that the configured CMS start page is shown
-                // and search engines only index a single start page url
-                if (isIndexFileRequest(httpRequest)) {
-                    String target = httpRequest.getContextPath() + "/";
-                    if (StringUtils.isNotEmpty(httpRequest.getQueryString())) {
-                        target += "?" + httpRequest.getQueryString();
-                    }
-                    logger.debug("Redirecting {} to {}", httpRequest.getRequestURI(), target);
-                    HttpServletResponse httpResponse = (HttpServletResponse) response;
-                    httpResponse.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
-                    httpResponse.setHeader("Location", target);
-                    return;
-                }
-
-                Optional<ViewerPath> currentPath = ViewerPathBuilder.createPath(httpRequest);
-                if (currentPath.isPresent()) {
-                    // logger.trace("currentPath: {}", currentPath.get());
-
-                    ViewHistory.setCurrentView(currentPath.get(), httpRequest.getSession());
-                    if (!ViewerPathBuilder.startsWith(currentPath.get().getPagePath(), "cms") && currentPath.get().getCmsPage() != null) {
-                        if (currentPath.get().getCmsPage().isMayContainUrlParameters()
-                                || StringUtils.isBlank(currentPath.get().getParameterPath().toString().replaceAll("/?\\d+/?", ""))) {
-                            ViewerPath cmsPagePath = new ViewerPath(currentPath.get());
-                            cmsPagePath.setPagePath(URI.create(currentPath.get().getCmsPage().getRelativeUrlPath(false)));
-                            logger.debug("Forwarding {} to {}", currentPath.get(), cmsPagePath.getCombinedUrl());
-                            RequestDispatcher d = request.getRequestDispatcher(cmsPagePath.getCombinedUrl());
-                            d.forward(request, response);
-                            return;
-                        }
-                    } else if (!ViewerPathBuilder.startsWith(currentPath.get().getPagePath(), "campaigns")
-                            && currentPath.get().getCampaign() != null) {
+                ViewHistory.setCurrentView(currentPath.get(), httpRequest.getSession(false));
+                if (!ViewerPathBuilder.startsWith(currentPath.get().getPagePath(), "cms") && currentPath.get().getCmsPage() != null) {
+                    if (currentPath.get().getCmsPage().isMayContainUrlParameters()
+                            || StringUtils.isBlank(currentPath.get().getParameterPath().toString().replaceAll("/?\\d+/?", ""))) {
                         ViewerPath cmsPagePath = new ViewerPath(currentPath.get());
                         cmsPagePath.setPagePath(URI.create(currentPath.get().getCmsPage().getRelativeUrlPath(false)));
                         logger.debug("Forwarding {} to {}", currentPath.get(), cmsPagePath.getCombinedUrl());
@@ -122,6 +110,14 @@ public class UrlRedirectFilter implements Filter {
                         d.forward(request, response);
                         return;
                     }
+                } else if (!ViewerPathBuilder.startsWith(currentPath.get().getPagePath(), "campaigns")
+                        && currentPath.get().getCampaign() != null) {
+                    ViewerPath cmsPagePath = new ViewerPath(currentPath.get());
+                    cmsPagePath.setPagePath(URI.create(currentPath.get().getCmsPage().getRelativeUrlPath(false)));
+                    logger.debug("Forwarding {} to {}", currentPath.get(), cmsPagePath.getCombinedUrl());
+                    RequestDispatcher d = request.getRequestDispatcher(cmsPagePath.getCombinedUrl());
+                    d.forward(request, response);
+                    return;
                 }
             }
         } catch (DAOException e) {

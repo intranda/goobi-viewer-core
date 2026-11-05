@@ -61,7 +61,8 @@ public class LoginFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         // Create new personal filter query suffix
 
-        if (httpRequest.getSession().getAttribute(SearchHelper.PARAM_NAME_FILTER_QUERY_SUFFIX) == null) {
+        if (httpRequest.getSession(false) != null
+                && httpRequest.getSession(false).getAttribute(SearchHelper.PARAM_NAME_FILTER_QUERY_SUFFIX) == null) {
             try {
                 SearchHelper.updateFilterQuerySuffix(httpRequest, IPrivilegeHolder.PRIV_LIST);
             } catch (IndexUnreachableException e) {

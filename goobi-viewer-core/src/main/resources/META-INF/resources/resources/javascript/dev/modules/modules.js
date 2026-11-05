@@ -55,7 +55,6 @@
 
     class PageAreas {
         constructor(config, image) {
-            console.log('init page areas ', config);
             this.areas = config.areas;
             let styles = viewerJS.helper.getCss('page-area', ['borderTopColor', 'borderTopWidth', 'background-color']);
             ({
@@ -71,7 +70,6 @@
             });
 
             image.viewer.onOpened.subscribe((viewer) => {
-                console.log('page areas on viewer open ', config);
                 image.viewer.openseadragon.addHandler('canvas-press', () => {
                     this.dragging = false;
                 });
@@ -80,7 +78,6 @@
                 });
 
                 let activeAreas = this.areas.filter((a) => a.logId === config.currentLogId);
-                console.log('active areas: ', activeAreas);
                 if (activeAreas.length > 0) {
                     this.drawActiveAreas(activeAreas, image);
                     this.initAreaClick(image, activeAreas);
@@ -126,7 +123,6 @@
             activeAreas.forEach((activeArea, index) => {
                 const area = this.drawArea(activeArea, index, imageView);
                 areasOnCanvas.push(area?.overlay?.bounds);
-                console.log('add active area ', area, areasOnCanvas);
                 let scrollPosition = window.sessionStorage.getItem('scrollPosition');
                 $(document).scrollTop(parseInt(scrollPosition));
                 window.sessionStorage.removeItem('scrollPosition');
@@ -152,7 +148,6 @@
                         rxjs.operators.debounceTime(10)
                     )
                     .subscribe((url) => {
-                        console.log('viewer click ', url, window.location.href);
                         if (url && url.length && url !== window.location.href) {
                             window.sessionStorage.setItem('scrollPosition', $(document).scrollTop());
                             window.location.href = url;
@@ -599,10 +594,8 @@
                     var areaString = this.getAreaString(area);
                     var pageUrl = window.location.origin + window.location.pathname + window.location.search + '#xywh=' + areaString;
                     var imageUrl = this.getRegionUrl(area);
-                    console.log('set area data ', pageUrl, imageUrl);
                     $('[data-fragment-link="page"]').attr('data-copy-share-image', pageUrl);
                     $('[data-fragment-link="iiif"]').attr('data-copy-share-image', imageUrl);
-                    console.log('area share ', $('[data-fragment-link="iiif"]'));
                     this.$links.show();
                     this.$instructions.hide();
                     this.initImageFragmentLinks(areaString);
@@ -768,13 +761,10 @@
 
             const tempElement = document.createElement('div');
             tempElement.innerHTML = story;
-
-            console.log('appending ', ...tempElement.children, ' to ', this.container);
             this.container.append(...tempElement.children);
 
             const voyager = document.getElementById(this.config.story);
             voyager.addEventListener('model-load', (e) => {
-                console.log('loaded ', e);
                 show(voyager);
             });
         }

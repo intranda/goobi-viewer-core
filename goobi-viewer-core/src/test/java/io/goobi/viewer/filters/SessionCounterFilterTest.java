@@ -28,22 +28,22 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractTest;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 class SessionCounterFilterTest extends AbstractTest {
 
     /**
-     * Reproduces the ConcurrentModificationException that occurs when JSF modifies the
-     * LogicalViewMap while SessionCounterFilter iterates over its values.
+     * Reproduces the ConcurrentModificationException that occurs when JSF modifies the LogicalViewMap while SessionCounterFilter iterates over its
+     * values.
+     * 
      * @verifies not throw when logical view map throws concurrent modification exception
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -86,7 +86,7 @@ class SessionCounterFilterTest extends AbstractTest {
                 .thenReturn(cmeMap);
 
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        Mockito.when(request.getSession()).thenReturn(session);
+        Mockito.when(request.getSession(false)).thenReturn(session);
         Mockito.when(request.getRemoteAddr()).thenReturn("127.0.0.1");
 
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);

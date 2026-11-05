@@ -7446,10 +7446,10 @@ public class JPADAO implements IDAO {
                     em.getTransaction().commit();
                     return 0;
                 }
-                // IDs are numeric database keys, so they can safely be inlined
+                // IDs are numeric database keys (List<Long> from the query above), so they can safely be inlined
                 String idList = ids.stream().map(String::valueOf).collect(Collectors.joining(","));
-                em.createNativeQuery("DELETE FROM mq_message_properties WHERE message_id IN (" + idList + ")").executeUpdate();
-                int deleted = em.createNativeQuery("DELETE FROM mq_messages WHERE id IN (" + idList + ")").executeUpdate();
+                em.createNativeQuery("DELETE FROM mq_message_properties WHERE message_id IN (" + idList + ")").executeUpdate(); //NOSONAR S2077
+                int deleted = em.createNativeQuery("DELETE FROM mq_messages WHERE id IN (" + idList + ")").executeUpdate(); //NOSONAR S2077
 
                 em.getTransaction().commit();
                 // The native deletes bypass the persistence context, so remove any cached instances
