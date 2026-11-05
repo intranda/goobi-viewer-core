@@ -68,16 +68,19 @@ public class ClientApplicationFilter implements Filter {
             if (StringUtils.isNotBlank(clientIdentifier)) {
                 try {
                     ClientApplication client =
-                            DataManager.getInstance().getClientManager().getClientByClientIdentifier(clientIdentifier).orElse(null);
+                            clientManager.getClientByClientIdentifier(clientIdentifier).orElse(null);
                     if (client != null) {
-                        if (clientManager.registerClientInSession(client, ((HttpServletRequest) request).getSession(false))) {
+                        // Deliberately create a session here: a client identifying itself via header expects its access rights to be kept for
+                        // subsequent requests. Without a session the registration would be lost and the client would be written to the database
+                        // on every single request. Crawlers don't send the client identifier header, so this doesn't create bot sessions.
+                        if (clientManager.registerClientInSession(client, ((HttpServletRequest) request).getSession(true))) {
                             logger.trace("Registered client {} in http session", client.getName());
                         } else {
                             logger.trace("Client {} attempts to register but client rights are not granted for this client", client.getName());
                         }
                     } else {
                         logger.debug("Unknown client requests registration. Saving to database");
-                        client = DataManager.getInstance().getClientManager().persistNewClient(clientIdentifier, (HttpServletRequest) request);
+                        client = clientManager.persistNewClient(clientIdentifier, (HttpServletRequest) request);
                     }
                     if (client != null && response instanceof HttpServletResponse) {
                         ((HttpServletResponse) response).setHeader(ClientApplicationManager.CLIENT_RESPONSE_HEADER,

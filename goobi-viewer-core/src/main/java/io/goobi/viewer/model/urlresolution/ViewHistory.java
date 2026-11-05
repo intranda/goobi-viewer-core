@@ -52,6 +52,12 @@ public final class ViewHistory {
 
     private static final String PREVIOUS_URL = "previousURL";
     private static final String CURRENT_URL = "currentURL";
+    /**
+     * Request attribute holding the current view for the duration of a single request. Unlike the session attribute {@link #CURRENT_URL} it is
+     * available even if the request has no http session yet (e.g. the very first request of a visitor, during which JSF only creates the session
+     * while rendering).
+     */
+    static final String REQUEST_CURRENT_URL = ViewHistory.class.getName() + ".currentURL";
 
     private static final PageType[] IGNORED_VIEWS = new PageType[] {};
 
@@ -59,8 +65,8 @@ public final class ViewHistory {
     }
 
     /**
-     * Saves the current view information to the session map. Also saves the previous view information to the session map if it represents a different
-     * view than the current view
+     * Saves the current view information to the request and, if a session exists, to the session map. Also saves the previous view information to
+     * the session map if it represents a different view than the current view. Never creates a new http session.
      *
      * @param request a {@link jakarta.servlet.ServletRequest} object.
      */
@@ -69,28 +75,41 @@ public final class ViewHistory {
         try {
             if (request != null) {
                 HttpServletRequest httpRequest = (HttpServletRequest) request;
-                HttpSession session = httpRequest.getSession(false);
-                if (session != null) {
-                    String hostUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest);
-                    String applicationName = httpRequest.getContextPath();
-                    String serviceUrl = ((HttpServletRequest) request).getRequestURI();
-                    String queryString = httpRequest.getQueryString();
-                    PrettyContext context = PrettyContext.getCurrentInstance(httpRequest);
-                    if (context != null && context.getRequestURL() != null) {
-                        serviceUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + context.getRequestURL().toURL();
-                    }
+                String hostUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest);
+                String applicationName = httpRequest.getContextPath();
+                String serviceUrl = ((HttpServletRequest) request).getRequestURI();
+                String queryString = httpRequest.getQueryString();
+                PrettyContext context = PrettyContext.getCurrentInstance(httpRequest);
+                if (context != null && context.getRequestURL() != null) {
+                    serviceUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + context.getRequestURL().toURL();
+                }
 
-                    Optional<ViewerPath> oCurrentPath = ViewerPathBuilder.createPath(hostUrl, applicationName, serviceUrl, queryString);
-                    if (oCurrentPath.isPresent()) {
-                        //viewer page url
-                        setCurrentView(oCurrentPath.get(), session);
-                    }
+                Optional<ViewerPath> oCurrentPath = ViewerPathBuilder.createPath(hostUrl, applicationName, serviceUrl, queryString);
+                if (oCurrentPath.isPresent()) {
+                    //viewer page url
+                    setCurrentView(oCurrentPath.get(), httpRequest);
                 }
             }
         } catch (NullPointerException | IllegalArgumentException | DAOException e) {
             //catch all throwables to avoid constant redirects to error
             logger.error("Error saving page url", e);
         }
+    }
+
+    /**
+     * Saves the given {@code currentPath} as attribute of the given request and, if the request already has an http session, also to the session
+     * map (see {@link #setCurrentView(ViewerPath, HttpSession)}). Never creates a new http session. Storing the path in the request makes it
+     * available to {@link #getCurrentView(ServletRequest)} for the rest of the request even if no session exists yet.
+     *
+     * @param currentPath The path to store
+     * @param request The current request. If null, nothing is stored
+     */
+    public static void setCurrentView(ViewerPath currentPath, HttpServletRequest request) {
+        if (request == null || currentPath == null || isIgnoredView(currentPath.getPagePath())) {
+            return;
+        }
+        request.setAttribute(REQUEST_CURRENT_URL, currentPath);
+        setCurrentView(currentPath, request.getSession(false));
     }
 
     /**
@@ -133,14 +152,19 @@ public final class ViewHistory {
     }
 
     /**
-     * Retrieves the stored currentPath from the session associated the the passed {@code request}.
+     * Retrieves the stored currentPath. The path stored in the passed {@code request} itself takes precedence; otherwise the path stored in the
+     * session associated with the request is returned.
      *
      * @param request a {@link jakarta.servlet.ServletRequest} object.
-     * @return An optional containing the last stored current path if available. An empty optional if no session is available or no path has been
-     *         stored yet
+     * @return An optional containing the last stored current path if available. An empty optional if neither the request nor its session contain a
+     *         path
      */
     public static synchronized Optional<ViewerPath> getCurrentView(ServletRequest request) {
         if (request != null) {
+            Object requestPath = request.getAttribute(REQUEST_CURRENT_URL);
+            if (requestPath instanceof ViewerPath viewerPath) {
+                return Optional.of(new ViewerPath(viewerPath));
+            }
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             HttpSession session = httpRequest.getSession(false);
 
