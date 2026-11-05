@@ -660,6 +660,57 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see AccessConditionUtils#generateAccessCheckQueryWithGroupThumbnail(String,String)
+     * @verifies add group thumbnail clause for image files
+     */
+    @Test
+    void generateAccessCheckQueryWithGroupThumbnail_shouldAddGroupThumbnailClauseForImageFiles() throws Exception {
+        String result = AccessConditionUtils.generateAccessCheckQueryWithGroupThumbnail("EPISODE1", "PODCAST123.png");
+        Assertions.assertEquals("(" + AccessConditionUtils.generateAccessCheckQuery("EPISODE1", "PODCAST123.png") + ") OR (+"
+                + SolrConstants.DOCTYPE + ":GROUP +" + SolrConstants.THUMBNAIL + ":\"EPISODE1/PODCAST123.png\")", result);
+    }
+
+    /**
+     * @see AccessConditionUtils#generateAccessCheckQueryWithGroupThumbnail(String,String)
+     * @verifies not add group thumbnail clause for non image files
+     */
+    @Test
+    void generateAccessCheckQueryWithGroupThumbnail_shouldNotAddGroupThumbnailClauseForNonImageFiles() throws Exception {
+        Assertions.assertEquals(AccessConditionUtils.generateAccessCheckQuery("EPISODE1", "EPISODE1.mp3"),
+                AccessConditionUtils.generateAccessCheckQueryWithGroupThumbnail("EPISODE1", "EPISODE1.mp3"));
+        Assertions.assertEquals(AccessConditionUtils.generateAccessCheckQuery("EPISODE1", "EPISODE1.json"),
+                AccessConditionUtils.generateAccessCheckQueryWithGroupThumbnail("EPISODE1", "EPISODE1.json"));
+    }
+
+    /**
+     * @see AccessConditionUtils#generateGroupThumbnailAccessCheckClause(String,String)
+     * @verifies build clause for image file
+     */
+    @Test
+    void generateGroupThumbnailAccessCheckClause_shouldBuildClauseForImageFile() throws Exception {
+        Assertions.assertEquals("+" + SolrConstants.DOCTYPE + ":GROUP +" + SolrConstants.THUMBNAIL + ":\"EPISODE1/PODCAST123.jpg\"",
+                AccessConditionUtils.generateGroupThumbnailAccessCheckClause("EPISODE1", "PODCAST123.jpg"));
+    }
+
+    /**
+     * @see AccessConditionUtils#generateGroupThumbnailAccessCheckClause(String,String)
+     * @verifies return null for non image file
+     */
+    @Test
+    void generateGroupThumbnailAccessCheckClause_shouldReturnNullForNonImageFile() throws Exception {
+        Assertions.assertNull(AccessConditionUtils.generateGroupThumbnailAccessCheckClause("EPISODE1", "EPISODE1.vtt"));
+    }
+
+    /**
+     * @see AccessConditionUtils#generateGroupThumbnailAccessCheckClause(String,String)
+     * @verifies return null for url
+     */
+    @Test
+    void generateGroupThumbnailAccessCheckClause_shouldReturnNullForUrl() throws Exception {
+        Assertions.assertNull(AccessConditionUtils.generateGroupThumbnailAccessCheckClause("EPISODE1", "https://example.com/podcast.png"));
+    }
+
+    /**
      * @see AccessConditionUtils#getPdfDownloadQuotaForRecord(String)
      * @verifies throw RecordNotFoundException if record not found
      */

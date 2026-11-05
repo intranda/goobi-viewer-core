@@ -497,6 +497,36 @@ class ThumbnailHandlerTest extends AbstractTest {
      * @param thumbnail Optional THUMBNAIL value
      * @return {@link SolrDocument} representing a podcast group
      */
+    /**
+     * @see ThumbnailHandler#getGroupImagePath(StructElement)
+     * @verifies return record relative file path
+     */
+    @Test
+    void getGroupImagePath_shouldReturnRecordRelativeFilePath() throws IndexUnreachableException {
+        StructElement doc = new StructElement("1", createGroupDoc("EPISODE1/PODCAST123.png"));
+        Assertions.assertEquals("EPISODE1/PODCAST123.png", ThumbnailHandler.getGroupImagePath(doc));
+    }
+
+    /**
+     * @see ThumbnailHandler#getGroupImagePath(StructElement)
+     * @verifies return absolute url
+     */
+    @Test
+    void getGroupImagePath_shouldReturnAbsoluteUrl() throws IndexUnreachableException {
+        StructElement doc = new StructElement("1", createGroupDoc("https://example.com/podcast.jpg"));
+        Assertions.assertEquals("https://example.com/podcast.jpg", ThumbnailHandler.getGroupImagePath(doc));
+    }
+
+    /**
+     * @see ThumbnailHandler#getGroupImagePath(StructElement)
+     * @verifies return null for plain file name
+     */
+    @Test
+    void getGroupImagePath_shouldReturnNullForPlainFileName() throws IndexUnreachableException {
+        StructElement doc = new StructElement("1", createGroupDoc("PODCAST123.png"));
+        Assertions.assertNull(ThumbnailHandler.getGroupImagePath(doc));
+    }
+
     private static SolrDocument createGroupDoc(String thumbnail) {
         SolrDocument solrDoc = new SolrDocument();
         solrDoc.setField(SolrConstants.DOCTYPE, DocType.GROUP);

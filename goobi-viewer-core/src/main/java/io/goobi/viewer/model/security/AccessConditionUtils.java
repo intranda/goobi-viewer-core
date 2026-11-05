@@ -82,6 +82,9 @@ public final class AccessConditionUtils {
     /** Maximum number of identifiers per Solr terms query before chunking kicks in. */
     private static final int PERMISSION_BATCH_CHUNK_SIZE = 500;
 
+    /** Extensions of image files that a group document (e.g. a podcast) may reference as its THUMBNAIL in a member record's media folder. */
+    private static final Set<String> GROUP_THUMBNAIL_EXTENSIONS = Set.of("tif", "tiff", "jpg", "jpeg", "png", "gif", "jp2");
+
     /**
      * Private constructor to prevent instantiation.
      */
@@ -332,6 +335,52 @@ public final class AccessConditionUtils {
     }
 
     /**
+     * Builds the Solr query for the access check of a content file. For image files, the query from
+     * {@link #generateAccessCheckQuery(String, String)} is extended by {@link #generateGroupThumbnailAccessCheckClause(String, String)}, so that
+     * the image of a group (e.g. a podcast) that is located in the media folder of a member record is found by the same single query.
+     *
+     * @param identifier Work identifier (PI).
+     * @param fileName Content file name.
+     * @return Generated Solr query
+     * @should add group thumbnail clause for image files
+     * @should not add group thumbnail clause for non image files
+     */
+    static String generateAccessCheckQueryWithGroupThumbnail(String identifier, String fileName) {
+        String query = generateAccessCheckQuery(identifier, fileName);
+        String groupThumbnailClause = generateGroupThumbnailAccessCheckClause(identifier, fileName);
+        if (query == null || groupThumbnailClause == null) {
+            return query;
+        }
+
+        return "(" + query + ") OR (" + groupThumbnailClause + ")";
+    }
+
+    /**
+     * Builds a Solr query clause matching a group document whose {@link SolrConstants#THUMBNAIL THUMBNAIL} is the given image file in the media
+     * folder of the given record (<code>&lt;identifier&gt;/&lt;file name&gt;</code>, as written by the indexer for images from the
+     * <code>&lt;GROUPSUFFIX&gt;-TEASER</code> file group).
+     *
+     * @param identifier Work identifier (PI) of the record whose media folder contains the file.
+     * @param fileName Image file name.
+     * @return Generated Solr query clause; null if fileName is not a local image file
+     * @should build clause for image file
+     * @should return null for non image file
+     * @should return null for url
+     */
+    static String generateGroupThumbnailAccessCheckClause(String identifier, String fileName) {
+        if (StringUtils.isEmpty(identifier) || StringUtils.isEmpty(fileName) || fileName.matches("https?:\\/\\/.*")) {
+            return null;
+        }
+        if (!GROUP_THUMBNAIL_EXTENSIONS.contains(FilenameUtils.getExtension(fileName).toLowerCase())) {
+            return null;
+        }
+
+        String simpleFileName = FileTools.getPathFromUrlString(fileName).getFileName().toString();
+        String value = (identifier + "/" + simpleFileName).replace("\\", "\\\\").replace("\"", "\\\"");
+        return "+%s:%s +%s:\"%s\"".formatted(SolrConstants.DOCTYPE, DocType.GROUP.name(), SolrConstants.THUMBNAIL, value);
+    }
+
+    /**
      * Checks whether the client may access a content file (by PI + file name). The single access check query also returns the
      * {@link SolrConstants#DOCTYPE DOCTYPE} of each hit, so that the privileges can be chosen per document type (see {@link RequiredPrivileges})
      * without an additional query. Up to two hits are evaluated for a single file name, so that a file name indexed both as page and as download
@@ -354,7 +403,7 @@ public final class AccessConditionUtils {
             return Collections.emptyMap();
         }
 
-        String query = generateAccessCheckQuery(identifier, fileName);
+        String query = generateAccessCheckQueryWithGroupThumbnail(identifier, fileName);
         // logger.trace("query: {}", query); //NOSONAR Sonar considers this log msg a security issue, so leave it commented out when not needed
         try {
             List<String> fields = Arrays.asList(SolrConstants.ACCESSCONDITION, SolrConstants.DOCTYPE);

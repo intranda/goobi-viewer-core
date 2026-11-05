@@ -911,16 +911,23 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Returns the group document's own {@link SolrConstants#THUMBNAIL} value (e.g. a podcast image), if it is an absolute URI. Relative file names
-     * are ignored because group documents have no media folder of their own.
+     * Returns the group document's own {@link SolrConstants#THUMBNAIL} value (e.g. a podcast image), if it is an absolute URI or a file in the
+     * media folder of a member record, given as <code>&lt;record PI&gt;/&lt;file name&gt;</code> (the indexer uses the latter for images from the
+     * <code>&lt;GROUPSUFFIX&gt;-TEASER</code> file group). Plain file names are ignored because group documents have no media folder of their own.
      *
      * @param doc group struct element
-     * @return Absolute thumbnail URI of the group document; null if none is set
+     * @return Absolute thumbnail URI or record-relative file path of the group document; null if none is set
+     * @should return record relative file path
+     * @should return absolute url
+     * @should return null for plain file name
      */
     static String getGroupImagePath(StructElement doc) {
         String thumbnail = doc.getMetadataValue(SolrConstants.THUMBNAIL);
         if (StringUtils.isBlank(thumbnail)) {
             return null;
+        }
+        if (isRecordRelativeFilePath(thumbnail)) {
+            return thumbnail;
         }
         try {
             if (PathConverter.toURI(thumbnail).isAbsolute()) {
@@ -931,6 +938,15 @@ public class ThumbnailHandler {
         }
 
         return null;
+    }
+
+    /**
+     * @param value thumbnail value to check
+     * @return true if value has the form <code>&lt;record PI&gt;/&lt;file name&gt;</code>; false otherwise
+     */
+    private static boolean isRecordRelativeFilePath(String value) {
+        String[] parts = value.split("/", -1);
+        return parts.length == 2 && StringUtils.isNotBlank(parts[0]) && StringUtils.isNotBlank(parts[1]) && !parts[0].endsWith(":");
     }
 
     /**
