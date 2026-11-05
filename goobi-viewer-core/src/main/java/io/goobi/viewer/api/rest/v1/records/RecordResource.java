@@ -1051,7 +1051,8 @@ public class RecordResource {
     @Operation(tags = { "records" }, summary = "Get the RSS feed of a podcast show",
             description = "Returns an RSS 2.0 feed with iTunes elements containing all episodes of the podcast show the caller may listen to."
                     + " The feed is blocked from podcast directories (itunes:block, podcast:block).")
-    @ApiResponse(responseCode = "200", description = "RSS feed", content = @Content(mediaType = PodcastFeedResourceBuilder.MEDIA_TYPE_RSS))
+    @ApiResponse(responseCode = "200", description = "RSS feed",
+            content = @Content(mediaType = PodcastFeedResourceBuilder.MEDIA_TYPE_RSS, schema = @Schema(type = "string")))
     @ApiResponse(responseCode = "403", description = "Access to this podcast is not allowed")
     @ApiResponse(responseCode = "404", description = "No podcast show found for the given identifier")
     public Response getPodcastFeed()

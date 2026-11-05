@@ -1368,6 +1368,28 @@
                     <param type="numvolumes" />
                 </metadata>
             </template>
+            <!-- Podcast group documents (DOCSTRCT "podcast"); their members are episodes -->
+            <template name="podcast">
+                <metadata label="MD_CREATOR">
+                    <param type="field" key="MD_CREATOR" />
+                </metadata>
+                <metadata label="MD_YEARPUBLISH">
+                    <param type="field" key="MD_YEARPUBLISH" />
+                </metadata>
+                <metadata label="MD_PLACEPUBLISH">
+                    <param type="field" key="MD_PLACEPUBLISH" />
+                </metadata>
+                <metadata label="MD_SHELFMARK">
+                    <param type="field" key="MD_SHELFMARK" />
+                </metadata>
+                <metadata label="UGCTERMS">
+                    <param type="field" key="UGCTERMS" />
+                </metadata>
+                <!-- Number of episodes for podcasts (live count) -->
+                <metadata label="numEpisodes">
+                    <param type="numvolumes" />
+                </metadata>
+            </template>
         </metadataList>
 
         <!-- metadataList[@type="sidebar"]: defines metadata that are displayed in the sidebar. -->
