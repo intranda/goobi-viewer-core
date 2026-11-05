@@ -84,6 +84,8 @@ public class PodcastFeedResourceBuilder {
     static final Namespace NS_ATOM = Namespace.getNamespace("atom", "http://www.w3.org/2005/Atom");
     static final Namespace NS_PODCAST = Namespace.getNamespace("podcast", "https://podcastindex.org/namespace/1.0");
 
+    static final int FEED_POSTER_SIZE = 1400;
+
     private static final List<String> PREFERRED_ENCLOSURE_TYPES = List.of("audio/mpeg", "audio/mp4", "audio/x-m4a", "audio/m4a");
 
     /**
@@ -102,7 +104,7 @@ public class PodcastFeedResourceBuilder {
      * @param explicit explicit flag
      */
     record Channel(String title, String link, String feedUrl, String description, String subtitle, String language, List<String> authors,
-            String ownerEmail, String ownerName, List<String> categories, boolean explicit) {
+            String ownerEmail, String ownerName, List<String> categories, String image, boolean explicit) {
     }
 
     /**
@@ -188,6 +190,7 @@ public class PodcastFeedResourceBuilder {
                 toFeedLanguage(show.getMetadataValue(PodloveEpisodeResourceBuilder.FIELD_LANGUAGE)), authors,
                 show.getMetadataValue(PodloveEpisodeResourceBuilder.FIELD_OWNER), authors.isEmpty() ? null : String.join(", ", authors),
                 show.getMetadataValues(PodloveEpisodeResourceBuilder.FIELD_TOPIC),
+                PodloveEpisodeResourceBuilder.getPoster(show, FEED_POSTER_SIZE),
                 isExplicit(show.getMetadataValue(PodloveEpisodeResourceBuilder.FIELD_EXPLICIT)));
     }
 
@@ -243,7 +246,8 @@ public class PodcastFeedResourceBuilder {
                 episode.getMetadataValue(PodloveEpisodeResourceBuilder.FIELD_SUBTITLE), getPublicationDate(doc), source.getString("url"),
                 source.optLong("size", 0), source.getString("mimeType"),
                 formatDuration(episode.getMetadataValue(PodloveEpisodeResourceBuilder.FIELD_DURATION)),
-                PodloveEpisodeResourceBuilder.getPoster(episode), isExplicit(episode.getMetadataValue(PodloveEpisodeResourceBuilder.FIELD_EXPLICIT)));
+                PodloveEpisodeResourceBuilder.getPoster(episode, FEED_POSTER_SIZE),
+                isExplicit(episode.getMetadataValue(PodloveEpisodeResourceBuilder.FIELD_EXPLICIT)));
     }
 
     /**
@@ -403,6 +407,9 @@ public class PodcastFeedResourceBuilder {
         addText(ele, "summary", NS_ITUNES, channel.description());
         if (channel.authors() != null && !channel.authors().isEmpty()) {
             addText(ele, "author", NS_ITUNES, String.join(", ", channel.authors()));
+        }
+        if (StringUtils.isNotBlank(channel.image())) {
+            ele.addContent(new Element("image", NS_ITUNES).setAttribute("href", cleanXmlText(channel.image())));
         }
         if (StringUtils.isNotBlank(channel.ownerEmail())) {
             Element owner = new Element("owner", NS_ITUNES);

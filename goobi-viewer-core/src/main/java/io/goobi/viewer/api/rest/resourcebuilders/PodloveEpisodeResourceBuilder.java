@@ -617,8 +617,12 @@ public class PodloveEpisodeResourceBuilder {
     }
 
     static String getPoster(StructElement element) {
+        return getPoster(element, POSTER_SIZE);
+    }
+
+    static String getPoster(StructElement element, int size) {
         try {
-            return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(element, POSTER_SIZE, POSTER_SIZE);
+            return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(element, size, size);
         } catch (RuntimeException e) {
             logger.warn("Cannot build poster URL for {}: {}", element.getPi(), e.getMessage());
             return null;
