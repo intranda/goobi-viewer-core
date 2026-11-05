@@ -42,7 +42,6 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 /**
  * Filters for redirecting prettified calls to cmsPages.
@@ -53,7 +52,8 @@ import jakarta.servlet.http.HttpSession;
  * by either their 'alternative url' or the url of the static page they replace. This filter needs to be placed in the filter chain before the
  * {@link org.ocpsoft.rewrite.servlet.RewriteFilter} because the RewriteFilter (former PrettyFilter) needs to handle the actual CMSPage mapping (the
  * PrettyFilter won't handle the request if it has been called already for this request, despite the forward) This filter also stores the called url
- * to the session map using {@link io.goobi.viewer.model.urlresolution.ViewHistory#setCurrentView(ViewerPath, HttpSession)}. This is essential to
+ * in the request and, if one exists, the session map using
+ * {@link io.goobi.viewer.model.urlresolution.ViewHistory#setCurrentView(ViewerPath, HttpServletRequest)}. This is essential to
  * leaving a view to return to a previous view (for example when leaving the reading mode)
  */
 public class UrlRedirectFilter implements Filter {
@@ -65,7 +65,8 @@ public class UrlRedirectFilter implements Filter {
      *
      * <p>
      * Redirects prettified calls to cmsPages (either using alternative url or static url of a cmsPage) to the actual page url (The cmsPage pretty-url
-     * that is) Also stores the actually requested path in the current http session using {@link ViewHistory#setCurrentView(ViewerPath, HttpSession)}
+     * that is) Also stores the actually requested path in the request and the current http session (if any) using
+     * {@link ViewHistory#setCurrentView(ViewerPath, HttpServletRequest)}
      */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -85,7 +86,7 @@ public class UrlRedirectFilter implements Filter {
                     return;
                 }
 
-                ViewHistory.setCurrentView(currentPath.get(), httpRequest.getSession(false));
+                ViewHistory.setCurrentView(currentPath.get(), httpRequest);
                 if (!ViewerPathBuilder.startsWith(currentPath.get().getPagePath(), "cms") && currentPath.get().getCmsPage() != null) {
                     if (currentPath.get().getCmsPage().isMayContainUrlParameters()
                             || StringUtils.isBlank(currentPath.get().getParameterPath().toString().replaceAll("/?\\d+/?", ""))) {

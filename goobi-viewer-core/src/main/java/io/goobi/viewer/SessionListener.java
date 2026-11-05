@@ -34,7 +34,7 @@ import io.goobi.viewer.managedbeans.AdminConfigEditorBean;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 
 /**
- * HTTP session listener that tracks active user sessions and performs cleanup on session expiry.
+ * HTTP session listener that performs cleanup on session expiry.
  */
 @WebListener
 public class SessionListener implements HttpSessionListener {
@@ -44,9 +44,7 @@ public class SessionListener implements HttpSessionListener {
     /** {@inheritDoc} */
     @Override
     public void sessionCreated(HttpSessionEvent event) {
-        //        if (DataManager.getInstance().getSessionMap().put(event.getSession().getId(), new HashMap<>()) == null) {
-        //            logger.trace("Session created: {}", event.getSession().getId()); //NOSONAR Debug
-        //        }
+        // logger.trace("Session created: {}", event.getSession().getId()); //NOSONAR Debug
     }
 
     /**
@@ -54,23 +52,25 @@ public class SessionListener implements HttpSessionListener {
      * includes record locks, admin-editor locks, and all access-permission caches stored under
      * the {@code PRIV_} prefix.
      *
+     * <p>
+     * Cleanup is performed unconditionally for every destroyed session. It must not depend on the session having been seen by a filter before:
+     * sessions created during rendering of the very first request (e.g. by JSF) may already hold record locks.
+     *
      * @param event servlet session event carrying the session being destroyed
      * @should remove all PRIV_ prefixed attributes on destroy
      */
     @Override
     public void sessionDestroyed(HttpSessionEvent event) {
-        if (DataManager.getInstance().getSessionMap().remove(event.getSession().getId()) != null) {
-            String sessionId = event.getSession().getId();
-            // logger.trace("Session destroyed: {}", sessionId); //NOSONAR Debug
-            DataManager.getInstance().getRecordLockManager().removeLocksForSessionId(sessionId, null);
-            AdminBean.unlockTranslation(sessionId);
-            // Release file edit locks
-            AdminConfigEditorBean.clearLocksForSessionId(sessionId);
-            // Remove the per-session PRIV_* access-permission cache so its entries (up to
-            // millions of AccessPermission objects on long-lived sessions) become eligible for
-            // GC. clearSessionPermissions handles IllegalStateException internally if the
-            // session has already been invalidated. refs #27880
-            AccessConditionUtils.clearSessionPermissions(event.getSession());
-        }
+        String sessionId = event.getSession().getId();
+        // logger.trace("Session destroyed: {}", sessionId); //NOSONAR Debug
+        DataManager.getInstance().getRecordLockManager().removeLocksForSessionId(sessionId, null);
+        AdminBean.unlockTranslation(sessionId);
+        // Release file edit locks
+        AdminConfigEditorBean.clearLocksForSessionId(sessionId);
+        // Remove the per-session PRIV_* access-permission cache so its entries (up to
+        // millions of AccessPermission objects on long-lived sessions) become eligible for
+        // GC. clearSessionPermissions handles IllegalStateException internally if the
+        // session has already been invalidated. refs #27880
+        AccessConditionUtils.clearSessionPermissions(event.getSession());
     }
 }

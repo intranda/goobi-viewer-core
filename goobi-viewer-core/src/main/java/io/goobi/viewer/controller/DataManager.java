@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -71,8 +70,6 @@ public final class DataManager {
     private static DataManager instance = null;
 
     private final List<IModule> modules = new ArrayList<>();
-
-    private final Map<String, Map<String, String>> sessionMap = new LinkedHashMap<>();
 
     private final RecordLockManager recordLockManager = new RecordLockManager();
 
@@ -242,24 +239,6 @@ public final class DataManager {
         modules.add(module);
         logger.info("Module registered: {} ({}) v{}", module.getId(), module.getName(), module.getVersion());
         return true;
-    }
-
-    /**
-     * getSessionCount.
-     *
-     * @return a int.
-     */
-    public int getSessionCount() {
-        return sessionMap.size();
-    }
-
-    /**
-     * Getter for the field <code>sessionMap</code>.
-     *
-     * @return the map of active HTTP session data, keyed by session ID
-     */
-    public Map<String, Map<String, String>> getSessionMap() {
-        return sessionMap;
     }
 
     /**

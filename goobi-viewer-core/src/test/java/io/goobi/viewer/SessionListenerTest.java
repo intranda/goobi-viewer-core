@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -29,7 +30,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpSessionEvent;
@@ -38,6 +38,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.model.security.recordlock.LockRecordResult;
+import io.goobi.viewer.model.security.recordlock.RecordLockManager;
 
 /**
  * Unit tests for {@link SessionListener}.
@@ -46,10 +48,19 @@ class SessionListenerTest {
 
     private static final String TEST_SESSION_ID = "test-session-1";
 
+    private static final String TEST_PI = "SessionListenerTest_PPN";
+
     @AfterEach
     void tearDown() {
         // Guard against test failure leaving state in the DataManager singleton
-        DataManager.getInstance().getSessionMap().remove(TEST_SESSION_ID);
+        DataManager.getInstance().getRecordLockManager().removeLocksForSessionId(TEST_SESSION_ID, null);
+        DataManager.getInstance().getRecordLockManager().removeLocksForSessionId(TEST_SESSION_ID + "-other", null);
+    }
+
+    private static HttpSessionEvent destroyEvent(HttpSession session) {
+        HttpSessionEvent event = mock(HttpSessionEvent.class);
+        when(event.getSession()).thenReturn(session);
+        return event;
     }
 
     /**
@@ -58,11 +69,6 @@ class SessionListenerTest {
      */
     @Test
     void sessionDestroyed_shouldRemoveAllPrivPrefixedAttributesOnDestroy() {
-        // Register the session id in DataManager so the cleanup block in sessionDestroyed
-        // is entered (the listener guards on sessionMap.remove(...) returning non-null). In
-        // production this put is performed by SessionCounterFilter.doFilter on each request.
-        DataManager.getInstance().getSessionMap().put(TEST_SESSION_ID, new HashMap<>());
-
         HttpSession session = mock(HttpSession.class);
         when(session.getId()).thenReturn(TEST_SESSION_ID);
         Enumeration<String> attrNames = Collections.enumeration(java.util.List.of(
@@ -72,16 +78,33 @@ class SessionListenerTest {
                 "user"));
         when(session.getAttributeNames()).thenReturn(attrNames);
 
-        HttpSessionEvent event = mock(HttpSessionEvent.class);
-        when(event.getSession()).thenReturn(session);
-
-        SessionListener listener = new SessionListener();
-        listener.sessionDestroyed(event);
+        new SessionListener().sessionDestroyed(destroyEvent(session));
 
         verify(session, times(1)).removeAttribute(eq("PRIV_VIEW_IMAGES_pi_abc_file1.png"));
         verify(session, times(1)).removeAttribute(eq("PRIV_DOWNLOAD_PDF_pi_abc_file1.pdf"));
         // non-PRIV attributes must not be removed by this listener
         verify(session, times(0)).removeAttribute(eq("currentPi"));
         verify(session, times(0)).removeAttribute(eq("user"));
+    }
+
+    /**
+     * @see SessionListener#sessionDestroyed(HttpSessionEvent)
+     * @verifies release record locks of session not seen by any filter
+     */
+    @Test
+    void sessionDestroyed_shouldReleaseRecordLocksOfSessionNotSeenByAnyFilter() {
+        // A session created by JSF while rendering the first request locks a limited record
+        RecordLockManager lockManager = DataManager.getInstance().getRecordLockManager();
+        assertEquals(LockRecordResult.RECORD_LOCKED, lockManager.lockRecord(TEST_PI, TEST_SESSION_ID, 1));
+        assertEquals(LockRecordResult.LIMIT_EXCEEDED, lockManager.lockRecord(TEST_PI, TEST_SESSION_ID + "-other", 1));
+
+        HttpSession session = mock(HttpSession.class);
+        when(session.getId()).thenReturn(TEST_SESSION_ID);
+        when(session.getAttributeNames()).thenReturn(Collections.emptyEnumeration());
+
+        new SessionListener().sessionDestroyed(destroyEvent(session));
+
+        // The slot must be free again for other sessions
+        assertEquals(LockRecordResult.RECORD_LOCKED, lockManager.lockRecord(TEST_PI, TEST_SESSION_ID + "-other", 1));
     }
 }
