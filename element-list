@@ -5,16 +5,19 @@ io.goobi.viewer.api.rest.bindings
 io.goobi.viewer.api.rest.exceptions
 io.goobi.viewer.api.rest.filters
 io.goobi.viewer.api.rest.model
+io.goobi.viewer.api.rest.model.archives
 io.goobi.viewer.api.rest.model.index
 io.goobi.viewer.api.rest.model.monitoring
 io.goobi.viewer.api.rest.model.ner
 io.goobi.viewer.api.rest.model.statistics.index
 io.goobi.viewer.api.rest.model.statistics.usage
 io.goobi.viewer.api.rest.model.tasks
+io.goobi.viewer.api.rest.model.webarchives
 io.goobi.viewer.api.rest.resourcebuilders
 io.goobi.viewer.api.rest.serialization
 io.goobi.viewer.api.rest.v1
 io.goobi.viewer.api.rest.v1.annotations
+io.goobi.viewer.api.rest.v1.archives
 io.goobi.viewer.api.rest.v1.authentication
 io.goobi.viewer.api.rest.v1.authorities
 io.goobi.viewer.api.rest.v1.bookmarks
@@ -99,6 +102,7 @@ io.goobi.viewer.model.crowdsourcing.campaigns
 io.goobi.viewer.model.crowdsourcing.questions
 io.goobi.viewer.model.email
 io.goobi.viewer.model.export
+io.goobi.viewer.model.export.bagit
 io.goobi.viewer.model.files.external
 io.goobi.viewer.model.files.upload
 io.goobi.viewer.model.iiif.auth
@@ -119,6 +123,7 @@ io.goobi.viewer.model.maps
 io.goobi.viewer.model.maps.coordinates
 io.goobi.viewer.model.maps.features
 io.goobi.viewer.model.media.voyager
+io.goobi.viewer.model.media.webarchives
 io.goobi.viewer.model.metadata
 io.goobi.viewer.model.misc
 io.goobi.viewer.model.normdata
