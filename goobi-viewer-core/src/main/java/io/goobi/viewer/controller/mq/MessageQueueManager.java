@@ -447,6 +447,42 @@ public class MessageQueueManager {
         return fastQueueContent;
     }
 
+    /**
+     * Returns the number of messages currently in the given queue, read from broker JMX metadata
+     * ({@link QueueViewMBean#getQueueSize()}). Unlike {@link #countMessagesInQueue(String)} this opens no client
+     * connection and does not enumerate the queue, so it stays cheap even for a large backlog and is safe to call
+     * on every page render.
+     *
+     * @param queueName name of the queue
+     * @return the queue size, or 0 if the broker is unavailable or the size cannot be read
+     */
+    public long getQueueSize(String queueName) {
+        if (this.broker == null) {
+            return 0;
+        }
+        try {
+            ObjectName queueViewMBeanName = getQueueViewBeanName(queueName);
+            QueueViewMBean mbean =
+                    (QueueViewMBean) broker.getManagementContext().newProxyInstance(queueViewMBeanName, QueueViewMBean.class, true);
+            return mbean.getQueueSize();
+        } catch (MalformedObjectNameException | RuntimeException e) {
+            // RuntimeException also covers the JMX proxy's UndeclaredThrowableException when the queue MBean is not
+            // (yet) registered; degrade gracefully to 0 rather than propagating.
+            logger.error(e);
+            return 0;
+        }
+    }
+
+    /**
+     * Sums {@link #getQueueSize(String)} across the viewer and pdf queues. Cheap enough to call frequently (e.g. the
+     * admin topbar background-task monitor) because it reads broker metadata rather than browsing messages.
+     *
+     * @return total number of messages across all queues; 0 if the broker is unavailable
+     */
+    public long getTotalQueueSize() {
+        return getQueueSize(QUEUE_NAME_VIEWER) + getQueueSize(QUEUE_NAME_PDF);
+    }
+
     public int countMessagesBefore(String queueName, String messageType, String messageId) {
         int count = 0;
         try (QueueConnection connection = startConnection();
