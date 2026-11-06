@@ -4,8 +4,11 @@
  * The terminal report is compared as plain text, so colours stay off whatever the terminal says.
  */
 process.env.NO_COLOR = '1';
+const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const { checkTree, runTokenCheck, formatReport, themeSteps, stepFiles, parseLess, readLessTree, MODULE_ROOT, LESS_ROOT } = require('..');
+const { readScriptTokens } = require('../parse');
 const { RENAMED_TOKENS, successorAdvice } = require('../renames');
 
 const files = (obj) => new Map(Object.entries(obj));
@@ -24,6 +27,19 @@ const CLEAN = {
     'views/page.less': '.page { background: var(--bg-paper); }',
 };
 const core = (extra) => checkTree(files({ ...CLEAN, ...extra })).core;
+
+test('reads the token names of the scripts, not of their tests', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'token-scripts-'));
+    fs.mkdirSync(path.join(dir, 'viewer', '__tests__'), { recursive: true });
+    fs.writeFileSync(path.join(dir, 'viewer', 'a.js'), "style.getPropertyValue('--player-brand'); const x = \"--player-alt\"; const y = 'not --a-token';");
+    fs.writeFileSync(path.join(dir, 'viewer', '__tests__', 'a.test.js'), "'--only-in-test'");
+    try {
+        expect([...readScriptTokens(dir)].sort()).toEqual(['--player-alt', '--player-brand']);
+        expect(readScriptTokens(path.join(dir, 'missing')).size).toBe(0);
+    } finally {
+        fs.rmSync(dir, { recursive: true, force: true });
+    }
+});
 
 test('accepts a tree that keeps all six sentences', () => {
     expect(core({})).toEqual([]);
@@ -212,6 +228,14 @@ describe('theme', () => {
         ).theme;
         expect(fixes(found)).toEqual(['theme/misc/tokens.less:1 nothing reads this token', 'theme/misc/tokens.less:2 nothing reads this token']);
         expect(found.every((f) => f.kind === 'todo')).toBe(true);
+    });
+
+    test('counts a theme token a script reads as read', () => {
+        const theme = files({
+            ...THEME,
+            'misc/tokens.less': THEME['misc/tokens.less'].replace(/--fg-ink: var(--color-theme-sea);/g, '--fg-ink: var(--color-theme-sea); --panel-unused: var(--color-theme-sea);'),
+        });
+        expect(checkTree(files(CLEAN), theme, null, new Set(['--panel-unused'])).theme).toEqual([]);
     });
 
     test('turns an old theme into a to-do list with the successor of every old name', () => {

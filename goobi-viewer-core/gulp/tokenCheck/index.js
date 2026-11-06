@@ -19,8 +19,8 @@
 const fs = require('fs');
 const path = require('path');
 const { checkTree } = require('./check');
-const { COLOR_LITERAL, LESS_ROOT, MODULE_ROOT, THEME_LESS_ROOT, THEME_ROOT, themePaths } = require('./constants');
-const { parseLess, readLessTree, withoutStrings } = require('./parse');
+const { COLOR_LITERAL, LESS_ROOT, MODULE_ROOT, SCRIPT_ROOT, THEME_LESS_ROOT, THEME_ROOT, themePaths } = require('./constants');
+const { parseLess, readLessTree, readScriptTokens, withoutStrings } = require('./parse');
 const { formatReport, stepFiles, themeSteps } = require('./steps');
 
 /**
@@ -45,7 +45,7 @@ async function runTokenCheck({ moduleRoot = MODULE_ROOT, lessRoot = LESS_ROOT, t
                       .map((f) => [f, fs.readFileSync(path.join(themeRoot, f), 'utf8')])
               )
             : null;
-    const result = checkTree(core, theme, templates);
+    const result = checkTree(core, theme, templates, readScriptTokens(path.resolve(moduleRoot, SCRIPT_ROOT)));
     return {
         core: result.core,
         theme: { status: !enabled ? 'off' : found ? 'checked' : 'missing', name: path.basename(path.resolve(themeDir, '..', '..')), path: themeLessRoot, findings: result.theme },

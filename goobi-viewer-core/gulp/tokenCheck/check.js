@@ -178,7 +178,7 @@ function mixinTokens(parsed, files) {
  * @param {{core: Map<string,string>, theme: Map<string,string>, themeParsed: Map, templates: Map<string,string>|null, tokens: Set<string>, palette: Set<string>, roleInputs: Set<string>, parsed: Map, typeSizes: Map}} input
  * @returns {object} the frozen context
  */
-function themeContext({ core, theme, themeParsed, templates, tokens, palette, roleInputs, parsed, typeSizes }) {
+function themeContext({ core, theme, themeParsed, templates, scriptReads, tokens, palette, roleInputs, parsed, typeSizes }) {
     const coreHas = (name) => tokens.has(name);
     const advise = adviceContext({ core: parsed, theme: themeParsed });
     const layout = new Map([...tokenLayout(core.get(PALETTE_FILE) ?? ''), ...tokenLayout(core.get(TOKENS_FILE) ?? '')]);
@@ -244,7 +244,7 @@ function themeContext({ core, theme, themeParsed, templates, tokens, palette, ro
             : 'reads a token the core removed — drop the read, or declare a theme token in misc/tokens.less';
     };
     const tokenLines = (file) => THEME_LAYER.test(file) || file === CORE_DEFAULTS_FILE;
-    const coreReads = new Set([...parsed.values()].flatMap((p) => p.reads.map((r) => r.name)));
+    const coreReads = new Set([...[...parsed.values()].flatMap((p) => p.reads.map((r) => r.name)), ...scriptReads]);
     const oldName = (file, d) => tokenLines(file) && !INTERNAL.test(d.name) && !tokens.has(d.name) && RENAMED_TOKENS.has(d.name);
     let themeReads = new Set();
     const dead = (file, d) => tokenLines(file) && !INTERNAL.test(d.name) && !tokens.has(d.name) && !coreReads.has(d.name) && !themeReads.has(d.name);
@@ -972,9 +972,10 @@ function checkTheme(input, out) {
  * @param {Map<string,string>} core relative path → LESS source
  * @param {Map<string,string>|null} theme relative path → LESS source, or null
  * @param {Map<string,string>|null} templates the theme's template*.html by file name, for the light-only check
+ * @param {Set<string>} [scriptReads] token names the scripts read at runtime; they count as read
  * @returns {{core: Array, theme: Array}} findings; theme files are reported as theme/<path>
  */
-function checkTree(core, theme = null, templates = null) {
+function checkTree(core, theme = null, templates = null, scriptReads = new Set()) {
     const parsed = parseAll(core);
     const out = { core: [], theme: [] };
 
@@ -1117,7 +1118,7 @@ function checkTree(core, theme = null, templates = null) {
     }
 
     if (theme) {
-        checkTheme({ core, theme, themeParsed, templates, tokens, palette, roleInputs, parsed, typeSizes }, out.theme);
+        checkTheme({ core, theme, themeParsed, templates, scriptReads, tokens, palette, roleInputs, parsed, typeSizes }, out.theme);
     }
 
     const byPlace = (a, b) => a.file.localeCompare(b.file) || a.line - b.line;

@@ -304,22 +304,6 @@
         }
     }
 
-    &__podlove {
-        width: 100%;
-
-        /* The player renders in an iframe and reads its colors from the following custom properties (see
-           includes/object/podcast.xhtml). A theme sets them here or on an ancestor; unset tokens keep the Podlove
-           default, so core declares no values:
-           --podcast-player-brand, -brand-dark, -brand-darkest, -brand-lightest, -shade-dark, -shade-base,
-           -contrast, -alt */
-    }
-
-    &__podlove-player {
-        iframe {
-            display: block;
-        }
-    }
-
     /* AUDIO */
     &__audio {
         width: 70%;
@@ -338,9 +322,24 @@
             margin-bottom: 30px;
         }
     }
-	&.-podcast {
-		padding: 0;
-	}
+
+    /* PODCAST */
+    &.-podcast {
+        padding: 0;
+    }
+
+    &__podlove {
+        width: 100%;
+
+        /* A theme sets the player colors with --podlove-player-brand, -brand-dark, -brand-darkest,
+           -brand-lightest, -shade-dark, -shade-base, -contrast and -alt; unset ones keep the Podlove default */
+    }
+
+    &__podlove-player {
+        iframe {
+            display: block;
+        }
+    }
 }
 
 /* IMAGE FRAGMENT */
