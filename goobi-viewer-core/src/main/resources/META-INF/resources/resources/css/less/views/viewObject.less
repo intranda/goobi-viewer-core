@@ -281,6 +281,7 @@
     border: 1px solid var(--border-strong);
     padding: 1.5rem;
     display: flex;
+    margin-top: 2rem;
     margin-bottom: 1.5rem;
 
     /* THUMB */
@@ -305,6 +306,18 @@
 
     &__podlove {
         width: 100%;
+
+        /* The player renders in an iframe and reads its colors from the following custom properties (see
+           includes/object/podcast.xhtml). A theme sets them here or on an ancestor; unset tokens keep the Podlove
+           default, so core declares no values:
+           --podcast-player-brand, -brand-dark, -brand-darkest, -brand-lightest, -shade-dark, -shade-base,
+           -contrast, -alt */
+    }
+
+    &__podlove-player {
+        iframe {
+            display: block;
+        }
     }
 
     /* AUDIO */
@@ -325,6 +338,9 @@
             margin-bottom: 30px;
         }
     }
+	&.-podcast {
+		padding: 0;
+	}
 }
 
 /* IMAGE FRAGMENT */
