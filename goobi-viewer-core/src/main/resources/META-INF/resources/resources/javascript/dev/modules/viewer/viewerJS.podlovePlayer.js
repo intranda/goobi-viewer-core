@@ -83,6 +83,13 @@ var viewerJS = (function (viewer) {
             '#app [data-focus-proxy] { outline: 2px solid ' + ring + '; outline-offset: -2px; box-shadow: inset 0 0 0 4px ' + inner + '; }' +
             // The default placeholder color has about 1.4:1 contrast (WCAG 1.4.3)
             '#app .input::placeholder { color: inherit; opacity: 0.75; }' +
+            // Transcript tab on mobile (player breakpoint): search field above the "stop following" button
+            '@media (max-width: 599px) {' +
+            ' #app :has(> [data-test="tab-transcripts--follow"]) { flex-direction: column; }' +
+            ' #app :has(> [data-test="tab-transcripts--follow"]) > [data-test="tab-transcripts--follow"] { width: 100%; margin: 0.5rem 0 0; }' +
+            // The header has a fixed height of 145px, too small for the stacked controls
+            ' #app .header:has([data-test="tab-transcripts--follow"]) { height: auto; }' +
+            '}' +
             '@media (prefers-reduced-motion: reduce) { #app *, #app *::before, #app *::after { animation: none !important; transition: none !important; } }'
         );
     }
@@ -132,6 +139,22 @@ var viewerJS = (function (viewer) {
         }).observe(doc.getElementById('app') || doc.body, { childList: true, subtree: true });
     }
 
+    // The player takes its language from the browser and does not react to changes later; set it on its i18n instance
+    function _setLanguage(doc, language) {
+        let tries = 0;
+        const timer = setInterval(() => {
+            const app = doc.getElementById('app') && doc.getElementById('app').__vue_app__;
+            const i18n = app && app._context.provides[app.__VUE_I18N_SYMBOL__];
+            if (i18n) {
+                i18n.global.locale = language;
+            }
+            // Wait for the player to mount
+            if (i18n || ++tries > 50) {
+                clearInterval(timer);
+            }
+        }, 100);
+    }
+
     // Adjusts the player iframe once the player has created it (same-origin, written by the player itself)
     function _improve(container, config) {
         const iframe = container.querySelector('iframe');
@@ -142,7 +165,9 @@ var viewerJS = (function (viewer) {
         // The player names the iframe in English only
         iframe.title = iframe.title.replace(/^Podlove Web Player/, config.title);
         iframe.setAttribute('aria-label', iframe.title);
-        doc.documentElement.lang = _getLanguage(navigator.language);
+        const language = _getLanguage(config.language || navigator.language);
+        doc.documentElement.lang = language;
+        _setLanguage(doc, language);
         _mirrorFocus(doc);
         _announceErrors(doc);
 
@@ -185,6 +210,7 @@ var viewerJS = (function (viewer) {
          * @param {String} config.pi Identifier of the episode
          * @param {String} [config.showPi] Identifier of the show; enables the RSS subscribe button
          * @param {String} config.title Localized title of the player iframe
+         * @param {String} [config.language] Language of the viewer, defaults to the browser language
          */
         init: function (config) {
             if (typeof podlovePlayer === 'undefined') {

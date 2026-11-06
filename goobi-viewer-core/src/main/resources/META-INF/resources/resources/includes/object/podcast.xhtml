@@ -41,7 +41,8 @@
                         contextPath: "#{request.contextPath}",
                         pi: "#{activeDocumentBean.viewManager.pi}",
                         showPi: "#{activeDocumentBean.viewManager.topStructElement.getMetadataValue('GROUPID_PODCAST')}",
-                        title: "#{msg.podcast_player__title}"
+                        title: "#{msg.podcast_player__title}",
+                        language: "#{navigationHelper.localeString}"
                     });
                 </script>
             </ui:fragment>

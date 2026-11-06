@@ -47,6 +47,12 @@ describe('frameCss', () => {
         expect(css).toContain('box-shadow: 0 0 0 4px #cb002d');
     });
 
+    test('stacks the transcript search and button on mobile', () => {
+        const css = viewerJS.podlovePlayer.frameCss('#cb002d', '#ffffff');
+        expect(css).toContain('max-width: 599px');
+        expect(css).toContain('[data-test="tab-transcripts--follow"]');
+    });
+
     test('contains the placeholder and reduced motion rules', () => {
         const css = player.frameCss('#cb002d', '#ffffff');
         expect(css).toContain('::placeholder');
