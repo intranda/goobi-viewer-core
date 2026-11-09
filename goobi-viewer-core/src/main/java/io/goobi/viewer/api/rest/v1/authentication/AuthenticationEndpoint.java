@@ -429,8 +429,8 @@ public class AuthenticationEndpoint {
                     + " the login is rejected with 403") @QueryParam("error") String error,
             @Parameter(description = "Authorization code issued by the OpenID provider; exchanged for an ID token. Either code or"
                     + " id_token must be present") @QueryParam("code") String authCode,
-            @Parameter(
-                    description = "ID token passed directly by the provider (implicit flow); used instead of exchanging a code") @QueryParam("id_token") String accessToken,
+            @Parameter(description = "ID token passed directly by the provider (implicit flow); used instead of exchanging a"
+                    + " code") @QueryParam("id_token") String accessToken,
             @Parameter(description = "State value from the authorization request; must match the state registered for the"
                     + " OpenID provider that started the login") @QueryParam("state") String state)
             throws IOException {

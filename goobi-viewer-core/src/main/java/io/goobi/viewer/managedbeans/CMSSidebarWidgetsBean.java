@@ -73,7 +73,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
 
     private static final String SIDEBAR_COMPONENT_ATTRIBUTE_SIDEBAR_ELEMENT = "sidebarElement";
 
-    private transient HtmlPanelGroup sidebarGroup = new HtmlPanelGroup();;
+    private transient HtmlPanelGroup sidebarGroup = new HtmlPanelGroup();
 
     private static final long serialVersionUID = -6039330925483238481L;
 

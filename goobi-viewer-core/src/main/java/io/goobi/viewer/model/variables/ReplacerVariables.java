@@ -50,5 +50,5 @@ public final class ReplacerVariables {
      * Should not be instantiated.
      */
     private ReplacerVariables() {
-    };
+    }
 }
