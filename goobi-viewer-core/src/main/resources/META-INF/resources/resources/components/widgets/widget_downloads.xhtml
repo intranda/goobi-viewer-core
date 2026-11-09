@@ -419,7 +419,7 @@
                     <!-- IIIF MANIFEST FULL RECORD -->
                     <ui:fragment
                         visibility-class="widget-element"
-                        rendered="#{displayConditions.matchRecord('{numPages:1, pageType:![viewFulltext, viewMetadata], accessCondition:GENERATE_IIIF_MANIFEST}')}">
+                        rendered="#{displayConditions.matchRecord('{numPages:1, pageType:![viewFulltext, viewMetadata], accessCondition:LIST}')}">
                         <button
                             id="iiifManifestRecord"
                             class="badge badge-dark widget-usage__work-download-iiif"
@@ -435,7 +435,7 @@
                     <!-- MIRADOR FULL RECORD -->
                     <ui:fragment
                         visibility-class="widget-element"
-                        rendered="#{displayConditions.matchRecord('{mimeType:[image, application/pdf], numPages:1, accessCondition:GENERATE_IIIF_MANIFEST}')}">
+                        rendered="#{displayConditions.matchRecord('{mimeType:[image, application/pdf], numPages:1, accessCondition:LIST}')}">
                         <a
                             href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifManifest}&amp;page=1"
                             id="mirador"
