@@ -1163,6 +1163,10 @@
 					<!--failBuildOnCVSS>5.0</failBuildOnCVSS-->
 					<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
 					<knownExploitedEnabled>false</knownExploitedEnabled>
+					<!-- OSS Index requires an authenticated account/token and returns HTTP 401 for
+						 unauthenticated requests; no credentials are wired on the build agent, so the
+						 analyzer is disabled. NVD/CPE scanning stays active. -->
+					<ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>
 					<skipProvidedScope>true</skipProvidedScope>
 					<skipTestScope>true</skipTestScope>
 					<format>ALL</format>
