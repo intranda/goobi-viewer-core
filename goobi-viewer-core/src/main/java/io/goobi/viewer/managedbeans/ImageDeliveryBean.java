@@ -22,24 +22,20 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.IIIFPresentationAPIHandler;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.controller.imaging.ImageHandler;
+import io.goobi.viewer.controller.imaging.MediaDeliveryHandlers;
 import io.goobi.viewer.controller.imaging.MediaHandler;
 import io.goobi.viewer.controller.imaging.Object3DHandler;
 import io.goobi.viewer.controller.imaging.PdfHandler;
@@ -90,32 +86,32 @@ public class ImageDeliveryBean implements Serializable {
     @Inject
     private HttpServletRequest servletRequest;
 
-    private String servletPath;
-    private String staticImagesURI;
-    private String cmsMediaPath;
-    private String tempMediaPath;
-    private ImageHandler images;
-    private ThumbnailHandler thumbs;
-    private PdfHandler pdf;
-    private WatermarkHandler footer;
-    private IIIFUrlHandler iiif;
-    private MediaHandler media;
-    private Object3DHandler objects3d;
-    private IIIFPresentationAPIHandler presentation;
+    /** Session independent handlers; transient because they are cheap to rebuild and not serializable. */
+    private transient MediaDeliveryHandlers handlers;
+    // Explicitly set handlers (tests) take precedence over the ones in {@link #handlers}
+    private transient ImageHandler images;
+    private transient ThumbnailHandler thumbs;
+    private transient PdfHandler pdf;
 
     public ImageDeliveryBean() {
         //
+    }
+
+    /**
+     * Creates an instance that is not managed by CDI and uses the given handlers. Used outside of JSF requests, where looking up the session scoped
+     * bean would create an HTTP session.
+     *
+     * @param handlers session independent media delivery handlers
+     */
+    public ImageDeliveryBean(MediaDeliveryHandlers handlers) {
+        this.handlers = handlers;
     }
 
     @PostConstruct
     private void init() {
         logger.trace("init");
         try {
-            Configuration config = DataManager.getInstance().getConfiguration();
-            AbstractApiUrlManager dataUrlManager = DataManager.getInstance().getRestApiManager().getIIIFDataApiManager();
-            AbstractApiUrlManager contentUrlManager =
-                    DataManager.getInstance().getRestApiManager().getContentApiManager().orElse(null);
-            init(config, dataUrlManager, contentUrlManager);
+            this.handlers = MediaDeliveryHandlers.create(getServletPathFromContext());
         } catch (NullPointerException e) {
             logger.error("Failed to initialize ImageDeliveryBean: Resources misssing");
         }
@@ -142,34 +138,22 @@ public class ImageDeliveryBean implements Serializable {
      * @param contentUrlManager URL manager for content delivery endpoints
      */
     public void init(Configuration config, AbstractApiUrlManager dataUrlManager, AbstractApiUrlManager contentUrlManager) {
-        this.servletPath = getServletPathFromContext();
+        this.handlers = new MediaDeliveryHandlers(getServletPathFromContext(), config, dataUrlManager, contentUrlManager);
+    }
 
-        this.staticImagesURI = getStaticImagesPath(this.servletPath, config.getTheme());
-        this.cmsMediaPath =
-                config.getViewerHome() + config.getCmsMediaFolder();
-        this.tempMediaPath =
-                config.getViewerHome() + config.getTempMediaFolder();
+    /**
+     * @return the session independent handlers, initializing them if necessary; null if initialization failed
+     */
+    public MediaDeliveryHandlers getHandlers() {
+        if (handlers == null) {
+            init();
+        }
+        return handlers;
+    }
 
-        iiif = new IIIFUrlHandler(contentUrlManager);
-        images = new ImageHandler(contentUrlManager);
-        if (contentUrlManager != null) {
-            objects3d = new Object3DHandler(contentUrlManager);
-        } else {
-            objects3d = new Object3DHandler(config);
-        }
-        footer = new WatermarkHandler(config, config.getIIIFApiUrl());
-        thumbs = new ThumbnailHandler(iiif, this.staticImagesURI);
-        if (contentUrlManager != null) {
-            pdf = new PdfHandler(footer, contentUrlManager);
-        } else {
-            pdf = new PdfHandler(footer, config);
-        }
-        media = new MediaHandler(contentUrlManager);
-        try {
-            presentation = new IIIFPresentationAPIHandler(dataUrlManager, config);
-        } catch (URISyntaxException e) {
-            logger.error("Failed to initalize presentation api handler {}", e.getMessage());
-        }
+    private <T> T fromHandlers(Function<MediaDeliveryHandlers, T> getter) {
+        MediaDeliveryHandlers h = getHandlers();
+        return h != null ? getter.apply(h) : null;
     }
 
     private static Optional<PhysicalElement> getCurrentPageIfExists() {
@@ -360,10 +344,7 @@ public class ImageDeliveryBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public IIIFUrlHandler getIiif() throws ViewerConfigurationException {
-        if (iiif == null) {
-            init();
-        }
-        return iiif;
+        return fromHandlers(MediaDeliveryHandlers::getIiif);
     }
 
     /**
@@ -372,10 +353,7 @@ public class ImageDeliveryBean implements Serializable {
      * @return the watermark handler instance
      */
     public WatermarkHandler getFooter() {
-        if (footer == null) {
-            init();
-        }
-        return footer;
+        return fromHandlers(MediaDeliveryHandlers::getFooter);
     }
 
     /**
@@ -384,10 +362,7 @@ public class ImageDeliveryBean implements Serializable {
      * @return the image handler instance
      */
     public ImageHandler getImages() {
-        if (images == null) {
-            init();
-        }
-        return images;
+        return images != null ? images : fromHandlers(MediaDeliveryHandlers::getImages);
     }
 
     /**
@@ -396,10 +371,7 @@ public class ImageDeliveryBean implements Serializable {
      * @return the PDF handler instance
      */
     public PdfHandler getPdf() {
-        if (pdf == null) {
-            init();
-        }
-        return pdf;
+        return pdf != null ? pdf : fromHandlers(MediaDeliveryHandlers::getPdf);
     }
 
     /**
@@ -408,19 +380,17 @@ public class ImageDeliveryBean implements Serializable {
      * @return the thumbnail handler instance
      */
     public ThumbnailHandler getThumbs() {
-        if (thumbs == null) {
-            init();
-        }
-        return thumbs;
+        return thumbs != null ? thumbs : fromHandlers(MediaDeliveryHandlers::getThumbs);
     }
 
     /**
      * Retrieves the #{@link io.goobi.viewer.controller.imaging.MediaHandler}, creates it if it doesn't exist yet.
      *
      * @return the media handler instance
+     * @should initialize handlers lazily
      */
     public MediaHandler getMedia() {
-        return media;
+        return fromHandlers(MediaDeliveryHandlers::getMedia);
     }
 
     /**
@@ -429,7 +399,7 @@ public class ImageDeliveryBean implements Serializable {
      * @return the handler for 3D object delivery
      */
     public Object3DHandler getObjects3D() {
-        return objects3d;
+        return fromHandlers(MediaDeliveryHandlers::getObjects3D);
     }
 
     /**
@@ -438,18 +408,11 @@ public class ImageDeliveryBean implements Serializable {
      * @return the IIIF presentation handler
      */
     public IIIFPresentationAPIHandler getPresentation() {
+        IIIFPresentationAPIHandler presentation = fromHandlers(MediaDeliveryHandlers::getPresentation);
         if (presentation == null) {
             throw new IllegalStateException("Presentation handler was not initialized");
         }
         return presentation;
-    }
-
-    private String getServletPath() {
-        if (servletPath == null) {
-            init();
-        }
-
-        return servletPath;
     }
 
     /**
@@ -460,15 +423,7 @@ public class ImageDeliveryBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public boolean isExternalUrl(String urlString) throws ViewerConfigurationException {
-        try {
-            URI uri = new URI(urlString);
-            if (uri.isAbsolute() && !uri.getScheme().toLowerCase().startsWith("file")) {
-                return !urlString.startsWith(getServletPath());
-            }
-            return false;
-        } catch (URISyntaxException e) {
-            return false;
-        }
+        return Boolean.TRUE.equals(fromHandlers(h -> h.isExternalUrl(urlString)));
     }
 
     /**
@@ -479,16 +434,7 @@ public class ImageDeliveryBean implements Serializable {
      * @return The url to the images folder in resources (possibly in the given theme)
      */
     public static String getStaticImagesPath(String servletPath, String theme) {
-        StringBuilder sb = new StringBuilder(servletPath);
-        if (!sb.toString().endsWith("/")) {
-            sb.append("/");
-        }
-        sb.append("resources").append("/");
-        if (StringUtils.isNotBlank(theme)) {
-            sb.append("themes").append("/").append(theme).append("/");
-        }
-        sb.append("images").append("/");
-        return sb.toString();
+        return MediaDeliveryHandlers.getStaticImagesPath(servletPath, theme);
     }
 
     /**
@@ -499,19 +445,7 @@ public class ImageDeliveryBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public boolean isCmsUrl(final String url) throws ViewerConfigurationException {
-        URI uri;
-        try {
-            uri = PathConverter.toURI(StringTools.decodeUrl(url));
-            Path path = PathConverter.getPath(uri);
-            if (path.isAbsolute()) {
-                path = path.normalize();
-                Path cmp = Paths.get(getCmsMediaPath());
-                return path.startsWith(cmp);
-            }
-        } catch (URISyntaxException e) {
-            logger.trace(e.toString());
-        }
-        return false;
+        return Boolean.TRUE.equals(fromHandlers(h -> h.isCmsUrl(url)));
     }
 
     /**
@@ -522,19 +456,7 @@ public class ImageDeliveryBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public boolean isTempUrl(final String url) throws ViewerConfigurationException {
-        URI uri;
-        try {
-            uri = PathConverter.toURI(StringTools.decodeUrl(url));
-            Path path = PathConverter.getPath(uri);
-            if (path.isAbsolute()) {
-                path = path.normalize();
-                Path cmp = Paths.get(getTempMediaPath());
-                return path.startsWith(cmp);
-            }
-        } catch (URISyntaxException e) {
-            logger.trace(e.toString());
-        }
-        return false;
+        return Boolean.TRUE.equals(fromHandlers(h -> h.isTempUrl(url)));
     }
 
     /**
@@ -564,29 +486,7 @@ public class ImageDeliveryBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getStaticImagesURI() throws ViewerConfigurationException {
-        if (staticImagesURI == null) {
-            init();
-        }
-        // logger.trace("staticImagesURI: {}", staticImagesURI); //NOSONAR Debug
-        return staticImagesURI;
-    }
-
-    /**
-     * 
-     * @throws ViewerConfigurationException
-     */
-    private String getCmsMediaPath() throws ViewerConfigurationException {
-        if (cmsMediaPath == null) {
-            init();
-        }
-        return cmsMediaPath;
-    }
-
-    private String getTempMediaPath() {
-        if (tempMediaPath == null) {
-            init();
-        }
-        return tempMediaPath;
+        return fromHandlers(MediaDeliveryHandlers::getStaticImagesURI);
     }
 
     /**

@@ -73,6 +73,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.ActiveDocumentBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -1254,7 +1255,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getImageToPdfUrl() throws IndexUnreachableException {
-        return BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(BeanUtils.getActiveDocumentBean().getCurrentElement(), this);
+        // ActiveDocumentBean is null outside of JSF if the request has no session
+        ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+        return BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(adb != null ? adb.getCurrentElement() : null, this);
     }
 
     /**

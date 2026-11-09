@@ -678,8 +678,10 @@ public class MetadataElement implements Serializable {
      */
     public String getFirstMetadataValue(String name) {
         Metadata md = getMetadata(name);
-        if (md == null) {
-            md = getMetadata(name, BeanUtils.getActiveDocumentBean().getSelectedRecordLanguage());
+        // ActiveDocumentBean is null outside of JSF if the request has no session
+        ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+        if (md == null && adb != null) {
+            md = getMetadata(name, adb.getSelectedRecordLanguage());
         }
         if (md != null) {
             if (StringUtils.isNotBlank(md.getMasterValue()) && !md.getMasterValue().equals("{0}") && !md.isGroup()) {

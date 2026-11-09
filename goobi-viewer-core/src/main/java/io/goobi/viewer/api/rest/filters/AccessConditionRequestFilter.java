@@ -29,19 +29,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
 import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.imaging.MediaDeliveryHandlers;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.RequiredPrivileges;
+import io.goobi.viewer.servlets.utils.ServletUtils;
 import jakarta.annotation.Priority;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -49,9 +49,6 @@ import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.Provider;
 
 /**
@@ -82,17 +79,15 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
 
-        String responseMediaType = MediaType.APPLICATION_JSON;
-
         try {
             String pi = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_PI);
             String logid = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_LOGID);
             String filename = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_FILENAME);
 
+            // Use the session independent checks: going through the session scoped ImageDeliveryBean would create a session per request
             if (StringUtils.isBlank(filename)
-                    || (!BeanUtils.getImageDeliveryBean().isExternalUrl(filename)
-                            && !BeanUtils.getImageDeliveryBean().isPublicUrl(filename)
-                            && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(filename))) {
+                    || !MediaDeliveryHandlers.isUnrestrictedUrl(filename, ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest),
+                            DataManager.getInstance().getConfiguration())) {
                 filterForAccessConditions(servletRequest, pi, logid, filename);
                 if (!FilterTools.checkForConcurrentViewLimit(pi, servletRequest)) {
                     throw new ServiceNotAllowedException("Serving resource not allowed: View limit exceeded for pi " + pi);
@@ -100,12 +95,6 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
             }
         } catch (ServiceNotAllowedException e) {
             servletRequest.setAttribute(ImageResource.REQUEST_ATTRIBUTE_ERROR, e);
-        } catch (ViewerConfigurationException e) {
-            Response response = Response.status(Status.INTERNAL_SERVER_ERROR)
-                    .type(responseMediaType)
-                    .entity(new ErrorMessage(Status.INTERNAL_SERVER_ERROR, e, false))
-                    .build();
-            request.abortWith(response);
         }
     }
 

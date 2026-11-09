@@ -34,8 +34,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.weld.serialization.spi.helpers.SerializableContextualInstance;
 
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.imaging.MediaDeliveryHandlers;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
 import io.goobi.viewer.managedbeans.AdminBean;
@@ -65,6 +65,7 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
 import jakarta.el.ELException;
 import jakarta.el.ValueExpression;
 import jakarta.enterprise.context.ContextNotActiveException;
+import jakarta.enterprise.context.SessionScoped;
 import jakarta.enterprise.context.spi.CreationalContext;
 import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
@@ -104,20 +105,42 @@ public final class BeanUtils {
      */
     public static HttpServletRequest getRequest() {
         // Check FacesContext first — it is a cheap thread-local lookup with no CDI overhead.
-        // CDI/SessionBean fallback is only needed outside JSF request threads (e.g. async tasks).
+        // CDI fallback is only needed outside JSF (REST resources, servlets, filters).
         FacesContext facesContext = FacesContext.getCurrentInstance();
         if (facesContext != null) {
             return getRequest(facesContext);
         }
 
-        SessionBean sb = getSessionBean();
-        try {
-            return sb.getRequest();
-        } catch (ContextNotActiveException | IllegalStateException e) {
-            // logger.trace(e.getMessage()); //NOSONAR Debug
-        }
+        return getRequestFromCdi(getBeanManager());
+    }
 
-        return null;
+    /**
+     * Returns the current request via Weld's built-in {@link HttpServletRequest} bean. Unlike going through a session scoped bean, this never creates
+     * an HTTP session.
+     *
+     * @param bm CDI bean manager; may be null
+     * @return the current request, or null if no servlet request is active on this thread
+     * @should return current request from cdi
+     * @should return null if no request is active
+     */
+    static HttpServletRequest getRequestFromCdi(BeanManager bm) {
+        if (bm == null) {
+            return null;
+        }
+        try {
+            Bean<?> bean = bm.resolve(bm.getBeans(HttpServletRequest.class));
+            if (bean == null) {
+                return null;
+            }
+            HttpServletRequest request = (HttpServletRequest) bm.getReference(bean, HttpServletRequest.class, bm.createCreationalContext(bean));
+            // The reference is a client proxy; probe it so callers get null instead of a proxy that fails on use
+            // when no servlet request is active (background threads, shutdown)
+            request.getDispatcherType();
+            return request;
+        } catch (RuntimeException e) {
+            // ContextNotActiveException, IllegalStateException, ClassCastException (request context not backed by a servlet request), ...
+            return null;
+        }
     }
 
     /**
@@ -324,6 +347,10 @@ public final class BeanUtils {
             BeanManager bm = getBeanManager();
             if (bm != null && bm.getBeans(name).iterator().hasNext()) {
                 Bean bean = bm.getBeans(name).iterator().next();
+                if (wouldCreateSession(bean, bm)) {
+                    logger.trace("Not looking up session scoped bean '{}' outside of JSF because the request has no session", name);
+                    return null;
+                }
                 CreationalContext ctx = bm.createCreationalContext(bean);
                 return bm.getReference(bean, clazz, ctx);
             }
@@ -335,6 +362,29 @@ public final class BeanUtils {
         }
 
         return null;
+    }
+
+    /**
+     * Checks whether using a reference to the given bean would make Weld create a new HTTP session. This is the case for session scoped beans outside
+     * of JSF (REST resources, servlets, filters) when the current request has no session yet: the first method call on the client proxy instantiates
+     * the bean and with it the session. JSF requests are not affected, they need a session anyway.
+     *
+     * @param bean the CDI bean
+     * @param bm CDI bean manager
+     * @return true if the bean is session scoped, there is no FacesContext and the current request has no session
+     * @should return true for session scoped bean outside jsf if request has no session
+     * @should return false if request has session
+     * @should return false for bean that is not session scoped
+     * @should return false in jsf context
+     * @should return false if no request is active
+     */
+    static boolean wouldCreateSession(Bean<?> bean, BeanManager bm) {
+        if (!SessionScoped.class.equals(bean.getScope()) || hasJsfContext()) {
+            return false;
+        }
+        HttpServletRequest request = getRequestFromCdi(bm);
+        // Without request the session context is not active either; the proxy will throw ContextNotActiveException as before
+        return request != null && request.getSession(false) == null;
     }
 
     /**
@@ -516,24 +566,27 @@ public final class BeanUtils {
     /**
      * getImageDeliveryBean.
      *
-     * @return the ImageDeliveryBean managed bean, or a newly initialized one if unavailable
+     * <p>
+     * Within JSF the session scoped CDI bean is returned. Outside of JSF (REST resources, servlets, filters) an unmanaged instance backed by
+     * session independent {@link MediaDeliveryHandlers} for the current request is returned instead, so that no HTTP session is created. The methods
+     * depending on the current record (e.g. {@link ImageDeliveryBean#getCurrentImage()}) use {@link #getActiveDocumentBean()} in both cases.
+     *
+     * @return the ImageDeliveryBean managed bean, or an initialized unmanaged instance if outside JSF or unavailable
+     * @should return initialized instance outside jsf
      */
     public static ImageDeliveryBean getImageDeliveryBean() {
-        ImageDeliveryBean bean = (ImageDeliveryBean) getBeanByName("imageDelivery", ImageDeliveryBean.class);
-        if (bean == null) {
-            bean = new ImageDeliveryBean();
-        } else {
-            try {
-                bean.getThumbs();
-            } catch (ContextNotActiveException e) {
-                bean = new ImageDeliveryBean();
-                bean.init(
-                        DataManager.getInstance().getConfiguration(),
-                        DataManager.getInstance().getRestApiManager().getIIIFDataApiManager(),
-                        DataManager.getInstance().getRestApiManager().getContentApiManager().orElse(null));
+        if (hasJsfContext()) {
+            ImageDeliveryBean bean = (ImageDeliveryBean) getBeanByName("imageDelivery", ImageDeliveryBean.class);
+            if (bean != null) {
+                try {
+                    bean.getThumbs();
+                    return bean;
+                } catch (ContextNotActiveException e) {
+                    // fall through to unmanaged instance
+                }
             }
         }
-        return bean;
+        return new ImageDeliveryBean(MediaDeliveryHandlers.forRequest(getRequest()));
     }
 
     /**

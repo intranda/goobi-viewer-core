@@ -30,23 +30,20 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.imaging.MediaDeliveryHandlers;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import jakarta.annotation.Priority;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.Provider;
 
 /**
@@ -82,8 +79,6 @@ public class ImageRequestFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
 
-        String mediaType = MediaType.APPLICATION_JSON;
-
         String pi = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_PI);
         String imageName = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_FILENAME);
 
@@ -97,18 +92,11 @@ public class ImageRequestFilter implements ContainerRequestFilter {
             }
             return;
         }
-        try {
-            if (!BeanUtils.getImageDeliveryBean().isExternalUrl(imageName) && !BeanUtils.getImageDeliveryBean().isPublicUrl(imageName)
-                    && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(imageName)) {
-                //filtering for accessConditions is done in AccessConditionRequestFilter
-                setRequestParameter(request, FilterTools.isThumbnail(servletRequest));
-            }
-        } catch (ViewerConfigurationException e) {
-            Response response = Response.status(Status.INTERNAL_SERVER_ERROR)
-                    .type(mediaType)
-                    .entity(new ErrorMessage(Status.INTERNAL_SERVER_ERROR, e, false))
-                    .build();
-            request.abortWith(response);
+        // Use the session independent checks: going through the session scoped ImageDeliveryBean would create a session per request
+        if (!MediaDeliveryHandlers.isUnrestrictedUrl(imageName, ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest),
+                DataManager.getInstance().getConfiguration())) {
+            //filtering for accessConditions is done in AccessConditionRequestFilter
+            setRequestParameter(request, FilterTools.isThumbnail(servletRequest));
         }
     }
 

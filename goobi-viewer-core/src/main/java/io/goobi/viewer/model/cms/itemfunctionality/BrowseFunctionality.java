@@ -34,7 +34,8 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
  */
 public class BrowseFunctionality implements Functionality {
 
-    private TermBrowseBean bean = BeanUtils.getTermBrowseBean();
+    // Looked up lazily: outside of JSF without session the lookup returns null, which must not stick to this instance
+    private TermBrowseBean bean = null;
 
     private String browseField = "";
 
@@ -47,12 +48,12 @@ public class BrowseFunctionality implements Functionality {
 
     @Override
     public void setPageNo(int pageNo) {
-        bean.setCurrentPage(pageNo);
+        getBean().setCurrentPage(pageNo);
     }
 
     @Override
     public int getPageNo() {
-        return bean.getCurrentPage();
+        return getBean().getCurrentPage();
     }
 
     /**
@@ -81,9 +82,9 @@ public class BrowseFunctionality implements Functionality {
      */
     public void setFilter(String field, String value) {
         if (StringUtils.isNoneBlank(field, value)) {
-            bean.setFilterQuery(field + ":" + value);
+            getBean().setFilterQuery(field + ":" + value);
         } else {
-            bean.setFilterQuery("");
+            getBean().setFilterQuery("");
         }
     }
 
@@ -93,7 +94,7 @@ public class BrowseFunctionality implements Functionality {
      * @param start starting character to filter browse results by
      */
     public void setStartingCharacter(String start) {
-        bean.setCurrentStringFilter(start);
+        getBean().setCurrentStringFilter(start);
     }
 
     /**
@@ -102,7 +103,7 @@ public class BrowseFunctionality implements Functionality {
      * @return String
      */
     public String getStartingCharacter() {
-        return bean.getCurrentStringFilter();
+        return getBean().getCurrentStringFilter();
     }
 
     /**
@@ -112,17 +113,24 @@ public class BrowseFunctionality implements Functionality {
      * @throws RedirectException
      */
     public void searchTerms() throws PresentationException, IndexUnreachableException, RedirectException {
-        bean.setBrowsingMenuField(getBrowseField());
-        bean.searchTerms();
+        getBean().setBrowsingMenuField(getBrowseField());
+        getBean().searchTerms();
     }
 
     /**
      * Resets the current browse page and the current string filter.
      */
     public void reset() {
-        bean.setCurrentStringFilter("");
-        bean.setFilterQuery("");
-        bean.setCurrentPage(1);
+        getBean().setCurrentStringFilter("");
+        getBean().setFilterQuery("");
+        getBean().setCurrentPage(1);
     }
 
+
+    private TermBrowseBean getBean() {
+        if (bean == null) {
+            bean = BeanUtils.getTermBrowseBean();
+        }
+        return bean;
+    }
 }
