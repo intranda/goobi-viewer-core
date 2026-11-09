@@ -28,12 +28,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -59,6 +53,11 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.servlets.utils.ServletUtils;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Provides methods for creation all urls for media delivery (images and other) Examples:
@@ -75,7 +74,8 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
  * <li>imageDelivery.images.imageUrl(pyhsicalElement[, pageType])</li>
  * <li>imageDelivery.pdf.pdfUrl(structElement[, pyhsicalElement[, more physicalElements...]])</li>
  * <li>imageDelivery.media.mediaUrl(mimeType, pi, filename)</li>
- * </ul>.
+ * </ul>
+ * .
  *
  * @author Florian Alpers
  */
@@ -251,7 +251,8 @@ public class ImageDeliveryBean implements Serializable {
     /**
      * Returns a thumbnail url of the current page (according to the {@link io.goobi.viewer.model.viewer.ViewManager} of the given width/height.
      *
-     * <p>Returns an empty string if no current page exists
+     * <p>
+     * Returns an empty string if no current page exists
      *
      * @param width desired thumbnail width in pixels
      * @param height desired thumbnail height in pixels
@@ -443,7 +444,6 @@ public class ImageDeliveryBean implements Serializable {
         return presentation;
     }
 
-    
     private String getServletPath() {
         if (servletPath == null) {
             init();
@@ -572,7 +572,7 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-
+     * 
      * @throws ViewerConfigurationException
      */
     private String getCmsMediaPath() throws ViewerConfigurationException {

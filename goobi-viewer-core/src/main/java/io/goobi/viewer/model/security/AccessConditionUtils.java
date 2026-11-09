@@ -434,8 +434,17 @@ public final class AccessConditionUtils {
      * @should return user from direct session attribute
      * @should return null without session scan when cdi returns null user
      * @should return user via session scan when stored under non standard key
+     * @should not look up user bean via cdi if no session exists
+     * @should use session from faces context if given session is null
      */
-    public static User retrieveUserFromContext(HttpSession session) {
+    public static User retrieveUserFromContext(final HttpSession session) {
+        HttpSession effectiveSession = session != null ? session : getExistingSessionFromFacesContext();
+        if (effectiveSession == null) {
+            // Without an http session there can be no logged-in user. Looking up the @SessionScoped UserBean via CDI here would make Weld
+            // instantiate a new UserBean and thereby create a new http session (LazySessionBeanStore -> request.getSession(true)), e.g. for
+            // every sessionless IIIF image or info.json request.
+            return null;
+        }
         try {
             UserBean userBean = BeanUtils.getUserBean(); //CDI lookup, faster than scanning session
             if (userBean != null) {
@@ -449,7 +458,24 @@ public final class AccessConditionUtils {
         } catch (ContextNotActiveException e) {
             // No CDI context (background thread) — fall through to session scan as the only option
         }
-        return BeanUtils.getUserFromSession(session); //expensive scan of whole session. Only as fallback
+        return BeanUtils.getUserFromSession(effectiveSession); //expensive scan of whole session. Only as fallback
+    }
+
+    /**
+     * Returns the http session of the current JSF request, if a JSF request is active and a session already exists. Never creates a session.
+     *
+     * @return the existing session of the current faces context; null if there is no faces context or no session
+     */
+    private static HttpSession getExistingSessionFromFacesContext() {
+        try {
+            FacesContext facesContext = FacesContext.getCurrentInstance();
+            if (facesContext != null && facesContext.getExternalContext() != null) {
+                return (HttpSession) facesContext.getExternalContext().getSession(false);
+            }
+        } catch (IllegalStateException e) {
+            // Faces context already released
+        }
+        return null;
     }
 
     /**

@@ -62,6 +62,8 @@ import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
@@ -737,6 +739,45 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void retrieveUserFromContext_shouldReturnNullForNullSession() {
         Assertions.assertNull(AccessConditionUtils.retrieveUserFromContext(null));
+    }
+
+    /**
+     * @see AccessConditionUtils#retrieveUserFromContext(HttpSession)
+     * @verifies not look up user bean via cdi if no session exists
+     *
+     *           Looking up the @SessionScoped UserBean would make Weld create a new http session for sessionless requests (e.g. IIIF info.json).
+     */
+    @Test
+    void retrieveUserFromContext_shouldNotLookUpUserBeanViaCdiIfNoSessionExists() {
+        try (MockedStatic<BeanUtils> mockedBeanUtils = Mockito.mockStatic(BeanUtils.class)) {
+            Assertions.assertNull(AccessConditionUtils.retrieveUserFromContext(null));
+            mockedBeanUtils.verify(BeanUtils::getUserBean, Mockito.never());
+            mockedBeanUtils.verify(() -> BeanUtils.getUserFromSession(Mockito.any()), Mockito.never());
+        }
+    }
+
+    /**
+     * @see AccessConditionUtils#retrieveUserFromContext(HttpSession)
+     * @verifies use session from faces context if given session is null
+     */
+    @Test
+    void retrieveUserFromContext_shouldUseSessionFromFacesContextIfGivenSessionIsNull() {
+        User user = new User();
+        UserBean userBean = new UserBean();
+        userBean.setUser(user);
+        HttpSession session = Mockito.mock(HttpSession.class);
+        Mockito.when(session.getAttribute("userBean")).thenReturn(userBean);
+
+        FacesContext facesContext = Mockito.mock(FacesContext.class);
+        ExternalContext externalContext = Mockito.mock(ExternalContext.class);
+        Mockito.when(facesContext.getExternalContext()).thenReturn(externalContext);
+        Mockito.when(externalContext.getSession(false)).thenReturn(session);
+
+        try (MockedStatic<FacesContext> mockedFacesContext = Mockito.mockStatic(FacesContext.class)) {
+            mockedFacesContext.when(FacesContext::getCurrentInstance).thenReturn(facesContext);
+            Assertions.assertEquals(user, AccessConditionUtils.retrieveUserFromContext(null));
+            Mockito.verify(externalContext, Mockito.never()).getSession(true);
+        }
     }
 
     /**
