@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -44,6 +45,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapp
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBinding;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.imaging.WatermarkHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -60,6 +62,7 @@ import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.core.Context;
@@ -92,7 +95,11 @@ public class PdfRequestFilter implements ContainerRequestFilter {
         this.servletRequest = servletRequest;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should grant access to page range
+     */
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
         try {
@@ -125,6 +132,9 @@ public class PdfRequestFilter implements ContainerRequestFilter {
             if (imageName == null) {
                 // Record or chapter PDF: contains all pages of the structure element, which can be more restricted than the element itself
                 filterForPageAccessConditions(pi, divId);
+            } else if (IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF.equals(privName)) {
+                // Single page or page range PDF: each requested page can be more restricted than the record
+                filterForPageFileAccessConditions(pi, FilterTools.splitFileNames(imageName));
             }
             filterForDownloadQuota(pi, divId, imageName, servletRequest);
             addRequestParameters(pi, divId, imageName, request);
@@ -188,14 +198,14 @@ public class PdfRequestFilter implements ContainerRequestFilter {
     /**
      * If the imageName is actually a list of names, return the first name.
      *
-     * @param imageName potentially multi-value image name string separated by "$"
+     * @param imageName potentially multi-value image name string separated by {@link FilterTools#FILE_NAME_SEPARATOR}
      * @return First image name
+     * @should return single image name unchanged
+     * @should return first name of image name list
      */
-    private static String getFirstImageName(String imageName) {
-        if (imageName.contains("$")) {
-            return imageName.split("$")[0];
-        }
-        return imageName;
+    static String getFirstImageName(String imageName) {
+        List<String> imageNames = FilterTools.splitFileNames(imageName);
+        return imageNames.isEmpty() ? imageName : imageNames.get(0);
     }
 
     /**
@@ -250,10 +260,12 @@ public class PdfRequestFilter implements ContainerRequestFilter {
                     }
                 }
             } else if (StringUtils.isEmpty(divId) && StringUtils.isNotEmpty(contentFileName)) {
-                // Page PDF
-                if (!checkPageAllowed(pi, contentFileName, percentage, numTotalRecordPages, request)) {
-                    logger.trace("Insufficient download quota");
-                    throw new ServiceNotAllowedException(INSUFFICIENT_QUOTA_PREFIX + pi + "': " + percentage + "%");
+                // Page PDF (single page or page range); each page counts towards the quota
+                for (String fileName : FilterTools.splitFileNames(contentFileName)) {
+                    if (!checkPageAllowed(pi, fileName, percentage, numTotalRecordPages, request)) {
+                        logger.trace("Insufficient download quota");
+                        throw new ServiceNotAllowedException(INSUFFICIENT_QUOTA_PREFIX + pi + "': " + percentage + "%");
+                    }
                 }
             }
         } catch (PresentationException | IndexUnreachableException | DAOException | RecordNotFoundException e) {
@@ -383,6 +395,33 @@ public class PdfRequestFilter implements ContainerRequestFilter {
     void filterForPageAccessConditions(String pi, String divId) throws ServiceNotAllowedException {
         if (!AccessConditionUtils.isAllPagesGrantedForPdf(pi, divId, servletRequest)) {
             logger.trace("Access denied for {}/{} due to restricted pages", pi, divId);
+            throw new ServiceNotAllowedException("Serving this content is restricted due to access conditions");
+        }
+    }
+
+    /**
+     * Denies a single page or page range PDF if {@link IPrivilegeHolder#PRIV_DOWNLOAD_PAGE_PDF} is not granted for any of the requested pages.
+     *
+     * @param pi record identifier to check access for
+     * @param fileNames image file names of the requested pages
+     * @throws ServiceNotAllowedException if no file name is given or any requested page is restricted
+     * @should grant access if all pages granted
+     * @should deny access if any page restricted
+     * @should deny access if no file names given
+     */
+    void filterForPageFileAccessConditions(String pi, List<String> fileNames) throws ServiceNotAllowedException {
+        HttpSession session = servletRequest.getSession(false);
+        String ipAddress = NetTools.getIpAddress(servletRequest);
+        boolean access;
+        try {
+            access = FilterTools.isGrantedForAllFiles(fileNames,
+                    fileName -> AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, pi, fileName,
+                            IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF, ipAddress, null));
+        } catch (IndexUnreachableException | DAOException e) {
+            throw new ServiceNotAllowedException("Serving this content is currently impossible due to " + e.getMessage());
+        }
+        if (!access) {
+            logger.trace("Access denied for {}/{} due to restricted pages", pi, fileNames);
             throw new ServiceNotAllowedException("Serving this content is restricted due to access conditions");
         }
     }

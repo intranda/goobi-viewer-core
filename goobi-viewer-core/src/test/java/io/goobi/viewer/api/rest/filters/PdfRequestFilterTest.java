@@ -31,16 +31,26 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.AccessPermission;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.container.ContainerRequestContext;
 
 class PdfRequestFilterTest extends AbstractDatabaseAndSolrEnabledTest {
+
+    /** Record whose pages are all open access. */
+    private static final String OPEN_ACCESS_PI = "PPN517154005";
+    /** Record whose only page (00000001.tif) is restricted. */
+    private static final String RESTRICTED_PI = "PPNsas1_2_194";
 
     /**
      * @see PdfRequestFilter#getNumAllowedPages(int,int)
@@ -218,5 +228,83 @@ class PdfRequestFilterTest extends AbstractDatabaseAndSolrEnabledTest {
         // Verify the page was actually added to the quota map
         Assertions.assertNotNull(quotaMap.get("PPN123"));
         Assertions.assertTrue(quotaMap.get("PPN123").contains("00000001.tif"));
+    }
+
+    /**
+     * @see PdfRequestFilter#getFirstImageName(String)
+     * @verifies return single image name unchanged
+     */
+    @Test
+    void getFirstImageName_shouldReturnSingleImageNameUnchanged() {
+        Assertions.assertEquals("00000001.tif", PdfRequestFilter.getFirstImageName("00000001.tif"));
+    }
+
+    /**
+     * @see PdfRequestFilter#getFirstImageName(String)
+     * @verifies return first name of image name list
+     */
+    @Test
+    void getFirstImageName_shouldReturnFirstNameOfImageNameList() {
+        Assertions.assertEquals("00000001.tif", PdfRequestFilter.getFirstImageName("00000001.tif$00000002.tif"));
+    }
+
+    /**
+     * @see PdfRequestFilter#filterForPageFileAccessConditions(String,List)
+     * @verifies grant access if all pages granted
+     */
+    @Test
+    void filterForPageFileAccessConditions_shouldGrantAccessIfAllPagesGranted() {
+        PdfRequestFilter filter = new PdfRequestFilter(Mockito.mock(HttpServletRequest.class));
+        Assertions.assertDoesNotThrow(() -> filter.filterForPageFileAccessConditions(OPEN_ACCESS_PI, List.of("00000001.tif", "00000002.tif")));
+    }
+
+    /**
+     * @see PdfRequestFilter#filterForPageFileAccessConditions(String,List)
+     * @verifies deny access if any page restricted
+     */
+    @Test
+    void filterForPageFileAccessConditions_shouldDenyAccessIfAnyPageRestricted() {
+        PdfRequestFilter filter = new PdfRequestFilter(Mockito.mock(HttpServletRequest.class));
+        try (MockedStatic<AccessConditionUtils> utils = Mockito.mockStatic(AccessConditionUtils.class)) {
+            utils.when(() -> AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(Mockito.any(), Mockito.eq("PPN123"),
+                    Mockito.eq("00000001.tif"), Mockito.eq(IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF), Mockito.any(), Mockito.any()))
+                    .thenReturn(AccessPermission.granted());
+            utils.when(() -> AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(Mockito.any(), Mockito.eq("PPN123"),
+                    Mockito.eq("00000002.tif"), Mockito.eq(IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF), Mockito.any(), Mockito.any()))
+                    .thenReturn(AccessPermission.denied());
+
+            Assertions.assertDoesNotThrow(() -> filter.filterForPageFileAccessConditions("PPN123", List.of("00000001.tif")));
+            Assertions.assertThrows(ServiceNotAllowedException.class,
+                    () -> filter.filterForPageFileAccessConditions("PPN123", List.of("00000001.tif", "00000002.tif")));
+        }
+        // Page with an access condition that doesn't grant the page PDF privilege
+        Assertions.assertThrows(ServiceNotAllowedException.class,
+                () -> filter.filterForPageFileAccessConditions(RESTRICTED_PI, List.of("00000001.tif")));
+    }
+
+    /**
+     * @see PdfRequestFilter#filterForPageFileAccessConditions(String,List)
+     * @verifies deny access if no file names given
+     */
+    @Test
+    void filterForPageFileAccessConditions_shouldDenyAccessIfNoFileNamesGiven() {
+        PdfRequestFilter filter = new PdfRequestFilter(Mockito.mock(HttpServletRequest.class));
+        Assertions.assertThrows(ServiceNotAllowedException.class, () -> filter.filterForPageFileAccessConditions(OPEN_ACCESS_PI, List.of()));
+    }
+
+    /**
+     * @see PdfRequestFilter#filter(ContainerRequestContext)
+     * @verifies grant access to page range
+     */
+    @Test
+    void filter_shouldGrantAccessToPageRange() throws IOException {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getAttribute(FilterTools.ATTRIBUTE_PI)).thenReturn(OPEN_ACCESS_PI);
+        Mockito.when(request.getAttribute(FilterTools.ATTRIBUTE_FILENAME)).thenReturn("00000001.tif$00000002.tif$00000003.tif");
+        ContainerRequestContext context = Mockito.spy(ContainerRequestContext.class);
+
+        new PdfRequestFilter(request).filter(context);
+
+        Mockito.verify(context, Mockito.never()).abortWith(Mockito.any());
     }
 }

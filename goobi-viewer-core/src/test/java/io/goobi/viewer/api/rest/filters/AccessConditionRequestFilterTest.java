@@ -22,18 +22,30 @@
 package io.goobi.viewer.api.rest.filters;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.RequiredPrivileges;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import jakarta.servlet.http.HttpServletRequest;
 
 class AccessConditionRequestFilterTest {
+
+    private static final String PI = "PPN123";
 
     private static HttpServletRequest requestWithPrivilege(Object privilege) {
         HttpServletRequest request = mock(HttpServletRequest.class);
@@ -74,5 +86,45 @@ class AccessConditionRequestFilterTest {
     void getRequiredPrivilegeSet_shouldFallBackToListPrivilegeIfAttributeMissing() {
         assertArrayEquals(new String[] { IPrivilegeHolder.PRIV_LIST },
                 AccessConditionRequestFilter.getRequiredPrivilegeSet(requestWithPrivilege(null)).getPrivileges(DocType.PAGE));
+    }
+
+    /**
+     * @see AccessConditionRequestFilter#filterForAccessConditions(HttpServletRequest,String,String,String)
+     * @verifies grant access to page range if all files granted
+     */
+    @Test
+    void filterForAccessConditions_shouldGrantAccessToPageRangeIfAllFilesGranted() {
+        HttpServletRequest request = requestWithPrivilege(IPrivilegeHolder.PRIV_VIEW_IMAGES);
+        try (MockedStatic<AccessConditionUtils> utils = mockStatic(AccessConditionUtils.class)) {
+            utils.when(() -> AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(any(), eq(PI), anyString(),
+                    any(RequiredPrivileges.class), any(), any())).thenReturn(AccessPermission.granted());
+
+            assertDoesNotThrow(() -> AccessConditionRequestFilter.filterForAccessConditions(request, PI, null, "00000001.tif$00000002.tif"));
+            // Each file of the range is checked individually, not the entire file name list
+            utils.verify(() -> AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(any(), eq(PI), eq("00000001.tif"),
+                    any(RequiredPrivileges.class), any(), any()));
+            utils.verify(() -> AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(any(), eq(PI), eq("00000002.tif"),
+                    any(RequiredPrivileges.class), any(), any()));
+        }
+    }
+
+    /**
+     * @see AccessConditionRequestFilter#filterForAccessConditions(HttpServletRequest,String,String,String)
+     * @verifies deny access to page range if any file denied
+     */
+    @Test
+    void filterForAccessConditions_shouldDenyAccessToPageRangeIfAnyFileDenied() {
+        HttpServletRequest request = requestWithPrivilege(IPrivilegeHolder.PRIV_VIEW_IMAGES);
+        try (MockedStatic<AccessConditionUtils> utils = mockStatic(AccessConditionUtils.class)) {
+            utils.when(() -> AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(any(), eq(PI), anyString(),
+                    any(RequiredPrivileges.class), any(), any())).thenReturn(AccessPermission.granted());
+            utils.when(() -> AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(any(), eq(PI), eq("00000002.tif"),
+                    any(RequiredPrivileges.class), any(), any())).thenReturn(AccessPermission.denied());
+
+            assertThrows(ServiceNotAllowedException.class,
+                    () -> AccessConditionRequestFilter.filterForAccessConditions(request, PI, null, "00000001.tif$00000002.tif$00000003.tif"));
+            assertThrows(ServiceNotAllowedException.class,
+                    () -> AccessConditionRequestFilter.filterForAccessConditions(request, PI, null, "00000002.tif"));
+        }
     }
 }

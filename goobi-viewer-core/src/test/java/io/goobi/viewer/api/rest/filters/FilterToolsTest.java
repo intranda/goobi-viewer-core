@@ -21,8 +21,11 @@
  */
 package io.goobi.viewer.api.rest.filters;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -69,5 +72,74 @@ class FilterToolsTest {
     @Test
     void isGrantedForAllPrivileges_shouldDenyIfNoPrivilegesGiven() throws Exception {
         assertFalse(FilterTools.isGrantedForAllPrivileges(new String[0], p -> AccessPermission.granted()));
+    }
+
+    /**
+     * @see FilterTools#splitFileNames(String)
+     * @verifies return single file name
+     */
+    @Test
+    void splitFileNames_shouldReturnSingleFileName() {
+        assertEquals(List.of("00000001.tif"), FilterTools.splitFileNames("00000001.tif"));
+    }
+
+    /**
+     * @see FilterTools#splitFileNames(String)
+     * @verifies split multiple file names
+     */
+    @Test
+    void splitFileNames_shouldSplitMultipleFileNames() {
+        assertEquals(List.of("00000001.tif", "00000002.tif", "00000003.tif"), FilterTools.splitFileNames("00000001.tif$00000002.tif$00000003.tif"));
+    }
+
+    /**
+     * @see FilterTools#splitFileNames(String)
+     * @verifies skip blank file names
+     */
+    @Test
+    void splitFileNames_shouldSkipBlankFileNames() {
+        assertEquals(List.of("00000001.tif", "00000002.tif"), FilterTools.splitFileNames("$00000001.tif$$ $00000002.tif$"));
+    }
+
+    /**
+     * @see FilterTools#splitFileNames(String)
+     * @verifies return empty list if blank
+     */
+    @Test
+    void splitFileNames_shouldReturnEmptyListIfBlank() {
+        assertTrue(FilterTools.splitFileNames(null).isEmpty());
+        assertTrue(FilterTools.splitFileNames(" ").isEmpty());
+    }
+
+    /**
+     * @see FilterTools#isGrantedForAllFiles(List,FilterTools.FileCheck)
+     * @verifies grant if all files are granted
+     */
+    @Test
+    void isGrantedForAllFiles_shouldGrantIfAllFilesAreGranted() throws Exception {
+        assertTrue(FilterTools.isGrantedForAllFiles(List.of("00000001.tif", "00000002.tif"), f -> AccessPermission.granted()));
+    }
+
+    /**
+     * @see FilterTools#isGrantedForAllFiles(List,FilterTools.FileCheck)
+     * @verifies deny if any file is denied
+     */
+    @Test
+    void isGrantedForAllFiles_shouldDenyIfAnyFileIsDenied() throws Exception {
+        List<String> fileNames = List.of("00000001.tif", "00000002.tif", "00000003.tif");
+        assertFalse(FilterTools.isGrantedForAllFiles(fileNames,
+                f -> "00000002.tif".equals(f) ? AccessPermission.denied() : AccessPermission.granted()));
+        assertFalse(FilterTools.isGrantedForAllFiles(fileNames,
+                f -> "00000003.tif".equals(f) ? AccessPermission.denied() : AccessPermission.granted()));
+    }
+
+    /**
+     * @see FilterTools#isGrantedForAllFiles(List,FilterTools.FileCheck)
+     * @verifies deny if no files given
+     */
+    @Test
+    void isGrantedForAllFiles_shouldDenyIfNoFilesGiven() throws Exception {
+        assertFalse(FilterTools.isGrantedForAllFiles(List.of(), f -> AccessPermission.granted()));
+        assertFalse(FilterTools.isGrantedForAllFiles(null, f -> AccessPermission.granted()));
     }
 }

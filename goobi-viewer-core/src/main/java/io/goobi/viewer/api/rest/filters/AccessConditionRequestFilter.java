@@ -45,6 +45,7 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
 import jakarta.annotation.Priority;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
@@ -102,11 +103,13 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
      * @param request HTTP servlet request
      * @param pi persistent identifier of the record
      * @param logid logical structure ID of the element
-     * @param inContentFileName content file name to check access for
+     * @param inContentFileName content file name to check access for; may contain several file names separated by
+     *            {@link FilterTools#FILE_NAME_SEPARATOR}, all of which must be accessible
      * @throws ServiceNotAllowedException
-     * @throws IndexUnreachableException
+     * @should grant access to page range if all files granted
+     * @should deny access to page range if any file denied
      */
-    private static void filterForAccessConditions(HttpServletRequest request, String pi, String logid, final String inContentFileName)
+    static void filterForAccessConditions(HttpServletRequest request, String pi, String logid, final String inContentFileName)
             throws ServiceNotAllowedException {
         // logger.trace("filterForAccessConditions: {}", request.getSession().getId()); //NOSONAR Debug
         String contentFileName = StringTools.decodeUrl(inContentFileName);
@@ -125,12 +128,13 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
                 if (StringUtils.isBlank(pi)) {
                     throw new ServiceNotAllowedException("Serving this resource is currently impossible Because no persistent identifier is given");
                 } else if (StringUtils.isNotBlank(contentFileName)) {
-                    // Privileges may depend on the DOCTYPE of the document listing the file, which is resolved by the access check query itself
-                    access = AccessConditionUtils
-                            .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request.getSession(false), pi, contentFileName,
-                                    requiredPrivileges,
-                                    NetTools.getIpAddress(request), null)
-                            .isGranted();
+                    // Privileges may depend on the DOCTYPE of the document listing the file, which is resolved by the access check query itself.
+                    // Page range PDFs request several files at once, all of which must be accessible.
+                    HttpSession session = request.getSession(false);
+                    String ipAddress = NetTools.getIpAddress(request);
+                    access = FilterTools.isGrantedForAllFiles(FilterTools.splitFileNames(contentFileName),
+                            fileName -> AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, pi, fileName,
+                                    requiredPrivileges, ipAddress, null));
                 } else {
                     // No file, so the record's (or logical element's) default privileges apply
                     access = FilterTools.isGrantedForAllPrivileges(requiredPrivileges.getPrivileges(null),

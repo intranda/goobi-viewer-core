@@ -60,6 +60,9 @@ public final class FilterTools {
     public static final String ATTRIBUTE_LOGID = "logid";
     public static final String ATTRIBUTE_PAGENO = "pageno";
 
+    /** Separator between the file names of a multi-page request, e.g. a page range PDF. */
+    public static final char FILE_NAME_SEPARATOR = '$';
+
     public static final int PRIORITY_REDIRECT = 100;
 
     /**
@@ -184,6 +187,62 @@ public final class FilterTools {
         }
         for (String privilege : privileges) {
             if (!check.check(privilege).isGranted()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Splits a file name value that may contain several file names separated by {@link #FILE_NAME_SEPARATOR} (e.g. the pages of a page range PDF)
+     * into the individual file names.
+     *
+     * @param fileNames single file name or list of file names separated by {@link #FILE_NAME_SEPARATOR}
+     * @return List of non-blank file names; empty list if fileNames is blank
+     * @should return single file name
+     * @should split multiple file names
+     * @should skip blank file names
+     * @should return empty list if blank
+     */
+    public static List<String> splitFileNames(String fileNames) {
+        if (StringUtils.isBlank(fileNames)) {
+            return Collections.emptyList();
+        }
+        return Arrays.stream(StringUtils.split(fileNames, FILE_NAME_SEPARATOR)).filter(StringUtils::isNotBlank).toList();
+    }
+
+    /**
+     * Access check for a single content file.
+     */
+    @FunctionalInterface
+    public interface FileCheck {
+        /**
+         * @param fileName content file name to check
+         * @return {@link AccessPermission} for fileName
+         * @throws IndexUnreachableException
+         * @throws DAOException
+         */
+        AccessPermission check(String fileName) throws IndexUnreachableException, DAOException;
+    }
+
+    /**
+     * Checks whether access is granted for all given files. Stops at the first file for which access is not granted.
+     *
+     * @param fileNames files which must all be accessible
+     * @param check access check to perform for each file
+     * @return true if fileNames is not empty and access is granted for all files; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @should grant if all files are granted
+     * @should deny if any file is denied
+     * @should deny if no files given
+     */
+    public static boolean isGrantedForAllFiles(List<String> fileNames, FileCheck check) throws IndexUnreachableException, DAOException {
+        if (fileNames == null || fileNames.isEmpty()) {
+            return false;
+        }
+        for (String fileName : fileNames) {
+            if (!check.check(fileName).isGranted()) {
                 return false;
             }
         }

@@ -49,6 +49,7 @@ import io.goobi.viewer.api.rest.v2.AbstractRestApiTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -73,7 +74,9 @@ class RecordPagesResourceTest extends AbstractRestApiTest {
 
         SolrSearchIndex defaultIndex = DataManager.getInstance().getSearchIndex();
         SolrSearchIndex mockedIndex = Mockito.spy(defaultIndex);
-        String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + PI_ANNOTATIONS + " +" + SolrConstants.ORDER + ":" + PAGENO_ANNOTATIONS;
+        // Must match the query of AccessConditionUtils.checkAccessPermissionByIdentifierAndPageOrder(String, Integer, ...)
+        String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + PI_ANNOTATIONS + " +" + SolrConstants.ORDER + ":" + PAGENO_ANNOTATIONS + " +"
+                + SolrConstants.DOCTYPE + ":" + DocType.PAGE;
         Mockito.when(mockedIndex.search(query, 1, null, Collections.singletonList(SolrConstants.ACCESSCONDITION))).thenReturn(solrDocs);
 
         DataManager.getInstance().injectSearchIndex(mockedIndex);
