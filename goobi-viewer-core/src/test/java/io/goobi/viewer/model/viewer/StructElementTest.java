@@ -367,4 +367,27 @@ class StructElementTest extends AbstractSolrEnabledTest {
                 "Record with a field in both ancestorIdentifierFields and recordGroupIdentifierFields must be recognized as group member");
         Assertions.assertEquals("group_pi_001", element.getGroupMemberships().get("GROUPID_1"));
     }
+
+    /**
+     * @see StructElement#getFirstPageFieldValue(String)
+     * @verifies query each field only once
+     */
+    @Test
+    void getFirstPageFieldValue_shouldQueryEachFieldOnlyOnce() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv, null);
+        Assertions.assertTrue(se.isWork());
+        String expectedFileName = new StructElement(iddocKleiuniv, null).getFirstPageFieldValue(SolrConstants.FILENAME);
+        Assertions.assertNotNull(expectedFileName);
+        SolrSearchIndex spy = Mockito.spy(DataManager.getInstance().getSearchIndex());
+        DataManager.getInstance().injectSearchIndex(spy);
+
+        for (int i = 0; i < 2; i++) {
+            Assertions.assertEquals(expectedFileName, se.getFirstPageFieldValue(SolrConstants.FILENAME));
+            Assertions.assertNull(se.getFirstPageFieldValue("MD_NOSUCHFIELD"));
+        }
+
+        // One query per field; repeated calls and missing values are answered from memory
+        Mockito.verify(spy, Mockito.times(2)).search(Mockito.startsWith("DOCTYPE:PAGE AND " + SolrConstants.PI_TOPSTRUCT + ":"),
+                Mockito.eq(1), Mockito.any(), Mockito.any());
+    }
 }

@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -96,6 +97,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     private transient SolrDocument preloadedAnchorDoc = null;
     /** True if {@link #preloadedAnchorDoc} holds the result of the anchor lookup, even if no anchor was found. */
     private transient boolean anchorDocPreloaded = false;
+    /** Field values of the first page already loaded by {@link #getFirstPageFieldValue(String)}, including missing values. */
+    private transient volatile Map<String, Optional<String>> firstPageFieldValues = null;
     /** True if this record has a right-to-left reading direction. */
     private boolean rtl = false;
     private MimeType mimeType = new MimeType();
@@ -1125,11 +1128,36 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @return the value of the given Solr field from the first physical page of this record
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should query each field only once
      */
     public String getFirstPageFieldValue(String field) throws PresentationException, IndexUnreachableException {
         if (field == null) {
             throw new IllegalArgumentException("field may not be null");
         }
+        // Only the requested values are kept, not the page document, which may carry the full text
+        Map<String, Optional<String>> values = firstPageFieldValues;
+        if (values == null) {
+            values = new ConcurrentHashMap<>();
+            firstPageFieldValues = values;
+        }
+        // Entries are never removed, so containsKey followed by get is safe
+        if (values.containsKey(field)) {
+            return values.get(field).orElse(null);
+        }
+        String value = loadFirstPageFieldValue(field);
+        values.put(field, Optional.ofNullable(value));
+        return value;
+    }
+
+    /**
+     * Loads the value of the given field from the first page of this record.
+     *
+     * @param field Solr field name to retrieve the value of
+     * @return the value of the given Solr field from the first physical page of this record; null if not found
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    private String loadFirstPageFieldValue(String field) throws PresentationException, IndexUnreachableException {
         if (work) {
             String query = new StringBuilder("DOCTYPE:PAGE AND ").append(SolrConstants.PI_TOPSTRUCT).append(':').append(pi).toString();
             List<StringPair> sortFields = Collections.singletonList(new StringPair("ORDER", ORDER.asc.name()));
