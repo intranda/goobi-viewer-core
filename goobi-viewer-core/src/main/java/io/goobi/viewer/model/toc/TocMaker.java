@@ -41,6 +41,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
@@ -318,6 +319,29 @@ public final class TocMaker {
     }
 
     /**
+     * Builds the query for all members of a group the current request may list. Members excluded by access conditions (or other configured
+     * search filters) are not part of the result.
+     *
+     * @param groupIdFields Solr fields holding group identifier values
+     * @param groupIdValue identifier (PI) of the group
+     * @return Solr query including the access condition suffix of the current request
+     * @should add access condition suffix
+     * @should escape group id value
+     */
+    static String buildGroupMembersQuery(List<String> groupIdFields, String groupIdValue) {
+        StringBuilder sbQuery = new StringBuilder(SearchHelper.ALL_RECORDS_QUERY).append(" +(");
+        for (String groupIdField : groupIdFields) {
+            sbQuery.append(' ')
+                    .append(groupIdField)
+                    .append(':')
+                    .append(ClientUtils.escapeQueryChars(groupIdValue));
+        }
+        sbQuery.append(')');
+        sbQuery.append(SearchHelper.getAllSuffixes());
+        return sbQuery.toString();
+    }
+
+    /**
      * A group is a series, etc.
      *
      * @param ret list to which TOC elements are added
@@ -348,23 +372,17 @@ public final class TocMaker {
         List<String> returnFields = getSolrFieldsToFetch(template);
         returnFields.addAll(groupIdFields); // add all groupid fields to return list
         List<StringPair> sortFields = new ArrayList<>(groupIdFields.size());
-        StringBuilder sbQuery = new StringBuilder(SearchHelper.ALL_RECORDS_QUERY).append(" +(");
         for (String groupIdField : groupIdFields) {
-            sbQuery.append(' ')
-                    .append(groupIdField)
-                    .append(':')
-                    .append(groupIdValue);
-
             String groupSortField = groupIdField.replace(SolrConstants.PREFIX_GROUPID, SolrConstants.PREFIX_GROUPORDER);
             sortFields.add(new StringPair(groupSortField, "asc"));
             returnFields.add(groupSortField); // add each sorting field to return list
         }
-        sbQuery.append(')');
-        logger.trace("Group TOC query: {}", sbQuery);
+        String query = buildGroupMembersQuery(groupIdFields, groupIdValue);
+        logger.trace("Group TOC query: {}", query);
 
         SolrDocumentList groupMemberDocs = DataManager.getInstance()
                 .getSearchIndex()
-                .search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, sortFields, returnFields);
+                .search(query, SolrSearchIndex.MAX_HITS, sortFields, returnFields);
         if (groupMemberDocs == null || groupMemberDocs.isEmpty()) {
             logger.trace("No group records found for {}", groupIdValue);
             return;

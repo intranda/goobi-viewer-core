@@ -57,6 +57,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -67,6 +68,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.jdom2.JDOMException;
 import org.json.JSONObject;
@@ -211,6 +213,8 @@ public class ViewManager implements Serializable {
 
     /** Table of contents object. Volatile so that the post-lock write in ActiveDocumentBean.update() is immediately visible to all threads. */
     private volatile TOC toc; //NOSONAR S3077: set once post-lock, safe publication
+    /** Lazily built TOCs of the groups this record belongs to, keyed by GROUPID_* field. Independent of {@link #toc}. */
+    private final Map<String, TOC> groupTocs = new ConcurrentHashMap<>();
 
     /**
      * @deprecated image rotation is done solely in browser frontend
@@ -2974,6 +2978,58 @@ public class ViewManager implements Serializable {
 
     public TOC getToc() {
         return toc;
+    }
+
+    /**
+     * Returns the table of contents of the group this record belongs to via the given group field, e.g. all episodes of the podcast an episode
+     * belongs to ({@code GROUPID_PODCAST}). The first element is the group itself, followed by all members the current request may list, sorted by
+     * the matching GROUPORDER_* field. The record's own TOC ({@link #getToc()}) is not affected. The result is built on first access and cached.
+     *
+     * @param groupIdField Solr field holding the group identifier (GROUPID_*)
+     * @return TOC of the group; null if the record does not belong to a group via this field or the group is not found or not accessible
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     * @should return toc of group for member
+     * @should return null if record is no member
+     * @should return cached toc
+     */
+    public TOC getGroupToc(String groupIdField)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        if (groupIdField == null || !groupIdField.startsWith(SolrConstants.PREFIX_GROUPID) || topStructElement == null
+                || topStructElement.getGroupMemberships() == null) {
+            return null;
+        }
+        String groupPi = topStructElement.getGroupMemberships().get(groupIdField);
+        if (StringUtils.isBlank(groupPi)) {
+            return null;
+        }
+        TOC cached = groupTocs.get(groupIdField);
+        if (cached != null) {
+            return cached;
+        }
+
+        String query = new StringBuilder("+").append(SolrConstants.PI)
+                .append(':')
+                .append(ClientUtils.escapeQueryChars(groupPi))
+                .append(" +")
+                .append(SolrConstants.DOCTYPE)
+                .append(':')
+                .append(DocType.GROUP)
+                .append(SearchHelper.getAllSuffixes())
+                .toString();
+        SolrDocument groupDoc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, null);
+        if (groupDoc == null) {
+            logger.debug("Group {} referenced in {} of {} not found or not accessible", groupPi, groupIdField, pi);
+            return null;
+        }
+        StructElement group = new StructElement((String) groupDoc.getFieldValue(SolrConstants.IDDOC), groupDoc);
+        TOC groupToc = new TOC();
+        groupToc.generate(group, false, getMimeType(), 1);
+        // Concurrent first calls may build the TOC twice; the first stored instance wins
+        TOC existing = groupTocs.putIfAbsent(groupIdField, groupToc);
+        return existing != null ? existing : groupToc;
     }
 
     public void setToc(TOC toc) {

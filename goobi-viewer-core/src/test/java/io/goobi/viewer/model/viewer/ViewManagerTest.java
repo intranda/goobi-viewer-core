@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.solr.common.SolrDocument;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,6 +53,8 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.model.toc.TOC;
+import io.goobi.viewer.model.toc.TOCElement;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.controller.imaging.WatermarkHandler;
 import io.goobi.viewer.exceptions.DAOException;
@@ -1248,4 +1251,54 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         Mockito.verify(top, Mockito.never()).getGroupDocStructType(Mockito.anyString());
     }
 
+
+    private static ViewManager createViewManagerForGroupMember() throws Exception {
+        SolrDocument doc = DataManager.getInstance()
+                .getSearchIndex()
+                .getFirstDoc("+GROUPID_CONVOLUTE:287831965_F75a +ISWORK:true", null);
+        Assertions.assertNotNull(doc, "test index must contain a member of group 287831965_F75a");
+        StructElement se = new StructElement((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
+        return new ViewManager(se, null, se.getLuceneId(), null, null, null);
+    }
+
+    /**
+     * @see ViewManager#getGroupToc(String)
+     * @verifies return toc of group for member
+     */
+    @Test
+    void getGroupToc_shouldReturnTocOfGroupForMember() throws Exception {
+        ViewManager viewManager = createViewManagerForGroupMember();
+        TOC toc = viewManager.getGroupToc("GROUPID_CONVOLUTE");
+        Assertions.assertNotNull(toc);
+        List<TOCElement> elements = toc.getTocElements();
+        Assertions.assertFalse(elements.isEmpty());
+        Assertions.assertEquals("287831965_F75a", elements.get(0).getTopStructPi());
+        String memberPi = viewManager.getPi();
+        Assertions.assertTrue(elements.stream().anyMatch(e -> memberPi.equals(e.getTopStructPi())),
+                "current record must be listed among the group members");
+        // The record's own TOC is not affected
+        Assertions.assertNotSame(toc, viewManager.getToc());
+    }
+
+    /**
+     * @see ViewManager#getGroupToc(String)
+     * @verifies return null if record is no member
+     */
+    @Test
+    void getGroupToc_shouldReturnNullIfRecordIsNoMember() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv);
+        ViewManager viewManager = new ViewManager(se, null, se.getLuceneId(), null, null, null);
+        Assertions.assertNull(viewManager.getGroupToc("GROUPID_CONVOLUTE"));
+        Assertions.assertNull(viewManager.getGroupToc(null));
+    }
+
+    /**
+     * @see ViewManager#getGroupToc(String)
+     * @verifies return cached toc
+     */
+    @Test
+    void getGroupToc_shouldReturnCachedToc() throws Exception {
+        ViewManager viewManager = createViewManagerForGroupMember();
+        Assertions.assertSame(viewManager.getGroupToc("GROUPID_CONVOLUTE"), viewManager.getGroupToc("GROUPID_CONVOLUTE"));
+    }
 }

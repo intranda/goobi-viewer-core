@@ -42,6 +42,7 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
@@ -568,5 +569,28 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
         } finally {
             DataManager.getInstance().injectConfiguration(originalConfig);
         }
+    }
+
+    /**
+     * @see TocMaker#buildGroupMembersQuery(List, String)
+     * @verifies add access condition suffix
+     */
+    @Test
+    void buildGroupMembersQuery_shouldAddAccessConditionSuffix() {
+        String suffix = SearchHelper.getAllSuffixes();
+        Assertions.assertFalse(suffix.isBlank(), "test configuration must produce a filter suffix");
+        String query = TocMaker.buildGroupMembersQuery(List.of("GROUPID_CONVOLUTE"), "287831965_F75a");
+        Assertions.assertTrue(query.startsWith(SearchHelper.ALL_RECORDS_QUERY + " +( GROUPID_CONVOLUTE:287831965_F75a)"), query);
+        Assertions.assertTrue(query.endsWith(suffix), query);
+    }
+
+    /**
+     * @see TocMaker#buildGroupMembersQuery(List, String)
+     * @verifies escape group id value
+     */
+    @Test
+    void buildGroupMembersQuery_shouldEscapeGroupIdValue() {
+        String query = TocMaker.buildGroupMembersQuery(List.of("GROUPID_SERIES"), "a:b c");
+        Assertions.assertTrue(query.contains("GROUPID_SERIES:a\\:b\\ c"), query);
     }
 }
