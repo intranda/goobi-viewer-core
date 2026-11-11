@@ -286,20 +286,26 @@ public class SearchHitFactory {
     }
 
     /**
-     * Loads the SHAPE metadata of all given documents with one Solr query, so that hits created from these documents need no query of their own.
+     * Loads the SHAPE metadata of all given documents up front, so that hits created from these documents need no query of their own.
+     *
+     * <p>If loading fails, each hit loads its own SHAPE metadata as before.
      *
      * @param docs Solr documents from which search hits will be created
      * @return this
-     * @throws PresentationException
-     * @throws IndexUnreachableException
      * @should avoid per hit shape queries
+     * @should fall back to per hit shape queries if preloading fails
      */
-    public SearchHitFactory preloadShapeMetadata(Collection<SolrDocument> docs) throws PresentationException, IndexUnreachableException {
+    public SearchHitFactory preloadShapeMetadata(Collection<SolrDocument> docs) {
         List<String> iddocs = docs.stream()
                 .map(doc -> (String) doc.getFieldValue(SolrConstants.IDDOC))
                 .filter(StringUtils::isNotEmpty)
                 .toList();
-        this.preloadedShapeDocs = MetadataTools.getShapeMetadataByOwner(iddocs);
+        try {
+            this.preloadedShapeDocs = MetadataTools.getShapeMetadataByOwner(iddocs);
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.warn("Could not preload SHAPE metadata, loading it per hit: {}", e.getMessage());
+            this.preloadedShapeDocs = Collections.emptyMap();
+        }
         return this;
     }
 

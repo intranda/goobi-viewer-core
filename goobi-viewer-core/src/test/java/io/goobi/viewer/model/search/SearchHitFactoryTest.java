@@ -126,6 +126,32 @@ class SearchHitFactoryTest extends AbstractSolrEnabledTest {
         }
     }
 
+    /**
+     * @see SearchHitFactory#preloadShapeMetadata(java.util.Collection)
+     * @verifies fall back to per hit shape queries if preloading fails
+     */
+    @Test
+    void preloadShapeMetadata_shouldFallBackToPerHitShapeQueriesIfPreloadingFails() throws Exception {
+        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search("+" + SolrConstants.ISWORK + ":true", 3, null, null);
+        Assertions.assertFalse(docs.isEmpty());
+        SolrSearchIndex spy = Mockito.spy(DataManager.getInstance().getSearchIndex());
+        Mockito.doThrow(new PresentationException("too many clauses"))
+                .when(spy)
+                .search(Mockito.contains(SolrConstants.IDDOC_OWNER + ":("), Mockito.anyInt(), Mockito.any(), Mockito.any());
+        DataManager.getInstance().injectSearchIndex(spy);
+
+        SearchHitFactory factory = new SearchHitFactory(null, null, null, 0, null, Locale.ENGLISH).preloadShapeMetadata(docs);
+        for (SolrDocument doc : docs) {
+            Assertions.assertNotNull(factory.createSearchHit(doc, null, null, null));
+        }
+
+        for (SolrDocument doc : docs) {
+            Mockito.verify(spy, Mockito.atLeastOnce())
+                    .search(Mockito.contains(SolrConstants.IDDOC_OWNER + ":\"" + doc.getFieldValue(SolrConstants.IDDOC) + "\""), Mockito.anyInt(),
+                            Mockito.any(), Mockito.any());
+        }
+    }
+
     @Test
     void findAdditionalMetadataFieldsContainingSearchTerms_shouldAddMetadataFieldsThatMatchSearchTerms() {
         BrowseElement be = new BrowseElement(null, 1, "label", null, Locale.ENGLISH, null, null);

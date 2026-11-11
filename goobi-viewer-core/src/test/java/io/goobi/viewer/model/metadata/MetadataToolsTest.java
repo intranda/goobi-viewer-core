@@ -29,6 +29,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -38,6 +39,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
 
 class MetadataToolsTest extends AbstractSolrEnabledTest {
@@ -151,6 +153,34 @@ class MetadataToolsTest extends AbstractSolrEnabledTest {
     @Test
     void getShapeMetadataByOwner_shouldReturnEmptyMapForEmptyInput() throws Exception {
         Assertions.assertTrue(MetadataTools.getShapeMetadataByOwner(List.of()).isEmpty());
+    }
+
+    /**
+     * @see MetadataTools#getShapeMetadataByOwner(java.util.Collection)
+     * @verifies split large owner lists into several queries
+     */
+    @Test
+    void getShapeMetadataByOwner_shouldSplitLargeOwnerListsIntoSeveralQueries() throws Exception {
+        SolrDocumentList anyShape = DataManager.getInstance()
+                .getSearchIndex()
+                .search("+" + SolrConstants.DOCTYPE + ":METADATA +" + SolrConstants.METADATATYPE + ':' + MetadataGroupType.SHAPE.name(), 1, null,
+                        List.of(SolrConstants.IDDOC_OWNER));
+        Assertions.assertFalse(anyShape.isEmpty(), "test index must contain at least one SHAPE document");
+        String owner = String.valueOf(anyShape.get(0).getFirstValue(SolrConstants.IDDOC_OWNER));
+        List<String> owners = new ArrayList<>();
+        for (int i = 0; i < 2 * MetadataTools.SHAPE_OWNER_CHUNK_SIZE; i++) {
+            owners.add("0" + i);
+        }
+        owners.add(owner);
+        SolrSearchIndex spy = Mockito.spy(DataManager.getInstance().getSearchIndex());
+        DataManager.getInstance().injectSearchIndex(spy);
+
+        Map<String, List<SolrDocument>> result = MetadataTools.getShapeMetadataByOwner(owners);
+
+        Mockito.verify(spy, Mockito.times(3))
+                .search(Mockito.contains(SolrConstants.IDDOC_OWNER + ":("), Mockito.anyInt(), Mockito.any(), Mockito.any());
+        Assertions.assertEquals(owners.size(), result.size());
+        Assertions.assertFalse(result.get(owner).isEmpty());
     }
 
     /**

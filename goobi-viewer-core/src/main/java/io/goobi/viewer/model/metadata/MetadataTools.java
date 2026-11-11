@@ -67,6 +67,9 @@ public final class MetadataTools {
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(MetadataTools.class);
 
+    /** Maximum number of owner IDDOCs per SHAPE metadata query. */
+    static final int SHAPE_OWNER_CHUNK_SIZE = 500;
+
     private static final String FIELD_MD_CREATOR = "MD_CREATOR";
     private static final String FIELD_MD_INFORMATION = "MD_INFORMATION";
     private static final String FIELD_MD_LANGUAGE = "MD_LANGUAGE";
@@ -712,6 +715,7 @@ public final class MetadataTools {
      * @should map shape docs to their owners
      * @should map owners without shapes to empty list
      * @should return empty map for empty input
+     * @should split large owner lists into several queries
      */
     public static Map<String, List<SolrDocument>> getShapeMetadataByOwner(Collection<String> ownerIddocs)
             throws PresentationException, IndexUnreachableException {
@@ -722,13 +726,18 @@ public final class MetadataTools {
         for (String iddoc : ownerIddocs) {
             ret.put(iddoc, new ArrayList<>());
         }
-        String query = "+" + SolrConstants.DOCTYPE + ':' + DocType.METADATA.name() + " +" + SolrConstants.METADATATYPE + ':'
-                + MetadataGroupType.SHAPE.name() + " +" + SolrConstants.IDDOC_OWNER + ":("
-                + ret.keySet().stream().map(iddoc -> '"' + iddoc + '"').collect(Collectors.joining(" OR ")) + ')';
-        for (SolrDocument doc : DataManager.getInstance().getSearchIndex().search(query, SolrSearchIndex.MAX_HITS, null, null)) {
-            List<SolrDocument> shapeDocs = ret.get(String.valueOf(doc.getFirstValue(SolrConstants.IDDOC_OWNER)));
-            if (shapeDocs != null) {
-                shapeDocs.add(doc);
+        // Chunked to stay below Solr's maxBooleanClauses limit (default 1024)
+        List<String> owners = new ArrayList<>(ret.keySet());
+        for (int from = 0; from < owners.size(); from += SHAPE_OWNER_CHUNK_SIZE) {
+            List<String> chunk = owners.subList(from, Math.min(from + SHAPE_OWNER_CHUNK_SIZE, owners.size()));
+            String query = "+" + SolrConstants.DOCTYPE + ':' + DocType.METADATA.name() + " +" + SolrConstants.METADATATYPE + ':'
+                    + MetadataGroupType.SHAPE.name() + " +" + SolrConstants.IDDOC_OWNER + ":("
+                    + chunk.stream().map(iddoc -> '"' + iddoc + '"').collect(Collectors.joining(" OR ")) + ')';
+            for (SolrDocument doc : DataManager.getInstance().getSearchIndex().search(query, SolrSearchIndex.MAX_HITS, null, null)) {
+                List<SolrDocument> shapeDocs = ret.get(String.valueOf(doc.getFirstValue(SolrConstants.IDDOC_OWNER)));
+                if (shapeDocs != null) {
+                    shapeDocs.add(doc);
+                }
             }
         }
         return ret;
