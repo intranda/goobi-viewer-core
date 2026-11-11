@@ -499,37 +499,34 @@ public class PodloveEpisodeResourceBuilder {
     }
 
     /**
-     * Return the first value of the given solrField in doc which matches the filterRegex (empty regex always matches). If no value was found, return
-     * an empty string
-     * 
+     * Returns the first value of the given Solr field.
+     *
      * @param doc The solr document containing the values
      * @param solrField The name of the solr field
-     * @return The values as string
+     * @return the first value as string; an empty string if the field has no value
      */
     static String buildMetadataField(SolrDocument doc, String solrField) {
         return buildMetadataField(doc, solrField, null);
     }
 
     /**
-     * Return the first value of the given solrField in doc which matches the filterRegex (empty regex always matches). If no value was found, return
-     * an empty string
-     * 
+     * Returns the first value of the given Solr field that matches the given pattern entirely.
+     *
      * @param doc The solr document containing the values
      * @param solrField The name of the solr field
-     * @param filterRegex a regex pattern which must match allowed values. If null it is assumed to always match
-     * @return The values as string
+     * @param filterRegex pattern that allowed values must match; if null, every value is allowed
+     * @return the first allowed value as string; an empty string if there is none
      */
     static String buildMetadataField(SolrDocument doc, String solrField, Pattern filterRegex) {
         Collection<Object> values = doc.getFieldValues(solrField);
-        if (values != null && !values.isEmpty()) {
-            String stringValue = values.stream()
-                    .map(Object::toString)
-                    .filter(v -> filterRegex == null ? true : filterRegex.matcher(v).matches())
-                    .findFirst()
-                    .orElse("");
-            return stringValue;
+        if (values == null) {
+            return "";
         }
-        return "";
+        return values.stream()
+                .map(Object::toString)
+                .filter(v -> filterRegex == null || filterRegex.matcher(v).matches())
+                .findFirst()
+                .orElse("");
     }
 
     /**
