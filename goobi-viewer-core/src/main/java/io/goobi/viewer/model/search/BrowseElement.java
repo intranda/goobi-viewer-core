@@ -255,6 +255,8 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws ViewerConfigurationException
+     * @should skip thumbnail access check if no placeholder image is configured
+     * @should check thumbnail access if a placeholder image is configured
      */
     BrowseElement(StructElement structElement, Map<String, List<Metadata>> metadataListMap, Locale locale, String fulltext,
             Map<String, Set<String>> searchTerms, ThumbnailHandler thumbs, User user)
@@ -507,7 +509,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * Resolves the thumbnail URL and checks thumbnail access permissions.
+     * Resolves the thumbnail URL and, if access denied placeholder images are configured, checks thumbnail access permissions.
      */
     private void initThumbnail(StructElement structElement, ThumbnailHandler thumbs, User user)
             throws IndexUnreachableException, PresentationException, DAOException {
@@ -532,6 +534,12 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
                 String thumbPageNo = firstVolume.getMetadataValue(SolrConstants.THUMBPAGENO);
                 imageNo = StringUtils.isNotBlank(thumbPageNo) ? Integer.parseInt(thumbPageNo) : 1;
             }
+        }
+
+        // The permission only selects a custom access denied placeholder image (see getAccessDeniedThumbnailUrl); access itself is
+        // enforced when the image is requested. Without any placeholder image, the check per hit would have no effect.
+        if (!DataManager.getInstance().getLicenseTypeCache().hasImagePlaceholders()) {
+            return;
         }
 
         // The access check only needs PI and file name; loading the page document would cost several Solr queries per hit

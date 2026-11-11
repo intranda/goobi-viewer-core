@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.security;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -37,6 +38,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
 
 /**
  * Integration tests for {@link LicenseTypeCache} against the H2 test fixture.
@@ -175,5 +177,26 @@ class LicenseTypeCacheTest extends AbstractDatabaseEnabledTest {
         List<LicenseType> second = cache.getAllLicenseTypes();
         assertEquals(first.size(), second.size());
         assertNotSame(first, second, "expected fresh snapshot after invalidate()");
+    }
+
+    /**
+     * @see LicenseTypeCache#hasImagePlaceholders()
+     * @verifies return false if no placeholder has an image
+     */
+    @Test
+    void hasImagePlaceholders_shouldReturnFalseIfNoPlaceholderHasAnImage() throws Exception {
+        // A placeholder without an image does not count
+        cache.getAllLicenseTypes().get(0).getPlaceholderInfo("en");
+        assertFalse(cache.hasImagePlaceholders());
+    }
+
+    /**
+     * @see LicenseTypeCache#hasImagePlaceholders()
+     * @verifies return true if a placeholder has an image
+     */
+    @Test
+    void hasImagePlaceholders_shouldReturnTrueIfAPlaceholderHasAnImage() throws Exception {
+        cache.getAllLicenseTypes().get(0).getPlaceholderInfo("en").setMediaItem(new CMSMediaItem());
+        assertTrue(cache.hasImagePlaceholders());
     }
 }

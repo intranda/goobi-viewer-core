@@ -29,27 +29,36 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.solr.common.SolrDocument;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
+import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.metadata.Metadata;
+import io.goobi.viewer.model.security.LicenseTypeCache;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -648,5 +657,55 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals(false, be.isHasImages());
         assertEquals(true, be.isHasMedia());
         assertEquals(PageType.viewObject, be.determinePageType());
+    }
+
+    /**
+     * @see BrowseElement#BrowseElement(StructElement,Map,Locale,String,Map,ThumbnailHandler,User)
+     * @verifies skip thumbnail access check if no placeholder image is configured
+     */
+    @Test
+    void BrowseElement_shouldSkipThumbnailAccessCheckIfNoPlaceholderImageIsConfigured() throws Exception {
+        Assertions.assertFalse(DataManager.getInstance().getLicenseTypeCache().hasImagePlaceholders());
+        SolrSearchIndex spy = Mockito.spy(DataManager.getInstance().getSearchIndex());
+        DataManager.getInstance().injectSearchIndex(spy);
+
+        BrowseElement be = createBrowseElementForTopStruct(PI_KLEIUNIV);
+
+        Assertions.assertNotNull(be.getThumbnailUrl());
+        Assertions.assertNull(be.getAccessPermissionThumbnail());
+        Assertions.assertNull(be.getAccessDeniedThumbnailUrl(Locale.ENGLISH));
+        Mockito.verify(spy, Mockito.never())
+                .search(Mockito.startsWith("+" + SolrConstants.PI_TOPSTRUCT + ":" + PI_KLEIUNIV), Mockito.eq(2), Mockito.any(), Mockito.any());
+    }
+
+    /**
+     * @see BrowseElement#BrowseElement(StructElement,Map,Locale,String,Map,ThumbnailHandler,User)
+     * @verifies check thumbnail access if a placeholder image is configured
+     */
+    @Test
+    void BrowseElement_shouldCheckThumbnailAccessIfAPlaceholderImageIsConfigured() throws Exception {
+        LicenseTypeCache licenseTypeCache = DataManager.getInstance().getLicenseTypeCache();
+        try {
+            licenseTypeCache.getAllLicenseTypes().get(0).getPlaceholderInfo("en").setMediaItem(new CMSMediaItem());
+            SolrSearchIndex spy = Mockito.spy(DataManager.getInstance().getSearchIndex());
+            DataManager.getInstance().injectSearchIndex(spy);
+
+            BrowseElement be = createBrowseElementForTopStruct(PI_KLEIUNIV);
+
+            Assertions.assertNotNull(be.getAccessPermissionThumbnail());
+            Mockito.verify(spy, Mockito.atLeastOnce())
+                    .search(Mockito.startsWith("+" + SolrConstants.PI_TOPSTRUCT + ":" + PI_KLEIUNIV), Mockito.eq(2), Mockito.any(), Mockito.any());
+        } finally {
+            // Reload the unmodified license types from the database
+            licenseTypeCache.invalidate();
+        }
+    }
+
+    private static BrowseElement createBrowseElementForTopStruct(String pi) throws Exception {
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + pi, null);
+        StructElement se = new StructElement((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
+        ThumbnailHandler thumbs =
+                new ThumbnailHandler(new IIIFUrlHandler(new ApiUrls(ApiUrls.API)), "http://localhost:8080/viewer/resources/images/");
+        return new BrowseElement(se, new HashMap<>(), Locale.ENGLISH, null, null, thumbs, null);
     }
 }

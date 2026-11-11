@@ -118,6 +118,18 @@ public class LicenseTypeCache {
     }
 
     /**
+     * Checks whether any license type has an access denied placeholder image.
+     *
+     * @return true if at least one placeholder of any license type has an image; false otherwise
+     * @throws DAOException if the underlying DAO load fails
+     * @should return false if no placeholder has an image
+     * @should return true if a placeholder has an image
+     */
+    public boolean hasImagePlaceholders() throws DAOException {
+        return snapshot().stream().flatMap(lt -> lt.getImagePlaceholders().stream()).anyMatch(info -> info.getMediaItem() != null);
+    }
+
+    /**
      * Drops the current snapshot. The next read reloads from the DAO. Called by {@code JPADAO}
      * write methods after a successful commit.
      *
