@@ -59,6 +59,7 @@ import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
@@ -68,6 +69,9 @@ import io.goobi.viewer.solr.SolrTools;
 public class SearchHitFactory {
 
     private static final Logger logger = LogManager.getLogger(SearchHitFactory.class);
+
+    /** Maximum number of PI values per anchor query. */
+    static final int PI_CHUNK_SIZE = 500;
 
     private Map<String, Set<String>> searchTerms;
     private String additionalMetadataListType;
@@ -89,6 +93,8 @@ public class SearchHitFactory {
     private ThumbnailHandler thumbnailHandler;
     private Locale locale;
     private Map<String, List<SolrDocument>> preloadedShapeDocs = Collections.emptyMap();
+    /** Anchor documents by PI; null if anchors were not preloaded and each hit loads its own anchor. */
+    private Map<String, SolrDocument> preloadedAnchorDocs = null;
     private final CitationProcessorWrapper citationProcessorWrapper = new CitationProcessorWrapper();
 
     /**
@@ -134,6 +140,10 @@ public class SearchHitFactory {
                                 DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), true, true, proximitySearchDistance);
         String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
         StructElement se = new StructElement(iddoc, doc, ownerDoc, preloadedShapeDocs.get(iddoc));
+        String parentPi = se.getMetadataValue(SolrConstants.PI_PARENT);
+        if (preloadedAnchorDocs != null && parentPi != null) {
+            se.setPreloadedAnchorDoc(preloadedAnchorDocs.get(parentPi));
+        }
         String docstructType = se.getDocStructType();
         if (DocType.METADATA.name().equals(se.getMetadataValue(SolrConstants.DOCTYPE))) {
             docstructType = DocType.METADATA.name();
@@ -307,6 +317,68 @@ public class SearchHitFactory {
             this.preloadedShapeDocs = Collections.emptyMap();
         }
         return this;
+    }
+
+    /**
+     * Loads the anchor documents of all given documents up front, so that hits created from these documents need no anchor query of their own.
+     *
+     * <p>If loading fails, each hit loads its own anchor as before.
+     *
+     * @param docs Solr documents from which search hits will be created
+     * @return this
+     * @should avoid per hit anchor queries
+     * @should fall back to per hit anchor queries if preloading fails
+     */
+    public SearchHitFactory preloadAnchorDocs(Collection<SolrDocument> docs) {
+        Set<String> parentPis = new HashSet<>();
+        for (SolrDocument doc : docs) {
+            String parentPi = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI_PARENT);
+            if (StringUtils.isNotEmpty(parentPi)) {
+                parentPis.add(parentPi);
+            }
+        }
+        try {
+            this.preloadedAnchorDocs = loadDocsByPi(parentPis);
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.warn("Could not preload anchor documents, loading them per hit: {}", e.getMessage());
+            this.preloadedAnchorDocs = null;
+        }
+        return this;
+    }
+
+    /**
+     * Loads the documents with the given PI values with all fields and without access condition filter, like
+     * {@link StructElement#getParent()} does for a single anchor.
+     *
+     * @param pis PI values
+     * @return map of PI to its document; PIs without a document are missing in the map
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @should map documents to their PI
+     * @should return empty map for empty input
+     */
+    static Map<String, SolrDocument> loadDocsByPi(Collection<String> pis) throws PresentationException, IndexUnreachableException {
+        Map<String, SolrDocument> ret = new HashMap<>();
+        if (pis == null || pis.isEmpty()) {
+            return ret;
+        }
+        // Chunked to stay below Solr's maxBooleanClauses limit (default 1024)
+        List<String> piList = new ArrayList<>(pis);
+        for (int from = 0; from < piList.size(); from += PI_CHUNK_SIZE) {
+            List<String> chunk = piList.subList(from, Math.min(from + PI_CHUNK_SIZE, piList.size()));
+            String query = SolrConstants.PI + ":("
+                    + chunk.stream()
+                            .map(pi -> '"' + pi.replace("\\", "\\\\").replace("\"", "\\\"") + '"')
+                            .collect(Collectors.joining(" OR "))
+                    + ')';
+            for (SolrDocument doc : DataManager.getInstance().getSearchIndex().search(query, SolrSearchIndex.MAX_HITS, null, null)) {
+                String pi = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI);
+                if (pi != null) {
+                    ret.putIfAbsent(pi, doc);
+                }
+            }
+        }
+        return ret;
     }
 
     /**

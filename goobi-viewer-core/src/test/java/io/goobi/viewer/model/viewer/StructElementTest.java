@@ -41,6 +41,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.ContextMocker;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 class StructElementTest extends AbstractSolrEnabledTest {
 
@@ -100,6 +101,47 @@ class StructElementTest extends AbstractSolrEnabledTest {
         StructElement parent = element.getParent();
         Assertions.assertNotNull(parent);
         Assertions.assertEquals(iddocKleiuniv, parent.getLuceneId());
+    }
+
+    /**
+     * @see StructElement#getParent()
+     * @verifies use preloaded anchor document without querying Solr
+     */
+    @Test
+    void getParent_shouldUsePreloadedAnchorDocumentWithoutQueryingSolr() throws Exception {
+        SolrDocument volumeDoc = DataManager.getInstance()
+                .getSearchIndex()
+                .getFirstDoc("+" + SolrConstants.ISWORK + ":true +" + SolrConstants.PI_PARENT + ":*", null);
+        Assertions.assertNotNull(volumeDoc, "test index must contain volumes");
+        String parentPi = (String) volumeDoc.getFieldValue(SolrConstants.PI_PARENT);
+        SolrDocument anchorDoc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":\"" + parentPi + "\"", null);
+        StructElement se = new StructElement((String) volumeDoc.getFieldValue(SolrConstants.IDDOC), volumeDoc);
+        se.setPreloadedAnchorDoc(anchorDoc);
+        SolrSearchIndex spy = Mockito.spy(DataManager.getInstance().getSearchIndex());
+        DataManager.getInstance().injectSearchIndex(spy);
+
+        StructElement parent = se.getParent();
+
+        Assertions.assertEquals(parentPi, parent.getPi());
+        Assertions.assertTrue(parent.isAnchor());
+        // Neither the anchor document nor its SHAPE metadata are queried
+        Mockito.verifyNoInteractions(spy);
+    }
+
+    /**
+     * @see StructElement#getParent()
+     * @verifies return null if preloaded anchor document is null
+     */
+    @Test
+    void getParent_shouldReturnNullIfPreloadedAnchorDocumentIsNull() throws Exception {
+        SolrDocument volumeDoc = DataManager.getInstance()
+                .getSearchIndex()
+                .getFirstDoc("+" + SolrConstants.ISWORK + ":true +" + SolrConstants.PI_PARENT + ":*", null);
+        Assertions.assertNotNull(volumeDoc, "test index must contain volumes");
+        StructElement se = new StructElement((String) volumeDoc.getFieldValue(SolrConstants.IDDOC), volumeDoc);
+        se.setPreloadedAnchorDoc(null);
+
+        Assertions.assertNull(se.getParent());
     }
 
     /**

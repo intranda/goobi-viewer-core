@@ -92,6 +92,10 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     private List<ShapeMetadata> shapeMetadata;
     private ComplexMetadataContainer metadataDocuments = null;
     private StructElement topStruct = null;
+    /** Anchor document loaded in advance for {@link #getParent()}; only used if {@link #anchorDocPreloaded} is true. */
+    private transient SolrDocument preloadedAnchorDoc = null;
+    /** True if {@link #preloadedAnchorDoc} holds the result of the anchor lookup, even if no anchor was found. */
+    private transient boolean anchorDocPreloaded = false;
     /** True if this record has a right-to-left reading direction. */
     private boolean rtl = false;
     private MimeType mimeType = new MimeType();
@@ -407,10 +411,22 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
+     * Sets the anchor document that {@link #getParent()} uses instead of querying Solr.
+     *
+     * @param anchorDoc Solr document of the anchor; null if the anchor does not exist
+     */
+    public void setPreloadedAnchorDoc(SolrDocument anchorDoc) {
+        this.preloadedAnchorDoc = anchorDoc;
+        this.anchorDocPreloaded = true;
+    }
+
+    /**
      * Loads and returns the immediate parent StructElement of this element.
      *
      * @return {@link io.goobi.viewer.model.viewer.StructElement}
      * @should return parent StructElement with matching Lucene ID for child element
+     * @should use preloaded anchor document without querying Solr
+     * @should return null if preloaded anchor document is null
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement getParent() throws IndexUnreachableException {
@@ -421,11 +437,13 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             // since this volume was indexed, so IDDOC_PARENT cannot be relied on for the cross-record link).
             String parentPi = getMetadataValue(SolrConstants.PI_PARENT);
             if (parentPi != null) {
-                SolrDocument anchorDoc = DataManager.getInstance()
-                        .getSearchIndex()
-                        .getFirstDoc(new StringBuilder(SolrConstants.PI).append(":\"").append(parentPi).append('"').toString(), null);
+                SolrDocument anchorDoc = anchorDocPreloaded ? preloadedAnchorDoc
+                        : DataManager.getInstance()
+                                .getSearchIndex()
+                                .getFirstDoc(new StringBuilder(SolrConstants.PI).append(":\"").append(parentPi).append('"').toString(), null);
                 if (anchorDoc != null) {
-                    parent = new StructElement(anchorDoc);
+                    // Shape regions are only displayed for sub-elements, never for anchors, so the SHAPE query is skipped
+                    parent = new StructElement(getIDDOC(anchorDoc), anchorDoc, Collections.emptyList());
                 }
                 return parent;
             }
@@ -1057,7 +1075,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             } else {
                 String iddoc = SolrTools.getSingleFieldStringValue(docVolume, SolrConstants.IDDOC);
                 if (StringUtils.isNotBlank(iddoc)) {
-                    return new StructElement(iddoc, docVolume);
+                    // Shape regions are only displayed for sub-elements, never for volumes, so the SHAPE query is skipped
+                    return new StructElement(iddoc, docVolume, Collections.emptyList());
                 }
             }
         } else if (isGroup()) {
@@ -1090,7 +1109,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             } else {
                 String iddoc = SolrTools.getSingleFieldStringValue(docVolume, SolrConstants.IDDOC);
                 if (StringUtils.isNotBlank(iddoc)) {
-                    return new StructElement(iddoc, docVolume);
+                    // Shape regions are only displayed for sub-elements, never for volumes, so the SHAPE query is skipped
+                    return new StructElement(iddoc, docVolume, Collections.emptyList());
                 }
             }
         }

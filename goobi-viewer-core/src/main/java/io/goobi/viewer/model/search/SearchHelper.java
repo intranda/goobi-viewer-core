@@ -450,7 +450,7 @@ public final class SearchHelper {
         if (user != null) {
             factory.setUser(user);
         }
-        factory.preloadShapeMetadata(resp.getResults());
+        factory.preloadShapeMetadata(resp.getResults()).preloadAnchorDocs(resp.getResults());
 
         int count = first;
         Map<String, SolrDocumentList> childDocsMap = resp.getExpandedResults();
