@@ -38,6 +38,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
@@ -235,6 +236,40 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
 
         Assertions.assertTrue(resolvableDuringReload.get(), "Archive was not resolvable while the archive list was reloaded");
         assertNotNull(archiveManager.getArchive("r1"));
+    }
+
+    /**
+     * @see ArchiveManager#updateArchiveList()
+     * @verifies not load linked records
+     */
+    @Test
+    void updateArchiveList_shouldNotLoadLinkedRecords() throws Exception {
+        assertNotNull(possibleDatabases, "No EAD record in the index.");
+        SolrEADParser parser = Mockito.spy(eadParser);
+        ArchiveManager archiveManager = new ArchiveManager(parser);
+        archiveManager.updateArchiveList();
+        possibleDatabases.add(new ArchiveResource("resource 3", "r3", ZonedDateTime.now().format(ArchiveResource.DATE_TIME_FORMATTER), "10"));
+        archiveManager.updateArchiveList();
+
+        assertNotNull(archiveManager.getArchive("r3"));
+        Mockito.verify(parser, Mockito.never()).updateAssociatedRecordMap();
+        Mockito.verify(parser, Mockito.never()).updateAssociatedRecordMapIfChanged();
+    }
+
+    /**
+     * @see ArchiveManager#loadDatabase(ArchiveParser,ArchiveResource)
+     * @verifies update linked records before building the tree
+     */
+    @Test
+    void loadDatabase_shouldUpdateLinkedRecordsBeforeBuildingTheTree() throws Exception {
+        assertNotNull(possibleDatabases, "No EAD record in the index.");
+        SolrEADParser parser = Mockito.spy(eadParser);
+        ArchiveManager archiveManager = new ArchiveManager(parser);
+
+        assertNotNull(archiveManager.loadDatabase(parser, possibleDatabases.get(0)));
+        InOrder inOrder = Mockito.inOrder(parser);
+        inOrder.verify(parser).updateAssociatedRecordMapIfChanged();
+        inOrder.verify(parser).loadDatabase(Mockito.any(), Mockito.anyInt());
     }
 
     /**

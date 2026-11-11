@@ -104,7 +104,6 @@ public class ArchiveManager implements Serializable {
         ArchiveParser parser = null;
         try {
             parser = new SolrEADParser();
-            parser.updateAssociatedRecordMap();
             initArchives(parser);
             this.databaseState = DatabaseState.ARCHIVES_LOADED;
         } catch (PresentationException | IndexUnreachableException | IOException | HTTPException e) {
@@ -163,9 +162,8 @@ public class ArchiveManager implements Serializable {
             }
             ArchiveResource cachedResource =
                     cachedDatabases.keySet().stream().filter(res -> res.getResourceId().equals(db.getResourceId())).findAny().orElse(null);
-            ArchiveTree cachedTree = cachedResource != null ? cachedDatabases.get(cachedResource) : null;
-            if (cachedTree == null) {
-                logger.trace("Archive '{}' is not yet loaded.", db.getResourceId());
+            if (cachedResource == null) {
+                logger.trace("Archive '{}' is new.", db.getResourceId());
                 updatedArchives.put(db, null);
                 updated = true;
             } else if (isOutdated(cachedResource, db)) {
@@ -173,7 +171,8 @@ public class ArchiveManager implements Serializable {
                 updatedArchives.put(db, null);
                 updated = true;
             } else {
-                updatedArchives.put(cachedResource, cachedTree);
+                // The tree may still be null if nobody has opened the archive yet; that is no change
+                updatedArchives.put(cachedResource, cachedDatabases.get(cachedResource));
                 cachedDatabases.remove(cachedResource);
             }
         }
@@ -580,9 +579,11 @@ public class ArchiveManager implements Serializable {
      * @throws HTTPException
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @should update linked records before building the tree
      */
     ArchiveTree loadDatabase(ArchiveParser eadParser, ArchiveResource archive)
             throws IllegalStateException, IOException, HTTPException, PresentationException, IndexUnreachableException {
+        eadParser.updateAssociatedRecordMapIfChanged();
         ArchiveEntry rootElement = eadParser.loadDatabase(archive, DataManager.getInstance().getConfiguration().getArchivesLazyLoadingThreshold());
         if (rootElement != null) {
             logger.info("Loaded EAD database: {}", archive);
@@ -637,22 +638,22 @@ public class ArchiveManager implements Serializable {
 
     /**
      * Checks the list of ead archives for updates. An update occurs if either the "lastModifiedDate" of an archive has changed since the last
-     * request, or if an archive was added or removed. In these cases, the list of records associated with an archive entry is updated as well
+     * request, or if an archive was added or removed. The records linked to archive nodes are only loaded when an archive tree is built.
      *
      * @should keep already loaded archives resolvable while the archive list is reloaded
+     * @should not load linked records
      */
     public void updateArchiveList() {
         logger.trace("updateArchiveList"); //NOSONAR Debug
         try {
             if (this.initArchives(eadParser)) {
-                this.eadParser.updateAssociatedRecordMap();
                 this.databaseState = DatabaseState.ARCHIVES_LOADED;
             }
         } catch (IOException | HTTPException e) {
             logger.error("Failed to retrieve database names from '{}': {}", eadParser != null ? eadParser.getUrl() : "null", e.toString());
             this.databaseState = DatabaseState.ERROR_NOT_REACHABLE;
         } catch (PresentationException | IndexUnreachableException e) {
-            logger.error("Failed to retrieve associated records from SOLR: {}", e.toString());
+            logger.error("Failed to retrieve archives from SOLR: {}", e.toString());
             this.databaseState = DatabaseState.ERROR_NOT_REACHABLE;
         }
     }
