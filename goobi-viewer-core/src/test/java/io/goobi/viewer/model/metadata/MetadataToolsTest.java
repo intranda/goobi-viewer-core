@@ -111,6 +111,49 @@ class MetadataToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
+     * @see MetadataTools#getShapeMetadataByOwner(java.util.Collection)
+     * @verifies map shape docs to their owners
+     */
+    @Test
+    void getShapeMetadataByOwner_shouldMapShapeDocsToTheirOwners() throws Exception {
+        SolrDocumentList anyShape = DataManager.getInstance()
+                .getSearchIndex()
+                .search("+" + SolrConstants.DOCTYPE + ":METADATA +" + SolrConstants.METADATATYPE + ':' + MetadataGroupType.SHAPE.name(), 1, null,
+                        List.of(SolrConstants.IDDOC_OWNER));
+        Assertions.assertFalse(anyShape.isEmpty(), "test index must contain at least one SHAPE document");
+        String owner = String.valueOf(anyShape.get(0).getFirstValue(SolrConstants.IDDOC_OWNER));
+
+        Map<String, List<SolrDocument>> result = MetadataTools.getShapeMetadataByOwner(List.of(owner, iddocKleiuniv));
+
+        Assertions.assertFalse(result.get(owner).isEmpty());
+        Assertions.assertEquals(MetadataTools.getGroupedMetadata(owner, " +" + SolrConstants.METADATATYPE + ':' + MetadataGroupType.SHAPE.name(), null)
+                .size(), result.get(owner).size());
+        for (SolrDocument doc : result.get(owner)) {
+            Assertions.assertEquals(owner, String.valueOf(doc.getFirstValue(SolrConstants.IDDOC_OWNER)));
+        }
+    }
+
+    /**
+     * @see MetadataTools#getShapeMetadataByOwner(java.util.Collection)
+     * @verifies map owners without shapes to empty list
+     */
+    @Test
+    void getShapeMetadataByOwner_shouldMapOwnersWithoutShapesToEmptyList() throws Exception {
+        Map<String, List<SolrDocument>> result = MetadataTools.getShapeMetadataByOwner(List.of("0"));
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertTrue(result.get("0").isEmpty());
+    }
+
+    /**
+     * @see MetadataTools#getShapeMetadataByOwner(java.util.Collection)
+     * @verifies return empty map for empty input
+     */
+    @Test
+    void getShapeMetadataByOwner_shouldReturnEmptyMapForEmptyInput() throws Exception {
+        Assertions.assertTrue(MetadataTools.getShapeMetadataByOwner(List.of()).isEmpty());
+    }
+
+    /**
      * @see MetadataTools#generateRIS(String, Map, Long)
      * @verifies ignore stored NUMVOLUMES field
      */

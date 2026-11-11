@@ -167,6 +167,20 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement(String luceneId, SolrDocument doc, SolrDocument docToMerge) throws IndexUnreachableException {
+        this(luceneId, doc, docToMerge, null);
+    }
+
+    /**
+     * Creates a new StructElement instance with pre-loaded shape documents.
+     *
+     * @param luceneId Solr IDDOC of the document
+     * @param doc primary Solr document to initialize from
+     * @param docToMerge additional Solr document whose fields are merged into doc
+     * @param preloadedShapeDocs SHAPE child docs for this element (null falls back to Solr query)
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public StructElement(String luceneId, SolrDocument doc, SolrDocument docToMerge, List<SolrDocument> preloadedShapeDocs)
+            throws IndexUnreachableException {
         super(luceneId);
         if (docToMerge != null) {
             if (docToMerge.getFieldValue(SolrConstants.LABEL) != null) {
@@ -210,7 +224,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                 doc.addField(SolrConstants.BOOL_DIRECTION_RTL, docToMerge.getFieldValue(SolrConstants.BOOL_DIRECTION_RTL));
             }
         }
-        init(doc);
+        init(doc, preloadedShapeDocs);
     }
 
     /**

@@ -384,6 +384,46 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         assertNull(be.getThumbnailUrl());
     }
 
+    /**
+     * @see BrowseElement#getThumbnailFileName(StructElement)
+     * @verifies return FILENAME for page documents
+     */
+    @Test
+    void getThumbnailFileName_shouldReturnFILENAMEForPageDocuments() throws Exception {
+        StructElement se = new StructElement(new SolrDocument(Map.of(
+                SolrConstants.IDDOC, "1",
+                SolrConstants.ORDER, "3",
+                SolrConstants.FILENAME, "00000003.tif",
+                SolrConstants.THUMBNAIL, "00000001.tif")));
+        assertEquals("00000003.tif", BrowseElement.getThumbnailFileName(se));
+    }
+
+    /**
+     * @see BrowseElement#getThumbnailFileName(StructElement)
+     * @verifies return THUMBNAIL for structure elements
+     */
+    @Test
+    void getThumbnailFileName_shouldReturnTHUMBNAILForStructureElements() throws Exception {
+        StructElement se = new StructElement(new SolrDocument(Map.of(
+                SolrConstants.IDDOC, "1",
+                SolrConstants.THUMBPAGENO, "2",
+                SolrConstants.THUMBNAIL, "00000002.tif")));
+        assertEquals("00000002.tif", BrowseElement.getThumbnailFileName(se));
+    }
+
+    /**
+     * @see BrowseElement#getThumbnailFileName(StructElement)
+     * @verifies return null if FILENAME present without ORDER
+     */
+    @Test
+    void getThumbnailFileName_shouldReturnNullIfFILENAMEPresentWithoutORDER() throws Exception {
+        StructElement se = new StructElement(new SolrDocument(Map.of(
+                SolrConstants.IDDOC, "1",
+                SolrConstants.FILENAME, "00000005.tif",
+                SolrConstants.THUMBNAIL, "00000001.tif")));
+        assertNull(BrowseElement.getThumbnailFileName(se));
+    }
+
     // -- Tests for initMediaFlags --
 
     /**

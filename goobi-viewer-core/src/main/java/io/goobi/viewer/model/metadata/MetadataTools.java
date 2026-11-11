@@ -23,16 +23,21 @@ package io.goobi.viewer.model.metadata;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
@@ -695,6 +700,38 @@ public final class MetadataTools {
 
         // logger.trace("getGroupedMetadata query: {}", sbQuery.toString()); //NOSONAR Debug
         return DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, sortFields, null);
+    }
+
+    /**
+     * Loads the SHAPE metadata documents of several owner documents with a single Solr query.
+     *
+     * @param ownerIddocs IDDOC values of the owner documents
+     * @return map of owner IDDOC to its SHAPE documents; owners without shapes map to an empty list
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @should map shape docs to their owners
+     * @should map owners without shapes to empty list
+     * @should return empty map for empty input
+     */
+    public static Map<String, List<SolrDocument>> getShapeMetadataByOwner(Collection<String> ownerIddocs)
+            throws PresentationException, IndexUnreachableException {
+        Map<String, List<SolrDocument>> ret = new HashMap<>();
+        if (ownerIddocs == null || ownerIddocs.isEmpty()) {
+            return ret;
+        }
+        for (String iddoc : ownerIddocs) {
+            ret.put(iddoc, new ArrayList<>());
+        }
+        String query = "+" + SolrConstants.DOCTYPE + ':' + DocType.METADATA.name() + " +" + SolrConstants.METADATATYPE + ':'
+                + MetadataGroupType.SHAPE.name() + " +" + SolrConstants.IDDOC_OWNER + ":("
+                + ret.keySet().stream().map(iddoc -> '"' + iddoc + '"').collect(Collectors.joining(" OR ")) + ')';
+        for (SolrDocument doc : DataManager.getInstance().getSearchIndex().search(query, SolrSearchIndex.MAX_HITS, null, null)) {
+            List<SolrDocument> shapeDocs = ret.get(String.valueOf(doc.getFirstValue(SolrConstants.IDDOC_OWNER)));
+            if (shapeDocs != null) {
+                shapeDocs.add(doc);
+            }
+        }
+        return ret;
     }
 
     /**

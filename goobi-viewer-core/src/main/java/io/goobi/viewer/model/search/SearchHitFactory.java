@@ -50,7 +50,9 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.metadata.Metadata;
+import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.metadata.MetadataWrapper;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -86,6 +88,8 @@ public class SearchHitFactory {
 
     private ThumbnailHandler thumbnailHandler;
     private Locale locale;
+    private Map<String, List<SolrDocument>> preloadedShapeDocs = Collections.emptyMap();
+    private final CitationProcessorWrapper citationProcessorWrapper = new CitationProcessorWrapper();
 
     /**
      * 
@@ -119,6 +123,7 @@ public class SearchHitFactory {
      * @throws DAOException
      * @should find with umlaut
      * @should find umlaute
+     * @should produce the same citation as a separate factory per hit
      */
     public SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, String fulltext, HitType overrideType)
             throws PresentationException, IndexUnreachableException, DAOException {
@@ -127,7 +132,8 @@ public class SearchHitFactory {
                 (fulltext == null || searchTerms == null) ? null
                         : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT), fulltext,
                                 DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), true, true, proximitySearchDistance);
-        StructElement se = new StructElement((String) doc.getFieldValue(SolrConstants.IDDOC), doc, ownerDoc);
+        String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
+        StructElement se = new StructElement(iddoc, doc, ownerDoc, preloadedShapeDocs.get(iddoc));
         String docstructType = se.getDocStructType();
         if (DocType.METADATA.name().equals(se.getMetadataValue(SolrConstants.DOCTYPE))) {
             docstructType = DocType.METADATA.name();
@@ -153,7 +159,7 @@ public class SearchHitFactory {
         Map<String, Set<String>> cleanedUpSearchTerms = getActualSearchTerms(searchTerms, searchedFields);
         BrowseElement browseElement = new BrowseElement(se, metadataListMap, locale,
                 (fulltextFragments != null && !fulltextFragments.isEmpty()) ? fulltextFragments.get(0) : null, cleanedUpSearchTerms,
-                thumbnailHandler, this.user);
+                thumbnailHandler, this.user, citationProcessorWrapper);
         // Add additional metadata fields that aren't configured for search hits but contain search term values
         if (DataManager.getInstance().getConfiguration().isDisplayAdditionalMetadataEnabled()) {
             Optional<String> labelValue = browseElement.getLabelAsMetadataValue().getValue();
@@ -276,6 +282,24 @@ public class SearchHitFactory {
      */
     public SearchHitFactory setUser(User user) {
         this.user = user;
+        return this;
+    }
+
+    /**
+     * Loads the SHAPE metadata of all given documents with one Solr query, so that hits created from these documents need no query of their own.
+     *
+     * @param docs Solr documents from which search hits will be created
+     * @return this
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @should avoid per hit shape queries
+     */
+    public SearchHitFactory preloadShapeMetadata(Collection<SolrDocument> docs) throws PresentationException, IndexUnreachableException {
+        List<String> iddocs = docs.stream()
+                .map(doc -> (String) doc.getFieldValue(SolrConstants.IDDOC))
+                .filter(StringUtils::isNotEmpty)
+                .toList();
+        this.preloadedShapeDocs = MetadataTools.getShapeMetadataByOwner(iddocs);
         return this;
     }
 

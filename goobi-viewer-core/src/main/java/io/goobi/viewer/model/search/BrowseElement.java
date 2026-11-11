@@ -259,6 +259,27 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     BrowseElement(StructElement structElement, Map<String, List<Metadata>> metadataListMap, Locale locale, String fulltext,
             Map<String, Set<String>> searchTerms, ThumbnailHandler thumbs, User user)
             throws PresentationException, IndexUnreachableException, DAOException {
+        this(structElement, metadataListMap, locale, fulltext, searchTerms, thumbs, user, new CitationProcessorWrapper());
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param structElement {@link StructElement}
+     * @param metadataListMap map of metadata list type names to metadata lists
+     * @param locale locale for translations
+     * @param fulltext full-text content for the element
+     * @param searchTerms map of field names to sets of search terms for highlighting
+     * @param thumbs thumbnail handler for generating thumbnail URLs
+     * @param user The user for whom the thumbnail accessCondition is calculated. If null, it is fetched from the jsfContext if one exists
+     * @param citationProcessorWrapper citation processors to reuse across the elements of one search
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    BrowseElement(StructElement structElement, Map<String, List<Metadata>> metadataListMap, Locale locale, String fulltext,
+            Map<String, Set<String>> searchTerms, ThumbnailHandler thumbs, User user, CitationProcessorWrapper citationProcessorWrapper)
+            throws PresentationException, IndexUnreachableException, DAOException {
         if (structElement == null) {
             throw new IllegalArgumentException("structElement may not be null");
         }
@@ -299,7 +320,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         sidebarPrevUrl = generateSidebarUrl("prevHit");
         sidebarNextUrl = generateSidebarUrl("nextHit");
 
-        initCitationString(hierarchy.top());
+        initCitationString(hierarchy.top(), citationProcessorWrapper);
 
         Collections.reverse(structElements);
     }
@@ -432,6 +453,28 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
+     * Returns the file name of the page that represents the given element as thumbnail.
+     *
+     * <p>Page documents carry their own FILENAME; structure elements name their representative page in THUMBNAIL. Documents with a FILENAME but
+     * no ORDER are not covered, because their page number is derived from the file name.
+     *
+     * @param structElement hit document or first volume
+     * @return thumbnail file name; null if it cannot be determined from the document fields
+     * @should return FILENAME for page documents
+     * @should return THUMBNAIL for structure elements
+     * @should return null if FILENAME present without ORDER
+     */
+    static String getThumbnailFileName(StructElement structElement) {
+        if (StringUtils.isNotEmpty(structElement.getMetadataValue(SolrConstants.ORDER))) {
+            return structElement.getMetadataValue(SolrConstants.FILENAME);
+        }
+        if (StringUtils.isEmpty(structElement.getMetadataValue(SolrConstants.FILENAME))) {
+            return structElement.getMetadataValue(SolrConstants.THUMBNAIL);
+        }
+        return null;
+    }
+
+    /**
      * Determines the image/page number from ORDER, FILENAME, or THUMBPAGENO fields.
      */
     private void resolveImageNo(StructElement structElement) {
@@ -478,16 +521,27 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         }
 
         String thumbnailPi = pi;
+        StructElement thumbnailSource = structElement;
         if ((isAnchor() || isGroup()) && StringConstants.ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME
                 .equals(DataManager.getInstance().getConfiguration().getAnchorThumbnailMode())) {
             StructElement firstVolume = structElement.getFirstVolume(new ArrayList<>(ThumbnailHandler.REQUIRED_SOLR_FIELDS));
             if (firstVolume != null) {
                 thumbnailPi = firstVolume.getPi();
+                thumbnailSource = firstVolume;
                 logger.trace("Using first volume for thumbnail: {}", thumbnailPi);
                 String thumbPageNo = firstVolume.getMetadataValue(SolrConstants.THUMBPAGENO);
                 imageNo = StringUtils.isNotBlank(thumbPageNo) ? Integer.parseInt(thumbPageNo) : 1;
             }
         }
+
+        // The access check only needs PI and file name; loading the page document would cost several Solr queries per hit
+        String thumbnailFileName = getThumbnailFileName(thumbnailSource);
+        if (StringUtils.isNotBlank(thumbnailFileName)) {
+            accessPermissionThumbnail =
+                    AccessConditionUtils.getAccessPermission(thumbnailPi, thumbnailFileName, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, user);
+            return;
+        }
+
         PhysicalElement pe = ThumbnailHandler.getPage(thumbnailPi, imageNo);
         if (pe != null) {
             accessPermissionThumbnail = pe.getAccessPermission(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, user);
@@ -1567,7 +1621,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return url + (url.contains("?") ? "&" : "?") + queryParam;
     }
 
-    private void initCitationString(StructElement topStructElement) {
+    private void initCitationString(StructElement topStructElement, CitationProcessorWrapper wrapper) {
         citationStringPlain = "";
         Configuration config = DataManager.getInstance().getConfiguration();
         if (!config.isDisplaySidebarWidgetCitationCitationRecommendation()) {
@@ -1581,7 +1635,6 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
             return;
         }
         try {
-            CitationProcessorWrapper wrapper = new CitationProcessorWrapper();
             CSL processor = wrapper.getCitationProcessor(availableStyles.get(0));
             Metadata md = config.getSidebarWidgetCitationCitationRecommendationSource();
             if (md == null) {

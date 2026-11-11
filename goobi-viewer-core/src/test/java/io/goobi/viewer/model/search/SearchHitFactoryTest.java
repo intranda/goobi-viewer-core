@@ -33,8 +33,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -46,6 +48,7 @@ import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataWrapper;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 class SearchHitFactoryTest extends AbstractSolrEnabledTest {
 
@@ -80,6 +83,49 @@ class SearchHitFactoryTest extends AbstractSolrEnabledTest {
     /**
      * @verifies add metadata fields that match search terms
      */
+    /**
+     * @see SearchHitFactory#createSearchHit(SolrDocument, SolrDocument, String, HitType)
+     * @verifies produce the same citation as a separate factory per hit
+     */
+    @Test
+    void createSearchHit_shouldProduceTheSameCitationAsASeparateFactoryPerHit() throws Exception {
+        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search("+" + SolrConstants.ISWORK + ":true", 5, null, null);
+        Assertions.assertTrue(docs.size() > 1);
+        SearchHitFactory sharedFactory = new SearchHitFactory(null, null, null, 0, null, Locale.ENGLISH);
+        for (SolrDocument doc : docs) {
+            String shared = sharedFactory.createSearchHit(new SolrDocument(new HashMap<>(doc)), null, null, null).getBrowseElement().getCitationStringPlain();
+            String separate = new SearchHitFactory(null, null, null, 0, null, Locale.ENGLISH).createSearchHit(new SolrDocument(new HashMap<>(doc)), null, null, null)
+                    .getBrowseElement()
+                    .getCitationStringPlain();
+            assertEquals(separate, shared);
+        }
+    }
+
+    /**
+     * @see SearchHitFactory#preloadShapeMetadata(java.util.Collection)
+     * @verifies avoid per hit shape queries
+     */
+    @Test
+    void preloadShapeMetadata_shouldAvoidPerHitShapeQueries() throws Exception {
+        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search("+" + SolrConstants.ISWORK + ":true", 5, null, null);
+        Assertions.assertFalse(docs.isEmpty());
+        SolrSearchIndex spy = Mockito.spy(DataManager.getInstance().getSearchIndex());
+        DataManager.getInstance().injectSearchIndex(spy);
+
+        SearchHitFactory factory = new SearchHitFactory(null, null, null, 0, null, Locale.ENGLISH).preloadShapeMetadata(docs);
+        Mockito.clearInvocations(spy);
+        for (SolrDocument doc : docs) {
+            factory.createSearchHit(doc, null, null, null);
+        }
+
+        // Parent documents of volume hits are not preloaded, so only the hits' own IDDOCs are checked
+        for (SolrDocument doc : docs) {
+            Mockito.verify(spy, Mockito.never())
+                    .search(Mockito.contains(SolrConstants.IDDOC_OWNER + ":\"" + doc.getFieldValue(SolrConstants.IDDOC) + "\""), Mockito.anyInt(),
+                            Mockito.any(), Mockito.any());
+        }
+    }
+
     @Test
     void findAdditionalMetadataFieldsContainingSearchTerms_shouldAddMetadataFieldsThatMatchSearchTerms() {
         BrowseElement be = new BrowseElement(null, 1, "label", null, Locale.ENGLISH, null, null);
