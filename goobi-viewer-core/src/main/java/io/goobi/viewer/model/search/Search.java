@@ -331,6 +331,7 @@ public class Search implements Serializable {
      * @should populate DC unfiltered facet
      * @should populate year range facets
      * @should populate unfiltered facets for always apply fields
+     * @should skip range and unfiltered facet queries if no such fields are configured
      */
     public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, Locale locale)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
@@ -641,6 +642,9 @@ public class Search implements Serializable {
             Map<String, String> params) throws PresentationException, IndexUnreachableException {
         logger.trace("populateRanges");
         List<String> rangeFacetFields = collectRangeFacetFields();
+        if (rangeFacetFields.isEmpty()) {
+            return;
+        }
 
         List<String> activeFilterQueries = facets.generateFacetFilterQueries(false);
         if (StringUtils.isNotEmpty(customFilterQuery)) {
@@ -679,6 +683,9 @@ public class Search implements Serializable {
             Map<String, String> params, Locale locale) throws PresentationException, IndexUnreachableException {
         logger.trace("populateUnfilteredFacets");
         List<String> unfilteredFacetFields = collectUnfilteredFacetFields();
+        if (unfilteredFacetFields.isEmpty()) {
+            return;
+        }
 
         List<String> activeFilterQueries = new ArrayList<>(2);
         if (StringUtils.isNotEmpty(customFilterQuery)) {
