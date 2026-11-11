@@ -1538,4 +1538,202 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         assertArrayEquals(new String[] { IPrivilegeHolder.PRIV_VIEW_IMAGES },
                 AccessConditionUtils.getRequiredPrivilegesForImageAction("file.jpg").getPrivileges(DocType.PAGE));
     }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionByIdentifierAndPageOrder(String, Integer, String, HttpServletRequest)
+     * @verifies check access conditions of page document
+     */
+    @Test
+    void checkAccessPermissionByIdentifierAndPageOrder_shouldCheckAccessConditionsOfPageDocument() throws Exception {
+        assertTrue(AccessConditionUtils.checkAccessPermissionByIdentifierAndPageOrder(PI_KLEIUNIV, 1, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, null)
+                .isGranted());
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionByIdentifierAndPageOrder(String, Integer, String, HttpServletRequest)
+     * @verifies deny access if page not found
+     */
+    @Test
+    void checkAccessPermissionByIdentifierAndPageOrder_shouldDenyAccessIfPageNotFound() throws Exception {
+        assertFalse(AccessConditionUtils
+                .checkAccessPermissionByIdentifierAndPageOrder(PI_KLEIUNIV, 99999, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, null)
+                .isGranted());
+    }
+
+    /**
+     * @see AccessConditionUtils#isAllPagesGrantedForPdf(String, String, HttpServletRequest)
+     * @verifies return true for open access record
+     */
+    @Test
+    void isAllPagesGrantedForPdf_shouldReturnTrueForOpenAccessRecord() {
+        assertTrue(AccessConditionUtils.isAllPagesGrantedForPdf(PI_KLEIUNIV, null, null));
+    }
+
+    /**
+     * @see AccessConditionUtils#isAllPagesGrantedForPdf(String, String, HttpServletRequest)
+     * @verifies return false for blank pi
+     */
+    @Test
+    void isAllPagesGrantedForPdf_shouldReturnFalseForBlankPi() {
+        assertFalse(AccessConditionUtils.isAllPagesGrantedForPdf("", null, null));
+    }
+
+    /**
+     * @see AccessConditionUtils#isAllPagesGranted(Set, String)
+     * @verifies return true if no page is denied
+     */
+    @Test
+    void isAllPagesGranted_shouldReturnTrueIfNoPageIsDenied() {
+        assertTrue(AccessConditionUtils.isAllPagesGranted(Collections.emptySet(), null));
+        assertTrue(AccessConditionUtils.isAllPagesGranted(Collections.emptySet(), "LOG_0001"));
+    }
+
+    /**
+     * @see AccessConditionUtils#isAllPagesGranted(Set, String)
+     * @verifies return false for record if any page is denied
+     */
+    @Test
+    void isAllPagesGranted_shouldReturnFalseForRecordIfAnyPageIsDenied() {
+        Set<String> denied = Set.of("LOG_0000", "LOG_0008");
+        assertFalse(AccessConditionUtils.isAllPagesGranted(denied, null));
+        assertFalse(AccessConditionUtils.isAllPagesGranted(denied, "-"));
+    }
+
+    /**
+     * @see AccessConditionUtils#isAllPagesGranted(Set, String)
+     * @verifies return false for structure element containing denied page
+     */
+    @Test
+    void isAllPagesGranted_shouldReturnFalseForStructureElementContainingDeniedPage() {
+        assertFalse(AccessConditionUtils.isAllPagesGranted(Set.of("LOG_0000", "LOG_0008"), "LOG_0008"));
+    }
+
+    /**
+     * @see AccessConditionUtils#isAllPagesGranted(Set, String)
+     * @verifies return true for structure element not containing denied page
+     */
+    @Test
+    void isAllPagesGranted_shouldReturnTrueForStructureElementNotContainingDeniedPage() {
+        assertTrue(AccessConditionUtils.isAllPagesGranted(Set.of("LOG_0000", "LOG_0008"), "LOG_0009"));
+    }
+
+    /**
+     * @see AccessConditionUtils#isAllPagesGranted(Set, String)
+     * @verifies return false if permissions could not be determined
+     */
+    @Test
+    void isAllPagesGranted_shouldReturnFalseIfPermissionsCouldNotBeDetermined() {
+        Set<String> denied = Set.of(AccessConditionUtils.LOGID_ALL_PAGES_DENIED);
+        assertFalse(AccessConditionUtils.isAllPagesGranted(denied, null));
+        assertFalse(AccessConditionUtils.isAllPagesGranted(denied, "LOG_0009"));
+    }
+
+    /**
+     * @see AccessConditionUtils#collectLogIdsWithDeniedPages(List, List, List, java.util.function.Predicate)
+     * @verifies mark owner and all ancestors of denied page
+     */
+    @Test
+    void collectLogIdsWithDeniedPages_shouldMarkOwnerAndAllAncestorsOfDeniedPage() {
+        List<SolrDocument> docstructDocs = createDocstructTree();
+        List<SolrDocument> pageDocs = List.of(createPageDoc("1", SolrConstants.OPEN_ACCESS_VALUE), createPageDoc("3", "restricted"));
+
+        Set<String> result =
+                AccessConditionUtils.collectLogIdsWithDeniedPages(pageDocs, docstructDocs, List.of(), c -> !c.contains("restricted"));
+        assertEquals(Set.of("LOG_0000", "LOG_0001", "LOG_0002"), result);
+    }
+
+    /**
+     * @see AccessConditionUtils#collectLogIdsWithDeniedPages(List, List, List, java.util.function.Predicate)
+     * @verifies not mark anything if all pages granted
+     */
+    @Test
+    void collectLogIdsWithDeniedPages_shouldNotMarkAnythingIfAllPagesGranted() {
+        List<SolrDocument> pageDocs = List.of(createPageDoc("1", SolrConstants.OPEN_ACCESS_VALUE), createPageDoc("3", "restricted"));
+
+        assertTrue(AccessConditionUtils.collectLogIdsWithDeniedPages(pageDocs, createDocstructTree(), List.of(), c -> true).isEmpty());
+    }
+
+    /**
+     * @see AccessConditionUtils#collectLogIdsWithDeniedPages(List, List, List, java.util.function.Predicate)
+     * @verifies mark top element for denied page without known owner
+     */
+    @Test
+    void collectLogIdsWithDeniedPages_shouldMarkTopElementForDeniedPageWithoutKnownOwner() {
+        List<SolrDocument> pageDocs = List.of(createPageDoc(null, "restricted"), createPageDoc("999", "restricted"));
+
+        Set<String> result =
+                AccessConditionUtils.collectLogIdsWithDeniedPages(pageDocs, createDocstructTree(), List.of(), c -> !c.contains("restricted"));
+        assertEquals(Set.of("LOG_0000"), result);
+    }
+
+    /**
+     * @see AccessConditionUtils#collectLogIdsWithDeniedPages(List, List, List, java.util.function.Predicate)
+     * @verifies mark owner and all ancestors of area on denied page
+     */
+    @Test
+    void collectLogIdsWithDeniedPages_shouldMarkOwnerAndAllAncestorsOfAreaOnDeniedPage() {
+        // Page 6 is owned by the top element; LOG_0002 only has an area on page 6, LOG_0003 an area on open page 5
+        List<SolrDocument> pageDocs = List.of(createPageDoc("1", 5, SolrConstants.OPEN_ACCESS_VALUE), createPageDoc("1", 6, "restricted"));
+        List<SolrDocument> shapeDocs = List.of(createShapeDoc("3", 6), createShapeDoc("4", 5));
+
+        Set<String> result =
+                AccessConditionUtils.collectLogIdsWithDeniedPages(pageDocs, createDocstructTree(), shapeDocs, c -> !c.contains("restricted"));
+        assertEquals(Set.of("LOG_0000", "LOG_0001", "LOG_0002"), result);
+    }
+
+    /**
+     * @see AccessConditionUtils#collectLogIdsWithDeniedPages(List, List, List, java.util.function.Predicate)
+     * @verifies not mark owner of area on granted page
+     */
+    @Test
+    void collectLogIdsWithDeniedPages_shouldNotMarkOwnerOfAreaOnGrantedPage() {
+        List<SolrDocument> pageDocs = List.of(createPageDoc("1", 5, SolrConstants.OPEN_ACCESS_VALUE), createPageDoc("2", 6, "restricted"));
+        List<SolrDocument> shapeDocs = List.of(createShapeDoc("4", 5));
+
+        Set<String> result =
+                AccessConditionUtils.collectLogIdsWithDeniedPages(pageDocs, createDocstructTree(), shapeDocs, c -> !c.contains("restricted"));
+        assertEquals(Set.of("LOG_0000", "LOG_0001"), result);
+    }
+
+    /**
+     * @return Structure element docs: LOG_0000 (IDDOC 1) with children LOG_0001 (IDDOC 2) and LOG_0003 (IDDOC 4); LOG_0002 (IDDOC 3) is a
+     *         child of LOG_0001
+     */
+    private static List<SolrDocument> createDocstructTree() {
+        return List.of(createDocstructDoc("1", null, "LOG_0000"), createDocstructDoc("2", "1", "LOG_0001"), createDocstructDoc("3", "2", "LOG_0002"),
+                createDocstructDoc("4", "1", "LOG_0003"));
+    }
+
+    private static SolrDocument createDocstructDoc(String iddoc, String parentIddoc, String logId) {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.IDDOC, iddoc);
+        if (parentIddoc != null) {
+            doc.setField(SolrConstants.IDDOC_PARENT, parentIddoc);
+        }
+        doc.setField(SolrConstants.LOGID, logId);
+        return doc;
+    }
+
+    private static SolrDocument createPageDoc(String ownerIddoc, String accessCondition) {
+        return createPageDoc(ownerIddoc, null, accessCondition);
+    }
+
+    private static SolrDocument createPageDoc(String ownerIddoc, Integer order, String accessCondition) {
+        SolrDocument doc = new SolrDocument();
+        if (ownerIddoc != null) {
+            doc.setField(SolrConstants.IDDOC_OWNER, ownerIddoc);
+        }
+        if (order != null) {
+            doc.setField(SolrConstants.ORDER, order);
+        }
+        doc.addField(SolrConstants.ACCESSCONDITION, accessCondition);
+        return doc;
+    }
+
+    private static SolrDocument createShapeDoc(String ownerIddoc, int order) {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.IDDOC_OWNER, ownerIddoc);
+        doc.setField(SolrConstants.ORDER, order);
+        return doc;
+    }
 }

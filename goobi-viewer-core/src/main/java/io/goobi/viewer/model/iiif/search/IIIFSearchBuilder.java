@@ -63,6 +63,7 @@ import io.goobi.viewer.model.iiif.search.model.SearchTermList;
 import io.goobi.viewer.model.iiif.search.parser.AbstractSearchParser;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.security.PagePermissions;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
@@ -627,7 +628,8 @@ public class IIIFSearchBuilder {
 
     /**
      * Checks whether the current request is allowed to view the fulltext of the searched record. Fulltext search hits expose OCR content, so the
-     * search-within endpoint must honour the same VIEW_FULLTEXT privilege as the per-page text endpoint. Errors are treated as denied.
+     * search-within endpoint must honour the same VIEW_FULLTEXT privilege as the per-page text endpoint. Errors are treated as denied. This is
+     * only the record-level gate; {@link #searchFulltext(String, String, int, int)} additionally checks each hit page.
      *
      * @return true if VIEW_FULLTEXT is granted for {@link #pi}, false otherwise
      * @throws IndexUnreachableException
@@ -678,10 +680,18 @@ public class IIIFSearchBuilder {
         SolrDocumentList docList = DataManager.getInstance()
                 .getSearchIndex()
                 .search(queryBuilder.toString(), SolrSearchIndex.MAX_HITS, getPageSortFields(), FULLTEXTFIELDLIST);
+        if (docList.isEmpty()) {
+            return results;
+        }
+        // Pages can be more restricted than the record, so check each hit page (unknown pages and lookup errors are denied)
+        PagePermissions pagePermissions = AccessConditionUtils.fetchPagePermissions(pi, request);
         for (SolrDocument doc : docList) {
+            Integer pageNo = SolrTools.getAsInt(doc.getFieldValue(SolrConstants.ORDER));
+            if (pageNo == null || !pagePermissions.isFulltextGranted(pageNo)) {
+                continue;
+            }
             Path altoFile = getPath(pi, SolrTools.getSingleFieldStringValue(doc, SolrConstants.FILENAME_ALTO));
             Path fulltextFile = getPath(pi, SolrTools.getSingleFieldStringValue(doc, SolrConstants.FILENAME_FULLTEXT));
-            Integer pageNo = SolrTools.getAsInt(doc.getFieldValue(SolrConstants.ORDER));
             converter.setPageNo(pageNo);
             try {
                 if (altoFile != null && Files.exists(altoFile)) {

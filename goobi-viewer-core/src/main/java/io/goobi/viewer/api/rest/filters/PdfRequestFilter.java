@@ -122,6 +122,10 @@ public class PdfRequestFilter implements ContainerRequestFilter {
                 }
             }
             filterForAccessConditions(pi, divId, privName);
+            if (imageName == null) {
+                // Record or chapter PDF: contains all pages of the structure element, which can be more restricted than the element itself
+                filterForPageAccessConditions(pi, divId);
+            }
             filterForDownloadQuota(pi, divId, imageName, servletRequest);
             addRequestParameters(pi, divId, imageName, request);
         } catch (ServiceNotAllowedException | IndexUnreachableException | PresentationException | DAOException e) {
@@ -365,6 +369,20 @@ public class PdfRequestFilter implements ContainerRequestFilter {
 
         if (!access.isGranted()) {
             logger.trace("Access denied for {}/{}", pi, privName);
+            throw new ServiceNotAllowedException("Serving this content is restricted due to access conditions");
+        }
+    }
+
+    /**
+     * Denies a record or chapter PDF if it would contain any page for which the PDF download privilege is not granted.
+     *
+     * @param pi record identifier to check access for
+     * @param divId structure element log ID, or null for full record
+     * @throws ServiceNotAllowedException if any contained page is restricted
+     */
+    void filterForPageAccessConditions(String pi, String divId) throws ServiceNotAllowedException {
+        if (!AccessConditionUtils.isAllPagesGrantedForPdf(pi, divId, servletRequest)) {
+            logger.trace("Access denied for {}/{} due to restricted pages", pi, divId);
             throw new ServiceNotAllowedException("Serving this content is restricted due to access conditions");
         }
     }

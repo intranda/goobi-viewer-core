@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
@@ -66,6 +67,7 @@ import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 import jakarta.faces.context.FacesContext;
@@ -81,6 +83,9 @@ public final class AccessConditionUtils {
 
     /** Maximum number of identifiers per Solr terms query before chunking kicks in. */
     private static final int PERMISSION_BATCH_CHUNK_SIZE = 500;
+
+    /** Pseudo LOGID returned by {@link #getLogIdsWithDeniedPages} if the page permissions could not be determined; denies every PDF. */
+    static final String LOGID_ALL_PAGES_DENIED = "_ALL_PAGES_DENIED_";
 
     /**
      * Private constructor to prevent instantiation.
@@ -684,6 +689,197 @@ public final class AccessConditionUtils {
     }
 
     /**
+     * Checks whether a PDF (or EPUB) of the given record or structure element may be delivered with regard to the access conditions of the
+     * contained pages. Such a PDF contains every page of the structure element and its descendants, and pages can be more restricted than the
+     * structure element itself (e.g. pages containing a restricted area or chapter). The access conditions of the structure element itself are
+     * not checked here.
+     *
+     * @param pi persistent identifier of the record
+     * @param logId LOGID of the structure element; blank or "-" for the entire record
+     * @param request HTTP servlet request providing session and IP address (may be null)
+     * @return true if {@link IPrivilegeHolder#PRIV_DOWNLOAD_PDF} is granted for all pages of the record or structure element; false otherwise
+     * @should return true for open access record
+     * @should return false for blank pi
+     */
+    public static boolean isAllPagesGrantedForPdf(String pi, String logId, HttpServletRequest request) {
+        return isAllPagesGranted(getLogIdsWithDeniedPages(pi, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request), logId);
+    }
+
+    /**
+     * @param logIdsWithDeniedPages result of {@link #getLogIdsWithDeniedPages(String, String, HttpServletRequest)}
+     * @param logId LOGID of the structure element; blank or "-" for the entire record
+     * @return true if the record or structure element contains no denied pages; false otherwise
+     * @should return true if no page is denied
+     * @should return false for record if any page is denied
+     * @should return false for structure element containing denied page
+     * @should return true for structure element not containing denied page
+     * @should return false if permissions could not be determined
+     */
+    public static boolean isAllPagesGranted(Set<String> logIdsWithDeniedPages, String logId) {
+        if (logIdsWithDeniedPages.contains(LOGID_ALL_PAGES_DENIED)) {
+            return false;
+        }
+        if (StringUtils.isBlank(logId) || "-".equals(logId)) {
+            // Every denied page also marks the top structure element, so any entry means the record contains a denied page
+            return logIdsWithDeniedPages.isEmpty();
+        }
+
+        return !logIdsWithDeniedPages.contains(logId);
+    }
+
+    /**
+     * Determines the LOGIDs of all structure elements of the given record that contain at least one page for which the given privilege is not
+     * granted. A page is mapped to its owning (lowest) structure element via IDDOC_OWNER and from there to all ancestors via IDDOC_PARENT.
+     * Structure elements that are only mapped to an area (mets:area) of a page contain that page's image as well; they are found via the SHAPE
+     * metadata documents, which carry the owning structure element and the page ORDER. The result is cached in the user session.
+     *
+     * @param pi persistent identifier of the record
+     * @param privilegeName access privilege name to verify for each page
+     * @param request HTTP servlet request providing session and IP address (may be null)
+     * @return Set of LOGIDs; contains {@link #LOGID_ALL_PAGES_DENIED} if the page permissions could not be determined
+     */
+    public static Set<String> getLogIdsWithDeniedPages(String pi, String privilegeName, HttpServletRequest request) {
+        if (StringUtils.isBlank(pi)) {
+            return Collections.singleton(LOGID_ALL_PAGES_DENIED);
+        }
+
+        String attributeName = IPrivilegeHolder.PREFIX_PRIV + "PAGES_" + privilegeName + "_" + pi;
+        HttpSession session = request != null ? request.getSession(false) : null;
+        if (getSessionPermission(attributeName, session) instanceof Set<?> cached) {
+            return cached.stream().map(Object::toString).collect(Collectors.toSet());
+        }
+
+        Set<String> ret;
+        String pageQuery = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi + " +" + SolrConstants.DOCTYPE + ":" + DocType.PAGE;
+        try {
+            SolrDocumentList pageDocs = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(pageQuery, SolrSearchIndex.MAX_HITS, null,
+                            Arrays.asList(SolrConstants.IDDOC_OWNER, SolrConstants.ACCESSCONDITION, SolrConstants.ORDER));
+            if (pageDocs == null || pageDocs.isEmpty()) {
+                ret = new HashSet<>();
+            } else {
+                SolrDocumentList docstructDocs = DataManager.getInstance()
+                        .getSearchIndex()
+                        .search("+" + SolrConstants.PI_TOPSTRUCT + ":" + pi + " +" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT,
+                                SolrSearchIndex.MAX_HITS, null, Arrays.asList(SolrConstants.IDDOC, SolrConstants.IDDOC_PARENT, SolrConstants.LOGID));
+
+                // Evaluate each distinct combination of access conditions only once
+                List<LicenseType> licenseTypes = DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes();
+                User user = retrieveUserFromContext(session);
+                String ipAddress = NetTools.getIpAddress(request);
+                Optional<ClientApplication> client = ClientApplicationManager.getClientFromRequest(request);
+                Map<Set<String>, Boolean> grantedMap = new HashMap<>();
+                for (SolrDocument pageDoc : pageDocs) {
+                    Set<String> accessConditions = getAccessConditions(pageDoc);
+                    if (!grantedMap.containsKey(accessConditions)) {
+                        grantedMap.put(accessConditions,
+                                checkAccessPermission(licenseTypes, accessConditions, privilegeName, user, ipAddress, client, pageQuery).isGranted());
+                    }
+                }
+                // Areas only matter if they lie on a denied page, so only load them in that case
+                List<SolrDocument> shapeDocs = Collections.emptyList();
+                if (grantedMap.containsValue(false)) {
+                    shapeDocs = DataManager.getInstance()
+                            .getSearchIndex()
+                            .search("+" + SolrConstants.PI_TOPSTRUCT + ":" + pi + " +" + SolrConstants.DOCTYPE + ":" + DocType.METADATA + " +"
+                                    + SolrConstants.METADATATYPE + ":" + MetadataGroupType.SHAPE, SolrSearchIndex.MAX_HITS, null,
+                                    Arrays.asList(SolrConstants.IDDOC_OWNER, SolrConstants.ORDER));
+                }
+                ret = collectLogIdsWithDeniedPages(pageDocs, docstructDocs, shapeDocs, c -> Boolean.TRUE.equals(grantedMap.get(c)));
+            }
+        } catch (PresentationException | IndexUnreachableException | DAOException e) {
+            logger.error("Failed to check page access conditions for PI '{}', denying access: {}", pi, e.getMessage());
+            // Do not cache, so that the next request tries again
+            return Collections.singleton(LOGID_ALL_PAGES_DENIED);
+        }
+
+        addSessionPermission(attributeName, ret, session);
+        return ret;
+    }
+
+    /**
+     * Collects the LOGIDs of all structure elements that own a denied page or an area on a denied page, either directly or via a descendant.
+     *
+     * @param pageDocs page documents with IDDOC_OWNER, ACCESSCONDITION and ORDER
+     * @param docstructDocs structure element documents of the same record with IDDOC, IDDOC_PARENT and LOGID
+     * @param shapeDocs SHAPE metadata documents of the same record with IDDOC_OWNER and ORDER (of the page containing the area)
+     * @param granted returns true if the given set of access conditions is granted
+     * @return Set of LOGIDs of structure elements containing denied pages
+     * @should mark owner and all ancestors of denied page
+     * @should not mark anything if all pages granted
+     * @should mark top element for denied page without known owner
+     * @should mark owner and all ancestors of area on denied page
+     * @should not mark owner of area on granted page
+     */
+    static Set<String> collectLogIdsWithDeniedPages(List<SolrDocument> pageDocs, List<SolrDocument> docstructDocs, List<SolrDocument> shapeDocs,
+            Predicate<Set<String>> granted) {
+        Map<String, String> logIdMap = new HashMap<>();
+        Map<String, String> parentMap = new HashMap<>();
+        Set<String> rootIddocs = new HashSet<>();
+        for (SolrDocument doc : docstructDocs) {
+            String iddoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC);
+            if (iddoc == null) {
+                continue;
+            }
+            logIdMap.put(iddoc, SolrTools.getSingleFieldStringValue(doc, SolrConstants.LOGID));
+            String parentIddoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC_PARENT);
+            if (StringUtils.isNotEmpty(parentIddoc)) {
+                parentMap.put(iddoc, parentIddoc);
+            } else {
+                rootIddocs.add(iddoc);
+            }
+        }
+
+        // Owners of denied pages, plus owners of areas on denied pages (their PDF contains the image of the whole page)
+        List<String> deniedOwnerIddocs = new ArrayList<>();
+        Set<Integer> deniedOrders = new HashSet<>();
+        for (SolrDocument pageDoc : pageDocs) {
+            if (!granted.test(getAccessConditions(pageDoc))) {
+                deniedOwnerIddocs.add(SolrTools.getSingleFieldStringValue(pageDoc, SolrConstants.IDDOC_OWNER));
+                Integer order = SolrTools.getSingleFieldIntegerValue(pageDoc, SolrConstants.ORDER);
+                if (order != null) {
+                    deniedOrders.add(order);
+                }
+            }
+        }
+        for (SolrDocument shapeDoc : shapeDocs) {
+            if (deniedOrders.contains(SolrTools.getSingleFieldIntegerValue(shapeDoc, SolrConstants.ORDER))) {
+                deniedOwnerIddocs.add(SolrTools.getSingleFieldStringValue(shapeDoc, SolrConstants.IDDOC_OWNER));
+            }
+        }
+
+        Set<String> ret = new HashSet<>();
+        Set<String> markedIddocs = new HashSet<>();
+        for (String ownerIddoc : deniedOwnerIddocs) {
+            // Pages or areas without a known owner belong to the record as a whole
+            Collection<String> startIddocs = ownerIddoc != null && logIdMap.containsKey(ownerIddoc) ? Collections.singleton(ownerIddoc) : rootIddocs;
+            for (String startIddoc : startIddocs) {
+                // Walk up to the top element; markedIddocs also guards against cycles
+                String iddoc = startIddoc;
+                while (iddoc != null && markedIddocs.add(iddoc)) {
+                    String logId = logIdMap.get(iddoc);
+                    if (logId != null) {
+                        ret.add(logId);
+                    }
+                    iddoc = parentMap.get(iddoc);
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * @param doc Solr document
+     * @return Set of ACCESSCONDITION values of the given doc; empty set if none
+     */
+    private static Set<String> getAccessConditions(SolrDocument doc) {
+        Collection<Object> acValues = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
+        return acValues != null ? acValues.stream().map(Object::toString).collect(Collectors.toSet()) : Collections.emptySet();
+    }
+
+    /**
      * Checks whether the client may access an image (by PI + file name).
      *
      * @param request Calling HttpServiceRequest.
@@ -722,6 +918,8 @@ public final class AccessConditionUtils {
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should check access conditions of page document
+     * @should deny access if page not found
      */
     public static AccessPermission checkAccessPermissionByIdentifierAndPageOrder(String pi, Integer pageOrder, String privilegeName,
             HttpServletRequest request) throws IndexUnreachableException, DAOException {
@@ -729,7 +927,10 @@ public final class AccessConditionUtils {
             throw new IllegalArgumentException("page order may not be null");
         }
 
-        String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi + " +" + SolrConstants.ORDER + ":" + pageOrder;
+        // Restrict to PAGE docs: other docs of the record (e.g. SHAPE metadata or UGC docs) may carry the same ORDER value
+        // but different access conditions
+        String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi + " +" + SolrConstants.ORDER + ":" + pageOrder + " +" + SolrConstants.DOCTYPE
+                + ":" + DocType.PAGE;
 
         try {
             User user = retrieveUserFromContext(request != null ? request.getSession(false) : null);
@@ -737,9 +938,11 @@ public final class AccessConditionUtils {
             SolrDocumentList results = DataManager.getInstance()
                     .getSearchIndex()
                     .search(query, 1, null, Collections.singletonList(SolrConstants.ACCESSCONDITION));
-            if (results.size() > 0) {
-                Set<String> accessConditions =
-                        results.getFirst().getFieldValues(SolrConstants.ACCESSCONDITION).stream().map(Object::toString).collect(Collectors.toSet());
+            if (results != null && !results.isEmpty()) {
+                Collection<Object> acValues = results.getFirst().getFieldValues(SolrConstants.ACCESSCONDITION);
+                Set<String> accessConditions = acValues != null
+                        ? acValues.stream().map(Object::toString).collect(Collectors.toSet())
+                        : Collections.emptySet();
                 return checkAccessPermission(DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes(), accessConditions,
                         privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
             }

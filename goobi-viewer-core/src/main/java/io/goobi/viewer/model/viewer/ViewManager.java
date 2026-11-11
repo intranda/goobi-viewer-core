@@ -2434,7 +2434,9 @@ public class ViewManager implements Serializable {
 
         if (accessPermissionPdf == null) {
             try {
-                accessPermissionPdf = isAccessPermission(IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
+                // The record PDF contains all pages, which can be more restricted than the record itself
+                accessPermissionPdf = isAccessPermission(IPrivilegeHolder.PRIV_DOWNLOAD_PDF)
+                        && AccessConditionUtils.isAllPagesGrantedForPdf(getPi(), null, BeanUtils.getRequest());
             } catch (IndexUnreachableException e) {
                 logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
                 return false;

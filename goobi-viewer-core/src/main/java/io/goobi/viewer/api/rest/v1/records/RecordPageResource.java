@@ -89,7 +89,6 @@ import io.goobi.viewer.controller.model.alto.AltoLayoutAnnotationBuilder.LayoutA
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
@@ -364,7 +363,7 @@ public class RecordPageResource {
     @jakarta.ws.rs.Path(RECORDS_PAGES_TEXT)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get the text content of a single page as annotations", tags = { "records" },
-            description = "If the record's fulltext view permission is not granted, an empty annotation collection is returned instead of an"
+            description = "If the page's fulltext view permission is not granted, an empty annotation collection is returned instead of an"
                     + " error response. Where an ALTO file is available its content is preferred over plain fulltext.")
     @ApiResponse(responseCode = "200", description = "Annotation collection containing page text",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = AnnotationList.class)))
@@ -384,13 +383,10 @@ public class RecordPageResource {
         requireValidPageNo(pageNo);
         // logger.trace("getTextForPage"); //NOSONAR Debug
         //        ApiPath apiPath = urls.path(RECORDS_PAGES, RECORDS_PAGES_TEXT).params(pi, pageNo);
-        boolean access;
-        try {
-            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest)
-                    .isGranted();
-        } catch (RecordNotFoundException e) {
-            access = false;
-        }
+        // Check the requested page, not the record: pages can be more restricted than the top document
+        boolean access =
+                AccessConditionUtils.checkAccessPermissionByIdentifierAndPageOrder(pi, pageNo, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest)
+                        .isGranted();
 
         Map<AnnotationType, AnnotationList> annotations;
         if (access) {

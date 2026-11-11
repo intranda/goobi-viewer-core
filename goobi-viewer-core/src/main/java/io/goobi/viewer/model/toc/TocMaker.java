@@ -303,7 +303,7 @@ public final class TocMaker {
         // Pass 3: apply resolved permissions onto TOCElements that were built with defaults in Pass 1. Iterates
         // every tree in `ret`, not only the bestTree picked below — keeping it ahead of the bestTree selection
         // so a future change of selection logic does not silently leave elements with default permissions.
-        applyPermissionsToTocElements(ret, batchPermissions, pdfNeeded);
+        applyPermissionsToTocElements(ret, batchPermissions, pdfNeeded, BeanUtils.getRequest());
 
         // Return the largest TOC tree
         List<TOCElement> bestTree = null;
@@ -391,8 +391,7 @@ public final class TocMaker {
             String volPi = entry.getKey();
             String volLogId = entry.getValue();
             try {
-                pdfPermissionMap.put(volPi,
-                        AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(volPi, volLogId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request));
+                pdfPermissionMap.put(volPi, getVolumePdfPermission(volPi, volLogId, request));
             } catch (RecordNotFoundException e) {
                 logger.error("Record not found in index during permission pre-fetch: {}", volPi);
                 pdfPermissionMap.put(volPi, AccessPermission.denied());
@@ -577,9 +576,7 @@ public final class TocMaker {
                         listPermissionMap.put(volPi,
                                 AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(
                                         volPi, null, IPrivilegeHolder.PRIV_LIST, request).isGranted());
-                        pdfPermissionMap.put(volPi,
-                                AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(
-                                        volPi, volLogId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request));
+                        pdfPermissionMap.put(volPi, getVolumePdfPermission(volPi, volLogId, request));
                         thumbnailPermissionMap.put(volPi,
                                 AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(
                                         volPi, volLogId, IPrivilegeHolder.PRIV_VIEW_IMAGES, request));
@@ -1230,6 +1227,29 @@ public final class TocMaker {
     }
 
     /**
+     * Checks the PDF download privilege for a volume record, including the access conditions of all its pages (the PDF contains every page, and
+     * pages can be more restricted than the volume itself).
+     *
+     * @param volPi volume record identifier
+     * @param volLogId LOGID of the volume's top structure element
+     * @param request HTTP servlet request providing session and IP address
+     * @return {@link AccessPermission}
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws RecordNotFoundException
+     */
+    private static AccessPermission getVolumePdfPermission(String volPi, String volLogId, HttpServletRequest request)
+            throws IndexUnreachableException, DAOException, RecordNotFoundException {
+        AccessPermission ret = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(volPi, volLogId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF,
+                request);
+        if (ret.isGranted() && !AccessConditionUtils.isAllPagesGrantedForPdf(volPi, null, request)) {
+            // Do not modify the returned instance, it is cached in the session
+            return AccessPermission.denied();
+        }
+        return ret;
+    }
+
+    /**
      * Applies thumbnail and PDF permissions onto already-constructed TOCElements based on a per-PI batch result. Used by the two-pass buildToc flow
      * to defer permission resolution until after structure assembly.
      *
@@ -1237,9 +1257,12 @@ public final class TocMaker {
      * @param batch result of AccessConditionUtils.checkAccessPermissionsForPisAndPrivileges keyed identifier -&gt; privilege -&gt; LOGID -&gt;
      *            permission
      * @param pdfNeeded whether PDF permissions should be applied
+     * @param request HTTP servlet request used for the page-level PDF permission check
      */
     private static void applyPermissionsToTocElements(List<List<TOCElement>> trees,
-            Map<String, Map<String, Map<String, AccessPermission>>> batch, boolean pdfNeeded) {
+            Map<String, Map<String, Map<String, AccessPermission>>> batch, boolean pdfNeeded, HttpServletRequest request) {
+        // LOGIDs of structure elements containing pages for which PDF download is denied, per record
+        Map<String, Set<String>> logIdsWithDeniedPages = new HashMap<>();
         for (List<TOCElement> tree : trees) {
             for (TOCElement element : tree) {
                 String pi = element.getTopStructPi();
@@ -1252,7 +1275,14 @@ public final class TocMaker {
                 element.setAccessPermissionThumbnail(thumb);
                 if (pdfNeeded) {
                     AccessPermission pdf = perPi.getOrDefault(IPrivilegeHolder.PRIV_DOWNLOAD_PDF, Collections.emptyMap()).get(logId);
-                    element.setAccessPermissionPdf(pdf != null && pdf.isGranted());
+                    // The PDF contains all pages of the element, which can be more restricted than the element itself
+                    boolean granted = pdf != null && pdf.isGranted();
+                    if (granted) {
+                        Set<String> deniedLogIds = logIdsWithDeniedPages.computeIfAbsent(pi,
+                                p -> AccessConditionUtils.getLogIdsWithDeniedPages(p, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request));
+                        granted = AccessConditionUtils.isAllPagesGranted(deniedLogIds, logId);
+                    }
+                    element.setAccessPermissionPdf(granted);
                 }
             }
         }

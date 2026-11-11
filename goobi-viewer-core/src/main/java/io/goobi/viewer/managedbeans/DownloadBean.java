@@ -50,6 +50,7 @@ import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.DownloadException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
@@ -58,6 +59,8 @@ import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.EpubDownloadJob;
 import io.goobi.viewer.model.job.download.PdfDownloadJob;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.statistics.usage.RequestType;
 import jakarta.faces.context.ExternalContext;
@@ -347,6 +350,26 @@ public class DownloadBean implements Serializable {
         this.downloadIdentifier = downloadIdentifier;
     }
 
+    /**
+     * Checks the PDF download privilege for the given record or structure element itself and for all pages it contains.
+     *
+     * @param pi record identifier
+     * @param logId structure element LOGID; blank or "-" for the entire record
+     * @return true if the PDF of the record or structure element may be downloaded; false otherwise
+     */
+    private static boolean isPdfDownloadAllowed(String pi, String logId) {
+        HttpServletRequest request = BeanUtils.getRequest();
+        String useLogId = StringUtils.isBlank(logId) || "-".equals(logId) ? null : logId;
+        try {
+            return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, useLogId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request)
+                    .isGranted()
+                    && AccessConditionUtils.isAllPagesGrantedForPdf(pi, useLogId, request);
+        } catch (IndexUnreachableException | DAOException | RecordNotFoundException e) {
+            logger.error("Cannot check PDF download access for {}/{}: {}", pi, logId, e.getMessage());
+            return false;
+        }
+    }
+
     public void createDownloadJob(String type, String pi, String logId, String usePdfSource, String configVariant)
             throws JsonProcessingException, DAOException, URISyntaxException {
         switch (type) {
@@ -364,6 +387,11 @@ public class DownloadBean implements Serializable {
 
         if (this.messageBroker == null) {
             logger.error("No message broker avaible. Aborting task");
+            return;
+        }
+        // EPUB uses the PDF download privilege, cf. ActiveDocumentBean.isAccessPermissionEpub()
+        if (!isPdfDownloadAllowed(pi, null)) {
+            logger.warn("EPUB download for {} denied due to access conditions", pi);
             return;
         }
 
@@ -414,6 +442,10 @@ public class DownloadBean implements Serializable {
 
         if (this.messageBroker == null) {
             logger.error("No message broker avaible. Aborting task");
+            return;
+        }
+        if (!isPdfDownloadAllowed(pi, logId)) {
+            logger.warn("PDF download for {}/{} denied due to access conditions", pi, logId);
             return;
         }
         ViewerMessage message = new ViewerMessage(TaskType.DOWNLOAD_PDF.name());

@@ -1581,9 +1581,11 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
                 return downloadPdfAllowed;
             }
             try {
+                // The record PDF contains all pages, which can be more restricted than the record itself
                 downloadPdfAllowed = AccessConditionUtils
                         .checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request)
-                        .isGranted();
+                        .isGranted()
+                        && AccessConditionUtils.isAllPagesGrantedForPdf(pi, null, request);
             } catch (IndexUnreachableException | DAOException | RecordNotFoundException e) {
                 logger.error(e.getMessage());
                 downloadPdfAllowed = false;

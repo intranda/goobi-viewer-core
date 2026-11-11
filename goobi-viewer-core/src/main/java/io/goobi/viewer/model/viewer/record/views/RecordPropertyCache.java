@@ -38,6 +38,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.AccessPermission;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.ViewManager;
 import jakarta.servlet.http.HttpServletRequest;
@@ -122,9 +123,16 @@ public class RecordPropertyCache {
 
     private static AccessPermission checkAccessPermissionForRecord(ViewManager viewManager, String privilege, HttpServletRequest request)
             throws IndexUnreachableException, DAOException, RecordNotFoundException {
-        return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(viewManager.getPi(), null,
+        AccessPermission ret = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(viewManager.getPi(), null,
                 privilege,
                 request);
+        // The record PDF contains all pages, which can be more restricted than the record itself
+        if (IPrivilegeHolder.PRIV_DOWNLOAD_PDF.equals(privilege) && ret.isGranted()
+                && !AccessConditionUtils.isAllPagesGrantedForPdf(viewManager.getPi(), null, request)) {
+            // Do not modify the returned instance, it is cached in the session
+            return AccessPermission.denied();
+        }
+        return ret;
     }
 
     private static AccessPermission checkAccessPermissionForPage(PhysicalElement page, String privilege, HttpServletRequest request)
