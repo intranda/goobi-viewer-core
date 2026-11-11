@@ -56,4 +56,59 @@ class ArchiveParserTest {
         Assertions.assertTrue(result.get("node1").getValue());
         Assertions.assertEquals("PPN3", result.get("node2").getKey());
     }
+
+    /**
+     * @see ArchiveParser#updateAssociatedRecordMapIfChanged(SolrSearchIndex)
+     * @verifies load map if not yet loaded
+     */
+    @Test
+    void updateAssociatedRecordMapIfChanged_shouldLoadMapIfNotYetLoaded() throws Exception {
+        SolrSearchIndex searchIndex = mockLinkedRecords(1, 1000L);
+        ArchiveParser parser = new SolrEADParser();
+
+        Assertions.assertTrue(parser.updateAssociatedRecordMapIfChanged(searchIndex));
+        Assertions.assertEquals("PPN1", parser.associatedRecordMap.get("node1").getKey());
+    }
+
+    /**
+     * @see ArchiveParser#updateAssociatedRecordMapIfChanged(SolrSearchIndex)
+     * @verifies not reload map if linked records are unchanged
+     */
+    @Test
+    void updateAssociatedRecordMapIfChanged_shouldNotReloadMapIfLinkedRecordsAreUnchanged() throws Exception {
+        SolrSearchIndex searchIndex = mockLinkedRecords(1, 1000L);
+        ArchiveParser parser = new SolrEADParser();
+        parser.updateAssociatedRecordMapIfChanged(searchIndex);
+
+        Assertions.assertFalse(parser.updateAssociatedRecordMapIfChanged(searchIndex));
+        Mockito.verify(searchIndex, Mockito.times(1)).search(ArgumentMatchers.anyString(), ArgumentMatchers.<List<String>> any());
+    }
+
+    /**
+     * @see ArchiveParser#updateAssociatedRecordMapIfChanged(SolrSearchIndex)
+     * @verifies reload map if linked records changed
+     */
+    @Test
+    void updateAssociatedRecordMapIfChanged_shouldReloadMapIfLinkedRecordsChanged() throws Exception {
+        ArchiveParser parser = new SolrEADParser();
+        parser.updateAssociatedRecordMapIfChanged(mockLinkedRecords(1, 1000L));
+
+        // Record reindexed
+        Assertions.assertTrue(parser.updateAssociatedRecordMapIfChanged(mockLinkedRecords(1, 2000L)));
+        // Record added or removed
+        Assertions.assertTrue(parser.updateAssociatedRecordMapIfChanged(mockLinkedRecords(2, 2000L)));
+    }
+
+    private static SolrSearchIndex mockLinkedRecords(long numFound, long latestDateIndexed) throws Exception {
+        SolrDocumentList fingerprintDocs = new SolrDocumentList();
+        fingerprintDocs.add(new SolrDocument(Map.of(SolrConstants.DATEINDEXED, List.of(latestDateIndexed - 1, latestDateIndexed))));
+        fingerprintDocs.setNumFound(numFound);
+        SolrDocumentList recordDocs = new SolrDocumentList();
+        recordDocs.add(new SolrDocument(Map.of(SolrConstants.EAD_NODE_ID, "node1", SolrConstants.PI, "PPN1", SolrConstants.BOOL_IMAGEAVAILABLE, true)));
+        SolrSearchIndex searchIndex = Mockito.mock(SolrSearchIndex.class);
+        Mockito.when(searchIndex.search(ArgumentMatchers.anyString(), ArgumentMatchers.anyInt(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(fingerprintDocs);
+        Mockito.when(searchIndex.search(ArgumentMatchers.anyString(), ArgumentMatchers.<List<String>> any())).thenReturn(recordDocs);
+        return searchIndex;
+    }
 }
