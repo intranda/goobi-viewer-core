@@ -257,6 +257,25 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
     }
 
     /**
+     * @see ArchiveManager#updateArchiveList()
+     * @verifies reset error state after a successful reload without changes
+     */
+    @Test
+    void updateArchiveList_shouldResetErrorStateAfterASuccessfulReloadWithoutChanges() throws Exception {
+        assertNotNull(possibleDatabases, "No EAD record in the index.");
+        SolrEADParser parser = Mockito.spy(eadParser);
+        ArchiveManager archiveManager = new ArchiveManager(parser);
+        Mockito.doThrow(new IndexUnreachableException("index down")).doCallRealMethod().when(parser).getPossibleDatabases();
+
+        archiveManager.updateArchiveList();
+        Assertions.assertTrue(archiveManager.isInErrorState());
+
+        // Same archive list as before, i.e. nothing changed
+        archiveManager.updateArchiveList();
+        assertEquals(ArchiveManager.DatabaseState.ARCHIVES_LOADED, archiveManager.getDatabaseState());
+    }
+
+    /**
      * @see ArchiveManager#loadDatabase(ArchiveParser,ArchiveResource)
      * @verifies update linked records before building the tree
      */

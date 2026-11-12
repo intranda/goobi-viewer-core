@@ -642,11 +642,14 @@ public class ArchiveManager implements Serializable {
      *
      * @should keep already loaded archives resolvable while the archive list is reloaded
      * @should not load linked records
+     * @should reset error state after a successful reload without changes
      */
     public void updateArchiveList() {
         logger.trace("updateArchiveList"); //NOSONAR Debug
         try {
-            if (this.initArchives(eadParser)) {
+            this.initArchives(eadParser);
+            if (eadParser != null) {
+                // The archive list was read successfully, so the index is reachable again, even if no archive changed
                 this.databaseState = DatabaseState.ARCHIVES_LOADED;
             }
         } catch (IOException | HTTPException e) {
