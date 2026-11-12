@@ -149,8 +149,12 @@ var viewerJS = (function (viewer) {
                 i18n.global.locale = language;
             }
             // Wait for the player to mount
-            if (i18n || ++tries > 50) {
+            if (i18n) {
                 clearInterval(timer);
+            } else if (++tries > 50) {
+                clearInterval(timer);
+                // Relies on internals of the player (Vue app and vue-i18n instance); check them after a player update
+                console.warn('Podlove player language could not be set to "' + language + '"');
             }
         }, 100);
     }
@@ -175,8 +179,14 @@ var viewerJS = (function (viewer) {
         doc.head.appendChild(style);
         const properties = Object.values(COLOR_TOKENS).concat(['--outline-focus', '--outline-focus-inner']);
         let signature = '';
+        const media = window.matchMedia('(prefers-color-scheme: dark)');
+        const refresh = () => requestAnimationFrame(() => update(true));
+        const observer = new MutationObserver(refresh);
         const update = (retheme) => {
+            // The player is gone (e.g. replaced by an Ajax update): stop following the color scheme
             if (!iframe.isConnected) {
+                observer.disconnect();
+                media.removeEventListener('change', refresh);
                 return;
             }
             const computed = getComputedStyle(container);
@@ -188,29 +198,34 @@ var viewerJS = (function (viewer) {
             signature = current;
             const tokens = _readTokens(computed);
             style.textContent = _frameCss(_toHex(computed.getPropertyValue('--outline-focus')) || tokens.contrast || '#000000', _toHex(computed.getPropertyValue('--outline-focus-inner')) || '#ffffff');
-            if (retheme && Object.keys(tokens).length > 0) {
-                iframe.contentWindow.PODLOVE_STORE.dispatch({ type: 'PLAYER_SET_THEME', payload: { version: 5, theme: { tokens: tokens } } });
+            const store = iframe.contentWindow && iframe.contentWindow.PODLOVE_STORE;
+            if (retheme && store && Object.keys(tokens).length > 0) {
+                store.dispatch({ type: 'PLAYER_SET_THEME', payload: { version: 5, theme: { tokens: tokens } } });
             }
         };
         update(false);
 
         // Follow the color scheme: theme toggle (class on html) and system setting
-        const refresh = () => requestAnimationFrame(() => update(true));
-        new MutationObserver(refresh).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', refresh);
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+        media.addEventListener('change', refresh);
     }
 
     viewer.podlovePlayer = {
         /**
+         * Every option except the selector may also be given as data attribute of the container (data-rest-api-url,
+         * data-context-path, data-pi, data-show-pi, data-title, data-language, data-active-tab); the config has precedence.
+         *
          * @method init
          * @param {Object} config
          * @param {String} config.selector Container of the player
-         * @param {String} config.restApiUrl REST API base URL
-         * @param {String} config.contextPath Context path of the viewer
-         * @param {String} config.pi Identifier of the episode
+         * @param {String} [config.restApiUrl] REST API base URL
+         * @param {String} [config.contextPath] Context path of the viewer
+         * @param {String} [config.pi] Identifier of the episode
          * @param {String} [config.showPi] Identifier of the show; enables the RSS subscribe button
-         * @param {String} config.title Localized title of the player iframe
+         * @param {String} [config.title] Localized title of the player iframe
          * @param {String} [config.language] Language of the viewer, defaults to the browser language
+         * @param {String} [config.activeTab] Tab that is open on load, defaults to 'chapters'; 'none' starts the player collapsed
+         * @returns {Promise|undefined} Resolves when the player is embedded and adjusted
          */
         init: function (config) {
             if (typeof podlovePlayer === 'undefined') {
@@ -218,14 +233,35 @@ var viewerJS = (function (viewer) {
                 return;
             }
             const container = document.querySelector(config.selector);
+            if (!container) {
+                console.error('Podlove player container not found: ' + config.selector);
+                return;
+            }
+            const data = container.dataset;
+            config = Object.assign(
+                {
+                    restApiUrl: data.restApiUrl,
+                    contextPath: data.contextPath,
+                    pi: data.pi,
+                    showPi: data.showPi,
+                    title: data.title,
+                    language: data.language,
+                    activeTab: data.activeTab,
+                },
+                config
+            );
             const restApiUrl = config.restApiUrl.replace(/\/$/, '');
             const playerConfig = {
                 version: 5,
                 // Location of the lazy-loaded player assets
                 base: config.contextPath + '/resources/javascript/libs/podlove-player/',
-                activeTab: 'chapters',
                 share: { channels: ['link', 'mail'], sharePlaytime: true },
             };
+            // Tab that is open on load; without one the player starts collapsed and tabs open on click
+            const activeTab = config.activeTab || 'chapters';
+            if (activeTab !== 'none') {
+                playerConfig.activeTab = activeTab;
+            }
             const tokens = _readTokens(getComputedStyle(container));
             if (Object.keys(tokens).length > 0) {
                 playerConfig.theme = { tokens: tokens };
@@ -238,7 +274,7 @@ var viewerJS = (function (viewer) {
                 };
             }
             const episodeUrl = restApiUrl + '/records/' + encodeURIComponent(config.pi) + '/podlove/episode.json';
-            Promise.resolve(podlovePlayer(config.selector, episodeUrl, playerConfig))
+            return Promise.resolve(podlovePlayer(config.selector, episodeUrl, playerConfig))
                 .then(() => _improve(container, config))
                 .catch((error) => console.warn('Podlove player adjustments failed', error));
         },

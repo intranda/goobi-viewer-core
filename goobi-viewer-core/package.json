@@ -108,7 +108,7 @@
     "tinymce": "8.10.1",
     "tone": "^15.1.22",
     "verovio": "^5.6.0",
-	"@podlove/web-player": "^5.13.0"
+	"@podlove/web-player": "5.13.0"
   },
   "overrides": {
     "@gulp-sourcemaps/identity-map": {

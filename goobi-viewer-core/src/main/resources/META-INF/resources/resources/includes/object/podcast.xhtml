@@ -33,17 +33,19 @@
                 <div
                     id="podcastPlayer"
                     class="view-object-content__podlove-player"
-                    data-template="#{request.contextPath}/resources/includes/object/podcast-player-template.html?#{navigationHelper.buildVersion}" />
+                    data-template="#{request.contextPath}/resources/includes/object/podcast-player-template.html?#{navigationHelper.buildVersion}"
+                    data-rest-api-url="#{configurationBean.restApiUrlV1}"
+                    data-context-path="#{request.contextPath}"
+                    data-pi="#{activeDocumentBean.viewManager.pi}"
+                    data-show-pi="#{activeDocumentBean.viewManager.topStructElement.getMetadataValue('GROUPID_PODCAST')}"
+                    data-title="#{msg.podcast_player__title}"
+                    data-language="#{navigationHelper.localeString}"
+                    data-active-tab="#{podcastActiveTab}" />
+                <!-- The player options are data attributes of the container (escaped as attribute values, unlike values in a script).
+                     Optional ui:param "podcastActiveTab" of the including page: tab that is open on load (default "chapters"),
+                     "none" starts the player collapsed. -->
                 <script>
-                    viewerJS.podlovePlayer.init({
-                        selector: "#podcastPlayer",
-                        restApiUrl: "#{configurationBean.restApiUrlV1}",
-                        contextPath: "#{request.contextPath}",
-                        pi: "#{activeDocumentBean.viewManager.pi}",
-                        showPi: "#{activeDocumentBean.viewManager.topStructElement.getMetadataValue('GROUPID_PODCAST')}",
-                        title: "#{msg.podcast_player__title}",
-                        language: "#{navigationHelper.localeString}"
-                    });
+                    viewerJS.podlovePlayer.init({ selector: "#podcastPlayer" });
                 </script>
             </ui:fragment>
         </div>
