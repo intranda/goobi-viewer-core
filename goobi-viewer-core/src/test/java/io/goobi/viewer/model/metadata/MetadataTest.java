@@ -766,6 +766,28 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
      * @param value parameter value or null for a blank metadata
      * @return {@link Metadata} with one FIELD parameter
      */
+    /**
+     * @see Metadata#hasParam(String)
+     * @verifies return true if param with given key exists
+     */
+    @Test
+    void hasParam_shouldReturnTrueIfParamWithGivenKeyExists() {
+        Metadata md = new Metadata();
+        md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("MD_FOO"));
+        Assertions.assertTrue(md.hasParam("MD_FOO"));
+    }
+
+    /**
+     * @see Metadata#hasParam(String)
+     * @verifies return false and not fail if params without key exist
+     */
+    @Test
+    void hasParam_shouldReturnFalseAndNotFailIfParamsWithoutKeyExist() {
+        Metadata md = new Metadata();
+        md.getParams().add(new MetadataParameter().setType(MetadataParameterType.NUMVOLUMES));
+        Assertions.assertFalse(md.hasParam(SolrConstants.URN));
+    }
+
     private static Metadata createIconTestMetadata(String icon, boolean singleString, String value) {
         Metadata md = new Metadata().setIcon(icon).setSingleString(singleString);
         md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("MD_FOO"));

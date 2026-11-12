@@ -814,10 +814,15 @@ public class Metadata implements MetadataListElement, Serializable {
      *
      * @param paramName Solr field name of the parameter to find
      * @return true if this metadata has a parameter with the given field name, false otherwise
+     * @should return true if param with given key exists
+     * @should return false and not fail if params without key exist
      */
     public boolean hasParam(String paramName) {
+        if (paramName == null) {
+            return false;
+        }
         for (MetadataParameter param : params) {
-            if (param.getKey().equals(paramName)) {
+            if (paramName.equals(param.getKey())) {
                 return true;
             }
         }
