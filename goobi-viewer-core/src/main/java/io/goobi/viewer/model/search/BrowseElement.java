@@ -1437,6 +1437,28 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
+     * Returns the non-blank search hit metadata that are displayed in the icon line below the regular search hit metadata list.
+     *
+     * @return non-blank search hit metadata with a configured icon, filtered to the current request locale
+     * @see Metadata#isShowInIconLine()
+     */
+    public List<Metadata> getIconMetadataListForCurrentLocale() {
+        return getIconMetadataListForLocale(BeanUtils.getLocale());
+    }
+
+    /**
+     * Returns the non-blank search hit metadata that are displayed in the icon line below the regular search hit metadata list.
+     *
+     * @param locale locale used to filter language-specific metadata
+     * @return non-blank search hit metadata with a configured icon, filtered to the given locale
+     * @see Metadata#isShowInIconLine()
+     * @should return only non blank icon line metadata
+     */
+    public List<Metadata> getIconMetadataListForLocale(Locale locale) {
+        return Metadata.filterIconLineMetadata(getMetadataListForLocale(locale));
+    }
+
+    /**
      * 
      * @return First metadata list in metadataListMap that's not the default search metadata list configuration; empty list if not found
      */

@@ -1,0 +1,23 @@
+/* ==============================================================
+   Metadata icon line
+   single line of metadata configured with an icon, displayed below
+   search hit and record metadata lists (metadataIconLine.xhtml)
+   ==============================================================*/
+.metadata-icon-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 1rem;
+    margin-top: 0.5rem;
+
+    &__item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    &__icon .icon-svg {
+        width: 1.1em;
+        height: 1.1em;
+    }
+}

@@ -707,4 +707,71 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
         md.setIcon("../evil");
         Assertions.assertFalse(md.isHasIcon());
     }
+
+    /**
+     * @see Metadata#isShowInIconLine()
+     * @verifies return true if icon configured and single string
+     */
+    @Test
+    void isShowInIconLine_shouldReturnTrueIfIconConfiguredAndSingleString() {
+        Assertions.assertTrue(new Metadata().setIcon("info-circle").setSingleString(true).isShowInIconLine());
+    }
+
+    /**
+     * @see Metadata#isShowInIconLine()
+     * @verifies return false if no icon configured
+     */
+    @Test
+    void isShowInIconLine_shouldReturnFalseIfNoIconConfigured() {
+        Assertions.assertFalse(new Metadata().setSingleString(true).isShowInIconLine());
+    }
+
+    /**
+     * @see Metadata#isShowInIconLine()
+     * @verifies return false if not single string
+     */
+    @Test
+    void isShowInIconLine_shouldReturnFalseIfNotSingleString() {
+        Assertions.assertFalse(new Metadata().setIcon("info-circle").setSingleString(false).isShowInIconLine());
+    }
+
+    /**
+     * @see Metadata#filterIconLineMetadata(List)
+     * @verifies return only non blank icon line metadata
+     */
+    @Test
+    void filterIconLineMetadata_shouldReturnOnlyNonBlankIconLineMetadata() {
+        Metadata iconMd = createIconTestMetadata("info-circle", true, "920");
+        Metadata blankIconMd = createIconTestMetadata("info-circle", true, null);
+        Metadata plainMd = createIconTestMetadata(null, true, "foo");
+        Metadata tableMd = createIconTestMetadata("info-circle", false, "bar");
+
+        List<Metadata> result = Metadata.filterIconLineMetadata(Arrays.asList(iconMd, blankIconMd, plainMd, tableMd));
+        assertEquals(1, result.size());
+        Assertions.assertSame(iconMd, result.get(0));
+    }
+
+    /**
+     * @see Metadata#filterIconLineMetadata(List)
+     * @verifies return empty list if metadata list null
+     */
+    @Test
+    void filterIconLineMetadata_shouldReturnEmptyListIfMetadataListNull() {
+        Assertions.assertTrue(Metadata.filterIconLineMetadata(null).isEmpty());
+    }
+
+    /**
+     * @param icon icon name or null
+     * @param singleString single string flag
+     * @param value parameter value or null for a blank metadata
+     * @return {@link Metadata} with one FIELD parameter
+     */
+    private static Metadata createIconTestMetadata(String icon, boolean singleString, String value) {
+        Metadata md = new Metadata().setIcon(icon).setSingleString(singleString);
+        md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("MD_FOO"));
+        if (value != null) {
+            md.setParamValue(0, 0, Collections.singletonList(value), "MD_FOO", null, null, null, null);
+        }
+        return md;
+    }
 }

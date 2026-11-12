@@ -520,6 +520,29 @@ public class MetadataElement implements Serializable {
     }
 
     /**
+     * Returns the non-blank sidebar metadata that are displayed in the icon line below the regular sidebar metadata list.
+     *
+     * @return non-blank sidebar metadata with a configured icon, filtered by the selected record language
+     * @see Metadata#isShowInIconLine()
+     * @should return only non blank icon line metadata
+     */
+    public List<Metadata> getSidebarIconMetadataList() {
+        return Metadata.filterIconLineMetadata(getSidebarMetadataList());
+    }
+
+    /**
+     * Returns the non-blank metadata of the given metadata type that are displayed in the icon line below the regular metadata list of that type.
+     *
+     * @param type metadata type (see {@link Metadata#getType()})
+     * @return non-blank metadata of the given type with a configured icon, filtered by the selected record language
+     * @see Metadata#isShowInIconLine()
+     * @should return only non blank icon line metadata of given type
+     */
+    public List<Metadata> getIconMetadataList(int type) {
+        return Metadata.filterIconLineMetadata(getMetadataList()).stream().filter(md -> md.getType() == type).toList();
+    }
+
+    /**
      * Setter for the field <code>sidebarMetadataList</code>.
      *
      * @param sidebarMetadataList the list of metadata fields to display in the sidebar section

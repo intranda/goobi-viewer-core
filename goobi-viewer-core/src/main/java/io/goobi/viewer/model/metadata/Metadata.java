@@ -1503,6 +1503,35 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
+     * Metadata with a configured icon are displayed in a single icon line below the regular metadata list (icon and value, label as tooltip).
+     * Only single string metadata qualify; key/value pair tables remain in the regular list.
+     *
+     * @return true if this metadata is to be displayed in the icon line; false otherwise
+     * @should return true if icon configured and single string
+     * @should return false if no icon configured
+     * @should return false if not single string
+     */
+    public boolean isShowInIconLine() {
+        return isHasIcon() && isSingleString();
+    }
+
+    /**
+     * Filters the given metadata list down to non-blank metadata that are displayed in the icon line.
+     *
+     * @param metadataList list of metadata to filter; may be null
+     * @return non-blank metadata from the given list for which {@link #isShowInIconLine()} is true; empty list if metadataList is null
+     * @should return only non blank icon line metadata
+     * @should return empty list if metadata list null
+     */
+    public static List<Metadata> filterIconLineMetadata(List<Metadata> metadataList) {
+        if (metadataList == null) {
+            return Collections.emptyList();
+        }
+
+        return metadataList.stream().filter(md -> md.isShowInIconLine() && !md.isBlank()).toList();
+    }
+
+    /**
      * Converts the given icon name to a Tabler icon file name. React-style component names ("IconInfoCircleFilled", "IconNumber1Small") are
      * converted to kebab case ("info-circle", "number-1-small"), dropping the "Icon" prefix and the "Filled" suffix. File names are returned
      * unchanged.

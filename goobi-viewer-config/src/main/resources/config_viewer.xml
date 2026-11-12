@@ -901,8 +901,12 @@
                component name (e.g. "IconInfoCircle"). A React name ending in "Filled" (e.g. "IconInfoCircleFilled")
                selects the filled variant.
              - iconFilled: "true" selects the filled variant for file names (default: "false").
+             Metadata with an icon (and singleString="true", the default) are not displayed in the regular list, but together
+             on a single line below it (search hits, metadata view, sidebar metadata widget). Each entry shows the icon and the
+             value only; the label is used as tooltip. Use a value pattern (value="message key" with {0}) to add text to the
+             value, e.g. the message numEpisodesValue ("{0} Folgen") for the number of episodes.
              Example:
-             <metadata label="MD_PODCASTFOLGEN" icon="IconInfoCircleFilled">
+             <metadata label="numEpisodes" value="numEpisodesValue" icon="IconInfoCircleFilled">
                  <param type="numvolumes" />
              </metadata>
         -->
