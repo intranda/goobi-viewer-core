@@ -26,6 +26,8 @@ var viewerJS = (function (viewer) {
         initHcSticky: false,
         initSearch: false,
         initTextTree: false,
+        // refresh hcSticky automatically when the height of a sticky column changes (e.g. lazy loaded images, expanded tree entries)
+        observeStickyResize: true,
     };
 
     viewer.archives = {
@@ -45,6 +47,9 @@ var viewerJS = (function (viewer) {
 
                 if (this.config.initHcSticky) {
                     this.initHcStickyWithChromeHack();
+                    if (this.config.observeStickyResize) {
+                        this.initStickyResizeObserver();
+                    }
                 }
                 viewerJS.jsfAjax.success.pipe(rxjs.operators.filter((e) => $(e.source).attr('data-select-entry') != undefined)).subscribe((e) => {
                     $('.archives__object-image').hide();
@@ -257,6 +262,7 @@ var viewerJS = (function (viewer) {
                     },
                 },
             });
+            this.observeStickyElements();
         },
 
         /**
@@ -295,6 +301,67 @@ var viewerJS = (function (viewer) {
                         disable: true,
                     },
                 },
+            });
+        },
+
+        /**
+         * Watches the height of both sticky columns and refreshes hcSticky whenever it changes.
+         * hcSticky caches the element height on init/refresh; if content grows or shrinks afterwards
+         * (lazy loaded thumbnails, expanded/collapsed tree entries, ajax updates inside the columns)
+         * the cached values are stale and scrolling breaks. ResizeObserver is used so the refresh also
+         * fires for changes that happen outside of the jsf ajax lifecycle.
+         */
+        initStickyResizeObserver: function () {
+            if (typeof ResizeObserver === 'undefined') {
+                if (_debug) console.log('ResizeObserver not supported, skipping sticky resize observer');
+                return;
+            }
+
+            if (this._stickyResizeObserver) {
+                this._stickyResizeObserver.disconnect();
+            }
+
+            let lastHeights = new WeakMap();
+            let refreshTimeout = 0;
+
+            this._stickyResizeObserver = new ResizeObserver((entries) => {
+                let heightChanged = false;
+
+                for (let entry of entries) {
+                    let newHeight = Math.round(entry.contentRect.height);
+                    let oldHeight = lastHeights.get(entry.target);
+                    // first callback after observe() only records the initial height
+                    if (oldHeight !== undefined && Math.abs(oldHeight - newHeight) > 1) {
+                        heightChanged = true;
+                    }
+                    lastHeights.set(entry.target, newHeight);
+                }
+
+                // ignore pure width changes (hcSticky sets width inline on refresh, this must not trigger a loop)
+                if (!heightChanged) {
+                    return;
+                }
+
+                clearTimeout(refreshTimeout);
+                refreshTimeout = setTimeout(() => {
+                    if (_debug) console.log('sticky column height changed, refreshing hcSticky');
+                    this.refreshStickyWithChromeHack();
+                }, 100);
+            });
+
+            this.observeStickyElements();
+        },
+
+        /**
+         * (Re)attaches the resize observer to the current sticky columns. Can be called again after
+         * ajax updates that replace the column elements themselves.
+         */
+        observeStickyElements: function () {
+            if (!this._stickyResizeObserver) {
+                return;
+            }
+            $('.archives__left-side, .archives__right-side').each((i, el) => {
+                this._stickyResizeObserver.observe(el);
             });
         },
 
