@@ -3,10 +3,8 @@
    style declarations for alphabeticPaginator.xhtml
    ==============================================================*/
 /* ALPHABETIC PAGINATOR */
-/* BLOCK */
 .alphabetic-paginator {
     margin-bottom: 1.3125rem;
-    /* ELEMENT */
     ul {
         display: flex;
         flex-wrap: wrap;
@@ -15,12 +13,17 @@
         width: 32px;
         height: 32px;
         margin: 0 5px 5px 0;
-        border: 1px solid @lightgray;
+        border: 1px solid var(--border-default);
         &.active {
             font-weight: bold;
-            background-color: @blue;
+            background-color: var(--bg-brand);
             a {
-                color: @white;
+                color: var(--fg-on-brand);
+                &:hover,
+                &:active,
+                &:focus {
+                    background-color: var(--bg-brand-hover);
+                }
             }
         }
     }
@@ -33,11 +36,12 @@
         &:hover,
         &:active,
         &:focus {
-            background-color: @lightgray;
+            background-color: var(--bg-subtle);
         }
     }
 }
 
+/* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
 }
 

@@ -16,11 +16,23 @@
 package io.goobi.viewer.connector.oai.servlets;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.io.UncheckedIOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import javax.xml.XMLConstants;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletOutputStream;
@@ -36,6 +48,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.ProcessingInstruction;
 import org.jdom2.output.XMLOutputter;
+import org.jdom2.transform.JDOMSource;
 
 import io.goobi.viewer.connector.DataManager;
 import io.goobi.viewer.connector.oai.RequestHandler;
@@ -67,6 +80,7 @@ public class OaiServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/xml;charset=UTF-8");
+        response.setHeader("Vary", "Accept");
 
         String queryString = (request.getQueryString() != null ? "?" + request.getQueryString() : "");
         if (logger.isDebugEnabled()) {
@@ -271,6 +285,14 @@ public class OaiServlet extends HttpServlet {
         format.setEncoding("utf-8");
         XMLOutputter xmlOut = new XMLOutputter(format);
         try {
+            if (prefersHtml(request.getHeader("Accept"))) {
+                String html = transformToHtml(doc);
+                if (html != null) {
+                    response.setContentType("text/html;charset=UTF-8");
+                    response.getWriter().write(html);
+                    return;
+                }
+            }
             if (handler.getMetadataPrefix() != null && handler.getMetadataPrefix().equals(Metadata.EPICUR)) {
                 String ueblerhack = xmlOut.outputString(doc);
                 ueblerhack = ueblerhack.replace("<epicur", "<epicur xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
@@ -287,6 +309,122 @@ public class OaiServlet extends HttpServlet {
                 } catch (IOException e1) {
                     logger.error(e1.getMessage());
                 }
+            }
+        }
+    }
+
+    /**
+     * Checks whether the client prefers HTML over XML according to its Accept header.
+     *
+     * <p>Browsers rank text/html above XML, whereas harvesters send a wildcard or an XML type. On a tie XML wins, so that only clients that
+     * explicitly prefer HTML get the rendered page.
+     *
+     * @param accept value of the Accept header; may be null
+     * @return true if text/html or application/xhtml+xml has a higher quality value than any XML type
+     * @should return true for a typical browser accept header
+     * @should return false for a missing accept header
+     * @should return false for a wildcard accept header
+     * @should return false if xml is ranked equal to or above html
+     * @should return false if html has quality zero
+     */
+    static boolean prefersHtml(String accept) {
+        if (StringUtils.isBlank(accept)) {
+            return false;
+        }
+        double htmlQuality = 0;
+        double xmlQuality = 0;
+        for (String range : accept.split(",")) {
+            String[] parts = range.split(";");
+            String mediaType = parts[0].trim().toLowerCase();
+            double quality = parseQuality(parts);
+            switch (mediaType) {
+                case "text/html", "application/xhtml+xml":
+                    htmlQuality = Math.max(htmlQuality, quality);
+                    break;
+                case "text/xml", "application/xml":
+                    xmlQuality = Math.max(xmlQuality, quality);
+                    break;
+                default:
+                    break;
+            }
+        }
+        return htmlQuality > xmlQuality;
+    }
+
+    /**
+     * Returns the quality value of one media range of an Accept header.
+     *
+     * @param parts media range split at semicolons; the first element is the media type
+     * @return the q parameter, 1.0 if absent, 0 if malformed
+     */
+    private static double parseQuality(String[] parts) {
+        for (int i = 1; i < parts.length; i++) {
+            String param = parts[i].trim();
+            if (param.startsWith("q=")) {
+                try {
+                    return Double.parseDouble(param.substring(2).trim());
+                } catch (NumberFormatException e) {
+                    return 0;
+                }
+            }
+        }
+        return 1.0;
+    }
+
+    /**
+     * Renders an OAI-PMH response document as HTML with oai2.xsl.
+     *
+     * <p>The stylesheet loads the metadata formats via document() from the base URL in the request element. A URI resolver answers that
+     * call with the locally generated format list, so the transformation never issues HTTP requests to a URL derived from the Host header.
+     *
+     * @param doc complete OAI-PMH response document
+     * @return the HTML page, or null if the transformation failed
+     * @should render the response as html
+     * @should list the metadata formats without fetching them over http
+     */
+    static String transformToHtml(Document doc) {
+        try {
+            Transformer transformer = HtmlTemplatesHolder.TEMPLATES.newTransformer();
+            transformer.setURIResolver((href, base) -> {
+                Element oaiPmh = Format.getOaiPmhElement("OAI-PMH");
+                if (href != null && href.contains("verb=ListMetadataFormats")) {
+                    oaiPmh.addContent(Format.createMetadataFormats());
+                }
+                return new JDOMSource(new Document(oaiPmh));
+            });
+            StringWriter writer = new StringWriter();
+            transformer.transform(new JDOMSource(doc), new StreamResult(writer));
+            return writer.toString();
+        } catch (TransformerException e) {
+            logger.error("Could not render OAI response as HTML, falling back to XML: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Holds the compiled oai2.xsl; compiled on first use because most requests come from harvesters that never need it.
+     */
+    private static final class HtmlTemplatesHolder {
+
+        private static final String STYLESHEET = "META-INF/resources/oai2.xsl";
+
+        private static final Templates TEMPLATES = compile();
+
+        private HtmlTemplatesHolder() {
+        }
+
+        private static Templates compile() {
+            try (InputStream in = OaiServlet.class.getClassLoader().getResourceAsStream(STYLESHEET)) {
+                if (in == null) {
+                    throw new IllegalStateException("Stylesheet not found on classpath: " + STYLESHEET);
+                }
+                TransformerFactory factory = TransformerFactory.newInstance();
+                factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+                return factory.newTemplates(new StreamSource(in));
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            } catch (TransformerConfigurationException e) {
+                throw new IllegalStateException("Could not compile " + STYLESHEET, e);
             }
         }
     }

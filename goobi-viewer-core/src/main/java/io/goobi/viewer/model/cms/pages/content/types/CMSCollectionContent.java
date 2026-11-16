@@ -247,7 +247,11 @@ public class CMSCollectionContent extends CMSContent {
      * Remove cached CollectionView for this content from {@link CollectionViewBean}.
      */
     private void resetCollection() {
-        BeanUtils.getCollectionViewBean().removeCollection(this);
+        // CollectionViewBean is null outside of JSF if the request has no session; then nothing is cached either
+        CollectionViewBean collectionViewBean = BeanUtils.getCollectionViewBean();
+        if (collectionViewBean != null) {
+            collectionViewBean.removeCollection(this);
+        }
     }
 
     @Override

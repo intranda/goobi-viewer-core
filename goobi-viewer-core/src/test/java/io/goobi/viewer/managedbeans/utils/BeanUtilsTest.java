@@ -22,15 +22,29 @@
 package io.goobi.viewer.managedbeans.utils;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.springframework.mock.web.MockHttpServletRequest;
 
+import jakarta.enterprise.context.ContextNotActiveException;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.faces.context.FacesContext;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 class BeanUtilsTest {
@@ -116,5 +130,102 @@ class BeanUtilsTest {
         Optional<ParentBean> result = BeanUtils.findInstanceInSessionAttributes(session, ParentBean.class);
 
         assertFalse(result.isPresent(), "Unrelated class must not be returned");
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private static BeanManager beanManagerWithRequest(HttpServletRequest request) {
+        BeanManager bm = Mockito.mock(BeanManager.class);
+        Bean requestBean = Mockito.mock(Bean.class);
+        Set beans = Set.of(requestBean);
+        Mockito.when(bm.getBeans(HttpServletRequest.class)).thenReturn(beans);
+        Mockito.when(bm.resolve(beans)).thenReturn(requestBean);
+        Mockito.when(bm.getReference(eq(requestBean), eq(HttpServletRequest.class), any())).thenReturn(request);
+        return bm;
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private static Bean beanWithScope(Class scope) {
+        Bean bean = Mockito.mock(Bean.class);
+        Mockito.when(bean.getScope()).thenReturn(scope);
+        return bean;
+    }
+
+    /**
+     * @see BeanUtils#wouldCreateSession(Bean, BeanManager)
+     * @verifies return true for session scoped bean outside jsf if request has no session
+     */
+    @Test
+    void wouldCreateSession_shouldReturnTrueForSessionScopedBeanOutsideJsfIfRequestHasNoSession() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        assertTrue(BeanUtils.wouldCreateSession(beanWithScope(SessionScoped.class), beanManagerWithRequest(request)));
+        assertNull(request.getSession(false), "the check itself must not create a session");
+    }
+
+    /**
+     * @see BeanUtils#wouldCreateSession(Bean, BeanManager)
+     * @verifies return false if request has session
+     */
+    @Test
+    void wouldCreateSession_shouldReturnFalseIfRequestHasSession() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.getSession(true);
+        assertFalse(BeanUtils.wouldCreateSession(beanWithScope(SessionScoped.class), beanManagerWithRequest(request)));
+    }
+
+    /**
+     * @see BeanUtils#wouldCreateSession(Bean, BeanManager)
+     * @verifies return false for bean that is not session scoped
+     */
+    @Test
+    void wouldCreateSession_shouldReturnFalseForBeanThatIsNotSessionScoped() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        assertFalse(BeanUtils.wouldCreateSession(beanWithScope(RequestScoped.class), beanManagerWithRequest(request)));
+    }
+
+    /**
+     * @see BeanUtils#wouldCreateSession(Bean, BeanManager)
+     * @verifies return false in jsf context
+     */
+    @Test
+    void wouldCreateSession_shouldReturnFalseInJsfContext() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        try (MockedStatic<FacesContext> fc = Mockito.mockStatic(FacesContext.class)) {
+            fc.when(FacesContext::getCurrentInstance).thenReturn(Mockito.mock(FacesContext.class));
+            assertFalse(BeanUtils.wouldCreateSession(beanWithScope(SessionScoped.class), beanManagerWithRequest(request)));
+        }
+    }
+
+    /**
+     * @see BeanUtils#wouldCreateSession(Bean, BeanManager)
+     * @verifies return false if no request is active
+     */
+    @Test
+    void wouldCreateSession_shouldReturnFalseIfNoRequestIsActive() {
+        HttpServletRequest inactiveProxy = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(inactiveProxy.getDispatcherType()).thenThrow(new ContextNotActiveException("no request"));
+        assertFalse(BeanUtils.wouldCreateSession(beanWithScope(SessionScoped.class), beanManagerWithRequest(inactiveProxy)));
+    }
+
+    /**
+     * @see BeanUtils#getRequestFromCdi(BeanManager)
+     * @verifies return current request from cdi
+     */
+    @Test
+    void getRequestFromCdi_shouldReturnCurrentRequestFromCdi() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        assertSame(request, BeanUtils.getRequestFromCdi(beanManagerWithRequest(request)));
+        assertNull(request.getSession(false));
+    }
+
+    /**
+     * @see BeanUtils#getRequestFromCdi(BeanManager)
+     * @verifies return null if no request is active
+     */
+    @Test
+    void getRequestFromCdi_shouldReturnNullIfNoRequestIsActive() {
+        HttpServletRequest inactiveProxy = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(inactiveProxy.getDispatcherType()).thenThrow(new IllegalStateException("no request"));
+        assertNull(BeanUtils.getRequestFromCdi(beanManagerWithRequest(inactiveProxy)));
+        assertNull(BeanUtils.getRequestFromCdi(null));
     }
 }

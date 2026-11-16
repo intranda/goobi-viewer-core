@@ -20,11 +20,36 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.CLIENTS_CLIENT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.CLIENTS_REGISTER;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.CLIENTS_REQUEST;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
+
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
+import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
+import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.dao.IDAO;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.security.clients.ClientApplication;
+import io.goobi.viewer.model.security.clients.ClientApplicationManager;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -40,33 +65,6 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
-import org.apache.commons.lang3.StringUtils;
-import org.json.JSONObject;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
-import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.NetTools;
-import io.goobi.viewer.dao.IDAO;
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.security.clients.ClientApplication;
-import io.goobi.viewer.model.security.clients.ClientApplicationManager;
-import io.goobi.viewer.controller.DateTools;
-import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 /**
  * REST resource for managing client application registrations and their access credentials.
@@ -100,8 +98,9 @@ public class ClientApplicationsResource {
     /**
      * Registers the calling client application as a new, pending trusted client using the identifier sent in the request.
      *
-     * <p>The client identifier is read from the 'X-goobi-content-protection' request header. A new {@link ClientApplication} is
-     * persisted with access status {@code REQUESTED} and the caller's IP address; the registration must be approved separately (see
+     * <p>
+     * The client identifier is read from the 'X-goobi-content-protection' request header. A new {@link ClientApplication} is persisted with access
+     * status {@code REQUESTED} and the caller's IP address; the registration must be approved separately (see
      * {@link #setClient(String, ClientApplication)}) before the client is granted access.
      *
      * @return the registration status as JSON
@@ -132,9 +131,10 @@ public class ClientApplicationsResource {
     /**
      * Requests access for a previously registered client application and reports its current access status.
      *
-     * <p>The client identifier is read from the 'X-goobi-content-protection' request header and must belong to a client already
-     * registered via {@link #register()}. On success the client is stored in the current HTTP session for later access condition
-     * checks, and its last access date is updated in the database the first time this happens within the session.
+     * <p>
+     * The client identifier is read from the 'X-goobi-content-protection' request header and must belong to a client already registered via
+     * {@link #register()}. On success the client is stored in the current HTTP session for later access condition checks, and its last access date is
+     * updated in the database the first time this happens within the session.
      *
      * @return the access status as JSON
      * @throws ContentLibException if no client is registered with the given identifier
@@ -159,7 +159,7 @@ public class ClientApplicationsResource {
             // Return 401 (Unauthorized) since the client identifier header is missing authentication credentials.
             throw new WebApplicationException("Missing client identifier in header", Response.Status.UNAUTHORIZED);
         }
-        HttpSession session = servletRequest.getSession();
+        HttpSession session = servletRequest.getSession(false);
         if (session == null) {
             throw new IllegalStateException("No http session available for request");
         }
@@ -211,8 +211,9 @@ public class ClientApplicationsResource {
             // ClientApplication because all writable fields are present in both classes.
             @RequestBody(description = "Client properties to update (only name, description, subnetMask and accessStatus are applied)",
                     required = true,
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ClientApplicationUpdate.class)))
-            ClientApplication update) throws DAOException, ContentNotFoundException {
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ClientApplicationUpdate.class))) ClientApplication update)
+            throws DAOException, ContentNotFoundException {
         try {
 
             ClientApplication databaseClient = dao.getClientApplicationByClientId(clientIdentifier);
@@ -235,15 +236,13 @@ public class ClientApplicationsResource {
     /**
      * Lists all registered {@link ClientApplication}s, optionally paginated.
      *
-     * <p>The default values keep the endpoint backwards-compatible with existing
-     * server-to-server consumers that fetched the unbounded list: when no parameters are
-     * supplied, the full list is returned. Clients that opt in by sending
-     * {@code first} / {@code count} get a paginated slice.
+     * <p>
+     * The default values keep the endpoint backwards-compatible with existing server-to-server consumers that fetched the unbounded list: when no
+     * parameters are supplied, the full list is returned. Clients that opt in by sending {@code first} / {@code count} get a paginated slice.
      *
-     * <p><b>Note:</b> the pagination is currently applied in-memory <i>after</i> the DAO
-     * loads the full result set, so it limits the response payload but does not relieve
-     * the database/heap. A true DoS hardening would require a DAO method with SQL
-     * {@code LIMIT/OFFSET}.
+     * <p>
+     * <b>Note:</b> the pagination is currently applied in-memory <i>after</i> the DAO loads the full result set, so it limits the response payload
+     * but does not relieve the database/heap. A true DoS hardening would require a DAO method with SQL {@code LIMIT/OFFSET}.
      *
      * @param first zero-based index of the first entry to return; must be {@code >= 0}
      * @param count maximum number of entries to return; must be {@code >= 0}
@@ -283,7 +282,8 @@ public class ClientApplicationsResource {
         }
         // isNotAllClients runs before skip/limit because the synthetic "all clients" entry
         // is not a real DB row and would otherwise shift the page offsets seen by consumers.
-        return dao.getAllClientApplications().stream()
+        return dao.getAllClientApplications()
+                .stream()
                 .filter(clientManager::isNotAllClients)
                 .skip(first)
                 .limit(count)

@@ -2,10 +2,8 @@
    Browse
    style declarations for browse.xhtml
    ==============================================================*/
-/* BROWSE */
-/* BLOCK */
+/* COLLECTIONS */
 .collections {
-    /* ELEMENT */
     &__wrapper {
         position: relative;
         div[class*='col-'],
@@ -14,16 +12,15 @@
         }
     }
 }
+
+/* COLLECTION */
 .collection {
     margin: 0;
     padding: 0;
     list-style: none;
     border-top: none;
-    /* ELEMENT */
     .row {
         margin: 0;
-    }
-    &__item {
     }
     &__structure,
     &__title,
@@ -31,7 +28,7 @@
     &__rss,
     &__archive-download {
         button {
-            font-size: 1.4rem;
+            font-size: var(--font-size-body-small);
         }
         a,
         button {
@@ -53,11 +50,6 @@
     &__structure {
         display: flex;
         justify-content: center;
-    }
-    &__title {
-    }
-    &__top-element {
-        font-weight: bold;
     }
     &__item-end {
         display: flex;
@@ -81,9 +73,8 @@
             margin-bottom: 2rem;
         }
     }
-    /* MODIFICATION */
     &__item--level-0 {
-        border-top: 1px solid @middlegray;
+        border-top: 1px solid var(--border-strong);
     }
 }
 

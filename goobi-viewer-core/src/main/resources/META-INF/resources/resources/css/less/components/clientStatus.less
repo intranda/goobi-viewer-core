@@ -29,21 +29,23 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        color: @white;
-        background-color: @redBar;
+        color: var(--fg-on-danger);
+        background-color: var(--bg-danger);
         .icon {
             width: 8px;
             height: 8px;
             stroke: currentColor;
         }
         &.-accepted {
-            background-color: @greenBar;
+            background-color: var(--bg-success);
+            color: var(--fg-on-success);
         }
         &.-wrongNetwork {
-            background-color: @yellowBar;
+            background-color: var(--bg-warning);
+            color: var(--fg-on-warning);
         }
         &.-rejected {
-            background-color: @redBar;
+            background-color: var(--bg-danger);
         }
     }
 }

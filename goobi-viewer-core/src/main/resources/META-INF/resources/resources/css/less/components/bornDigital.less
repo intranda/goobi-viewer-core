@@ -3,20 +3,21 @@
    style declarations for bornDigital.xhtml
    ==============================================================*/
 /* BORN DIGITAL */
-/* BLOCK */
 .born-digital {
     margin-bottom: 21px;
     margin-top: 25px;
-    /* ELEMENT */
+    /* NO ACCESS BOX */
     &__no-access-box {
         padding: 1.5rem;
         p {
             margin-bottom: 0;
         }
     }
+    /* BOX */
     &__box {
         padding: 1.5rem;
     }
+    /* INTERNAL RESOURCES WRAPPER */
     &__internal-resources-wrapper {
         display: flex;
         flex-direction: column;
@@ -26,24 +27,20 @@
         margin-bottom: 1rem;
         margin-top: 3.5rem;
     }
-    p {
-    }
+    /* ITEMS WRAPPER */
     &__items-wrapper {
         display: grid;
         grid-template-columns: 2fr 2fr 1fr 1fr 1fr;
-        grid-gap: 0px;
         grid-column: span 5;
         grid-gap: 5px;
         padding: 0 15px;
         margin-left: -15px;
         margin-right: -15px;
     }
-    &__items {
-    }
+    /* HEAD */
     &__head-wrapper {
         display: grid;
         grid-template-columns: 2fr 2fr 1fr 1fr 1fr;
-        // padding: 1.5rem;
         padding-bottom: 0;
         grid-gap: 5px;
     }
@@ -51,69 +48,52 @@
         font-weight: 700;
         display: none;
     }
-    &__head-mobile-wrapper {
-        display: grid;
-        grid-template-columns: 2fr 2fr 1fr 1fr 1fr;
-        padding: 1.5rem;
-        padding-bottom: 0;
-        grid-gap: 5px;
-    }
     &__head {
         font-weight: bold;
     }
+    /* ITEM */
     &__item {
         position: relative;
         word-wrap: anywhere;
         place-self: center start;
-        &-download-last {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-        }
     }
-    &__item-order-label {
-        display: block;
-        margin-top: 3px;
-        padding: 1px 3px;
-        color: @white;
-        font-size: @fontSmall;
-        border-radius: 5px;
-        background-color: @blue;
-    }
-    &__item-download-dummy {
-        visibility: 0;
-        opacity: 0;
+    &__item-download-last {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
     }
 }
 
+/* DOWNLOAD EXTERNAL RESOURCE */
 .download-external-resource {
-    &__wrapper {
-    }
+    /* HEADING */
     &__heading {
-        font-size: 14px;
+        font-size: var(--font-size-body-small);
         margin: 0;
         font-weight: 700;
         margin-top: 5px;
     }
+    /* LIST */
     &__list {
         display: flex;
         flex-direction: column;
         gap: 5px;
     }
+    /* ITEM */
     &__item {
         padding: 0 15px;
         margin-left: -15px;
         margin-right: -15px;
-        &:hover {
-        }
     }
+    /* ERROR */
     &__error_wrapper {
         display: none;
-        color: red;
+        color: var(--fg-danger);
         &.-active {
             display: block;
         }
     }
+    /* INNER WRAPPER */
     &__inner-wrapper {
         display: none;
         gap: 0 20px;
@@ -122,38 +102,38 @@
             align-items: center;
         }
     }
+    /* LABEL */
     &__label {
         margin-right: auto;
         display: block;
         word-break: break-all;
     }
+    /* BUTTON WRAPPER */
     &__button-wrapper {
         min-width: 120px;
     }
+    /* ORDER */
     &__order {
         display: none;
         &.-active {
             display: block;
         }
     }
+    /* WAITING ANIMATION */
     &__waiting_animation {
         display: none;
         &.-active {
             display: block;
         }
     }
+    /* LOADING ANIMATION */
     &__loading_animation {
         display: none;
         &.-active {
             display: block;
         }
     }
-    &__cancel_download {
-        display: none;
-        &.-active {
-            display: block;
-        }
-    }
+    /* RESULTS */
     &__results {
         display: none;
         &.-active {
@@ -176,7 +156,6 @@
     .born-digital__items-wrapper {
         grid-template-columns: 1fr;
         grid-gap: 0px;
-        // margin-bottom: 1.5rem;
         &:last-child {
             margin-bottom: 0;
         }
@@ -198,10 +177,8 @@
         &__items-wrapper {
             padding: 10px 15px;
         }
-        &__item {
-            &-download-last {
-                justify-content: flex-start;
-            }
+        &__item-download-last {
+            justify-content: flex-start;
         }
     }
     .download-external-resource {

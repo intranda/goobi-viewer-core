@@ -165,7 +165,7 @@ export function setupPanels(immersiveRoot, keys) {
 
 /**
  * Adds the handle that resizes the left panels: one shared
- * --immersive-panel-width custom property, persisted in sessionStorage. The handle
+ * --_immersive-panel-width custom property, persisted in sessionStorage. The handle
  * is a focusable separator; arrow keys step the width (Shift for larger steps),
  * Home and End jump to the limits.
  *
@@ -186,7 +186,7 @@ export function setupPanelResize(immersiveRoot) {
         return Math.max(MIN_WIDTH, panelMin);
     };
     const clamp = (px) => Math.min(Math.max(px, minWidth()), maxWidth());
-    const applyWidth = (px) => immersiveViewer.style.setProperty('--immersive-panel-width', Math.round(px) + 'px');
+    const applyWidth = (px) => immersiveViewer.style.setProperty('--_immersive-panel-width', Math.round(px) + 'px');
     let stored = NaN;
     try {
         stored = parseInt(sessionStorage.getItem(WIDTH_KEY), 10);
@@ -204,7 +204,7 @@ export function setupPanelResize(immersiveRoot) {
         handle.setAttribute('title', label);
     }
     const currentWidth = () => {
-        const set = parseFloat(immersiveViewer.style.getPropertyValue('--immersive-panel-width'));
+        const set = parseFloat(immersiveViewer.style.getPropertyValue('--_immersive-panel-width'));
         if (Number.isFinite(set)) return set;
         const open = immersiveViewer.querySelector(PANEL_OPEN_SELECTOR);
         return open ? open.getBoundingClientRect().width : minWidth();

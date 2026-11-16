@@ -346,7 +346,7 @@ function createRegionCoupling({ notes, sources, scrollContainer }) {
  * Places the cards: in the side column with collision stacking, or inline under
  * their anchor line once the panel is narrower than COLLAPSE_BELOW. A card that
  * would overflow above the first printed line shifts the text down via the
- * --immersive-anno-shift custom property instead of being clamped onto the line.
+ * --_immersive-anno-shift custom property instead of being clamped onto the line.
  */
 /** Marks the cards whose clamped text overflows, so they can hint at the full text in the popover. */
 function markTruncation(notes) {
@@ -366,7 +366,7 @@ function createNoteLayout({ box, notes, anchors, columnsHead, popovers, resizer 
         popovers.hide();
         inlineNotes.splice(0).forEach((el) => el.remove());
         column.remove();
-        box.style.removeProperty('--immersive-anno-shift');
+        box.style.removeProperty('--_immersive-anno-shift');
         const collapsed = box.clientWidth < COLLAPSE_BELOW;
         box.classList.toggle('-anno-collapsed', collapsed);
         if (columnsHead) columnsHead.hidden = collapsed;
@@ -404,7 +404,7 @@ function createNoteLayout({ box, notes, anchors, columnsHead, popovers, resizer 
             .sort((a, b) => a.top - b.top);
         const overflow = desired.length ? Math.max(0, -desired[0].top) : 0;
         if (overflow) {
-            box.style.setProperty('--immersive-anno-shift', `${overflow}px`);
+            box.style.setProperty('--_immersive-anno-shift', `${overflow}px`);
             desired.forEach((d) => {
                 d.top += overflow;
             });
@@ -418,7 +418,7 @@ function createNoteLayout({ box, notes, anchors, columnsHead, popovers, resizer 
         column.remove();
         if (handle) handle.remove();
         box.classList.remove('-anno-collapsed');
-        box.style.removeProperty('--immersive-anno-shift');
+        box.style.removeProperty('--_immersive-anno-shift');
         if (columnsHead) columnsHead.hidden = true;
     };
     return { relayout, destroy, column };

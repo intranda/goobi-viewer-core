@@ -33,6 +33,8 @@ import java.util.concurrent.TimeoutException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import io.goobi.viewer.api.rest.model.tasks.Task;
 import io.goobi.viewer.api.rest.model.tasks.Task.TaskStatus;
@@ -44,6 +46,7 @@ import io.goobi.viewer.model.job.TaskType;
  * @author florian
  *
  */
+@Execution(ExecutionMode.CONCURRENT)
 class JobManagerTest {
 
     TaskManager manager;

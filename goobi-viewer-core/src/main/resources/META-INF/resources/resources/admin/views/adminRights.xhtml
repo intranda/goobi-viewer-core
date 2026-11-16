@@ -6,8 +6,6 @@
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
@@ -35,9 +33,7 @@
                             #{msg.add}
                         </a>
                     </div>
-
                     <viewerComponent:adminBreadcrumbs />
-
                     <div class="admin__content-inner-content">
                         <!-- INFO TEXT -->
                         <div class="admin__info-text">
@@ -45,16 +41,13 @@
                                 value="#{msg.admin__roles_description_text}"
                                 escape="false" />
                         </div>
-
                         <ui:include src="/resources/admin/includes/adminRightsTicketTable.xhtml" />
-
                         <h:form
                             id="adminLicensesForm"
                             prependId="false">
                             <ui:fragment rendered="#{not empty adminLicenseBean.allLicenses}">
                                 <h2 class="admin__licenses-optional-heading">#{msg.admin__rights_entries_heading}</h2>
                             </ui:fragment>
-
                             <div class="admin__entry-list">
                                 <ui:repeat
                                     var="license"
@@ -101,11 +94,7 @@
                                                         </ui:fragment>
                                                         <ui:fragment rendered="#{licensee.client != adminClientsBean.allClients}">
                                                             <h2 class="col-12">
-                                                                <!--
-                                                                    Read client data from the current licensee (LicenseRightsHolder)
-                                                                    instead of the deprecated direct License.client getter, which is
-                                                                    no longer populated for licenses configured since 2026.01.
-                                                                -->
+                                                                <!-- CLIENT FROM THE LICENSEE, LICENSE.CLIENT IS EMPTY SINCE 2026.01 -->
                                                                 <util:icon-text
                                                                     icon="device-desktop"
                                                                     text="#{licensee.client.name} (#{licensee.client.clientIdentifier})"
@@ -115,6 +104,7 @@
                                                     </ui:fragment>
                                                 </ui:repeat>
                                             </div>
+
                                             <!-- DATA -->
                                             <dl class="row">
                                                 <dt class="col-sm-4">#{msg.admin__right_license_type}:</dt>
@@ -123,7 +113,7 @@
                                                 <!-- FUNCTIONS -->
                                                 <dt class="col-sm-4">#{msg.admin__right_functions}:</dt>
                                                 <dd class="col-sm-8">
-                                                    <!-- Allowed subthemes -->
+                                                    <!-- ALLOWED SUBTHEMES -->
                                                     <ui:fragment rendered="#{license.privCmsAllSubthemes}">
                                                         <div
                                                             class="admin__badge admin__badge-dark"
@@ -141,7 +131,8 @@
                                                             #{msg[subtheme]}
                                                         </div>
                                                     </ui:repeat>
-                                                    <!-- Allowed categories -->
+
+                                                    <!-- ALLOWED CATEGORIES -->
                                                     <ui:fragment rendered="#{license.privCmsAllCategories}">
                                                         <div
                                                             class="admin__badge admin__badge-violet"
@@ -159,7 +150,8 @@
                                                             #{msg[cat.name]}
                                                         </div>
                                                     </ui:repeat>
-                                                    <!-- Allowed CMS templates -->
+
+                                                    <!-- ALLOWED CMS TEMPLATES -->
                                                     <ui:fragment rendered="#{license.privCmsAllTemplates}">
                                                         <div
                                                             class="admin__badge admin__badge-primary"
@@ -179,7 +171,8 @@
                                                             </div>
                                                         </ui:fragment>
                                                     </ui:repeat>
-                                                    <!-- Added to this license -->
+
+                                                    <!-- ADDED TO THIS LICENSE -->
                                                     <ui:repeat
                                                         var="priv"
                                                         value="#{license.getSortedPrivileges(license.privileges)}">
@@ -189,7 +182,8 @@
                                                             #{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}
                                                         </div>
                                                     </ui:repeat>
-                                                    <!-- Inherited from the selected license type -->
+
+                                                    <!-- INHERITED FROM THE LICENSE TYPE -->
                                                     <ui:repeat
                                                         var="priv"
                                                         value="#{license.getSortedPrivileges(license.licenseType.privileges)}">
@@ -199,7 +193,8 @@
                                                             #{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}
                                                         </div>
                                                     </ui:repeat>
-                                                    <!-- All other -->
+
+                                                    <!-- ALL OTHER -->
                                                     <ui:repeat
                                                         var="priv"
                                                         value="#{license.getAvailablePrivileges(license.privileges)}">
@@ -217,11 +212,7 @@
                                             <div class="row justify-content-end admin__boxed-entry-actions">
                                                 <div class="col-3 d-flex justify-content-end">
                                                     <!-- EDIT -->
-                                                    <!--
-                                                        The licensee names were read from the deprecated direct License
-                                                        fields (user/userGroup/ipRange) and have been empty since 2026.01;
-                                                        simplify to the license type, which is always present.
-                                                    -->
+                                                    <!-- LICENSE TYPE ONLY, THE OLD LICENSEE FIELDS ARE EMPTY SINCE 2026.01 -->
                                                     <a
                                                         href="#{navigationHelper.applicationUrl}admin/rights/edit/#{license.id}/"
                                                         class="admin__boxed-entry-actions-edit"

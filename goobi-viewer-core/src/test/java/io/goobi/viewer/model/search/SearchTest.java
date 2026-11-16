@@ -24,17 +24,22 @@ package io.goobi.viewer.model.search;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.controller.GeoCoordinateConverter;
 import io.goobi.viewer.model.maps.IArea;
 import io.goobi.viewer.model.maps.Location;
@@ -161,6 +166,37 @@ class SearchTest extends AbstractDatabaseAndSolrEnabledTest {
             Assertions.assertTrue(items.get(0).getCount() > 0, "The dynamic collection facet should report a positive hit count");
         } finally {
             DataManager.getInstance().getDao().deleteDynamicCollection(dc);
+        }
+    }
+
+    /**
+     * @see Search#execute(SearchFacets,Map,int,Locale)
+     * @verifies skip range and unfiltered facet queries if no such fields are configured
+     */
+    @Test
+    void execute_shouldSkipRangeAndUnfilteredFacetQueriesIfNoSuchFieldsAreConfigured() throws Exception {
+        Configuration originalConfig = DataManager.getInstance().getConfiguration();
+        SolrSearchIndex originalIndex = DataManager.getInstance().getSearchIndex();
+        Configuration config = Mockito.spy(originalConfig);
+        Mockito.doReturn(Collections.emptyList()).when(config).getRangeFacetFields();
+        SolrSearchIndex index = Mockito.spy(originalIndex);
+        DataManager.getInstance().injectConfiguration(config);
+        DataManager.getInstance().injectSearchIndex(index);
+        try {
+            // MD_PLACEPUBLISH is neither a range, always-apply nor boolean facet field
+            Search search = new Search(SearchHelper.SEARCH_TYPE_REGULAR, null, new ArrayList<>(List.of(SearchResultGroup.createDefaultGroup())),
+                    List.of("MD_PLACEPUBLISH"));
+            search.setQuery("");
+
+            search.execute(new SearchFacets(), null, 10, Locale.ENGLISH);
+
+            Assertions.assertTrue(search.getHitsCount() > 0);
+            Mockito.verify(index, Mockito.never())
+                    .search(Mockito.any(), Mockito.eq(0), Mockito.eq(0), Mockito.any(), Mockito.eq(Collections.emptyList()),
+                            Mockito.eq(Collections.singletonList(SolrConstants.IDDOC)), Mockito.any(), Mockito.any());
+        } finally {
+            DataManager.getInstance().injectConfiguration(originalConfig);
+            DataManager.getInstance().injectSearchIndex(originalIndex);
         }
     }
 }

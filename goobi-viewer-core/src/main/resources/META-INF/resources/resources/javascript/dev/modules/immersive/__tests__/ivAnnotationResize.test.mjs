@@ -37,7 +37,7 @@ function create({ panel, box, columnsHead }) {
     return resize;
 }
 
-const splitVar = (panel) => panel.style.getPropertyValue('--immersive-anno-split');
+const splitVar = (panel) => panel.style.getPropertyValue('--_immersive-anno-split');
 
 /** A drag tracks the pointer on the window, so only the pointerdown goes to the handle. */
 const pointer = (type, clientX) => window.dispatchEvent(new MouseEvent(type, { clientX }));

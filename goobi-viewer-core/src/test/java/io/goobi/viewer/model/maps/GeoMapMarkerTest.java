@@ -25,6 +25,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -33,6 +35,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
  * @author florian
  *
  */
+@Execution(ExecutionMode.CONCURRENT)
 class GeoMapMarkerTest {
 
     private GeoMapMarker testObject = new GeoMapMarker("test");

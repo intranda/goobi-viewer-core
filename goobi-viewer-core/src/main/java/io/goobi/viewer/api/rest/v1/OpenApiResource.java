@@ -227,6 +227,7 @@ public class OpenApiResource {
         return List.of(
                 tag("records", "Records addressed by persistent identifier: metadata, pages, files, images and downloads."),
                 tag("iiif", "IIIF Presentation 2.1.1, Image, Search and Change Discovery resources."),
+                tag("archives", "Archive resources, including the positional card catalog view over digitized card catalogs."),
                 tag("collections", "Information about and downloads of BagIt archives for a whole collection."),
                 tag("search", "OpenSearch description, quick filter facets and search result exports."),
                 tag("index", "Direct Solr index access: field list, geospatial search, heatmaps, queries and statistics."),

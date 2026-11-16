@@ -516,7 +516,7 @@ public class IdentifierResolver extends HttpServlet {
      * @throws IOException
      * @throws ServletException
      */
-    private static void redirectToError(int code, String identifier, HttpServletRequest request, HttpServletResponse response)
+    static void redirectToError(int code, String identifier, HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String url = "/error/";
         response.setStatus(code);

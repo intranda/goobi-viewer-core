@@ -12,6 +12,14 @@
             name="notes"
             type="java.util.List"
             required="true" />
+        <composite:attribute
+            name="variables"
+            required="false"
+            default="page" />
+        <composite:attribute
+            name="editLink"
+            required="false"
+            default="true" />
     </composite:interface>
 
     <composite:implementation>
@@ -20,25 +28,26 @@
             var="note"
             varStatus="status"
             value="#{cc.attrs.notes}">
-            <div
-                id="widgetRecordNotes_#{status.index}"
-                class="widget widget-record-notes #{note.styleClass}">
-                <div class="widget__topbar widget-record-notes__topbar">
-                    <h2 class="widget__title widget-record-notes__title">
-                        #{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}
-                    </h2>
+            <ui:fragment
+                rendered="#{cmsRecordNotesBean.resolveNoteText(note.noteText.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale), cc.attrs.variables) != null}">
+                <div
+                    id="widgetRecordNotes_#{status.index}"
+                    class="widget widget-record-notes #{note.styleClass}">
+                    <div class="widget__topbar widget-record-notes__topbar">
+                        <h2 class="widget__title widget-record-notes__title">#{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}</h2>
+                    </div>
+                    <div class="widget__body widget-record-notes__body">
+                        <h:outputText
+                            escape="false"
+                            value="#{cmsRecordNotesBean.resolveNoteText(note.noteText.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale), cc.attrs.variables)}" />
+                        <ui:fragment rendered="#{userBean.admin and cc.attrs.editLink}">
+                            <div class="widget-record-notes__action-link">
+                                <a href="#{request.contextPath}/admin/cms/recordnotes/edit/#{note.id}">#{msg.edit}</a>
+                            </div>
+                        </ui:fragment>
+                    </div>
                 </div>
-                <div class="widget__body widget-record-notes__body">
-                    <h:outputText
-                        escape="false"
-                        value="#{note.noteText.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}" />
-                    <ui:fragment rendered="#{userBean.admin}">
-                        <div class="widget-record-notes__action-link">
-                            <a href="#{request.contextPath}/admin/cms/recordnotes/edit/#{note.id}">#{msg.edit}</a>
-                        </div>
-                    </ui:fragment>
-                </div>
-            </div>
+            </ui:fragment>
         </ui:repeat>
     </composite:implementation>
 </ui:composition>

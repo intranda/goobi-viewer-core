@@ -38,6 +38,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
@@ -149,6 +150,29 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
     }
 
     /**
+     * @verifies resolve the archive without loading its tree when it is shown as catalog
+     * @see ArchiveManager#loadArchiveForEntry(String)
+     */
+    @Test
+    void loadArchiveForEntry_shouldResolveTheArchiveWithoutLoadingItsTreeWhenItIsShownAsCatalog() throws Exception {
+        String entryId = "A91x36057394742965620181205135958381";
+        var doc = DataManager.getInstance()
+                .getSearchIndex()
+                .getFirstDoc("+EAD_NODE_ID:\"" + entryId + "\" +DOCTYPE:ARCHIVE", List.of("PI_TOPSTRUCT"));
+        String pi = String.valueOf(doc.getFirstValue("PI_TOPSTRUCT"));
+        possibleDatabases.add(new ArchiveResource("catalog", pi, ZonedDateTime.now().format(ArchiveResource.DATE_TIME_FORMATTER), "10"));
+        ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser));
+        Mockito.doReturn(true).when(archiveManager).isCatalogView(Mockito.any());
+
+        assertEquals(pi, archiveManager.loadArchiveForEntry(entryId).getResourceId());
+        Mockito.verify(archiveManager, Mockito.never()).loadDatabase(Mockito.any(), Mockito.any());
+
+        Mockito.doReturn(false).when(archiveManager).isCatalogView(Mockito.any());
+        assertEquals(pi, archiveManager.loadArchiveForEntry(entryId).getResourceId());
+        Mockito.verify(archiveManager, Mockito.times(1)).loadDatabase(Mockito.any(), Mockito.any());
+    }
+
+    /**
      * @verifies add new archive
      */
     @Test
@@ -212,6 +236,59 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
 
         Assertions.assertTrue(resolvableDuringReload.get(), "Archive was not resolvable while the archive list was reloaded");
         assertNotNull(archiveManager.getArchive("r1"));
+    }
+
+    /**
+     * @see ArchiveManager#updateArchiveList()
+     * @verifies not load linked records
+     */
+    @Test
+    void updateArchiveList_shouldNotLoadLinkedRecords() throws Exception {
+        assertNotNull(possibleDatabases, "No EAD record in the index.");
+        SolrEADParser parser = Mockito.spy(eadParser);
+        ArchiveManager archiveManager = new ArchiveManager(parser);
+        archiveManager.updateArchiveList();
+        possibleDatabases.add(new ArchiveResource("resource 3", "r3", ZonedDateTime.now().format(ArchiveResource.DATE_TIME_FORMATTER), "10"));
+        archiveManager.updateArchiveList();
+
+        assertNotNull(archiveManager.getArchive("r3"));
+        Mockito.verify(parser, Mockito.never()).updateAssociatedRecordMap();
+        Mockito.verify(parser, Mockito.never()).updateAssociatedRecordMapIfChanged();
+    }
+
+    /**
+     * @see ArchiveManager#updateArchiveList()
+     * @verifies reset error state after a successful reload without changes
+     */
+    @Test
+    void updateArchiveList_shouldResetErrorStateAfterASuccessfulReloadWithoutChanges() throws Exception {
+        assertNotNull(possibleDatabases, "No EAD record in the index.");
+        SolrEADParser parser = Mockito.spy(eadParser);
+        ArchiveManager archiveManager = new ArchiveManager(parser);
+        Mockito.doThrow(new IndexUnreachableException("index down")).doCallRealMethod().when(parser).getPossibleDatabases();
+
+        archiveManager.updateArchiveList();
+        Assertions.assertTrue(archiveManager.isInErrorState());
+
+        // Same archive list as before, i.e. nothing changed
+        archiveManager.updateArchiveList();
+        assertEquals(ArchiveManager.DatabaseState.ARCHIVES_LOADED, archiveManager.getDatabaseState());
+    }
+
+    /**
+     * @see ArchiveManager#loadDatabase(ArchiveParser,ArchiveResource)
+     * @verifies update linked records before building the tree
+     */
+    @Test
+    void loadDatabase_shouldUpdateLinkedRecordsBeforeBuildingTheTree() throws Exception {
+        assertNotNull(possibleDatabases, "No EAD record in the index.");
+        SolrEADParser parser = Mockito.spy(eadParser);
+        ArchiveManager archiveManager = new ArchiveManager(parser);
+
+        assertNotNull(archiveManager.loadDatabase(parser, possibleDatabases.get(0)));
+        InOrder inOrder = Mockito.inOrder(parser);
+        inOrder.verify(parser).updateAssociatedRecordMapIfChanged();
+        inOrder.verify(parser).loadDatabase(Mockito.any(), Mockito.anyInt());
     }
 
     /**

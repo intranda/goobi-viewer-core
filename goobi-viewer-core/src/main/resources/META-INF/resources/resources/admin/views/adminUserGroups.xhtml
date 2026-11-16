@@ -5,7 +5,6 @@
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
@@ -30,6 +29,7 @@
                         <div class="admin__title-bar">
                             <!-- TITLE -->
                             <h1 class="admin__title">#{msg.admin__groups}</h1>
+
                             <!-- CREATE NEW GROUP -->
                             <a
                                 href="#{navigationHelper.getPageUrl('adminUserGroupNew')}/"
@@ -37,9 +37,7 @@
                                 #{msg.add}
                             </a>
                         </div>
-
                         <viewerComponent:adminBreadcrumbs />
-
                         <div class="admin__content-inner-content">
                             <!-- INFO TEXT -->
                             <div class="admin__info-text">
@@ -47,7 +45,6 @@
                                     value="#{msg.admin__groups_description_text}"
                                     escape="false" />
                             </div>
-
                             <div class="admin__entry-list -w33">
                                 <!-- INDIVIDUAL GROUPS -->
                                 <ui:repeat
@@ -58,6 +55,7 @@
                                         <div class="row">
                                             <h2 class="col-12">#{userGroup.name}</h2>
                                         </div>
+
                                         <!-- DESCRIPTION -->
                                         <div class="row">
                                             <ui:fragment rendered="#{userGroup.description ne ''}">
@@ -71,6 +69,7 @@
                                                 </p>
                                             </ui:fragment>
                                         </div>
+
                                         <!-- DATA -->
                                         <dl class="row">
                                             <dt class="col-sm-4">#{msg.userGroup_members}:</dt>
@@ -80,6 +79,7 @@
                                                 <h:outputText value="#{userGroup.owner.displayName}" />
                                             </dd>
                                         </dl>
+
                                         <!-- ACTIONS -->
                                         <div class="row admin__boxed-entry-actions">
                                             <div class="col-3 d-flex">

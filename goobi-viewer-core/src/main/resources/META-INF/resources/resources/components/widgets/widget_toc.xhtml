@@ -6,7 +6,6 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:o="http://omnifaces.org/ui"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <composite:interface>
         <composite:attribute
@@ -36,11 +35,11 @@
             <o:socket
                 channel="tocUpdateChannel"
                 onmessage="updateToc" />
-
             <div
                 id="widgetToc"
                 class="widget widget-toc">
                 <h:form
+                    styleClass="widget__form-wrapper"
                     id="widgetTocForm"
                     prependId="false">
                     <!-- TITLE -->
@@ -51,36 +50,31 @@
                             <!-- EXPAND ALL -->
                             <ui:fragment rendered="#{configurationBean.sidebarTocTreeView and activeDocumentBean.toc.maxTocDepth > 0}">
                                 <div class="widget-toc__title-expand">
-                                    <!-- CLOSE -->
                                     <button
                                         type="button"
-                                        class="btn btn--clean widget-toc__title-expand-all-button"
-                                        data-action="collapse-all"
-                                        title="#{msg.allClose}"
-                                        data-toggle="tooltip"
-                                        data-placement="top"
-                                        aria-label="#{msg.allClose}">
-                                        <util:icon
-                                            icon="square-rounded-minus"
-                                            svgClass="icon icon-lg widget__topbar-icon-svg widget-toc__topbar-icon-svg" />
-                                    </button>
-                                    <!-- OPEN -->
-                                    <button
-                                        type="button"
-                                        class="btn btn--clean widget-toc__title-close-all-button"
-                                        data-action="expand-all"
+                                        class="btn btn--clean widget-toc__title-toggle-all-button"
+                                        data-action="toggle-all"
+                                        aria-expanded="false"
                                         title="#{msg.allOpen}"
                                         data-toggle="tooltip"
                                         data-placement="top"
-                                        aria-label="#{msg.allOpen}">
+                                        aria-label="#{msg.allOpen}"
+                                        data-label-expand="#{msg.allOpen}"
+                                        data-label-collapse="#{msg.allClose}">
                                         <util:icon
-                                            icon="square-rounded-plus"
-                                            svgClass="icon icon-lg widget__topbar-icon-svg widget-toc__topbar-icon-svg" />
+                                            icon="square-plus"
+                                            styleClass="widget-toc__title-toggle-all-expand"
+                                            svgClass="widget__topbar-icon-svg widget-toc__topbar-icon-svg" />
+                                        <util:icon
+                                            icon="square-minus"
+                                            styleClass="widget-toc__title-toggle-all-collapse"
+                                            svgClass="widget__topbar-icon-svg widget-toc__topbar-icon-svg" />
                                     </button>
                                 </div>
                             </ui:fragment>
                         </div>
                     </div>
+
                     <!-- ELEMENTS -->
                     <div
                         jsf:id="sidebarTocTree"
@@ -99,7 +93,7 @@
                                             data-iddoc="iddoc_#{tocElement.iddoc}"
                                             data-level="#{tocElement.level}"
                                             data-page-no="#{tocElement.pageNo}"
-                                            style="#{navigationHelper.localeString eq 'ar' or navigationHelper.localeString eq 'iw' ? 'margin-right:' : 'margin-left:'} #{tocElement.level * 15}px">
+                                            style="--toc-level: #{tocElement.level}">
                                             <!-- EXPAND -->
                                             <ui:fragment rendered="#{tocElement.hasChild == true}">
                                                 <div class="widget-toc__element-expand">
@@ -107,13 +101,10 @@
                                                         type="button"
                                                         class="btn btn--clean widget-toc__toggle"
                                                         aria-expanded="#{tocElement.expanded}"
-                                                        aria-label="#{tocElement.expanded ? msg.allClose : msg.allOpen}">
+                                                        aria-label="#{tocElement.expanded ? msg.close : msg.open}">
                                                         <util:icon
-                                                            icon="square-rounded-plus"
-                                                            svgClass="icon icon-lg widget__body-icon-svg widget-toc__body-icon-svg widget-toc__expand-svg" />
-                                                        <util:icon
-                                                            icon="square-rounded-minus"
-                                                            svgClass="icon icon-lg widget__body-icon-svg widget-toc__body-icon-svg widget-toc__collapse-svg" />
+                                                            icon="chevron-down"
+                                                            svgClass="widget__body-icon-svg widget-toc__body-icon-svg widget-toc__toggle-icon-svg" />
                                                     </button>
                                                 </div>
                                             </ui:fragment>
@@ -174,7 +165,7 @@
                                             class="widget-toc__element #{tocElement.hasChild == true ? 'parent' : 'child' }"
                                             data-logid="#{tocElement.logId}"
                                             data-page-no="#{tocElement.pageNo}"
-                                            style="#{navigationHelper.localeString eq 'ar' or navigationHelper.localeString eq 'iw' ? 'margin-right:' : 'margin-left:'} #{tocElement.level * 15}px">
+                                            style="--toc-level: #{tocElement.level}">
                                             <!-- LINK -->
                                             <div
                                                 class="widget-toc__element-link #{!configurationBean.sidebarTocTreeView ? 'non-tree-view' : ''} #{configurationBean.sidebarTocPageNumbersVisible ? 'has-pagenumber' : ''}">
@@ -189,6 +180,7 @@
                                                         value="#{msg.sidebarTocAnchor}: #{tocElement.label}, #{tocElement.logId}" />
                                                 </h:outputLink>
                                             </div>
+
                                             <!-- PAGE NUMBER -->
                                             <ui:fragment rendered="#{configurationBean.sidebarTocPageNumbersVisible}">
                                                 <div class="widget-toc__element-pagenumber">
@@ -204,6 +196,7 @@
                 </h:form>
             </div>
 
+            <!-- TOC INIT -->
             <script type="text/javascript">viewerJS.widgetToc.init();</script>
         </ui:fragment>
     </composite:implementation>

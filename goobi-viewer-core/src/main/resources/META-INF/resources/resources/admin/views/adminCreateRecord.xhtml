@@ -4,10 +4,7 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:util="http://goobi.io/util"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
@@ -27,9 +24,7 @@
                     <div class="admin__title-bar">
                         <h1 class="admin__title">#{msg.admin__create_record__title}</h1>
                     </div>
-
                     <viewerComponent:adminBreadcrumbs />
-
                     <div class="admin__content-inner-content">
                         <!-- INFO TEXT -->
                         <div class="admin__info-text">
@@ -37,10 +32,8 @@
                                 value="#{msg.admin__create_record__description}"
                                 escape="false" />
                         </div>
-
                         <h:form prependId="false">
                             <h2>#{msg.admin__create_record__metadata__title}</h2>
-
                             <div class="admin__default-block">
                                 <p>#{msg.admin__create_record__metadata__description}</p>
                                 <fieldset>
@@ -258,7 +251,6 @@
                                     </div>
                                 </fieldset>
                             </div>
-
                             <h2>#{msg.admin__create_record__files__title}</h2>
                             <p>
                                 <h:outputText
@@ -270,7 +262,6 @@
                                 styleClass="admin__content-inner-content__upload_form">
                                 <adminMediaUpload />
                             </h:panelGroup>
-
                             <div class="admin__final-actions">
                                 <h:link
                                     styleClass="btn admin__cancel-button"
@@ -282,29 +273,30 @@
                             </div>
                         </h:form>
 
+                        <!-- FILE UPLOAD SCRIPT -->
                         <script type="text/javascript">
                             var fileUploadConfig = {
-    postUrl: '#{navigationHelper.applicationUrl}api/v1/temp/files/#{createRecordBean.uuid}_tif/',
-    msg: {
-        buttonUpload: '#{msg.button__upload}',
-        uploadText: '#{msg.admin__media_upload_text}',
-        allowedFileTypes: '#{msg.admin__media_upload_filetypes}',
-        mediaUploading: '#{msg.admin__media_upload_uploading}',
-        mediaFinished: '#{msg.admin__media_upload_finished}',
-        mediaError: '#{msg.admin__media_upload_error}',
-        bulkDeleteConfirm: '#{msg.admin__media_bulk_delete_confirm}',
-        overwriteFileConfirm: '#{msg.admin__media_overwrite_file_confirm}',
-        overwriteFileRefused: '#{msg.admin__media_overwrite_file_refused}',
-        button__overwrite: '#{msg.button__overwrite}',
-    },
-    fileTypes: 'TIFF, JPEG, JP2, PNG',
-    showFiles: true,
-    onUploadComplete: function () {
-        console.log('file upload complete');
-    },
-};
+                                postUrl: '#{navigationHelper.applicationUrl}api/v1/temp/files/#{createRecordBean.uuid}_tif/',
+                                msg: {
+                                    buttonUpload: '#{msg.button__upload}',
+                                    uploadText: '#{msg.admin__media_upload_text}',
+                                    allowedFileTypes: '#{msg.admin__media_upload_filetypes}',
+                                    mediaUploading: '#{msg.admin__media_upload_uploading}',
+                                    mediaFinished: '#{msg.admin__media_upload_finished}',
+                                    mediaError: '#{msg.admin__media_upload_error}',
+                                    bulkDeleteConfirm: '#{msg.admin__media_bulk_delete_confirm}',
+                                    overwriteFileConfirm: '#{msg.admin__media_overwrite_file_confirm}',
+                                    overwriteFileRefused: '#{msg.admin__media_overwrite_file_refused}',
+                                    button__overwrite: '#{msg.button__overwrite}',
+                                },
+                                fileTypes: 'TIFF, JPEG, JP2, PNG',
+                                showFiles: true,
+                                onUploadComplete: function () {
+                                    console.log('file upload complete');
+                                },
+                            };
 
-riot.mount('adminMediaUpload', fileUploadConfig);
+                            riot.mount('adminMediaUpload', fileUploadConfig);
                         </script>
                     </div>
                 </div>

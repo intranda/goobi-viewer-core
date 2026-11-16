@@ -142,7 +142,7 @@ describe('setupPanelResize', () => {
         localStorage.clear();
     });
 
-    /** The handle position follows --immersive-panel-width, so the clamp must never
+    /** The handle position follows --_immersive-panel-width, so the clamp must never
      *  let the variable drop below the open panel's own min-width (annotations
      *  two-column mode raises it) — otherwise the handle detaches from the panel edge. */
     test('drag clamps to the open panel min-width so the handle stays on the panel edge', () => {
@@ -164,7 +164,7 @@ describe('setupPanelResize', () => {
 
         handle.dispatchEvent(new MouseEvent('pointerdown', { clientX: 740 }));
         handle.dispatchEvent(new MouseEvent('pointermove', { clientX: 300 }));
-        expect(viewer.style.getPropertyValue('--immersive-panel-width')).toBe('560px');
+        expect(viewer.style.getPropertyValue('--_immersive-panel-width')).toBe('560px');
         handle.dispatchEvent(new MouseEvent('pointerup', { clientX: 300 }));
         expect(sessionStorage.getItem(WIDTH_KEY)).toBe('560');
     });
@@ -197,7 +197,7 @@ describe('setupPanelResize', () => {
             // — the first-visit case with no inline style and no stored width.
             handle.getBoundingClientRect = () => ({ left: 374, width: 12 });
             roCallbacks.forEach((cb) => cb());
-            expect(viewer.style.getPropertyValue('--immersive-panel-width')).toBe('560px');
+            expect(viewer.style.getPropertyValue('--_immersive-panel-width')).toBe('560px');
             expect(handle.getAttribute('aria-valuenow')).toBe('560');
         } finally {
             delete global.ResizeObserver;
@@ -222,7 +222,7 @@ describe('setupPanelResize', () => {
 
         handle.dispatchEvent(new MouseEvent('pointerdown', { clientX: 740 }));
         handle.dispatchEvent(new MouseEvent('pointermove', { clientX: 100 }));
-        expect(viewer.style.getPropertyValue('--immersive-panel-width')).toBe('240px');
+        expect(viewer.style.getPropertyValue('--_immersive-panel-width')).toBe('240px');
         handle.dispatchEvent(new MouseEvent('pointerup', { clientX: 100 }));
     });
 
@@ -253,7 +253,7 @@ describe('setupPanelResize', () => {
         const reachedDocument = jest.fn();
         document.addEventListener('keydown', reachedDocument);
         const press = (key, shiftKey = false) => handle.dispatchEvent(new KeyboardEvent('keydown', { key, shiftKey, bubbles: true, cancelable: true }));
-        const width = () => viewer.style.getPropertyValue('--immersive-panel-width');
+        const width = () => viewer.style.getPropertyValue('--_immersive-panel-width');
         try {
             press('ArrowRight');
             expect(width()).toBe('316px');
@@ -276,7 +276,7 @@ describe('setupPanelResize', () => {
         localStorage.setItem(WIDTH_KEY, '555');
         const { root, viewer } = mountResizeMarkup();
         setupPanelResize(root);
-        expect(viewer.style.getPropertyValue('--immersive-panel-width')).toBe('300px');
+        expect(viewer.style.getPropertyValue('--_immersive-panel-width')).toBe('300px');
     });
 
     test('persists the dragged width to sessionStorage only', () => {

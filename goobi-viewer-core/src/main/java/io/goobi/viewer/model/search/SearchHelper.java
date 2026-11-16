@@ -147,9 +147,9 @@ public final class SearchHelper {
     /** Standard Solr query for all records and anchors. */
     public static final String ALL_RECORDS_QUERY = "+(ISWORK:true ISANCHOR:true)";
     /**
-     * Default filter query for search results and collection listings: all records and anchors, but no volumes. Volumes are excluded via the
-     * stable PI_PARENT: a volume's IDDOC_PARENT refers to the anchor across records and is missing or outdated if the anchor was not yet
-     * indexed or has been re-indexed since (within a record, IDDOC_PARENT remains the reference to the parent node).
+     * Default filter query for search results and collection listings: all records and anchors, but no volumes. Volumes are excluded via the stable
+     * PI_PARENT: a volume's IDDOC_PARENT refers to the anchor across records and is missing or outdated if the anchor was not yet indexed or has been
+     * re-indexed since (within a record, IDDOC_PARENT remains the reference to the parent node).
      */
     public static final String DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY = ALL_RECORDS_QUERY + " -" + SolrConstants.PI_PARENT + ":*";
     /**
@@ -330,7 +330,7 @@ public final class SearchHelper {
                     HttpServletRequest request = BeanUtils.getRequest();
                     if (StringUtils.isNotBlank(plaintextFilename)) {
                         boolean access = AccessConditionUtils
-                                .checkAccess(request.getSession(), "text", pi, plaintextFilename, NetTools.getIpAddress(request), false)
+                                .checkAccess(request.getSession(false), "text", pi, plaintextFilename, NetTools.getIpAddress(request), false)
                                 .isGranted();
                         if (access) {
                             fulltext = DataFileTools.loadFulltext(null, plaintextFilename, false);
@@ -340,7 +340,7 @@ public final class SearchHelper {
                     } else if (StringUtils.isNotBlank(altoFilename)) {
                         boolean access =
                                 AccessConditionUtils
-                                        .checkAccess(request.getSession(), "text", pi, altoFilename, NetTools.getIpAddress(request), false)
+                                        .checkAccess(request.getSession(false), "text", pi, altoFilename, NetTools.getIpAddress(request), false)
                                         .isGranted();
                         if (access) {
                             fulltext = DataFileTools.loadFulltext(altoFilename, null, false);
@@ -450,6 +450,7 @@ public final class SearchHelper {
         if (user != null) {
             factory.setUser(user);
         }
+        factory.preloadShapeMetadata(resp.getResults()).preloadAnchorDocs(resp.getResults());
 
         int count = first;
         Map<String, SolrDocumentList> childDocsMap = resp.getExpandedResults();
@@ -868,6 +869,7 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should find all collections
      * @should group collections by DC field and aggregate their docstruct facet values
+     * @should count records in multiple subcollections only once for parent
      */
     public static Map<String, CollectionResult> findAllCollectionsFromField(String luceneField, String groupingField, String filterQuery,
             boolean filterForWhitelist, boolean filterForBlacklist, String splittingChar) throws IndexUnreachableException {
@@ -876,23 +878,8 @@ public final class SearchHelper {
             throw new IllegalArgumentException("Splitting char may not be empty. Check configuration for collection field " + luceneField);
         }
         try {
-            StringBuilder sbQuery = new StringBuilder();
-            if (StringUtils.isNotBlank(filterQuery)) {
-                sbQuery.append(filterQuery);
-            }
-            if (filterForWhitelist) {
-                if (!sbQuery.isEmpty()) {
-                    sbQuery.append(SolrConstants.SOLR_QUERY_AND);
-                }
-                sbQuery.append("+(").append(getDocstrctWhitelistFilterQuery()).append(')');
-            }
-            sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist());
-            if (filterForBlacklist) {
-                sbQuery.append(getCollectionBlacklistFilterSuffix(luceneField));
-            }
-            logger.trace("Collection query: {}", sbQuery);
-
-            // Iterate over record hits instead of using facets to determine the size of the parent collections
+            String query = buildCollectionQuery(luceneField, filterQuery, filterForWhitelist, filterForBlacklist);
+            logger.trace("Collection query: {}", query);
 
             FacetField facetResults = null;
             FacetField groupResults = null;
@@ -904,13 +891,14 @@ public final class SearchHelper {
             }
             QueryResponse response = DataManager.getInstance()
                     .getSearchIndex()
-                    .searchFacetsAndStatistics(sbQuery.toString(), null, facetFields, 1, false);
+                    .searchFacetsAndStatistics(query, null, facetFields, 1, false);
             facetResults = response.getFacetField(facetField);
             groupResults = response.getFacetField(groupingField);
 
             Map<String, CollectionResult> ret = createCollectionResults(facetResults, splittingChar);
+            applyDistinctParentCounts(ret, facetField, query, splittingChar);
 
-            addGrouping(ret, luceneField, groupResults, sbQuery.toString());
+            addGrouping(ret, luceneField, groupResults, query);
 
             logger.debug("{} collections found", ret.size());
             return ret;
@@ -923,6 +911,37 @@ public final class SearchHelper {
     }
 
     /**
+     * Builds the Solr query that selects all records relevant for collection listings over the given field.
+     *
+     * @param luceneField the SOLR field over which to build the collections (typically "DC")
+     * @param filterQuery An addition solr-query to filer collections by.
+     * @param filterForWhitelist if true, restrict results to whitelisted document structures
+     * @param filterForBlacklist if true, exclude blacklisted collection values
+     * @return Solr query string
+     */
+    static String buildCollectionQuery(String luceneField, String filterQuery, boolean filterForWhitelist, boolean filterForBlacklist) {
+        StringBuilder sbQuery = new StringBuilder();
+        if (StringUtils.isNotBlank(filterQuery)) {
+            sbQuery.append(filterQuery);
+        }
+        if (filterForWhitelist) {
+            if (!sbQuery.isEmpty()) {
+                sbQuery.append(SolrConstants.SOLR_QUERY_AND);
+            }
+            sbQuery.append("+(").append(getDocstrctWhitelistFilterQuery()).append(')');
+        }
+        sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist());
+        if (filterForBlacklist) {
+            sbQuery.append(getCollectionBlacklistFilterSuffix(luceneField));
+        }
+
+        return sbQuery.toString();
+    }
+
+    /**
+     * Creates collection results from the given facet values. Facet counts of subcollections are added to all ancestor collections, so the
+     * counts of parent collections are only upper bounds if records belong to multiple collections within the same subtree. These counts are
+     * corrected in {@code applyDistinctParentCounts}.
      *
      * @param facetResults Solr facet field containing collection value counts
      * @param splittingChar character used to separate hierarchy levels in collection names
@@ -931,7 +950,6 @@ public final class SearchHelper {
     private static Map<String, CollectionResult> createCollectionResults(FacetField facetResults, String splittingChar) {
         Map<String, CollectionResult> ret = new HashMap<>();
 
-        Set<String> counted = new HashSet<>();
         if (facetResults == null) {
             return ret;
         }
@@ -945,7 +963,7 @@ public final class SearchHelper {
             CollectionResult result = ret.computeIfAbsent(dc, k -> new CollectionResult(dc));
             result.incrementCount(count.getCount());
 
-            if (dc.contains(splittingChar) && !counted.contains(dc)) {
+            if (dc.contains(splittingChar)) {
                 String parent = dc;
                 while (parent.lastIndexOf(splittingChar) != -1) {
                     parent = parent.substring(0, parent.lastIndexOf(splittingChar));
@@ -960,6 +978,55 @@ public final class SearchHelper {
         }
 
         return ret;
+    }
+
+    /**
+     * Replaces the summed up counts of collections that have subcollections with the number of distinct records in each collection's subtree.
+     * Summing up facet counts would count a record that belongs to several collections within the same subtree (e.g. "a.a" and "a.b") multiple
+     * times for the common parent. All counts are retrieved via a single request using one facet query per parent collection.
+     *
+     * @param ret map of collection results whose parent collection counts are to be corrected
+     * @param facetField Solr facet field containing the collection values
+     * @param query Solr query used for retrieving the collection facets
+     * @param splittingChar character used to separate hierarchy levels in collection names
+     */
+    private static void applyDistinctParentCounts(Map<String, CollectionResult> ret, String facetField, String query, String splittingChar) {
+        Set<String> parents = new HashSet<>();
+        for (String name : ret.keySet()) {
+            String parent = name;
+            while (parent.lastIndexOf(splittingChar) != -1) {
+                parent = parent.substring(0, parent.lastIndexOf(splittingChar));
+                parents.add(parent);
+            }
+        }
+        if (parents.isEmpty()) {
+            return;
+        }
+
+        Map<String, String> collectionsByFacetQuery = new HashMap<>(parents.size());
+        for (String parent : parents) {
+            String facetQuery = "+(" + facetField + ":\"" + parent.replace("\\", "\\\\").replace("\"", "\\\"") + "\" " + facetField + ":"
+                    + ClientUtils.escapeQueryChars(parent + splittingChar) + "*)";
+            collectionsByFacetQuery.put(SolrTools.cleanUpQuery(facetQuery), parent);
+        }
+
+        try {
+            QueryResponse resp = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(query, 0, 0, null, null, new ArrayList<>(collectionsByFacetQuery.keySet()), null,
+                            Collections.singletonList(SolrConstants.IDDOC), null, null);
+            if (resp == null || resp.getFacetQuery() == null) {
+                return;
+            }
+            for (Map.Entry<String, Integer> entry : resp.getFacetQuery().entrySet()) {
+                String collectionName = collectionsByFacetQuery.get(entry.getKey());
+                if (collectionName != null && entry.getValue() != null && ret.containsKey(collectionName)) {
+                    ret.get(collectionName).setCount(entry.getValue().longValue());
+                }
+            }
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.warn("Could not determine distinct record counts for parent collections: {}", e.getMessage());
+        }
     }
 
     /**
@@ -1276,8 +1343,8 @@ public final class SearchHelper {
                         NetTools.getIpAddress(request),
                         ClientApplicationManager.getClientFromRequest(request), privilege);
         logger.trace("New filter query suffix: {}", filterQuerySuffix);
-        if (request != null) {
-            request.getSession().setAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX, filterQuerySuffix);
+        if (request != null && request.getSession(false) != null) {
+            request.getSession(false).setAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX, filterQuerySuffix);
         } else {
             logger.warn("No HttpServletRequest found, cannot set filter query.");
         }

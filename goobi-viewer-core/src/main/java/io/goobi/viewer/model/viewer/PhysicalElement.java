@@ -74,6 +74,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.ActiveDocumentBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -797,7 +798,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
 
         HttpServletRequest request = BeanUtils.getRequest();
         return AccessConditionUtils
-                .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null, getPi(), filename,
+                .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession(false) : null, getPi(), filename,
                         IPrivilegeHolder.PRIV_VIEW_IMAGES, NetTools.getIpAddress(request))
                 .isGranted();
     }
@@ -857,7 +858,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
 
         HttpServletRequest request = BeanUtils.getRequest();
         return AccessConditionUtils
-                .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null, getPi(), filename,
+                .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession(false) : null, getPi(), filename,
                         IPrivilegeHolder.PRIV_VIEW_FULLTEXT, NetTools.getIpAddress(request))
                 .isGranted();
     }
@@ -918,7 +919,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
 
             HttpServletRequest request = BeanUtils.getRequest();
             return AccessConditionUtils
-                    .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null, getPi(), filename,
+                    .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession(false) : null, getPi(), filename,
                             IPrivilegeHolder.PRIV_VIEW_FULLTEXT, NetTools.getIpAddress(request))
                     .isGranted();
         } catch (FileNotFoundException | IndexUnreachableException | DAOException e) {
@@ -1265,7 +1266,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getImageToPdfUrl() throws IndexUnreachableException {
-        return BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(BeanUtils.getActiveDocumentBean().getCurrentElement(), this);
+        // ActiveDocumentBean is null outside of JSF if the request has no session
+        ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+        return BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(adb != null ? adb.getCurrentElement() : null, this);
     }
 
     /**
@@ -1504,7 +1507,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         } else if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             return AccessConditionUtils
-                    .checkAccessPermissionForImage(request != null ? request.getSession() : null, pi, fileName, NetTools.getIpAddress(request))
+                    .checkAccessPermissionForImage(request != null ? request.getSession(false) : null, pi, fileName, NetTools.getIpAddress(request))
                     .isGranted();
         } else {
             logger.trace("FacesContext not found");
@@ -1638,7 +1641,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             AccessPermission access =
-                    AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null, pi,
+                    AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(
+                            request != null ? request.getSession(false) : null, pi,
                             fileName,
                             IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES, NetTools.getIpAddress(request));
             // logger.trace("Born digital access for page {} is granted: {}", order, access.isGranted()); //NOSONAR Debug
@@ -1690,7 +1694,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         }
 
         return AccessConditionUtils
-                .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null, pi, fileName,
+                .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession(false) : null, pi, fileName,
                         IPrivilegeHolder.PRIV_VIEW_FULLTEXT, NetTools.getIpAddress(request))
                 .isGranted();
     }
@@ -1954,8 +1958,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * Builds containedStructElements from docs. Must be called while holding {@code lock}.
-     * Pass a non-null shapeDocsByIddoc to skip per-element Solr shape queries.
+     * Builds containedStructElements from docs. Must be called while holding {@code lock}. Pass a non-null shapeDocsByIddoc to skip per-element Solr
+     * shape queries.
      */
     private void buildContainedStructElements(List<SolrDocument> docs, Map<String, List<SolrDocument>> shapeDocsByIddoc)
             throws PresentationException, IndexUnreachableException {

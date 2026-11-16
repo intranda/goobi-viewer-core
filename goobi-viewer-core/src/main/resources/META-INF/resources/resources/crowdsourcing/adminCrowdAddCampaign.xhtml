@@ -5,7 +5,6 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:crowdsourcingComponent="http://xmlns.jcp.org/jsf/composite/crowdsourcing/components"
@@ -32,7 +31,6 @@
                         <h:outputText value="#{msg.admin__campaign_crowdsourcing_backToOverview}" />
                     </h:commandLink>
                 </h:form>
-
                 <h:panelGroup rendered="#{crowdsourcingBean.selectedCampaign != null}">
                     <div class="admin__title-bar">
                         <h1 class="admin__title">
@@ -40,9 +38,7 @@
                             msg.admin__crowdsourcing_campaign_new}
                         </h1>
                     </div>
-
                     <viewerComponent:adminBreadcrumbs />
-
                     <div class="admin__content-inner-content">
                         <h:form
                             id="createCampaignForm"
@@ -54,7 +50,6 @@
                                         <div class="admin__content-main -refreshHCsticky">
                                             <!-- GENERAL INFORMATION (TITLE + TEXT) -->
                                             <h2>#{msg.admin__category_general}</h2>
-
                                             <h:panelGroup id="titleDataGroup">
                                                 <!-- NEW CAMPAIGN LANGUAGE TABS GENERAL -->
                                                 <div class="admin__language-tabs">
@@ -80,7 +75,6 @@
                                                                     </ui:fragment>
                                                                 </label>
                                                             </div>
-
                                                             <div class="col-9 cms-module__option-control admin__form-input">
                                                                 <h:message
                                                                     for="displayName"
@@ -93,7 +87,6 @@
                                                                         class="fa fa-exclamation"
                                                                         aria-hidden="true" />
                                                                 </div>
-
                                                                 <h:inputText
                                                                     value="#{crowdsourcingBean.selectedCampaign.title}"
                                                                     id="displayName"
@@ -108,7 +101,6 @@
                                                                 </h:inputText>
                                                                 <span class="admin__form-help-text">#{msg.help__cms_page_title}</span>
                                                             </div>
-
                                                             <div class="col-1 admin__form-help-icon">
                                                                 <button
                                                                     type="button"
@@ -129,7 +121,6 @@
                                                                     #{msg.description}:
                                                                 </label>
                                                             </div>
-
                                                             <div class="col-9 admin__form-input">
                                                                 <h:inputTextarea
                                                                     id="adminCrowdAddCampaignDescription"
@@ -141,7 +132,6 @@
                                                                 </h:inputTextarea>
                                                                 <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_description}</span>
                                                             </div>
-
                                                             <div class="col-1 admin__form-help-icon">
                                                                 <button
                                                                     type="button"
@@ -165,11 +155,9 @@
                                                             <div class="col-2 control-label admin__form-label">
                                                                 <label for="">#{msg.admin__cms_media_file}:</label>
                                                             </div>
-
                                                             <div class="col-9 admin__form-input">
                                                                 <div class="admin__campaign-media-file-box">
                                                                     <!-- MEDIA FILE -->
-
                                                                     <ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.mediaItem != null}">
                                                                         <ui:include src="/resources/cms/includes/mediaFile.xhtml">
                                                                             <ui:param
@@ -203,7 +191,6 @@
                                                                     <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_media_file}</span>
                                                                 </div>
                                                             </div>
-
                                                             <div class="col-1 admin__form-help-icon">
                                                                 <button
                                                                     type="button"
@@ -224,7 +211,6 @@
                                                                     <span class="admin__label-required-field">(#{msg.form__required_field})</span>
                                                                 </label>
                                                             </div>
-
                                                             <div class="cms-module__option-control col-9 admin__form-input">
                                                                 <h:panelGroup id="solrQueryInputGroup">
                                                                     <div class="cms-module__option-message">
@@ -233,7 +219,6 @@
                                                                             infoClass="cms-module__option-message-status success"
                                                                             warnClass="cms-module__option-message-status warning"
                                                                             errorClass="cms-module__option-message-status danger" />
-
                                                                         <div class="cms-module__option-message-mark">
                                                                             <i
                                                                                 class="fa fa-check"
@@ -263,7 +248,6 @@
                                                                 </h:panelGroup>
                                                                 <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_solr_query}</span>
                                                             </div>
-
                                                             <div class="col-1 admin__form-help-icon">
                                                                 <button
                                                                     type="button"
@@ -274,10 +258,7 @@
                                                                 </button>
                                                             </div>
                                                         </div>
-
-                                                        <!-- TAB CONTENT EOL -->
                                                     </div>
-                                                    <!-- ADMIN BLOCK EOL -->
                                                 </div>
                                             </h:panelGroup>
 
@@ -286,7 +267,7 @@
                                                 <ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.solrQuery != null}">
                                                     <h2>
                                                         #{msg.admin__crowdsourcing_questions}
-                                                        <!-- Add new question link -->
+                                                        <!-- ADD QUESTION LINK -->
                                                         <h:commandButton
                                                             styleClass="btn btn--default admin__title-bar-action"
                                                             action="#{crowdsourcingBean.addNewQuestionAction}"
@@ -336,12 +317,10 @@
                                                                             </div>
 
                                                                             <!-- CAMPAIGN LANGUAGE TABS QUESTIONS VERTICAL ORDER -->
-
                                                                             <viewerComponent:translatedInputField
                                                                                 value="#{question.text}"
                                                                                 required="true"
                                                                                 ariaLabel="#{msg.admin__crowdsourcing_question_text}" />
-
                                                                             <div class="col-1 admin__form-help-icon">
                                                                                 <button
                                                                                     type="button"
@@ -351,7 +330,6 @@
                                                                                     <util:icon icon="help" />
                                                                                 </button>
                                                                             </div>
-
                                                                             <div class="col-2" />
                                                                             <span class="col-8 admin__form-help-text">#{msg.admin__help_crowdsourcing_question_text}</span>
                                                                         </div>
@@ -361,7 +339,6 @@
                                                                             <div class="col-2 admin__form-label">
                                                                                 <label for="adminCrowdAddCampaignQueryType">#{msg.type}:</label>
                                                                             </div>
-
                                                                             <div class="col-9 admin__form-input">
                                                                                 <h:selectOneMenu
                                                                                     id="adminCrowdAddCampaignQueryType"
@@ -381,7 +358,6 @@
                                                                                 </h:selectOneMenu>
                                                                                 <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_question_type}</span>
                                                                             </div>
-
                                                                             <div class="col-1 admin__form-help-icon">
                                                                                 <button
                                                                                     type="button"
@@ -399,7 +375,6 @@
                                                                                 <div class="col-2 admin__form-label">
                                                                                     <label for="adminCrowdAddCampaignQueryMetadata">#{msg.metadata}:</label>
                                                                                 </div>
-
                                                                                 <div class="col-9 admin__form-input">
                                                                                     <h:panelGroup
                                                                                         id="metadataFields"
@@ -411,7 +386,6 @@
                                                                                             <div class="badge badge-info">#{msg[field]}</div>
                                                                                         </ui:repeat>
                                                                                     </h:panelGroup>
-
                                                                                     <div class="multiselect-dropdown">
                                                                                         <div
                                                                                             class="multiselect-dropdown-trigger"
@@ -439,10 +413,8 @@
                                                                                             </ui:repeat>
                                                                                         </ul>
                                                                                     </div>
-
                                                                                     <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_question_metadata}</span>
                                                                                 </div>
-
                                                                                 <div class="col-1 admin__form-help-icon">
                                                                                     <button
                                                                                         type="button"
@@ -454,7 +426,6 @@
                                                                                 </div>
                                                                             </div>
                                                                         </ui:fragment>
-                                                                        <!-- 																	</c:if> -->
 
                                                                         <!-- TARGET SELECTOR -->
                                                                         <div class="form-row form-group">
@@ -464,7 +435,6 @@
                                                                                     <span class="admin__label-required-field">(#{msg.form__required_field})</span>
                                                                                 </label>
                                                                             </div>
-
                                                                             <div class="col-9 admin__form-input">
                                                                                 <h:selectOneMenu
                                                                                     id="adminCrowdAddCampaignQuestionTargetSelector"
@@ -484,7 +454,6 @@
                                                                                 </h:selectOneMenu>
                                                                                 <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_question_targetSelector}</span>
                                                                             </div>
-
                                                                             <div class="col-1 admin__form-help-icon">
                                                                                 <button
                                                                                     type="button"
@@ -504,7 +473,6 @@
                                                                                     <span class="admin__label-required-field">(#{msg.form__required_field})</span>
                                                                                 </label>
                                                                             </div>
-
                                                                             <div class="col-9 admin__form-input">
                                                                                 <h:selectOneMenu
                                                                                     id="adminCrowdAddCampaignQuestionTargetFrequency"
@@ -527,7 +495,6 @@
                                                                                 </h:selectOneMenu>
                                                                                 <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_question_targetFrequency}</span>
                                                                             </div>
-
                                                                             <div class="col-1 admin__form-help-icon">
                                                                                 <button
                                                                                     type="button"
@@ -588,7 +555,6 @@
                                                             #{msg.admin__crowdsourcing_campaign_visibility}:
                                                         </label>
                                                     </div>
-
                                                     <div class="col-1 admin__form-help-icon">
                                                         <button
                                                             type="button"
@@ -598,7 +564,6 @@
                                                             <util:icon icon="help" />
                                                         </button>
                                                     </div>
-
                                                     <div class="col-12 admin__form-input">
                                                         <h:selectOneMenu
                                                             id="adminCrowdVisibleStatus"
@@ -616,7 +581,6 @@
                                                         <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_visibility}</span>
                                                     </div>
                                                 </div>
-
                                                 <h:panelGroup
                                                     id="adminCrowdPrivateSettingsGroup"
                                                     layout="block">
@@ -626,7 +590,6 @@
                                                             <div class="col-11 control-label admin__form-label">
                                                                 <label for="adminCrowdVisibleFor">#{msg.admin__crowdsourcing_campaign_limit_to_group}:</label>
                                                             </div>
-
                                                             <div class="col-1 admin__form-help-icon">
                                                                 <button
                                                                     type="button"
@@ -664,7 +627,6 @@
                                                                 </div>
                                                                 <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_limit_to_group}</span>
                                                             </div>
-
                                                             <h:panelGroup
                                                                 id="selectUserGroupGroup"
                                                                 styleClass="col-12 mt-1">
@@ -674,7 +636,6 @@
                                                                     styleClass="form-control mt-2"
                                                                     immediate="true"
                                                                     converter="userGroupConverter">
-                                                                    <!-- TODO aria label -->
                                                                     <f:selectItem
                                                                         itemLabel="#{msg.select}"
                                                                         itemValue="#{null}"
@@ -747,7 +708,6 @@
                                                                 <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_time_pediod}</span>
                                                             </div>
                                                         </div>
-
                                                         <h:panelGroup
                                                             id="datePickerGroup"
                                                             class="admin__campaign-date-picker-group">
@@ -767,11 +727,10 @@
                                                                                 <f:passThroughAttribute
                                                                                     name="data-target"
                                                                                     value="datePickerStart" />
-                                                                                <!-- 	                                                             		<f:converter converterId = "localDateConverter" /> -->
                                                                             </h:inputText>
                                                                         </div>
 
-                                                                        <!-- Date format handled by flatpickr via viewerJS.datePicker -->
+                                                                        <!-- DATE FORMAT BY FLATPICKR (VIEWERJS.DATEPICKER) -->
                                                                     </div>
                                                                 </div>
                                                                 <div class="form-row">
@@ -789,14 +748,13 @@
                                                                                 <f:passThroughAttribute
                                                                                     name="data-target"
                                                                                     value="datePickerEnd" />
-                                                                                <!-- 	                                                             		<f:converter converterId = "localDateConverter" /> -->
                                                                             </h:inputText>
                                                                         </div>
                                                                     </div>
 
-                                                                    <!-- flatpickr init for both date pickers -->
+                                                                    <!-- FLATPICKR INIT FOR BOTH DATE PICKERS -->
                                                                     <script type="text/javascript">
-                                                                    //<![CDATA[
+                                                                        //<![CDATA[
                                                                         if (typeof viewerJS !== 'undefined' && viewerJS.datePicker) {
                                                                             var startEl = document.querySelector("[data-target='datePickerStart']");
                                                                             var endEl = document.querySelector("[data-target='datePickerEnd']");
@@ -806,7 +764,7 @@
                                                                                 });
                                                                             }
                                                                         }
-                                                                    //]]>
+                                                                        //]]>
                                                                     </script>
                                                                 </div>
                                                             </ui:fragment>
@@ -827,7 +785,6 @@
                                                         value="#{crowdsourcingBean.selectedCampaign.reviewMode}"
                                                         styleClass="form-control mt-2"
                                                         immediate="true">
-                                                        <!-- TODO aria label -->
                                                         <f:selectItems
                                                             value="#{crowdsourcingBean.getPossibleReviewModes()}"
                                                             var="mode"
@@ -850,7 +807,6 @@
                                                                 styleClass="form-control"
                                                                 immediate="true"
                                                                 converter="userGroupConverter">
-                                                                <!-- 	                                                    TODO aria label -->
                                                                 <f:selectItem
                                                                     itemLabel="#{msg.select}"
                                                                     itemValue="#{null}"
@@ -934,6 +890,7 @@
                                                 <ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.solrQuery != null}">
                                                     <div class="admin__default-block mb-0">
                                                         <h2>#{msg.admin__crowdsourcing_campaign_statistics}</h2>
+
                                                         <!-- METADATA WRAPPER -->
                                                         <crowdsourcingComponent:crowdsourcing_addCampaignMetadataItemWrapper id="metadata_component" />
                                                         <ui:include src="/resources/crowdsourcing/includes/campaignStatistics.xhtml">

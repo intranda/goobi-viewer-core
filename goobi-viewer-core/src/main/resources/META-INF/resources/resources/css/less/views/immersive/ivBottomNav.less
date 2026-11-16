@@ -4,6 +4,7 @@
    ==============================================================*/
 
 .immersive {
+    /* BOTTOMBAR */
     &__bottombar {
         position: absolute;
         bottom: @immersive-edge-inset;
@@ -12,7 +13,7 @@
         display: flex;
         align-items: center;
         gap: 2px;
-        height: 40px;
+        min-height: 40px;
         max-width: calc(100% - (2 * @immersive-edge-inset));
         overflow-x: auto;
         padding: 0 4px;
@@ -27,10 +28,11 @@
 
         & + & {
             padding-left: 4px;
-            border-left: 1px solid @immersive-divider;
+            border-left: 1px solid var(--border-default);
         }
     }
 
+    /* BAR BUTTONS */
     &__bar-btn {
         .mx-immersive-icon-button(32px);
     }
@@ -40,12 +42,13 @@
         height: 18px;
     }
 
+    /* PAGE INDICATOR */
     &__page-indicator {
         min-width: 4em;
         padding: 0 4px;
         text-align: center;
-        font-size: @fontMedium;
-        color: @immersive-chrome-fg;
+        font-size: var(--font-size-body-small);
+        color: var(--fg-default);
         white-space: nowrap;
     }
 }
@@ -62,7 +65,7 @@
 @media screen and (max-width: @xSmallBreakpoint) {
     .immersive {
         &__bottombar {
-            height: 36px;
+            min-height: 36px;
             padding: 0 2px;
         }
 
@@ -78,7 +81,7 @@
         &__page-indicator {
             min-width: 3.2em;
             padding: 0 2px;
-            font-size: @fontSmall;
+            font-size: var(--font-size-caption);
         }
     }
 }

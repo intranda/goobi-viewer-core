@@ -1,15 +1,12 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <composite:interface>
         <composite:attribute
             name="metadataElementList"
@@ -42,22 +39,20 @@
                         svgClass="widget__topbar-icon-svg widget-metadata__topbar-icon-svg" />
                 </div>
             </div>
-
             <div
                 class="widget__body widget-metadata__body #{configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'metadata') ? '-collapsed' : ''}">
                 <c:forEach
                     items="#{cc.attrs.metadataElementList}"
                     var="metadataElement"
                     varStatus="status">
-                    <!-- Skip element if it contains no sidebar metadata -->
+                    <!-- SKIP ELEMENTS WITHOUT SIDEBAR METADATA -->
                     <ui:fragment rendered="#{metadataElement.hasSidebarMetadata}">
-                        <!-- Render structure type label only if more than one element in list -->
+                        <!-- STRUCTURE TYPE LABEL, ONLY FOR SEVERAL ELEMENTS -->
                         <ui:fragment rendered="#{fn:length(cc.attrs.metadataElementList) gt 1}">
                             <h3 class="metadata__elements-h3">
                                 <h:outputText value="#{msg[metadataElement.docStructTypeLabel]}" />
                             </h3>
                         </ui:fragment>
-
                         <dl jsf:id="sidebarMetadataList-#{status.index}">
                             <c:forEach
                                 items="#{metadataElement.sidebarMetadataList}"
@@ -69,15 +64,15 @@
                                             escape="false" />
                                     </dt>
 
-                                    <!-- Grouped metadata -->
+                                    <!-- GROUPED METADATA -->
                                     <h:panelGroup rendered="#{metadata.group}">
-                                        <!-- Single label for all values, each value is a single string -->
+                                        <!-- SINGLE STRING -->
                                         <h:panelGroup rendered="#{metadata.singleString}">
                                             <c:forEach
                                                 items="#{metadata.values}"
                                                 var="val">
                                                 <dd>
-                                                    <!-- Metadata value -->
+                                                    <!-- METADATA VALUE -->
                                                     <h:panelGroup rendered="#{metadata.singleString}">
                                                         <ui:fragment rendered="#{val.accessRestricted}">
                                                             <span
@@ -94,7 +89,7 @@
                                                             escape="false" />
                                                     </h:panelGroup>
 
-                                                    <!-- Nested child metadata -->
+                                                    <!-- CHILD METADATA -->
                                                     <c:forEach
                                                         var="child"
                                                         items="#{metadata.childMetadata}"
@@ -120,7 +115,7 @@
                                             </c:forEach>
                                         </h:panelGroup>
 
-                                        <!-- Each value has a label column and a value column -->
+                                        <!-- KEY VALUE PAIRS -->
                                         <h:panelGroup rendered="#{!metadata.singleString}">
                                             <c:forEach
                                                 begin="0"
@@ -152,7 +147,7 @@
                                         </h:panelGroup>
                                     </h:panelGroup>
 
-                                    <!-- Non-grouped metadata -->
+                                    <!-- NON-GROUPED METADATA -->
                                     <h:panelGroup rendered="#{!metadata.group}">
                                         <ui:repeat
                                             value="#{metadata.values}"
@@ -172,7 +167,7 @@
 
                 <!-- LIDO -->
                 <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.lidoRecord}">
-                    <!-- LIDO event sidebar metadata (event metadata explicitly configured in the sidebar metadata list) -->
+                    <!-- LIDO EVENT METADATA, CONFIGURED IN THE SIDEBAR LIST -->
                     <ui:fragment rendered="#{fn:length(metadataBean.events) > 0}">
                         <div
                             id="widgetMetadata"
@@ -216,18 +211,19 @@
                 </ui:fragment>
             </div>
 
+            <!-- NORMDATA SCRIPT -->
             <script type="text/javascript">
                 var normdataWidgetConfig = {
-    path: '#{request.contextPath}',
-    lang: {
-        popoverTitle: '#{msg.normdataPopoverTitle}',
-        popoverClose: '#{msg.normdataPopoverClose}',
-        showNormdata: '#{msg.normdataExpand}',
-    },
-    elemWrapper: $('#widgetMetadata'),
-};
+                    path: '#{request.contextPath}',
+                    lang: {
+                        popoverTitle: '#{msg.normdataPopoverTitle}',
+                        popoverClose: '#{msg.normdataPopoverClose}',
+                        showNormdata: '#{msg.normdataExpand}',
+                    },
+                    elemWrapper: $('#widgetMetadata'),
+                };
 
-viewerJS.normdata.init(normdataWidgetConfig);
+                viewerJS.normdata.init(normdataWidgetConfig);
             </script>
         </h:panelGroup>
     </composite:implementation>

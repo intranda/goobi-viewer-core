@@ -55,7 +55,6 @@
 
     class PageAreas {
         constructor(config, image) {
-            console.log('init page areas ', config);
             this.areas = config.areas;
             let styles = viewerJS.helper.getCss('page-area', ['borderTopColor', 'borderTopWidth', 'background-color']);
             ({
@@ -71,7 +70,6 @@
             });
 
             image.viewer.onOpened.subscribe((viewer) => {
-                console.log('page areas on viewer open ', config);
                 image.viewer.openseadragon.addHandler('canvas-press', () => {
                     this.dragging = false;
                 });
@@ -80,7 +78,6 @@
                 });
 
                 let activeAreas = this.areas.filter((a) => a.logId === config.currentLogId);
-                console.log('active areas: ', activeAreas);
                 if (activeAreas.length > 0) {
                     this.drawActiveAreas(activeAreas, image);
                     this.initAreaClick(image, activeAreas);
@@ -126,7 +123,6 @@
             activeAreas.forEach((activeArea, index) => {
                 const area = this.drawArea(activeArea, index, imageView);
                 areasOnCanvas.push(area?.overlay?.bounds);
-                console.log('add active area ', area, areasOnCanvas);
                 let scrollPosition = window.sessionStorage.getItem('scrollPosition');
                 $(document).scrollTop(parseInt(scrollPosition));
                 window.sessionStorage.removeItem('scrollPosition');
@@ -152,7 +148,6 @@
                         rxjs.operators.debounceTime(10)
                     )
                     .subscribe((url) => {
-                        console.log('viewer click ', url, window.location.href);
                         if (url && url.length && url !== window.location.href) {
                             window.sessionStorage.setItem('scrollPosition', $(document).scrollTop());
                             window.location.href = url;
@@ -599,10 +594,8 @@
                     var areaString = this.getAreaString(area);
                     var pageUrl = window.location.origin + window.location.pathname + window.location.search + '#xywh=' + areaString;
                     var imageUrl = this.getRegionUrl(area);
-                    console.log('set area data ', pageUrl, imageUrl);
                     $('[data-fragment-link="page"]').attr('data-copy-share-image', pageUrl);
                     $('[data-fragment-link="iiif"]').attr('data-copy-share-image', imageUrl);
-                    console.log('area share ', $('[data-fragment-link="iiif"]'));
                     this.$links.show();
                     this.$instructions.hide();
                     this.initImageFragmentLinks(areaString);
@@ -768,13 +761,10 @@
 
             const tempElement = document.createElement('div');
             tempElement.innerHTML = story;
-
-            console.log('appending ', ...tempElement.children, ' to ', this.container);
             this.container.append(...tempElement.children);
 
             const voyager = document.getElementById(this.config.story);
             voyager.addEventListener('model-load', (e) => {
-                console.log('loaded ', e);
                 show(voyager);
             });
         }
@@ -2891,7 +2881,7 @@
 
     /**
      * Adds the handle that resizes the left panels: one shared
-     * --immersive-panel-width custom property, persisted in sessionStorage. The handle
+     * --_immersive-panel-width custom property, persisted in sessionStorage. The handle
      * is a focusable separator; arrow keys step the width (Shift for larger steps),
      * Home and End jump to the limits.
      *
@@ -2912,7 +2902,7 @@
             return Math.max(MIN_WIDTH, panelMin);
         };
         const clamp = (px) => Math.min(Math.max(px, minWidth()), maxWidth());
-        const applyWidth = (px) => immersiveViewer.style.setProperty('--immersive-panel-width', Math.round(px) + 'px');
+        const applyWidth = (px) => immersiveViewer.style.setProperty('--_immersive-panel-width', Math.round(px) + 'px');
         let stored = NaN;
         try {
             stored = parseInt(sessionStorage.getItem(WIDTH_KEY), 10);
@@ -2930,7 +2920,7 @@
             handle.setAttribute('title', label);
         }
         const currentWidth = () => {
-            const set = parseFloat(immersiveViewer.style.getPropertyValue('--immersive-panel-width'));
+            const set = parseFloat(immersiveViewer.style.getPropertyValue('--_immersive-panel-width'));
             if (Number.isFinite(set)) return set;
             const open = immersiveViewer.querySelector(PANEL_OPEN_SELECTOR);
             return open ? open.getBoundingClientRect().width : minWidth();
@@ -4235,7 +4225,7 @@
      * Places the cards: in the side column with collision stacking, or inline under
      * their anchor line once the panel is narrower than COLLAPSE_BELOW. A card that
      * would overflow above the first printed line shifts the text down via the
-     * --immersive-anno-shift custom property instead of being clamped onto the line.
+     * --_immersive-anno-shift custom property instead of being clamped onto the line.
      */
     /** Marks the cards whose clamped text overflows, so they can hint at the full text in the popover. */
     function markTruncation(notes) {
@@ -4255,7 +4245,7 @@
             popovers.hide();
             inlineNotes.splice(0).forEach((el) => el.remove());
             column.remove();
-            box.style.removeProperty('--immersive-anno-shift');
+            box.style.removeProperty('--_immersive-anno-shift');
             const collapsed = box.clientWidth < COLLAPSE_BELOW;
             box.classList.toggle('-anno-collapsed', collapsed);
             if (columnsHead) columnsHead.hidden = collapsed;
@@ -4293,7 +4283,7 @@
                 .sort((a, b) => a.top - b.top);
             const overflow = desired.length ? Math.max(0, -desired[0].top) : 0;
             if (overflow) {
-                box.style.setProperty('--immersive-anno-shift', `${overflow}px`);
+                box.style.setProperty('--_immersive-anno-shift', `${overflow}px`);
                 desired.forEach((d) => {
                     d.top += overflow;
                 });
@@ -4307,7 +4297,7 @@
             column.remove();
             if (handle) handle.remove();
             box.classList.remove('-anno-collapsed');
-            box.style.removeProperty('--immersive-anno-shift');
+            box.style.removeProperty('--_immersive-anno-shift');
             if (columnsHead) columnsHead.hidden = true;
         };
         return { relayout, destroy, column };
@@ -4458,8 +4448,8 @@
 
         const apply = (next) => {
             split = Number.isFinite(next) ? clamp(next) : NaN;
-            if (Number.isFinite(split)) panel.style.setProperty('--immersive-anno-split', split + 'px');
-            else panel.style.removeProperty('--immersive-anno-split');
+            if (Number.isFinite(split)) panel.style.setProperty('--_immersive-anno-split', split + 'px');
+            else panel.style.removeProperty('--_immersive-anno-split');
             const { min, max } = bounds();
             const share = shareOf(current());
             handle.setAttribute('aria-valuenow', String(share));
@@ -4546,7 +4536,7 @@
                 if (frame) cancelAnimationFrame(frame);
                 endDrag();
                 handle.remove();
-                panel.style.removeProperty('--immersive-anno-split');
+                panel.style.removeProperty('--_immersive-anno-split');
             },
         };
     }
@@ -6409,7 +6399,7 @@
             if (gridOverlay) gridOverlay.setAttribute('data-thumb-size', String(step));
             if (gridSizeSlider) {
                 gridSizeSlider.value = String(step);
-                gridSizeSlider.style.setProperty('--immersive-slider-fill', `${(step / THUMB_SIZE_MAX) * 100}%`);
+                gridSizeSlider.style.setProperty('--_immersive-slider-fill', `${(step / THUMB_SIZE_MAX) * 100}%`);
                 if (gridSizeLabels[step]) {
                     gridSizeSlider.setAttribute('aria-valuetext', gridSizeLabels[step]);
                 } else {

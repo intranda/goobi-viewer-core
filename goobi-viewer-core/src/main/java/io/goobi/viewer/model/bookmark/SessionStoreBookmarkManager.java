@@ -24,12 +24,8 @@ package io.goobi.viewer.model.bookmark;
 import java.util.List;
 import java.util.Optional;
 
-import jakarta.persistence.PersistenceException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -37,6 +33,9 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
+import jakarta.persistence.PersistenceException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
@@ -84,6 +83,10 @@ public class SessionStoreBookmarkManager {
      * @throws java.lang.NullPointerException if the session is NULL
      */
     public BookmarkList createBookmarkList(HttpSession session) {
+
+        if (session == null) {
+            return new BookmarkList();
+        }
 
         if (session.getAttribute(BOOKMARK_LIST_ATTRIBUTE_NAME) == null) {
             BookmarkList bookmarkList = new BookmarkList();
@@ -171,7 +174,7 @@ public class SessionStoreBookmarkManager {
         if (request == null) {
             return;
         }
-        Optional<BookmarkList> oBookmarkList = getBookmarkList(request.getSession());
+        Optional<BookmarkList> oBookmarkList = getBookmarkList(request.getSession(false));
         if (oBookmarkList.isPresent() && !oBookmarkList.get().getItems().isEmpty()) {
             try {
                 oBookmarkList.get().setOwner(user);
@@ -222,7 +225,8 @@ public class SessionStoreBookmarkManager {
      * contains the complete text with a placeholder {0} which is replaced by the text generated from the bookmarks. {@code itemText} is the text for
      * each bookmark with placeholder {0} which is replaced by the link to the bookmarked item, and {1} which is replaced by the title of that item.
      *
-     * <p>The parameter {@code bookmarkList} is the bookmark list containing the items to be inserted
+     * <p>
+     * The parameter {@code bookmarkList} is the bookmark list containing the items to be inserted
      *
      * @param text email body template containing placeholder {0} for the item list
      * @param itemText per-bookmark text template with placeholders {0} (URL) and {1} (title)

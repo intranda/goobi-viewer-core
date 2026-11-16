@@ -7,10 +7,7 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <!-- MESSAGES -->
     <div class="messages">
         <h:messages
@@ -23,6 +20,7 @@
     <!-- ADMIN TOPBAR FRONTEND -->
     <viewerComponent:frontEndAdminTopBar />
 
+    <!-- ARCHIVES -->
     <div
         id="archives"
         class="archives #{archiveBean.databaseState == 'ARCHIVES_LOADED' ? '-archivesLoaded' : '-archivesNotLoaded'}">
@@ -36,8 +34,12 @@
                     <a
                         href="#{request.contextPath}/"
                         title="{msg.home}">
-                        <img
-                            src='#{adminThemesBean.getFullscreenLogo("images/template/fullscreen_logo.png", 300, 40)}'
+                        <viewerComponent:themeLogo
+                            variant="fullscreen"
+                            defaultUrl="images/template/fullscreen_logo.png"
+                            darkDefaultUrl="images/template/fullscreen_logo_dark.png"
+                            width="300"
+                            height="40"
                             alt="#{adminThemesBean.getThemeLabel(configurationBean.name)} Logo" />
                     </a>
                 </div>
@@ -92,16 +94,16 @@
             id="archivesContent"
             class="archives__main">
             <c:choose>
-                <!-- CONDITION ERROR -->
+                <!-- ERROR -->
                 <c:when test="#{archiveBean.databaseState == 'ERROR_NOT_REACHABLE'}">
                     <div class="archives__error">
                         <span>#{msg.errIndexUnreachableMsg}</span>
                     </div>
                 </c:when>
 
-                <!-- CONDITION IF MORE THAN ONE ARCHIVE EXISTENT -->
+                <!-- ARCHIVE LIST LOADED, NONE SELECTED -->
                 <c:when test="#{archiveBean.databaseState == 'ARCHIVES_LOADED'}">
-                    <!-- SHOW ARCHIVE SELECTION AS MODAL WITH BACKDROP -->
+                    <!-- ARCHIVE SELECTION MODAL -->
                     <div
                         class="modal fade archives__modal show arcxhives__select-archive-modal"
                         id="selectArchivesModal"
@@ -116,13 +118,9 @@
                                 <div class="modal-header">
                                     <h1 class="modal-title">#{msg.archives__archiveViewHeading}</h1>
                                 </div>
-
                                 <div class="modal-body">
                                     <!-- MODAL CONTENT -->
-
                                     <div class="archives__select">
-                                        <!-- 										<p>#{msg.archives__choose_database}:</p> -->
-
                                         <!-- SELECT BOX ARCHIVE -->
                                         <h:form>
                                             <h:outputLabel for="selectArchivesDropdown">#{msg.archives__choose_database}:</h:outputLabel>
@@ -142,7 +140,6 @@
                                                         itemLabel="#{database.resourceName}" />
                                                 </h:selectOneMenu>
                                             </div>
-
                                             <div class="form-group form-row archives__modal-action">
                                                 <div class="col-sm-12 d-flex justify-content-end">
                                                     <button
@@ -161,8 +158,8 @@
                         <div class="alt-backdrop" />
                     </div>
 
+                    <!-- ARCHIVE SELECTION SCRIPT -->
                     <script>
-                        // FOCUS SELECTION ELEMENT IN MODAL IF IN ARCHIVE SELECTION SCREEN
                         archiveBeanDataBaseState = '#{archiveBean.databaseState}';
                         if (archiveBeanDataBaseState == 'ARCHIVES_LOADED') {
                             console.log('condition yes');
@@ -175,7 +172,7 @@
                     </script>
                 </c:when>
 
-                <!-- CONDITION ONLY ONE ARCHIVE AND LOADED WITHOUT ERRORS -->
+                <!-- ARCHIVE TREE OR NOT INITIALIZED -->
                 <c:otherwise>
                     <ui:insert name="content" />
                 </c:otherwise>
@@ -188,10 +185,10 @@
         <!-- HC STICKY INIT FOR ARCHIVES -->
         <script type="text/javascript">
             viewerJS.archives.init({
-    initHcSticky: true,
-    initSearch: true,
-    initTextTree: true,
-});
+                initHcSticky: true,
+                initSearch: true,
+                initTextTree: true,
+            });
         </script>
     </div>
 </ui:composition>

@@ -656,7 +656,6 @@ public final class SolrTools {
         // These indicate invalid input (HTTP 400), not server/auth failures (HTTP 403/500).
         return e.getMessage() != null && (e.getMessage().startsWith("org.apache.solr.search.SyntaxError")
                 || e.getMessage().contains("Cannot parse")
-                || e.getMessage().contains("parsing error")
                 || e.getMessage().contains("Invalid Number")
                 || e.getMessage().contains("undefined field")
                 || e.getMessage().contains("field can't be found")
@@ -996,6 +995,7 @@ public final class SolrTools {
     private static final String[] WHITELISTED_LOCAL_PARAMS = {
             "{!join from=PI_TOPSTRUCT to=PI}",
             "{!join from=IDDOC to=IDDOC_OWNER}",
+            "{!join from=EAD_NODE_ID to=EAD_NODE_ID}",
             "{!terms f=PI_TOPSTRUCT}" };
 
     /**
@@ -1004,6 +1004,7 @@ public final class SolrTools {
      * @return cleaned up query
      * @should remove brace pairs
      * @should keep join parameter
+     * @should keep archive node join parameter
      * @should keep single braces
      * @should preserve nested solr local params
      * @should not double wrap already wrapped join parameter

@@ -82,6 +82,7 @@ public class PpnResolver extends HttpServlet implements Serializable {
      * can not forward to a target above '/'. A redirect changes the URL displayed in the browser, a forward does not.
      * @should return 400 if record identifier missing
      * @should return 404 if record not found
+     * @should return 410 if record deleted
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -140,6 +141,20 @@ public class PpnResolver extends HttpServlet implements Serializable {
                 return;
             }
 
+            // 4. extract the target field value of the single found document
+            SolrDocument targetDoc = hits.get(0);
+
+            // Deleted record check (before the access check, which would report a trace document as not found)
+            if (targetDoc.getFieldValue(SolrConstants.DATEDELETED) != null) {
+                logger.debug("Record '{}' has been deleted, trace document found.", identifier);
+                try {
+                    IdentifierResolver.redirectToError(HttpServletResponse.SC_GONE, identifier, request, response);
+                } catch (IOException | ServletException e) {
+                    logger.error(e.getMessage());
+                }
+                return;
+            }
+
             // If the user has no listing privilege for this record, act as if it does not exist
             boolean access = false;
             try {
@@ -175,9 +190,6 @@ public class PpnResolver extends HttpServlet implements Serializable {
                 }
                 return;
             }
-
-            // 4. extract the target field value of the single found document
-            SolrDocument targetDoc = hits.get(0);
 
             String result;
             if (page == null) {

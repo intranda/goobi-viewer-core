@@ -54,6 +54,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.model.job.download.PdfDownloadJob;
+import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.viewer.Dataset;
 import io.goobi.viewer.solr.SolrConstants;
 import io.swagger.v3.oas.annotations.Operation;
@@ -89,6 +90,7 @@ public class ViewerRecordPDFResource {
     private final String pi;
     private final boolean usePdfSource;
 
+    private final HttpServletRequest request;
     private final HttpServletResponse response;
 
     public ViewerRecordPDFResource(
@@ -99,6 +101,7 @@ public class ViewerRecordPDFResource {
             @Parameter(description = "allow using single page files from pdf folder to render pdf") @QueryParam("usePdfSource") Boolean usePdfSource)
             throws ContentLibException {
         this.pi = requireValidPi(pi);
+        this.request = request;
         this.response = response;
         this.usePdfSource = Optional.ofNullable(usePdfSource).orElse(ContentServerConfiguration.getInstance().getUsePdf());
         request.setAttribute("pi", pi);
@@ -132,7 +135,8 @@ public class ViewerRecordPDFResource {
         PdfDownloadJob job = new PdfDownloadJob(message);
 
         response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION,
-                NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + StringTools.sanitizeFilenameToAscii(job.getDownloadFilename()) + "\"");
+                ClientApplicationManager.isClientApplicationRequest(request) ? NetTools.HTTP_HEADER_VALUE_INLINE
+                        : NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + StringTools.sanitizeFilenameToAscii(job.getDownloadFilename()) + "\"");
 
         return out -> {
             try {

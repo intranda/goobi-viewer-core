@@ -367,7 +367,9 @@ public class ThumbnailHandler {
     public static PhysicalElement getPage(SolrDocument recordDoc, int order)
             throws IndexUnreachableException, PresentationException, DAOException {
         if (recordDoc != null) {
-            StructElement struct = new StructElement((String) recordDoc.getFirstValue(SolrConstants.IDDOC), recordDoc);
+            // Only the pages of the record are needed here, so its SHAPE metadata is not loaded
+            StructElement struct =
+                    new StructElement((String) recordDoc.getFirstValue(SolrConstants.IDDOC), recordDoc, Collections.emptyList());
             // Pass List.of(order) so AbstractPageLoader.create() picks the LeanPageLoader and only
             // loads the single requested page. The previous create(struct) call passed an empty
             // pageNosToLoad list, which fell through to EagerPageLoader for any record below the

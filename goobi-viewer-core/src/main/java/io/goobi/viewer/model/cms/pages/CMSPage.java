@@ -64,6 +64,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSProperty;
@@ -764,7 +765,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * @return the pretty url to this page (using alternative url if set)
      */
     public String getPageUrl() {
-        return BeanUtils.getCmsBean().getUrl(this);
+        // Static variant: looking up the session scoped CmsBean would create a session outside of JSF
+        return CmsBean.getPageUrl(this, true);
     }
 
     /**

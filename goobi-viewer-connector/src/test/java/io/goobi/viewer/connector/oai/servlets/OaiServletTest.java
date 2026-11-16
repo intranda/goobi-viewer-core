@@ -17,10 +17,13 @@ package io.goobi.viewer.connector.oai.servlets;
 
 import java.io.IOException;
 
+import org.jdom2.Document;
+import org.jdom2.Element;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.connector.AbstractTest;
+import io.goobi.viewer.connector.oai.model.formats.Format;
 
 class OaiServletTest extends AbstractTest {
     /**
@@ -197,6 +200,91 @@ class OaiServletTest extends AbstractTest {
     @Test
     void isSolrUrlMismatch_shouldReturnTrueWhenUrlsDiffer() {
         Assertions.assertTrue(OaiServlet.isSolrUrlMismatch("http://localhost:8983/solr", "http://other-host:8983/solr"));
+    }
+
+    /**
+     * @see OaiServlet#prefersHtml(String)
+     * @verifies return true for a typical browser accept header
+     */
+    @Test
+    void prefersHtml_shouldReturnTrueForATypicalBrowserAcceptHeader() {
+        Assertions.assertTrue(OaiServlet.prefersHtml(
+                "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"));
+    }
+
+    /**
+     * @see OaiServlet#prefersHtml(String)
+     * @verifies return false for a missing accept header
+     */
+    @Test
+    void prefersHtml_shouldReturnFalseForAMissingAcceptHeader() {
+        Assertions.assertFalse(OaiServlet.prefersHtml(null));
+        Assertions.assertFalse(OaiServlet.prefersHtml(""));
+    }
+
+    /**
+     * @see OaiServlet#prefersHtml(String)
+     * @verifies return false for a wildcard accept header
+     */
+    @Test
+    void prefersHtml_shouldReturnFalseForAWildcardAcceptHeader() {
+        Assertions.assertFalse(OaiServlet.prefersHtml("*/*"));
+    }
+
+    /**
+     * @see OaiServlet#prefersHtml(String)
+     * @verifies return false if xml is ranked equal to or above html
+     */
+    @Test
+    void prefersHtml_shouldReturnFalseIfXmlIsRankedEqualToOrAboveHtml() {
+        Assertions.assertFalse(OaiServlet.prefersHtml("application/xml, text/html"));
+        Assertions.assertFalse(OaiServlet.prefersHtml("text/xml, text/html;q=0.5"));
+    }
+
+    /**
+     * @see OaiServlet#prefersHtml(String)
+     * @verifies return false if html has quality zero
+     */
+    @Test
+    void prefersHtml_shouldReturnFalseIfHtmlHasQualityZero() {
+        Assertions.assertFalse(OaiServlet.prefersHtml("text/html;q=0, */*"));
+    }
+
+    /**
+     * @see OaiServlet#transformToHtml(Document)
+     * @verifies render the response as html
+     */
+    @Test
+    void transformToHtml_shouldRenderTheResponseAsHtml() {
+        String html = OaiServlet.transformToHtml(createListMetadataFormatsResponse());
+        Assertions.assertNotNull(html);
+        Assertions.assertTrue(html.contains("<html"), html);
+        Assertions.assertTrue(html.contains("OAI 2.0 Request Results"), html);
+    }
+
+    /**
+     * @see OaiServlet#transformToHtml(Document)
+     * @verifies list the metadata formats without fetching them over http
+     */
+    @Test
+    void transformToHtml_shouldListTheMetadataFormatsWithoutFetchingThemOverHttp() {
+        String html = OaiServlet.transformToHtml(createListMetadataFormatsResponse());
+        Assertions.assertNotNull(html);
+        // The quicklinks are built from the document() lookup; the request URL is unresolvable, so they only appear if it was answered locally
+        Assertions.assertTrue(html.contains("ListRecords (oai_dc)"), html);
+    }
+
+    private static Document createListMetadataFormatsResponse() {
+        Element root = Format.getOaiPmhElement("OAI-PMH");
+        Element responseDate = new Element("responseDate", Format.OAI_NS);
+        responseDate.setText("2026-11-11T12:00:00Z");
+        root.addContent(responseDate);
+        Element request = new Element("request", Format.OAI_NS);
+        request.setAttribute("verb", "ListMetadataFormats");
+        request.setText("http://oai.invalid/viewer/oai");
+        root.addContent(request);
+        root.addContent(Format.createMetadataFormats());
+        return new Document(root);
     }
 
     /**

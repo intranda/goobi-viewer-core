@@ -8,7 +8,6 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
@@ -35,6 +34,7 @@
                 <!-- TITLE -->
                 <div class="admin__title-bar">
                     <h1 class="admin__title">#{msg.admin__cms_collections}</h1>
+
                     <!-- ADD DYNAMIC COLLECTION -->
                     <h:outputLink
                         value="#{navigationHelper.applicationUrl}admin/cms/collections/new/"
@@ -42,9 +42,7 @@
                         <span>#{msg.add}</span>
                     </h:outputLink>
                 </div>
-
                 <viewerComponent:adminBreadcrumbs />
-
                 <div class="admin__content-inner-content">
                     <!-- GENERAL DESCRIPTION -->
                     <div class="admin__info-text">#{msg.admin__cms_collections_desc}</div>
@@ -74,7 +72,7 @@
                                             execute="collectionTreeGroup" />
                                     </div>
 
-                                    <!-- DYNAMIC COLLECTIONS (database-defined, same listing style as the Solr tree) -->
+                                    <!-- DYNAMIC COLLECTIONS, FROM THE DATABASE -->
                                     <ui:fragment rendered="#{cmsCollectionsBean.dynamicCollectionsSource}">
                                         <div class="admin__default-block">
                                             <ui:fragment rendered="#{empty dynamicCollectionsBean.collections}">
@@ -178,13 +176,11 @@
                                                                                 icon="chevron-down"
                                                                                 aria-hidden="true" />
                                                                         </h:panelGroup>
-
                                                                         <h:panelGroup rendered="#{browseDcElement.showDescription}">
                                                                             <util:icon
                                                                                 icon="chevron-up"
                                                                                 aria-hidden="true" />
                                                                         </h:panelGroup>
-
                                                                         <f:setPropertyActionListener
                                                                             target="#{browseDcElement.showDescription}"
                                                                             value="#{not browseDcElement.showDescription}" />
@@ -249,7 +245,6 @@
                                                     <div class="admin__default-block -warning">
                                                         <!-- GROUP TITLE -->
                                                         <h2>#{msg.admin__cms_collections_translation}</h2>
-
                                                         <div class="admin__form-help-text in mb-2">#{msg.admin__cms_collections_translation_desc}</div>
 
                                                         <!-- PROGRESS BAR FOR COLLECTION NAMES-->
@@ -263,7 +258,6 @@
                                                                     </span>
                                                                 </div>
                                                             </div>
-
                                                             <div class="admin__cms-collections-progress-bar">
                                                                 <div
                                                                     class="admin__dashboard-translations-progress-complete"
@@ -319,7 +313,7 @@
                                         </c:choose>
                                     </ui:fragment>
 
-                                    <!-- TRANSLATIONS (dynamic collections, via the synthetic translation group) -->
+                                    <!-- TRANSLATIONS OF DYNAMIC COLLECTIONS, VIA THE SYNTHETIC TRANSLATION GROUP -->
                                     <ui:fragment rendered="#{cmsCollectionsBean.dynamicCollectionsSource}">
                                         <ui:repeat
                                             var="group"
@@ -328,7 +322,6 @@
                                                 <div class="admin__default-block -warning">
                                                     <!-- GROUP TITLE -->
                                                     <h2>#{msg.admin__cms_collections_translation}</h2>
-
                                                     <div class="admin__form-help-text in mb-2">#{msg.admin__cms_collections_translation_desc}</div>
 
                                                     <!-- PROGRESS BAR FOR COLLECTION LABELS -->
@@ -342,7 +335,6 @@
                                                                 </span>
                                                             </div>
                                                         </div>
-
                                                         <div class="admin__cms-collections-progress-bar">
                                                             <div
                                                                 class="admin__dashboard-translations-progress-complete"
@@ -376,7 +368,7 @@
                                         </ui:repeat>
                                     </ui:fragment>
 
-                                    <!-- COLLECTION SOURCE (Solr field or dynamic collections) -->
+                                    <!-- COLLECTION SOURCE, SOLR FIELD OR DYNAMIC -->
                                     <ui:fragment rendered="#{cmsCollectionsBean.displaySolrFieldSelectionWidget}">
                                         <div class="admin__default-block">
                                             <h2>#{msg.admin__cms_collections_source}</h2>

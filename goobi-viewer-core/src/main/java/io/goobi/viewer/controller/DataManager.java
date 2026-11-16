@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,6 +40,7 @@ import io.goobi.viewer.dao.impl.JPADAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.ModuleMissingException;
 import io.goobi.viewer.model.archives.ArchiveManager;
+import io.goobi.viewer.model.archives.CardCatalogManager;
 import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.iiif.auth.BearerTokenManager;
@@ -71,8 +71,6 @@ public final class DataManager {
     private static DataManager instance = null;
 
     private final List<IModule> modules = new ArrayList<>();
-
-    private final Map<String, Map<String, String>> sessionMap = new LinkedHashMap<>();
 
     private final RecordLockManager recordLockManager = new RecordLockManager();
 
@@ -115,6 +113,8 @@ public final class DataManager {
     private final TaskManager restApiJobManager;
 
     private ArchiveManager archiveManager = null;
+
+    private final CardCatalogManager cardCatalogManager = new CardCatalogManager();
 
     private ClientApplicationManager clientManager = null;
 
@@ -242,24 +242,6 @@ public final class DataManager {
         modules.add(module);
         logger.info("Module registered: {} ({}) v{}", module.getId(), module.getName(), module.getVersion());
         return true;
-    }
-
-    /**
-     * getSessionCount.
-     *
-     * @return a int.
-     */
-    public int getSessionCount() {
-        return sessionMap.size();
-    }
-
-    /**
-     * Getter for the field <code>sessionMap</code>.
-     *
-     * @return the map of active HTTP session data, keyed by session ID
-     */
-    public Map<String, Map<String, String>> getSessionMap() {
-        return sessionMap;
     }
 
     /**
@@ -559,6 +541,15 @@ public final class DataManager {
         return restApiJobManager;
     }
 
+    /**
+     * Sets custom ArchiveManager object (used for unit testing).
+     *
+     * @param archiveManager archive manager instance to inject
+     */
+    public void injectArchiveManager(ArchiveManager archiveManager) {
+        this.archiveManager = archiveManager;
+    }
+
     public ArchiveManager getArchiveManager() {
         if (archiveManager == null) {
             synchronized (LOCK) {
@@ -566,6 +557,10 @@ public final class DataManager {
             }
         }
         return archiveManager;
+    }
+
+    public CardCatalogManager getCardCatalogManager() {
+        return cardCatalogManager;
     }
 
     public ClientApplicationManager getClientManager() throws DAOException {

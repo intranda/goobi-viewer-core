@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.cms.itemfunctionality;
 
+import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
@@ -41,13 +42,18 @@ public class QueryListFunctionality extends SearchFunctionality {
     /** {@inheritDoc} */
     @Override
     public void setPageNo(int pageNo) {
-        BeanUtils.getSearchBean().setCurrentPage(pageNo);
+        // SearchBean is null outside of JSF if the request has no session
+        SearchBean searchBean = BeanUtils.getSearchBean();
+        if (searchBean != null) {
+            searchBean.setCurrentPage(pageNo);
+        }
     }
 
     /** {@inheritDoc} */
     @Override
     public int getPageNo() {
-        return BeanUtils.getSearchBean().getCurrentPage();
+        SearchBean searchBean = BeanUtils.getSearchBean();
+        return searchBean != null ? searchBean.getCurrentPage() : 1;
     }
 
 }

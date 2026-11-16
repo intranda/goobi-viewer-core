@@ -80,8 +80,8 @@ export function setupAnnotationColumnResize({ panel, box, label }) {
 
     const apply = (next) => {
         split = Number.isFinite(next) ? clamp(next) : NaN;
-        if (Number.isFinite(split)) panel.style.setProperty('--immersive-anno-split', split + 'px');
-        else panel.style.removeProperty('--immersive-anno-split');
+        if (Number.isFinite(split)) panel.style.setProperty('--_immersive-anno-split', split + 'px');
+        else panel.style.removeProperty('--_immersive-anno-split');
         const { min, max } = bounds();
         const share = shareOf(current());
         handle.setAttribute('aria-valuenow', String(share));
@@ -168,7 +168,7 @@ export function setupAnnotationColumnResize({ panel, box, label }) {
             if (frame) cancelAnimationFrame(frame);
             endDrag();
             handle.remove();
-            panel.style.removeProperty('--immersive-anno-split');
+            panel.style.removeProperty('--_immersive-anno-split');
         },
     };
 }

@@ -3,22 +3,26 @@
    style declarations for widget_statistics_usage.xhtml
    ==============================================================*/
 .widget-usage-statistics {
+    /* TITLE */
     &__title {
         width: 100%;
     }
 
+    /* KEY */
     &__key {
         font-weight: 700;
     }
 
+    /* VALUE */
     &__value {
         display: inline-block;
         min-width: 40px;
     }
 
+    /* UPDATED */
     &__updated {
         opacity: 0.5;
-        font-size: 12px;
+        font-size: var(--font-size-caption);
         font-style: italic;
     }
 }

@@ -1,7 +1,6 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
@@ -13,6 +12,7 @@
             #{activeDocumentBean.viewManager.currentPage.loadUserGeneratedContentsForDisplay()};
         </script>
 
+        <!-- UGC WIDGET -->
         <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.userGeneratedContentsForDisplay != null}">
             <div
                 id="userGeneratedContentWidget"
@@ -20,7 +20,6 @@
                 <div class="widget__topbar widget-user-generated-content__topbar">
                     <h2 class="widget__title widget-user-generated-content__title">#{msg.crowdsourcing_userGeneratedContent}</h2>
                 </div>
-
                 <div class="widget__body widget-user-generated-content__body">
                     <ul>
                         <ui:repeat
@@ -39,7 +38,6 @@
                                         </dl>
                                     </li>
                                 </h:panelGroup>
-
                                 <h:panelGroup rendered="#{content.type == 'ADDRESS'}">
                                     <li id="words-#{content.id}">
                                         <dl class="dl-horizontal">
@@ -52,7 +50,6 @@
                                         </dl>
                                     </li>
                                 </h:panelGroup>
-
                                 <h:panelGroup rendered="#{content.type == 'PERSON'}">
                                     <li id="words-#{content.id}">
                                         <dl class="dl-horizontal">
@@ -65,7 +62,6 @@
                                         </dl>
                                     </li>
                                 </h:panelGroup>
-
                                 <h:panelGroup rendered="#{content.type == 'CORPORATION'}">
                                     <li id="words-#{content.id}">
                                         <dl class="dl-horizontal">
@@ -81,23 +77,21 @@
                             </h:panelGroup>
                             <script type="text/javascript">
                                 userGeneratedContentJSArray.push(['#{content.id}', '#{content.displayCoordinates}', '#{content.title}']);
-$('#words-#{content.id}').on('click', function (e) {
-    e.preventDefault();
-    highlightContentBox('${content.id}');
-    highlightCurrentSelection($(this));
-});
+                                $('#words-#{content.id}').on('click', function (e) {
+                                    e.preventDefault();
+                                    highlightContentBox('${content.id}');
+                                    highlightCurrentSelection($(this));
+                                });
                             </script>
                         </ui:repeat>
                         <script type="text/javascript">
                             drawContentBoxes(true);
 
-var highlightCurrentSelection = function ($Obj) {
-    // reset styles for all li elements
-    $('#user_generated_content_nav li').removeClass('ugc-highlight');
+                            var highlightCurrentSelection = function ($Obj) {
+                                $('#user_generated_content_nav li').removeClass('ugc-highlight');
 
-    // highlight clicked li element
-    $Obj.addClass('ugc-highlight');
-};
+                                $Obj.addClass('ugc-highlight');
+                            };
                         </script>
                     </ul>
                 </div>

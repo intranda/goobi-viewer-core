@@ -23,7 +23,7 @@ describe('mountBlockAnnotations (jsdom)', () => {
         return { box, flat, els, setWidth };
     };
 
-    test('an above-anchor card shifts the text via --immersive-anno-shift; destroy clears it', () => {
+    test('an above-anchor card shifts the text via --_immersive-anno-shift; destroy clears it', () => {
         const { box, flat, els } = buildPage();
         const layout = {
             blocks: [
@@ -45,9 +45,9 @@ describe('mountBlockAnnotations (jsdom)', () => {
         expect(card.getAttribute('role')).toBe('button');
         expect(card.getAttribute('tabindex')).toBe('0');
         expect(card.querySelector('.immersive__anno-note-author').textContent).toBe('Jacob Grimm');
-        expect(box.style.getPropertyValue('--immersive-anno-shift')).toBe('2px');
+        expect(box.style.getPropertyValue('--_immersive-anno-shift')).toBe('2px');
         mounted.destroy();
-        expect(box.style.getPropertyValue('--immersive-anno-shift')).toBe('');
+        expect(box.style.getPropertyValue('--_immersive-anno-shift')).toBe('');
     });
 
     test('the card text carries the word markup of the annotation (underline + tag class), without region ids', () => {
@@ -177,7 +177,7 @@ describe('mountBlockAnnotations (jsdom)', () => {
         const { box, flat, els } = buildPage();
         const layout = { blocks: [{ id: 'b-9', author: 'gr_jacob_grimm', authorName: 'Jacob Grimm', rect: { x: 0, y: 200, w: 200, h: 20 }, text: 'Randnotiz' }] };
         const mounted = mountBlockAnnotations({ box, layout, pi: 'PI1', pageNo: 2, flat, els });
-        expect(box.style.getPropertyValue('--immersive-anno-shift')).toBe('');
+        expect(box.style.getPropertyValue('--_immersive-anno-shift')).toBe('');
         mounted.destroy();
     });
 });

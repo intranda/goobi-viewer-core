@@ -53,6 +53,6 @@ public class ToolsRequestParameters extends TaskParameter {
     
     public void setDataRepositoryName(String dataRepositoryName) {
         this.dataRepositoryName = dataRepositoryName;
-    };
+    }
 
 }

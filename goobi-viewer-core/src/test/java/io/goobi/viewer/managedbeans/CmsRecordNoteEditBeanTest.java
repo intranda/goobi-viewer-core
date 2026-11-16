@@ -26,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Locale;
@@ -42,6 +44,8 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.archives.ArchiveManager;
+import io.goobi.viewer.model.archives.ArchiveResource;
 import io.goobi.viewer.model.cms.recordnotes.CMSRecordNote;
 import io.goobi.viewer.model.cms.recordnotes.CMSSingleRecordNote;
 import io.goobi.viewer.model.translations.TranslatedText;
@@ -331,5 +335,22 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
         CMSSingleRecordNote note2 = (CMSSingleRecordNote) DataManager.getInstance().getDao().getRecordNote(1L);
         assertNotNull(note2);
         assertEquals("PI3", note2.getRecordPi());
+    }
+
+    /**
+     * @verifies offer the archives of the archive manager for selection
+     * @see CmsRecordNoteEditBean#getArchives
+     */
+    @Test
+    void getArchives_shouldOfferTheArchivesOfTheArchiveManagerForSelection() {
+        ArchiveResource archive = new ArchiveResource("Archive 1", "ARCHIVE_1", "", "1");
+        ArchiveManager archiveManager = mock(ArchiveManager.class);
+        when(archiveManager.getDatabases()).thenReturn(List.of(archive));
+        DataManager.getInstance().injectArchiveManager(archiveManager);
+        try {
+            assertEquals(List.of(archive), bean.getArchives());
+        } finally {
+            DataManager.getInstance().injectArchiveManager(null);
+        }
     }
 }

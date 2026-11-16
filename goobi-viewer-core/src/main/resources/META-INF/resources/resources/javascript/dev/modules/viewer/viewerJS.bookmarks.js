@@ -205,10 +205,11 @@ var viewerJS = (function (viewer) {
             });
 
             // Trigger bookmarks dropdown in login navigation dropdown
-            $('body').on('click', '.login-navigation__bookmarks-trigger', function () {
+            $('body').on('click', '.login-navigation__bookmarks-trigger', function (event) {
                 event.preventDefault();
                 $('.login-navigation__bookmarks-small-list').slideToggle('fast');
                 $('.login-navigation__bookmarks-list').toggleClass('-opened');
+                $(this).attr('aria-expanded', $('.login-navigation__bookmarks-list').hasClass('-opened'));
             });
 
             //                $dropdown.on("click", (event) => event.stopPropagation());

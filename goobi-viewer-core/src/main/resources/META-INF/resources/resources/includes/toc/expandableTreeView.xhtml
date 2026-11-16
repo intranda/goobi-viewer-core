@@ -5,10 +5,7 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+    xmlns:jsf="http://xmlns.jcp.org/jsf">
     <!-- EXPANDABLE TREEVIEW -->
     <h:panelGroup rendered="#{configurationBean.isTocTreeView(activeDocumentBean.viewManager.topStructElement.docStructType)}">
         <div id="expandableToc">
@@ -36,6 +33,7 @@
                 </button>
             </div>
 
+            <!-- TREE -->
             <nav class="toc__list-expandable">
                 <ul class="toc__list-outer-list">
                     <ui:repeat
@@ -130,6 +128,7 @@
             </nav>
         </div>
 
+        <!-- TREE SCRIPT -->
         <script type="text/javascript">viewerJS.expandableToc.init();</script>
     </h:panelGroup>
 </ui:composition>

@@ -35,6 +35,7 @@ import org.apache.logging.log4j.Logger;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
+import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.filters.AdminLoggedInFilter;
 import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
 import io.goobi.viewer.api.rest.model.PrerenderPdfsRequestParameters;
@@ -52,12 +53,11 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.job.TaskType;
-import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -76,8 +76,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 /**
- * REST resource for creating and monitoring asynchronous
- * {@link io.goobi.viewer.api.rest.model.tasks.TaskManager} tasks within the viewer, such as PDF pre-rendering.
+ * REST resource for creating and monitoring asynchronous {@link io.goobi.viewer.api.rest.model.tasks.TaskManager} tasks within the viewer, such as
+ * PDF pre-rendering.
  *
  * @author Florian Alpers
  */
@@ -102,17 +102,16 @@ public class TasksResource {
     /**
      * Creates a task for the given {@link TaskParameter#getType()} and starts it asynchronously.
      *
-     * <p>If the internal message queue broker is enabled in the configuration, which is the default, only the three task types that
-     * carry a dedicated {@link TaskParameter} subtype are queued as a {@link ViewerMessage} and processed by the message queue consumer
-     * (sitemap update, data repository name update, PDF pre-rendering); any other type is accepted but creates no task. With the broker
-     * disabled, the task runs as an in-memory {@link Task} on a fixed pool of five worker threads. The task type also determines, via
-     * {@link Task#getAccessibility(ITaskType)}, the authorization required to create it (token, admin or session, depending on the
-     * type).
+     * <p>
+     * If the internal message queue broker is enabled in the configuration, which is the default, only the three task types that carry a dedicated
+     * {@link TaskParameter} subtype are queued as a {@link ViewerMessage} and processed by the message queue consumer (sitemap update, data
+     * repository name update, PDF pre-rendering); any other type is accepted but creates no task. With the broker disabled, the task runs as an
+     * in-memory {@link Task} on a fixed pool of five worker threads. The task type also determines, via {@link Task#getAccessibility(ITaskType)}, the
+     * authorization required to create it (token, admin or session, depending on the type).
      *
      * @param desc parameters describing the task to create, including its type
      * @return the created {@link Task} or {@link ViewerMessage}
-     * @throws WebApplicationException if no task type is given, the caller is not authorized to create it, or the message queue
-     *             rejects the task
+     * @throws WebApplicationException if no task type is given, the caller is not authorized to create it, or the message queue rejects the task
      */
     @POST
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -222,11 +221,11 @@ public class TasksResource {
     /**
      * Returns a single task or message-queue job by id, provided the request is authorized to access it.
      *
-     * <p>A purely numeric id is looked up among the tasks held in memory by the viewer's task manager; any other id is treated as a
-     * message queue job id and looked up first via the message broker, then, if not found there, in the database.
-     * Authorization depends on the {@link Task.Accessibility} of the underlying task type: token tasks require the same authorization
-     * header as other protected endpoints, admin tasks require an active admin session, and session tasks are only visible to the
-     * session that created them.
+     * <p>
+     * A purely numeric id is looked up among the tasks held in memory by the viewer's task manager; any other id is treated as a message queue job id
+     * and looked up first via the message broker, then, if not found there, in the database. Authorization depends on the {@link Task.Accessibility}
+     * of the underlying task type: token tasks require the same authorization header as other protected endpoints, admin tasks require an active
+     * admin session, and session tasks are only visible to the session that created them.
      *
      * @param id the id of the task
      * @return the {@link Task} or {@link ViewerMessage} with the given id
@@ -303,9 +302,10 @@ public class TasksResource {
     /**
      * Returns the tasks held in memory by the viewer's task manager that the current request is authorized to see.
      *
-     * <p>Unlike {@link #getTask(String)}, this only lists locally tracked tasks, not asynchronous message queue jobs. Visibility of
-     * each task depends on its accessibility: token tasks require the same authorization token as other protected endpoints, admin
-     * tasks require an active admin session, and session tasks are included only for the session that created them.
+     * <p>
+     * Unlike {@link #getTask(String)}, this only lists locally tracked tasks, not asynchronous message queue jobs. Visibility of each task depends on
+     * its accessibility: token tasks require the same authorization token as other protected endpoints, admin tasks require an active admin session,
+     * and session tasks are included only for the session that created them.
      *
      * @return the list of tasks visible to the current request
      */
@@ -339,7 +339,7 @@ public class TasksResource {
             case ADMIN:
                 return AdminLoggedInFilter.isAdminLoggedIn(request);
             case SESSION:
-                String sessionId = request.getSession().getId();
+                String sessionId = Optional.ofNullable(request.getSession(false)).map(s -> s.getId()).orElse(null);
                 if (sessionId != null) {
                     return jobSessionId.map(id -> id.equals(sessionId)).orElse(false);
                 }

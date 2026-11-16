@@ -26,6 +26,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.parallel.ResourceLock;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.solr.SolrSearchIndex;
@@ -33,6 +34,7 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 /**
  * JUnit test classes that extend this class can use the embedded Solr server setup with a fixed viewer index.
  */
+@ResourceLock("Solr")
 public abstract class AbstractSolrEnabledTest extends AbstractTest {
 
     protected static String iddocKleiuniv = null;

@@ -59,7 +59,7 @@ class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
     private static ClientAndServer mockServer;
     private static MockServerClient serverClient;
 
-    private static final int SERVERPORT = 1080;
+    private static final int SERVERPORT = 1081;
     private static final String SERVERURL = "127.0.0.1";
     private static final String REQUEST_BODY_TEMPLATE = "{\"username\":\"{username}\",\"password\":\"{password}\"}";
     private static final String RESPONSE_USER_VALID = "{ " + "\"user\": {" + "\"isValid\": \"Y\"," + "\"exists\": \"Y\"" + "}," + "\"expired\": {"

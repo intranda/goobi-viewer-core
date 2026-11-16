@@ -1,6 +1,5 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
@@ -15,7 +14,6 @@
                 <div class="widget__topbar widget-version-history__topbar">
                     <h2 class="widget__title widget-version-history__title">#{msg.versionHistory}:</h2>
                 </div>
-
                 <div class="widget__body widget-version-history__body">
                     <ul>
                         <ui:repeat
@@ -29,15 +27,16 @@
                 </div>
             </div>
 
+            <!-- VERSION HISTORY SCRIPT -->
             <script type="text/javascript">
                 var versionHistoryConfig = {
-    imgUrl: '#{navigationHelper.imageUrl}',
-    imgPi: '#{activeDocumentBean.viewManager.pi}',
-    widgetInputs: '#widgetVersionHistory ul input',
-    widgetList: '#widgetVersionHistory ul',
-};
+                    imgUrl: '#{navigationHelper.imageUrl}',
+                    imgPi: '#{activeDocumentBean.viewManager.pi}',
+                    widgetInputs: '#widgetVersionHistory ul input',
+                    widgetList: '#widgetVersionHistory ul',
+                };
 
-viewerJS.versionHistory.init(versionHistoryConfig);
+                viewerJS.versionHistory.init(versionHistoryConfig);
             </script>
         </h:panelGroup>
     </composite:implementation>

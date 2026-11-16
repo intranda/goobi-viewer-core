@@ -1,6 +1,5 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
@@ -17,6 +16,7 @@
             class="cms-page-links"
             rendered="#{cc.attrs.widget.type == 'WIDGET_CMSPAGES'}">
             <h:form
+                styleClass="widget__form-wrapper"
                 id="customDrillDownForm"
                 prependId="false">
                 <div
@@ -28,7 +28,6 @@
                                 <h2 class="widget__title widget-cms-page-links__title">#{cc.attrs.widget.title.textOrDefault}</h2>
                             </ui:fragment>
                         </div>
-
                         <div class="widget__body widget-cms-page-links__body">
                             <ul>
                                 <ui:repeat
@@ -53,7 +52,6 @@
                                 <util:icon icon="arrow-down" />
                             </a>
                         </h2>
-
                         <div
                             id="customCollapse-#{cc.attrs.widget.id}"
                             class="collapse">

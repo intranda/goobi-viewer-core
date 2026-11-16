@@ -4,9 +4,7 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
@@ -35,9 +33,7 @@
                         #{msg.add}
                     </a>
                 </div>
-
                 <viewerComponent:adminBreadcrumbs />
-
                 <div class="admin__content-inner-content">
                     <!-- INFO TEXT -->
                     <div class="admin__info-text">
@@ -117,12 +113,8 @@
             </div>
         </ui:fragment>
         <script>
-            // Create no entries found message
             if ($('.admin__table-entry').length == 0) {
-                $('.admin__table-content').append('
-            <br />
-            <p>#{msg.hitsZero}</p>
-            ');
+                $('.admin__table-content').append(document.createElement('br'), $(document.createElement('p')).text(#{navigationHelper.getTranslationsAsJson(['hitsZero'])}.hitsZero));
             }
         </script>
     </ui:define>

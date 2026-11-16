@@ -2,14 +2,10 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <h:form
         id="adminPendingTicketsForm"
         prependId="false">
@@ -17,7 +13,6 @@
         <ui:fragment rendered="#{not empty adminLicenseBean.ticketRequests}">
             <!-- PENDING TICKETS HEADING -->
             <h2 class="admin__tickets-heading">#{msg.admin__access_tickets__pending_requests}</h2>
-
             <div class="admin__tickets-pending-tickets-wrapper">
                 <ui:repeat
                     var="ticket"
@@ -69,61 +64,50 @@
                             </div>
                         </ui:fragment>
 
+                        <!-- UNFOLD LONG MESSAGES SCRIPT -->
                         <script>
-                            // Check if download ticket request messsage is very long and offer unfold button
-
-                            // Debounce
-                            function debounce(func, time){
+                            //<![CDATA[
+                            function debounce(func, time) {
                                 var time = time || 100; // 100 by default if no param
                                 var timer;
-                                return function(event){
-                                    if(timer) clearTimeout(timer);
+                                return function (event) {
+                                    if (timer) clearTimeout(timer);
                                     timer = setTimeout(func, time, event);
                                 };
                             }
 
-                            // Function with stuff to execute
                             function resizeContent() {
-                                // Do loads of stuff once window has resized
-                            	checkTextLength();
+                                checkTextLength();
                             }
 
-                            // Eventlistener
-                            window.addEventListener("resize", debounce( resizeContent, 150 ));
+                            window.addEventListener('resize', debounce(resizeContent, 150));
 
+                            function checkTextLength() {
+                                $('.admin__tickets-pending-ticket-value-message-wrapper').each(function () {
+                                    if (
+                                        $(this).find('.admin__tickets-pending-ticket-value-invis-message').height() > 85 &&
+                                        !$(this).find('.admin__tickets-pending-ticket-value-message').hasClass('-unfolded')
+                                    ) {
+                                        $(this).find('.admin__tickets-pending-ticket-unfold-button').fadeIn('fast');
+                                        $(this).find('.admin__tickets-pending-ticket-value-message').addClass('-unfoldable');
 
-                              							function checkTextLength() {
-                              								$('.admin__tickets-pending-ticket-value-message-wrapper').each(function() {
+                                        $(this).on('click', function () {
+                                            $(this).find('.admin__tickets-pending-ticket-value-message').addClass('-unfolded');
+                                            $(this).find('.admin__tickets-pending-ticket-unfold-button').hide();
+                                            $(this).find('.admin__tickets-pending-ticket-value-invis-message').addClass('-unfolded');
+                                        });
+                                    } else {
+                                        $(this).find('.admin__tickets-pending-ticket-unfold-button').fadeOut('fast');
+                                        $(this).find('.admin__tickets-pending-ticket-value-message').removeClass('-unfoldable');
+                                    }
+                                });
+                            }
 
-                                    						if ( $(this).find('.admin__tickets-pending-ticket-value-invis-message').height() > 85 &amp; &amp; !$(this).find('.admin__tickets-pending-ticket-value-message').hasClass("-unfolded") )  {
-                                    							 // console.log('Height: ' + $(this).find('.admin__tickets-pending-ticket-value-invis-message').height());
-
-                                    							$(this).find('.admin__tickets-pending-ticket-unfold-button').fadeIn('fast');
-                                    							$(this).find('.admin__tickets-pending-ticket-value-message').addClass('-unfoldable');
-
-                                     						$(this).on('click', function() {
-                                     							$(this).find('.admin__tickets-pending-ticket-value-message').addClass('-unfolded');
-                                     							$(this).find('.admin__tickets-pending-ticket-unfold-button').hide();
-                                     							$(this).find('.admin__tickets-pending-ticket-value-invis-message').addClass('-unfolded');
-                                     						});
-
-
-                                    						} else {
-                                    							$(this).find('.admin__tickets-pending-ticket-unfold-button').fadeOut('fast');
-                                    							$(this).find('.admin__tickets-pending-ticket-value-message').removeClass('-unfoldable');
-                                    						}
-
-                               							});
-
-                              							}
-
-                              							$(document).ready(function() {
-
-                              							checkTextLength();
-
-                              							});
+                            $(document).ready(function () {
+                                checkTextLength();
+                            });
+                            //]]>
                         </script>
-
                         <div class="admin__tickets-pending-ticket-actions">
                             <button
                                 class="btn btn--danger"
@@ -149,7 +133,6 @@
             </div>
         </ui:fragment>
     </h:form>
-
     <h:form
         id="adminActiveTicketsForm"
         prependId="false">
@@ -158,12 +141,12 @@
             rendered="#{adminLicenseBean.lazyModelTickets.sizeOfDataList > 0 or not empty adminLicenseBean.lazyModelTickets.getFilter('pi_email_title_requestMessage').value}">
             <div class="admin__tickets-active-tickets-table-wrapper">
                 <h2 class="admin__tickets-heading">#{msg.admin__download_tickets__active_download_tickets}</h2>
-
                 <div class="admin__table-tools">
                     <!-- PAGINATOR -->
                     <div class="admin__table-paginator">
                         <viewerComponent:dataTablePaginator tableValues="#{adminLicenseBean.lazyModelTickets}" />
                     </div>
+
                     <!-- FILTER -->
                     <div class="admin__table-filter">
                         <viewerComponent:dataTableColumnFilter
@@ -171,7 +154,6 @@
                             filter="#{adminLicenseBean.lazyModelTickets.getFilter('pi_email_title_requestMessage')}" />
                     </div>
                 </div>
-
                 <div
                     id="activeTicketsTable"
                     class="admin__grid-table -columns-2-1-1-1-1"
@@ -186,18 +168,14 @@
                                 colHeading="#{msg.admin__download_tickets__title}"
                                 list="#{adminLicenseBean.lazyModelTickets}" />
                         </div>
-
                         <div class="admin__grid-table-sorting-wrapper">#{msg.type}</div>
-
                         <div class="admin__grid-table-sorting-wrapper">#{msg.message}</div>
-
                         <div class="admin__grid-table-sorting-wrapper">
                             <viewerComponent:sortingArrow
                                 filterType="dateCreated"
                                 colHeading="#{msg.admin__download_tickets__email}"
                                 list="#{adminLicenseBean.lazyModelTickets}" />
                         </div>
-
                         <div class="admin__grid-table-sorting-wrapper">
                             <viewerComponent:sortingArrow
                                 filterType="dateLastAccess"
@@ -205,7 +183,6 @@
                                 list="#{adminLicenseBean.lazyModelTickets}" />
                         </div>
                     </div>
-
                     <div class="admin__grid-table-data-row-area">
                         <ui:repeat
                             var="ticket"
@@ -229,6 +206,7 @@
                                             aria-label="#{msg.downloadTicket} #{msg.show} (#{ticket.pi}/1)">
                                             #{msg.show}
                                         </a>
+
                                         <!-- EXTEND -->
                                         <ui:fragment rendered="#{ticket.active or ticket.expired}">
                                             <button
@@ -248,6 +226,7 @@
                                                 #{msg.admin__download_tickets_extend}
                                             </button>
                                         </ui:fragment>
+
                                         <!-- RENEW -->
                                         <ui:fragment rendered="#{ticket.active}">
                                             <button
@@ -266,6 +245,7 @@
                                                 #{msg.admin__download_tickets_renew}
                                             </button>
                                         </ui:fragment>
+
                                         <!-- DELETE -->
                                         <button
                                             class="admin__table-action-link -redlink"
@@ -327,20 +307,17 @@
                         </ui:repeat>
                     </div>
 
+                    <!-- NO ENTRIES MESSAGE SCRIPT -->
                     <script type="text/javascript">
-                        // Create no entries found message
                         if ($('.admin__grid-table-data-row').length == 0) {
-                            $('.admin__grid-table-data-row-area').append('
-                        <div
-                            class="admin__grid-table-data-row"
-                            role="row">
-                            <div
-                                class="admin__grid-table-data"
-                                role="gridcell">
-                                #{msg.hitsZero}
-                            </div>
-                        </div>
-                        ');
+                            $('.admin__grid-table-data-row-area').append(
+                                $(document.createElement('div'))
+                                    .addClass('admin__grid-table-data-row')
+                                    .attr('role', 'row')
+                                    .append(
+                                        $(document.createElement('div')).addClass('admin__grid-table-data').attr('role', 'gridcell').text(#{navigationHelper.getTranslationsAsJson(['hitsZero'])}.hitsZero)
+                                    )
+                            );
                         }
                     </script>
                 </div>

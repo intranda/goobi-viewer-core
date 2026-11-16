@@ -32,9 +32,7 @@
                         msg.cms_collection_edit}
                     </h1>
                 </div>
-
                 <viewerComponent:adminBreadcrumbs />
-
                 <div class="admin__content-inner-content">
                     <div class="admin__content-wrapper">
                         <div class="admin__content-main #{dynamicCollectionsBean.currentCollection.id == null ? '-full' : ''}">
@@ -43,7 +41,7 @@
                                 prependId="false">
                                 <!-- IDENTIFIER -->
                                 <viewerForms:inputFormBlock title="#{msg.general}">
-                                    <!-- IDENTIFIER (only editable on creation; shown in the info sidebar afterwards) -->
+                                    <!-- IDENTIFIER, EDITABLE ONLY ON CREATION -->
                                     <ui:fragment rendered="#{dynamicCollectionsBean.currentCollection.id == null}">
                                         <viewerForms:inputFormField
                                             label="#{msg.admin__dynamic_collections_identifier}"
@@ -101,9 +99,8 @@
                                         </h:panelGroup>
                                     </viewerForms:inputFormField>
                                 </viewerForms:inputFormBlock>
-
                                 <ui:fragment rendered="#{dynamicCollectionsBean.currentCollection.id != null}">
-                                    <!-- DESCRIPTION (per language, tabs; labels are translated via the translations editor like regular collection names) -->
+                                    <!-- DESCRIPTION PER LANGUAGE, LABELS VIA THE TRANSLATIONS EDITOR -->
                                     <h2>#{msg.description}</h2>
                                     <div class="admin__cms-edit-collection-translation-box">
                                         <h:panelGroup id="translationsGroup">
@@ -114,7 +111,6 @@
                                                     render="translationsGroup"
                                                     execute="translationsGroup" />
                                             </div>
-
                                             <div class="admin__default-block">
                                                 <h:inputTextarea
                                                     id="collectionDescription"
@@ -149,7 +145,6 @@
                                     <h2>#{msg.cms_collections_image}</h2>
                                     <div class="admin__default-block">
                                         <p class="admin__boxed-entry-description">#{msg.admin__cms_collections_image_desc}</p>
-
                                         <h:panelGroup
                                             layout="block"
                                             id="imageModeGroup"
@@ -189,7 +184,6 @@
                                                     </h:selectOneRadio>
                                                 </div>
                                             </div>
-
                                             <h:panelGroup
                                                 layout="block"
                                                 styleClass="admin__cms-edit-collection-wrapper-choose-image"
@@ -226,7 +220,6 @@
                                                     </h:commandLink>
                                                 </div>
                                             </h:panelGroup>
-
                                             <h:panelGroup
                                                 layout="block"
                                                 styleClass="admin__cms-collections-wrapper-identifier"
@@ -255,6 +248,7 @@
                                         value="#{msg.cancel}"
                                         immediate="true"
                                         action="#{dynamicCollectionsBean.resetCurrentCollection}" />
+
                                     <!-- PREVIEW -->
                                     <ui:fragment rendered="#{dynamicCollectionsBean.currentCollection.id != null}">
                                         <h:outputLink
@@ -264,6 +258,7 @@
                                             <h:outputText value="#{msg.admin__cms_collections_preview}" />
                                         </h:outputLink>
                                     </ui:fragment>
+
                                     <!-- DELETE -->
                                     <ui:fragment rendered="#{dynamicCollectionsBean.currentCollection.id != null}">
                                         <button
@@ -276,6 +271,7 @@
                                             #{msg.delete}
                                         </button>
                                     </ui:fragment>
+
                                     <!-- SAVE -->
                                     <h:commandButton
                                         disabled="#{!dynamicCollectionsBean.currentCollectionValid}"
@@ -285,7 +281,6 @@
                                         action="#{dynamicCollectionsBean.saveCurrentCollection()}" />
                                 </div>
                             </h:form>
-
                             <h:panelGroup id="mediaSelectPanel">
                                 <ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
                                     <div class="admin-cms-media-select-overlay">
@@ -311,7 +306,7 @@
                             </h:panelGroup>
                         </div>
 
-                        <!-- INFO SIDEBAR (existing collections only) -->
+                        <!-- INFO SIDEBAR, EXISTING COLLECTIONS ONLY -->
                         <ui:fragment rendered="#{dynamicCollectionsBean.currentCollection.id != null}">
                             <div class="admin__content-side -sticky -refreshHCsticky">
                                 <!-- TRANSLATION HINT -->
@@ -319,7 +314,8 @@
                                     <div class="admin__default-block -warning">
                                         <h2>#{msg.admin__cms_collections_translation}</h2>
                                         <div class="admin__form-help-text in mb-3">#{msg.admin__cms_collections_translation_desc}</div>
-                                        <!-- TRANSLATION ACTION: opens the translations editor on the dynamic collections group -->
+
+                                        <!-- TRANSLATION ACTION, OPENS THE TRANSLATIONS EDITOR -->
                                         <div class="row">
                                             <div class="col-12 d-flex justify-content-center">
                                                 <a
@@ -332,15 +328,15 @@
                                         </div>
                                     </div>
                                 </ui:fragment>
-
                                 <div class="admin__default-block">
                                     <h2>#{msg.admin__cms_collections_information}</h2>
                                     <div class="admin__cms-edit-collection-info-box">
-                                        <!-- IDENTIFIER (immutable) -->
+                                        <!-- IDENTIFIER, IMMUTABLE -->
                                         <div class="admin__cms-edit-collection-data-wrapper">
                                             <div class="admin__cms-edit-collection-data-type mb-4">#{msg.admin__cms_collections_info_internal_name}</div>
                                             <div class="admin__cms-edit-collection-data-value mb-4">#{dynamicCollectionsBean.currentCollection.identifier}</div>
                                         </div>
+
                                         <!-- LABELS PER LANGUAGE -->
                                         <ui:repeat
                                             var="labelTranslation"
@@ -352,6 +348,7 @@
                                                 </div>
                                             </div>
                                         </ui:repeat>
+
                                         <!-- QUERY HIT COUNT -->
                                         <ui:fragment rendered="#{dynamicCollectionsBean.queryHitCount != null}">
                                             <div class="admin__cms-edit-collection-data-wrapper">
@@ -364,14 +361,14 @@
                             </div>
                         </ui:fragment>
 
+                        <!-- UNSAVED CHANGES SCRIPT -->
                         <script>
-                            // Warn before leaving the page with unsaved changes (native browser dialog, cf. adminJS.configEditor).
-                            // TinyMCE edits arrive as change events on the underlying textarea (viewerJS.tinyMce setup).
+                            // WARN BEFORE LEAVING WITH UNSAVED CHANGES (TINYMCE SENDS CHANGE EVENTS)
                             let dynamicCollectionDirty = false;
                             $('#dynamicEditCollectionForm').on('change input', () => {
                                 dynamicCollectionDirty = true;
                             });
-                            // Save, cancel and delete leave the page intentionally
+                            // SAVE, CANCEL AND DELETE LEAVE INTENTIONALLY
                             $('#saveCollection, #dynamicEditCollectionBack, #deleteCollectionButton').on('click', () => {
                                 dynamicCollectionDirty = false;
                             });

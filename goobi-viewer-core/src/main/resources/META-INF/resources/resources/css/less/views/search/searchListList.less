@@ -3,12 +3,25 @@
    style declarations for searchList.xhtml
    ==============================================================*/
 /* SEARCH LIST LIST */
-/* BLOCK */
 .search-list {
-    /* ELEMENT */
     /* HITS */
     &__hits {
         &.list-view {
+            /* LIST VIEW HAS NO THUMBNAIL COLUMN */
+            .search-list__hit-inner-structure {
+                grid-template-columns: 1fr;
+                align-items: stretch;
+            }
+            .search-list__hit-thumb-wrapper {
+                display: none;
+            }
+            .search-list__hit-thumbnail {
+                aspect-ratio: auto;
+            }
+            .search-list__hit-info-wrapper {
+                display: flex;
+                flex-direction: column-reverse;
+            }
             .search-list__hit-options-wrapper {
                 display: none;
             }
@@ -21,16 +34,11 @@
             h2:nth-child(n + 2 of .search-list__hit-result-group-heading) {
                 margin-top: 15px;
             }
-            .search-list__hit {
-                // margin-bottom: 5px;
-            }
-            .search-list__hit-header {
-            }
 
             .search-list__hit-thumbnail a,
             .search-list__hit-content,
             .search-list__hit-metadata-list {
-                .mx-hidden;
+                .mx-hidden();
             }
 
             .search-list--highlight {
@@ -41,6 +49,14 @@
                 display: none;
             }
         }
+    }
+}
+
+/* POINTER DEVICES: THE TOOLS OF A ROW APPEAR ON HOVER, THE VISIBILITY RULES ARE IN searchList.less */
+@media (min-width: (@smallBreakpoint + 1)) and (hover: hover) and (pointer: fine) and (~'not (any-pointer: coarse)') {
+    .search-list__hits.list-view .search-list__hit-options-wrapper {
+        display: flex;
+        flex-direction: row;
     }
 }
 

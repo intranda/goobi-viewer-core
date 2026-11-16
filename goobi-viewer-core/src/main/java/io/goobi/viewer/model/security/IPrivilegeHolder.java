@@ -25,9 +25,9 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Interface for entities that carry a set of named access privileges (e.g. a role or a license).
- * Defines constants for all known privilege names spanning data access, CMS administration, and crowdsourcing,
- * as well as generic add/remove/check operations and convenience boolean accessors for individual privileges.
+ * Interface for entities that carry a set of named access privileges (e.g. a role or a license). Defines constants for all known privilege names
+ * spanning data access, CMS administration, and crowdsourcing, as well as generic add/remove/check operations and convenience boolean accessors for
+ * individual privileges.
  */
 public interface IPrivilegeHolder {
 
@@ -67,13 +67,6 @@ public interface IPrivilegeHolder {
     public static final String PRIV_DOWNLOAD_METADATA = "DOWNLOAD_METADATA";
     /** Constant <code>PRIV_DOWNLOAD_IMAGES="DOWNLOAD_IMAGES"</code>. */
     public static final String PRIV_DOWNLOAD_IMAGES = "DOWNLOAD_IMAGES";
-    /**
-     * Constant <code>PRIV_GENERATE_IIIF_MANIFEST="GENERATE_IIIF_MANIFEST"</code>.
-     * 
-     * @deprecated iiif manifests are now always allowed, but individual resources therein may not be, depending on specific privileges
-     */
-    @Deprecated(since = "25.11")
-    public static final String PRIV_GENERATE_IIIF_MANIFEST = "GENERATE_IIIF_MANIFEST";
     /** Constant <code>PRIV_ZOOM_IMAGES="ZOOM_IMAGES"</code>. */
     public static final String PRIV_ZOOM_IMAGES = "ZOOM_IMAGES";
     /** Constant <code>PRIV_DOWNLOAD_BORN_DIGITAL_FILES="DOWNLOAD_BORN_DIGITAL_FILES"</code>. */

@@ -54,8 +54,8 @@ public class UserLoggedInFilter implements ContainerRequestFilter {
     private static final Logger logger = LogManager.getLogger(UserLoggedInFilter.class);
 
     /**
-     * Key of the OpenAPI security scheme describing the {@code Authorization: Bearer} token accepted here and by
-     * {@link AdminLoggedInFilter}. An identifier, not a header name: generated clients and tooling bind to it.
+     * Key of the OpenAPI security scheme describing the {@code Authorization: Bearer} token accepted here and by {@link AdminLoggedInFilter}. An
+     * identifier, not a header name: generated clients and tooling bind to it.
      */
     public static final String SECURITY_SCHEME_BEARER = "bearer";
 
@@ -114,7 +114,7 @@ public class UserLoggedInFilter implements ContainerRequestFilter {
     }
 
     public static boolean isUserLoggedIn(HttpServletRequest request) {
-        return BeanUtils.getUserFromSession(request.getSession()) != null;
+        return BeanUtils.getUserFromSession(request.getSession(false)) != null;
     }
 
     public static Optional<UserToken> getUserToken(HttpServletRequest request) throws DAOException {

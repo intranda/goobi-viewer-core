@@ -4,13 +4,15 @@
    ==============================================================*/
 /* WIDGET USER INTERACTIONS */
 #widgetUserInteractions {
-    background: @adminBackend-bg;
+    background: var(--bg-inverse);
+    color: var(--fg-on-inverse);
+    /* MODAL TITLE */
     .modal-title {
-        color: @black;
+        color: var(--fg-default);
     }
     h2,
     h3 {
-        color: @white;
+        color: var(--fg-on-inverse);
         font-weight: 700;
         margin-bottom: 1rem;
         font-family: @fontBackend;
@@ -18,14 +20,13 @@
     h2 {
         background: transparent;
         font-weight: 700;
-        font-size: 2.2rem;
+        font-size: var(--font-size-heading-small);
         border: none;
         text-transform: none;
     }
-    h3 {
-    }
     ul {
-        background: @adminBackend-bg;
+        background: var(--bg-inverse);
+        color: var(--fg-on-inverse);
         border: none;
         margin-bottom: 2rem;
         list-style: none;
@@ -33,11 +34,11 @@
         li {
             a {
                 padding: 0.3rem 0;
-                color: @white;
+                color: var(--fg-on-inverse);
                 &:hover,
                 &:focus,
                 &:active {
-                    color: @white;
+                    color: var(--fg-on-inverse);
                 }
             }
             &:first-of-type {
@@ -46,9 +47,8 @@
                 }
             }
         }
-        &:last-of-type {
-        }
     }
+    /* DELETE RECORD WRAPPER */
     .widget-user-interactions__delete-record-wrapper {
         margin-bottom: 0;
     }
@@ -57,15 +57,16 @@
 .widget-user-interactions {
     font-family: @fontBackend;
     padding: 2rem;
-    background-color: @adminBackend-bg;
+    background-color: var(--bg-inverse);
+    color: var(--fg-on-inverse);
+    /* INFO TEXT */
     &__info-text {
-        font-size: 1.2rem;
+        font-size: var(--font-size-caption);
         font-style: italic;
         margin-bottom: 1rem;
-        color: @white;
+        color: var(--fg-on-inverse);
     }
-    &__delete-record {
-    }
+    /* DELETE RECORD */
     &__delete-record-message {
         padding: 1.5rem;
         padding-top: 5px;
@@ -73,11 +74,11 @@
         span {
             display: inline-block;
             padding: 10px;
-            font-size: @fontMedium;
+            font-size: var(--font-size-body-small);
             line-height: 1.4rem;
-            color: @black;
-            border: 1px solid @validWarning;
-            background-color: @btnWarningBgc;
+            color: var(--fg-on-warning-subtle);
+            border: 1px solid var(--border-warning);
+            background-color: var(--bg-warning-subtle);
         }
     }
     &__delete-record-action,
@@ -85,7 +86,7 @@
         .btn {
             display: block;
             padding: 8px 12px;
-            color: #555;
+            color: var(--fg-secondary);
         }
         padding: 5px 0 10px 0;
         &.has-no-urn {
@@ -105,11 +106,13 @@
             }
         }
     }
+    /* CUSTOM CONTROL SELECT */
     .custom-control--select {
-        font-size: 1.3rem;
+        font-size: var(--font-size-caption);
     }
 }
 
+/* RTL */
 @{RTL} {
     .widget-user-interactions {
         &__delete-record-action {

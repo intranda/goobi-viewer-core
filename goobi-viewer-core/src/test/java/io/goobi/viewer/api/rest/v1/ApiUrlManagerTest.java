@@ -29,6 +29,8 @@ import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
@@ -36,6 +38,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
  * @author florian
  *
  */
+@Execution(ExecutionMode.CONCURRENT)
 class ApiUrlManagerTest {
 
     private final static String PI = "12345";

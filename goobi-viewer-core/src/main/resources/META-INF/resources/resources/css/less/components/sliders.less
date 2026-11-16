@@ -58,7 +58,7 @@
     &__slide {
     }
     &__header {
-        font-size: 1.6rem;
+        font-size: var(--font-size-body);
     }
     &__image {
         height: 210px;
@@ -80,7 +80,7 @@
     &__slide {
     }
     &__header {
-        font-size: 1.6rem;
+        font-size: var(--font-size-body);
     }
     &__image {
         height: 210px;
@@ -122,7 +122,7 @@
     &__slide {
     }
     &__header {
-        font-size: 1.6rem;
+        font-size: var(--font-size-body);
     }
     &__image {
         height: 220px;
@@ -158,10 +158,10 @@
         align-items: center;
         justify-content: center;
         padding: 10px;
-        font-size: @fontLarge;
+        font-size: var(--font-size-body-large);
         text-align: center;
-        color: @white;
-        background-color: fade(@black, 75%);
+        color: var(--fg-on-inverse);
+        background-color: rgb(from var(--shadow-color) r g b / 75%);
         opacity: 0;
         transition: opacity 0.2s;
     }

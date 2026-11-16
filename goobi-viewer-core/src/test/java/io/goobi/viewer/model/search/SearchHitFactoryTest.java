@@ -23,6 +23,7 @@ package io.goobi.viewer.model.search;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,8 +34,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -45,7 +48,9 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataWrapper;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.model.viewer.StructElementStub;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 class SearchHitFactoryTest extends AbstractSolrEnabledTest {
 
@@ -80,6 +85,167 @@ class SearchHitFactoryTest extends AbstractSolrEnabledTest {
     /**
      * @verifies add metadata fields that match search terms
      */
+    /**
+     * @see SearchHitFactory#createSearchHit(SolrDocument, SolrDocument, String, HitType)
+     * @verifies produce the same citation as a separate factory per hit
+     */
+    @Test
+    void createSearchHit_shouldProduceTheSameCitationAsASeparateFactoryPerHit() throws Exception {
+        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search("+" + SolrConstants.ISWORK + ":true", 5, null, null);
+        Assertions.assertTrue(docs.size() > 1);
+        SearchHitFactory sharedFactory = new SearchHitFactory(null, null, null, 0, null, Locale.ENGLISH);
+        for (SolrDocument doc : docs) {
+            String shared = sharedFactory.createSearchHit(new SolrDocument(new HashMap<>(doc)), null, null, null).getBrowseElement().getCitationStringPlain();
+            String separate = new SearchHitFactory(null, null, null, 0, null, Locale.ENGLISH).createSearchHit(new SolrDocument(new HashMap<>(doc)), null, null, null)
+                    .getBrowseElement()
+                    .getCitationStringPlain();
+            assertEquals(separate, shared);
+        }
+    }
+
+    /**
+     * @see SearchHitFactory#preloadShapeMetadata(java.util.Collection)
+     * @verifies avoid per hit shape queries
+     */
+    @Test
+    void preloadShapeMetadata_shouldAvoidPerHitShapeQueries() throws Exception {
+        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search("+" + SolrConstants.ISWORK + ":true", 5, null, null);
+        Assertions.assertFalse(docs.isEmpty());
+        SolrSearchIndex spy = Mockito.spy(DataManager.getInstance().getSearchIndex());
+        DataManager.getInstance().injectSearchIndex(spy);
+
+        SearchHitFactory factory = new SearchHitFactory(null, null, null, 0, null, Locale.ENGLISH).preloadShapeMetadata(docs);
+        Mockito.clearInvocations(spy);
+        for (SolrDocument doc : docs) {
+            factory.createSearchHit(doc, null, null, null);
+        }
+
+        // Parent documents of volume hits are not preloaded, so only the hits' own IDDOCs are checked
+        for (SolrDocument doc : docs) {
+            Mockito.verify(spy, Mockito.never())
+                    .search(Mockito.contains(SolrConstants.IDDOC_OWNER + ":\"" + doc.getFieldValue(SolrConstants.IDDOC) + "\""), Mockito.anyInt(),
+                            Mockito.any(), Mockito.any());
+        }
+    }
+
+    /**
+     * @see SearchHitFactory#preloadShapeMetadata(java.util.Collection)
+     * @verifies fall back to per hit shape queries if preloading fails
+     */
+    @Test
+    void preloadShapeMetadata_shouldFallBackToPerHitShapeQueriesIfPreloadingFails() throws Exception {
+        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search("+" + SolrConstants.ISWORK + ":true", 3, null, null);
+        Assertions.assertFalse(docs.isEmpty());
+        SolrSearchIndex spy = Mockito.spy(DataManager.getInstance().getSearchIndex());
+        Mockito.doThrow(new PresentationException("too many clauses"))
+                .when(spy)
+                .search(Mockito.contains(SolrConstants.IDDOC_OWNER + ":("), Mockito.anyInt(), Mockito.any(), Mockito.any());
+        DataManager.getInstance().injectSearchIndex(spy);
+
+        SearchHitFactory factory = new SearchHitFactory(null, null, null, 0, null, Locale.ENGLISH).preloadShapeMetadata(docs);
+        for (SolrDocument doc : docs) {
+            Assertions.assertNotNull(factory.createSearchHit(doc, null, null, null));
+        }
+
+        for (SolrDocument doc : docs) {
+            Mockito.verify(spy, Mockito.atLeastOnce())
+                    .search(Mockito.contains(SolrConstants.IDDOC_OWNER + ":\"" + doc.getFieldValue(SolrConstants.IDDOC) + "\""), Mockito.anyInt(),
+                            Mockito.any(), Mockito.any());
+        }
+    }
+
+    /**
+     * @see SearchHitFactory#preloadAnchorDocs(java.util.Collection)
+     * @verifies avoid per hit anchor queries
+     */
+    @Test
+    void preloadAnchorDocs_shouldAvoidPerHitAnchorQueries() throws Exception {
+        SolrDocumentList docs = DataManager.getInstance()
+                .getSearchIndex()
+                .search("+" + SolrConstants.ISWORK + ":true +" + SolrConstants.PI_PARENT + ":*", 5, null, null);
+        Assertions.assertFalse(docs.isEmpty(), "test index must contain volumes");
+        // Reference: anchor stubs as built with one anchor query per hit
+        List<String> expectedStubs = new ArrayList<>();
+        SearchHitFactory perHitFactory = new SearchHitFactory(null, null, null, 0, null, Locale.ENGLISH);
+        for (SolrDocument doc : docs) {
+            expectedStubs.add(describeStubs(perHitFactory.createSearchHit(new SolrDocument(new HashMap<>(doc)), null, null, null)));
+        }
+        SolrSearchIndex spy = Mockito.spy(DataManager.getInstance().getSearchIndex());
+        DataManager.getInstance().injectSearchIndex(spy);
+
+        SearchHitFactory factory = new SearchHitFactory(null, null, null, 0, null, Locale.ENGLISH).preloadAnchorDocs(docs);
+        Mockito.clearInvocations(spy);
+        List<String> stubs = new ArrayList<>();
+        for (SolrDocument doc : docs) {
+            stubs.add(describeStubs(factory.createSearchHit(doc, null, null, null)));
+        }
+
+        Assertions.assertEquals(expectedStubs, stubs);
+        for (SolrDocument doc : docs) {
+            Mockito.verify(spy, Mockito.never())
+                    .getFirstDoc(Mockito.contains(SolrConstants.PI + ":\"" + doc.getFieldValue(SolrConstants.PI_PARENT) + "\""), Mockito.any());
+        }
+    }
+
+    /**
+     * @see SearchHitFactory#preloadAnchorDocs(java.util.Collection)
+     * @verifies fall back to per hit anchor queries if preloading fails
+     */
+    @Test
+    void preloadAnchorDocs_shouldFallBackToPerHitAnchorQueriesIfPreloadingFails() throws Exception {
+        SolrDocumentList docs = DataManager.getInstance()
+                .getSearchIndex()
+                .search("+" + SolrConstants.ISWORK + ":true +" + SolrConstants.PI_PARENT + ":*", 3, null, null);
+        Assertions.assertFalse(docs.isEmpty(), "test index must contain volumes");
+        SolrSearchIndex spy = Mockito.spy(DataManager.getInstance().getSearchIndex());
+        Mockito.doThrow(new PresentationException("too many clauses"))
+                .when(spy)
+                .search(Mockito.startsWith(SolrConstants.PI + ":("), Mockito.anyInt(), Mockito.any(), Mockito.any());
+        DataManager.getInstance().injectSearchIndex(spy);
+
+        SearchHitFactory factory = new SearchHitFactory(null, null, null, 0, null, Locale.ENGLISH).preloadAnchorDocs(docs);
+        for (SolrDocument doc : docs) {
+            SearchHit hit = factory.createSearchHit(doc, null, null, null);
+            Assertions.assertFalse(hit.getBrowseElement().getStructElements().isEmpty(), "anchor stub expected");
+        }
+
+        for (SolrDocument doc : docs) {
+            Mockito.verify(spy, Mockito.atLeastOnce())
+                    .getFirstDoc(Mockito.contains(SolrConstants.PI + ":\"" + doc.getFieldValue(SolrConstants.PI_PARENT) + "\""), Mockito.any());
+        }
+    }
+
+    /**
+     * @see SearchHitFactory#loadDocsByPi(java.util.Collection)
+     * @verifies map documents to their PI
+     */
+    @Test
+    void loadDocsByPi_shouldMapDocumentsToTheirPI() throws Exception {
+        Map<String, SolrDocument> result = SearchHitFactory.loadDocsByPi(List.of(PI_KLEIUNIV, "notfound\"pi"));
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals(PI_KLEIUNIV, result.get(PI_KLEIUNIV).getFieldValue(SolrConstants.PI));
+        // All fields are returned, as with the single anchor lookup
+        Assertions.assertEquals(DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":\"" + PI_KLEIUNIV + "\"", null).size(),
+                result.get(PI_KLEIUNIV).size());
+    }
+
+    /**
+     * @see SearchHitFactory#loadDocsByPi(java.util.Collection)
+     * @verifies return empty map for empty input
+     */
+    @Test
+    void loadDocsByPi_shouldReturnEmptyMapForEmptyInput() throws Exception {
+        Assertions.assertTrue(SearchHitFactory.loadDocsByPi(List.of()).isEmpty());
+    }
+
+    private static String describeStubs(SearchHit hit) {
+        StringBuilder sb = new StringBuilder();
+        for (StructElementStub stub : hit.getBrowseElement().getStructElements()) {
+            sb.append(stub.getPi()).append('|').append(stub.getLuceneId()).append('|').append(stub.getLabel()).append(';');
+        }
+        return sb.toString();
+    }
+
     @Test
     void findAdditionalMetadataFieldsContainingSearchTerms_shouldAddMetadataFieldsThatMatchSearchTerms() {
         BrowseElement be = new BrowseElement(null, 1, "label", null, Locale.ENGLISH, null, null);

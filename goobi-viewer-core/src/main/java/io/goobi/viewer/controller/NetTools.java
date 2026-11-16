@@ -31,6 +31,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -108,6 +109,11 @@ public final class NetTools {
     public static final String HTTP_HEADER_CONTENT_LENGTH = "Content-Length";
 
     public static final String HTTP_HEADER_VALUE_ATTACHMENT_FILENAME = "attachment; filename=\"";
+    /**
+     * Content-Disposition sent to client applications instead of an attachment. The desktop client adds a plain "inline" header itself if it
+     * cannot find one (e.g. behind HTTP/2, where header names are lower case), so the value must match exactly to avoid conflicting headers.
+     */
+    public static final String HTTP_HEADER_VALUE_INLINE = "inline";
 
     private static final String HTTP_METHOD_DELETE = "DELETE";
 
@@ -120,6 +126,41 @@ public final class NetTools {
      * Hiding public constructor.
      */
     private NetTools() {
+    }
+
+    /**
+     * Builds a {@code Content-Disposition} attachment header value for the given file name. The name is sent both as a quoted
+     * {@code filename} parameter (with backslashes and double quotes escaped) and as an RFC 5987 encoded {@code filename*} parameter so
+     * that non-ASCII characters survive in clients that support it.
+     *
+     * @param filename file name to announce to the client
+     * @return header value of the form {@code attachment; filename="..."; filename*=UTF-8''...}
+     * @should quote file name
+     * @should escape quotes and backslashes in file name
+     * @should percent encode file name in extended parameter
+     */
+    public static String buildAttachmentContentDisposition(String filename) {
+        String quoted = filename.replace("\\", "\\\\").replace("\"", "\\\"");
+        return HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + quoted + "\"; filename*=UTF-8''" + encodeRfc5987(filename);
+    }
+
+    /**
+     * Percent-encodes the given value as UTF-8, leaving only the {@code attr-char} set of RFC 5987 unencoded.
+     *
+     * @param value value to encode
+     * @return encoded value
+     */
+    private static String encodeRfc5987(String value) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : value.getBytes(StandardCharsets.UTF_8)) {
+            char c = (char) (b & 0xFF);
+            if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || "!#$&+-.^_`|~".indexOf(c) >= 0) {
+                sb.append(c);
+            } else {
+                sb.append('%').append(String.format("%02X", b & 0xFF));
+            }
+        }
+        return sb.toString();
     }
 
     /**

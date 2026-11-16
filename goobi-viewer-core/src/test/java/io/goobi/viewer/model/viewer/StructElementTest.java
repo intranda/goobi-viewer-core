@@ -41,6 +41,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.ContextMocker;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 class StructElementTest extends AbstractSolrEnabledTest {
 
@@ -100,6 +101,47 @@ class StructElementTest extends AbstractSolrEnabledTest {
         StructElement parent = element.getParent();
         Assertions.assertNotNull(parent);
         Assertions.assertEquals(iddocKleiuniv, parent.getLuceneId());
+    }
+
+    /**
+     * @see StructElement#getParent()
+     * @verifies use preloaded anchor document without querying Solr
+     */
+    @Test
+    void getParent_shouldUsePreloadedAnchorDocumentWithoutQueryingSolr() throws Exception {
+        SolrDocument volumeDoc = DataManager.getInstance()
+                .getSearchIndex()
+                .getFirstDoc("+" + SolrConstants.ISWORK + ":true +" + SolrConstants.PI_PARENT + ":*", null);
+        Assertions.assertNotNull(volumeDoc, "test index must contain volumes");
+        String parentPi = (String) volumeDoc.getFieldValue(SolrConstants.PI_PARENT);
+        SolrDocument anchorDoc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":\"" + parentPi + "\"", null);
+        StructElement se = new StructElement((String) volumeDoc.getFieldValue(SolrConstants.IDDOC), volumeDoc);
+        se.setPreloadedAnchorDoc(anchorDoc);
+        SolrSearchIndex spy = Mockito.spy(DataManager.getInstance().getSearchIndex());
+        DataManager.getInstance().injectSearchIndex(spy);
+
+        StructElement parent = se.getParent();
+
+        Assertions.assertEquals(parentPi, parent.getPi());
+        Assertions.assertTrue(parent.isAnchor());
+        // Neither the anchor document nor its SHAPE metadata are queried
+        Mockito.verifyNoInteractions(spy);
+    }
+
+    /**
+     * @see StructElement#getParent()
+     * @verifies return null if preloaded anchor document is null
+     */
+    @Test
+    void getParent_shouldReturnNullIfPreloadedAnchorDocumentIsNull() throws Exception {
+        SolrDocument volumeDoc = DataManager.getInstance()
+                .getSearchIndex()
+                .getFirstDoc("+" + SolrConstants.ISWORK + ":true +" + SolrConstants.PI_PARENT + ":*", null);
+        Assertions.assertNotNull(volumeDoc, "test index must contain volumes");
+        StructElement se = new StructElement((String) volumeDoc.getFieldValue(SolrConstants.IDDOC), volumeDoc);
+        se.setPreloadedAnchorDoc(null);
+
+        Assertions.assertNull(se.getParent());
     }
 
     /**
@@ -324,5 +366,28 @@ class StructElementTest extends AbstractSolrEnabledTest {
         Assertions.assertTrue(element.isGroupMember(),
                 "Record with a field in both ancestorIdentifierFields and recordGroupIdentifierFields must be recognized as group member");
         Assertions.assertEquals("group_pi_001", element.getGroupMemberships().get("GROUPID_1"));
+    }
+
+    /**
+     * @see StructElement#getFirstPageFieldValue(String)
+     * @verifies query each field only once
+     */
+    @Test
+    void getFirstPageFieldValue_shouldQueryEachFieldOnlyOnce() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv, null);
+        Assertions.assertTrue(se.isWork());
+        String expectedFileName = new StructElement(iddocKleiuniv, null).getFirstPageFieldValue(SolrConstants.FILENAME);
+        Assertions.assertNotNull(expectedFileName);
+        SolrSearchIndex spy = Mockito.spy(DataManager.getInstance().getSearchIndex());
+        DataManager.getInstance().injectSearchIndex(spy);
+
+        for (int i = 0; i < 2; i++) {
+            Assertions.assertEquals(expectedFileName, se.getFirstPageFieldValue(SolrConstants.FILENAME));
+            Assertions.assertNull(se.getFirstPageFieldValue("MD_NOSUCHFIELD"));
+        }
+
+        // One query per field; repeated calls and missing values are answered from memory
+        Mockito.verify(spy, Mockito.times(2)).search(Mockito.startsWith("DOCTYPE:PAGE AND " + SolrConstants.PI_TOPSTRUCT + ":"),
+                Mockito.eq(1), Mockito.any(), Mockito.any());
     }
 }

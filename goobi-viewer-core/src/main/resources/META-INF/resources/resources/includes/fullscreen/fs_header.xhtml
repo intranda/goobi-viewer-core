@@ -5,11 +5,7 @@
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <!-- READINGMODE HEADER -->
     <header
         id="fullscreenHeader"
@@ -19,10 +15,13 @@
             <a
                 href="#{request.contextPath}/"
                 title="#{msg.fullscreen__logo_home_link}">
-                <img
-                    src='#{adminThemesBean.getFullscreenLogo("images/template/fullscreen_logo.png", 300, 40)}'
+                <viewerComponent:themeLogo
+                    variant="fullscreen"
+                    defaultUrl="images/template/fullscreen_logo.png"
+                    darkDefaultUrl="images/template/fullscreen_logo_dark.png"
+                    width="300"
+                    height="40"
                     alt="#{adminThemesBean.getThemeLabel(configurationBean.name)} Logo" />
-                <!--                 <span>#{msg.fullscreen_brandName}</span> -->
             </a>
         </div>
 

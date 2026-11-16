@@ -1,14 +1,12 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:component="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:util="http://goobi.io/util">
     <composite:interface>
-        <!-- activates a megamenu which takes the fullwidth of the page -->
+        <!-- MEGAMENU, FULL PAGE WIDTH -->
         <composite:attribute
             name="megaMenu"
             required="false"
@@ -37,6 +35,7 @@
                                     <h:panelGroup rendered="#{navItem.activeChildItems.isEmpty()}">
                                         <component:navigationLink navItem="#{navItem}" />
                                     </h:panelGroup>
+
                                     <!-- WITH SUBMENU -->
                                     <h:panelGroup rendered="#{!navItem.activeChildItems.isEmpty()}">
                                         <button
@@ -66,6 +65,7 @@
                                                             <h:panelGroup rendered="#{child.activeChildItems.isEmpty()}">
                                                                 <component:navigationLink navItem="#{child}" />
                                                             </h:panelGroup>
+
                                                             <!-- WITH SUBMENU -->
                                                             <h:panelGroup rendered="#{!child.activeChildItems.isEmpty()}">
                                                                 <button
@@ -91,6 +91,7 @@
                                                                                     <h:panelGroup rendered="#{child1.activeChildItems.isEmpty()}">
                                                                                         <component:navigationLink navItem="#{child1}" />
                                                                                     </h:panelGroup>
+
                                                                                     <!-- WITH SUBMENU -->
                                                                                     <h:panelGroup rendered="#{!child1.activeChildItems.isEmpty()}">
                                                                                         <button
@@ -109,19 +110,16 @@
                                                                                                     varStatus="count"
                                                                                                     var="child2"
                                                                                                     value="#{child1.activeChildItems}">
-                                                                                                    <h:panelGroup
-                                                                                                        rendered="#{child2.valid and child2.shouldDisplay}">
+                                                                                                    <h:panelGroup rendered="#{child2.valid and child2.shouldDisplay}">
                                                                                                         <li
                                                                                                             class="#{!navItem.activeChildItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navItem.matchesPage(navigationHelper.currentPage) ? 'active' : ''}">
                                                                                                             <!-- WITHOUT SUBMENU -->
-                                                                                                            <h:panelGroup
-                                                                                                                rendered="#{child2.activeChildItems.isEmpty()}">
-                                                                                                                <component:navigationLink
-                                                                                                                    navItem="#{child2m}" />
+                                                                                                            <h:panelGroup rendered="#{child2.activeChildItems.isEmpty()}">
+                                                                                                                <component:navigationLink navItem="#{child2m}" />
                                                                                                             </h:panelGroup>
+
                                                                                                             <!-- WITH SUBMENU -->
-                                                                                                            <h:panelGroup
-                                                                                                                rendered="#{!child2.activeChildItems.isEmpty()}">
+                                                                                                            <h:panelGroup rendered="#{!child2.activeChildItems.isEmpty()}">
                                                                                                                 <button
                                                                                                                     type="button"
                                                                                                                     class="btn btn--clean"
@@ -130,8 +128,7 @@
                                                                                                                     <span class="caret" />
                                                                                                                 </button>
                                                                                                             </h:panelGroup>
-                                                                                                            <h:panelGroup
-                                                                                                                rendered="#{!child2.activeChildItems.isEmpty()}">
+                                                                                                            <h:panelGroup rendered="#{!child2.activeChildItems.isEmpty()}">
                                                                                                                 <!-- LEVEL 4 -->
                                                                                                                 <div class="navigation__submenu level-4">
                                                                                                                     <ul class="navigation__list -level-4">
@@ -149,6 +146,7 @@
                                                                                                                                         <component:navigationLink
                                                                                                                                             navItem="#{child3}" />
                                                                                                                                     </h:panelGroup>
+
                                                                                                                                     <!-- WITH SUBMENU -->
                                                                                                                                     <h:panelGroup
                                                                                                                                         rendered="#{!child3.activeChildItems.isEmpty()}">
@@ -157,17 +155,14 @@
                                                                                                                                             class="btn btn--clean"
                                                                                                                                             data-toggle="submenu">
                                                                                                                                             #{msg[child3.itemLabel]}
-                                                                                                                                            <span
-                                                                                                                                                class="caret" />
+                                                                                                                                            <span class="caret" />
                                                                                                                                         </button>
                                                                                                                                     </h:panelGroup>
                                                                                                                                     <h:panelGroup
                                                                                                                                         rendered="#{!child3.activeChildItems.isEmpty()}">
                                                                                                                                         <!-- LEVEL 5 -->
-                                                                                                                                        <div
-                                                                                                                                            class="navigation__submenu level-5">
-                                                                                                                                            <ul
-                                                                                                                                                class="navigation__list -level-5">
+                                                                                                                                        <div class="navigation__submenu level-5">
+                                                                                                                                            <ul class="navigation__list -level-5">
                                                                                                                                                 <ui:repeat
                                                                                                                                                     varStatus="count"
                                                                                                                                                     var="child4"
@@ -225,6 +220,7 @@
                                     <h:panelGroup rendered="#{navItem.childItems.isEmpty()}">
                                         <component:navigationLink navItem="#{navItem}" />
                                     </h:panelGroup>
+
                                     <!-- WITH SUBMENU -->
                                     <h:panelGroup rendered="#{!navItem.childItems.isEmpty()}">
                                         <button
@@ -238,7 +234,6 @@
                                             <ui:param
                                                 name="parentItem"
                                                 value="#{navItem}" />
-
                                             <div class="navigation__megamenu-wrapper">
                                                 <!-- CLOSE -->
                                                 <button
@@ -259,7 +254,6 @@
                                                             <h:panelGroup rendered="#{child.valid}">
                                                                 <li class="navigation__megamenu-heading">
                                                                     <component:navigationLink navItem="#{child}" />
-
                                                                     <h:panelGroup rendered="#{!child.childItems.isEmpty()}">
                                                                         <!-- LEVEL 2 -->
                                                                         <div class="navigation__megamenu-element level-2">
@@ -294,14 +288,15 @@
             </h:form>
         </nav>
 
+        <!-- NAVIGATION SCRIPT -->
         <script type="text/javascript">
             var navigationConfig = {
-    navigationSelector: '.navigation',
-    subMenuSelector: '#' + CSS.escape('#{cc.clientId}') + " [data-toggle='submenu']",
-    megaMenuSelector: '#' + CSS.escape('#{cc.clientId}') + " [data-toggle='megamenu']",
-    closeMegaMenuSelector: '#' + CSS.escape('#{cc.clientId}') + " [data-toggle='close']",
-};
-viewerJS.navigation.init(navigationConfig);
+                navigationSelector: '.navigation',
+                subMenuSelector: '#' + CSS.escape('#{cc.clientId}') + " [data-toggle='submenu']",
+                megaMenuSelector: '#' + CSS.escape('#{cc.clientId}') + " [data-toggle='megamenu']",
+                closeMegaMenuSelector: '#' + CSS.escape('#{cc.clientId}') + " [data-toggle='close']",
+            };
+            viewerJS.navigation.init(navigationConfig);
         </script>
     </composite:implementation>
 </ui:composition>

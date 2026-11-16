@@ -7,21 +7,21 @@
         input[type='file']::file-selector-button {
             display: inline-block;
             font-weight: 400;
-            color: #212529;
+            color: var(--fg-default);
             user-select: none;
             padding: 0.6rem 1.2rem;
-            font-size: 1.6rem;
+            font-size: var(--font-size-body);
             line-height: 1.2;
             border-radius: none;
             border-width: 1px;
             border-style: solid;
-            border-color: @btnDefaultBorder;
-            background-color: @btnDefaultBgc;
+            border-color: var(--border-strong);
+            background-color: var(--bg-subtle);
             cursor: pointer;
             &:hover,
             &:active,
             &:focus {
-                background-color: @btnDefaultHoverBgc;
+                background-color: var(--bg-hover);
             }
         }
     }

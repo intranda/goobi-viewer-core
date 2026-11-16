@@ -1,13 +1,8 @@
 <ui:composition
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms">
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <composite:interface>
         <composite:attribute
             name="contentItem"
@@ -20,7 +15,6 @@
             <ui:fragment rendered="#{not empty cc.attrs.contentItem.label}">
                 <div class="admin__content-component-input-label">#{msg[cc.attrs.contentItem.label]}#{cc.attrs.contentItem.mandatory?'*':''}:</div>
             </ui:fragment>
-
             <h:panelGroup
                 layout="block"
                 id="inputGroup"
@@ -45,10 +39,7 @@
                             styleClass="form-control -validation-input tinyMCE"
                             required="#{cc.attrs.contentItem.content.isDefaultLocaleSelected() and cc.attrs.contentItem.mandatory}"
                             requiredMessage="#{msg.info__input_required}">
-                            <!-- Sanitize submitted HTML before it reaches TranslatedText.setText to prevent
-                                 stored XSS at the source. Render-path sanitization in the frontend
-                                 component remains as defense in depth. Note: editor input will be
-                                 normalized by Jsoup (tag-case lowercased, attribute order, etc.). -->
+                            <!-- SANITIZE ON SAVE (STORED XSS), JSOUP NORMALIZES THE MARKUP -->
                             <f:converter converterId="htmlSanitizer" />
                             <f:passThroughAttribute
                                 name="aria-label"

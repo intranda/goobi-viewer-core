@@ -1,20 +1,25 @@
-FROM maven:3-eclipse-temurin-21 AS build-stage
+ARG build=true
+
+# build war in container
+FROM --platform=$BUILDPLATFORM maven:3-eclipse-temurin-21 AS war-build-true
+COPY ./ /viewer/
+WORKDIR /viewer
+RUN mvn clean package
+RUN mkdir -p /viewer-exploded && cd /viewer-exploded && jar -xf /viewer/goobi-viewer-theme-reference/target/viewer.war
+
+# take pre-built war from file system
+FROM --platform=$BUILDPLATFORM busybox:stable AS war-build-false
+COPY goobi-viewer-theme-reference/target/viewer.war /tmp/viewer.war
+RUN mkdir -p /viewer-exploded && cd /viewer-exploded && unzip -q /tmp/viewer.war
+
+# switch for build target
+FROM war-build-${build} AS war
+
+FROM tomcat:10-jre21 AS assemble-stage
 
 LABEL org.opencontainers.image.authors="Matthias Geerdsen <matthias.geerdsen@intranda.com>"
 LABEL org.opencontainers.image.source="https://github.com/intranda/goobi-viewer-core"
 LABEL org.opencontainers.image.description="Goobi viewer"
-
-# you can use --build-arg build=false to skip viewer.war compilation, a viewer.war file needs to be available in target/viewer.war then
-ARG build=true
-
-COPY ./ /viewer/
-WORKDIR /viewer
-RUN echo $build; if [ "$build" = "true" ]; then mvn clean package; elif [ -f "/viewer/goobi-viewer-theme-reference/target/viewer.war" ]; then echo "using existing viewer.war"; else echo "not supposed to build, but no viewer.war found either"; exit 1; fi
-
-RUN mkdir -p /viewer-exploded && cd /viewer-exploded && jar -xf /viewer/goobi-viewer-theme-reference/target/viewer.war
-
-# Build actual application container
-FROM tomcat:10-jre21 AS assemble-stage
 
 # ENV CATALINA_HOME is set to /usr/local/tomcat in the base image
 
@@ -58,7 +63,7 @@ RUN grep -qxF 'org.omnifaces.cdi.push.SocketEndpoint.level = OFF' ${CATALINA_HOM
     grep -qxF 'org.apache.tomcat.websocket.level = OFF' ${CATALINA_HOME}/conf/logging.properties || echo 'org.apache.tomcat.websocket.level = OFF' >> ${CATALINA_HOME}/conf/logging.properties && \
     grep -qxF 'org.glassfish.jersey.server.level = OFF' ${CATALINA_HOME}/conf/logging.properties || echo 'org.glassfish.jersey.server.level = OFF' >> ${CATALINA_HOME}/conf/logging.properties
 
-COPY --from=build-stage /viewer-exploded/ ${CATALINA_HOME}/webapps/viewer/
+COPY --from=war /viewer-exploded/ ${CATALINA_HOME}/webapps/viewer/
 
 COPY goobi-viewer-config/install/docker/run.sh /
 COPY goobi-viewer-config/install/docker/healthcheck.sh /

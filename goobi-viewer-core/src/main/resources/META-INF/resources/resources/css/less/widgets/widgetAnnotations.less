@@ -4,8 +4,6 @@
    ==============================================================*/
 #widgetAnnotations {
     margin-top: 2rem;
-    h2 {
-    }
     ul {
         padding: 0;
         border: none;
@@ -27,14 +25,17 @@
         }
     }
     #user_generated_content_nav .ugc-highlight {
-        background: @lightgray;
+        background: var(--bg-subtle);
+        color: var(--fg-default);
     }
 }
 
 .widget-annotations {
+    /* ENTRY LINK */
     a.widget-annotations__entry {
         display: flex;
     }
+    /* BODY */
     .widget__body {
         overflow: hidden;
         &.-scrollable {
@@ -42,6 +43,7 @@
             overflow: hidden auto;
         }
     }
+    /* ENTRY */
     &__entry {
         display: flex;
         align-items: center;
@@ -54,19 +56,17 @@
         }
         &.-onpage {
             border: none;
-            border-left: 4px solid @blue;
+            border-left: 4px solid var(--border-brand);
             padding-left: 0.5rem;
         }
     }
+    /* TYPE */
     &__type {
         display: none;
         flex: 23px 0 0;
         max-width: 50px;
     }
-    &__text {
-    }
-    &__link {
-    }
+    /* BUTTON */
     &__button {
         display: inline-block;
         width: 1.6rem;
@@ -77,20 +77,21 @@
         border: none;
         background: none;
         &:hover {
-            color: @blue;
+            color: var(--fg-link);
         }
         &.disabled {
             cursor: not-allowed;
             opacity: 0.25;
         }
     }
+    /* PAGE */
     &__page {
         margin-left: auto;
         padding-left: 0.6rem;
         align-self: start;
         span {
-            background: @blue;
-            color: @white;
+            background: var(--bg-brand);
+            color: var(--fg-on-brand);
             padding: 0 0.3rem;
             display: block;
             white-space: nowrap;
@@ -98,6 +99,7 @@
     }
 }
 
+/* RTL */
 @{RTL} .widget-annotations {
     &__page {
         margin-left: unset;
@@ -105,7 +107,7 @@
     }
     &__entry {
         &.-onpage {
-            border-right: 4px solid @blue;
+            border-right: 4px solid var(--border-brand);
             border-left: none;
             padding-right: 0.5rem;
             padding-left: 0;

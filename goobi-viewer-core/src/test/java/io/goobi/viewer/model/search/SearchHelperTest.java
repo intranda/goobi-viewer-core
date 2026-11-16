@@ -40,6 +40,7 @@ import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocumentList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -142,6 +143,33 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                 .containsAll(Arrays.asList("item", "musical_notation", "monograph", "letter", "3dobject", "video")));
         assertTrue(collections.get("dcimage.many").getFacetValues().containsAll(Arrays.asList("volume")));
 
+    }
+
+    /**
+     * @see SearchHelper#findAllCollectionsFromField(String,String,String,boolean,boolean,String)
+     * @verifies count records in multiple subcollections only once for parent
+     */
+    @Test
+    void findAllCollectionsFromField_shouldCountRecordsInMultipleSubcollectionsOnlyOnceForParent() throws Exception {
+        Map<String, CollectionResult> collections =
+                SearchHelper.findAllCollectionsFromField(SolrConstants.DC, null, null, true, true, ".");
+        String query = SearchHelper.buildCollectionQuery(SolrConstants.DC, null, true, true);
+        String facetField = SearchHelper.facetifyField(SolrConstants.DC);
+
+        int parentsChecked = 0;
+        for (String name : collections.keySet()) {
+            if (collections.keySet().stream().noneMatch(c -> c.startsWith(name + "."))) {
+                continue;
+            }
+            long expected = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getHitCount(query + " +(" + facetField + ":\"" + name + "\" " + facetField + ":"
+                            + ClientUtils.escapeQueryChars(name + ".") + "*)");
+            assertEquals(expected, collections.get(name).getCount().longValue(), "Wrong count for collection " + name);
+            parentsChecked++;
+        }
+        assertTrue(parentsChecked > 0);
+        assertTrue(collections.containsKey("dcauthoritydata"));
     }
 
     /**

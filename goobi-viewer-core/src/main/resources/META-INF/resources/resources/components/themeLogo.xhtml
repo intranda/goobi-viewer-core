@@ -1,0 +1,64 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    <!-- ONE LOGO PER COLOR MODE, DARK FALLS BACK TO THE LOGO -->
+    <composite:interface>
+        <composite:attribute
+            name="variant"
+            required="false"
+            default="logo"
+            shortDescription="logo or fullscreen" />
+        <composite:attribute
+            name="defaultUrl"
+            required="true"
+            shortDescription="image used when no logo is configured" />
+        <composite:attribute
+            name="darkDefaultUrl"
+            required="false"
+            default=""
+            shortDescription="image used in dark mode when no logo is configured; falls back to defaultUrl" />
+        <composite:attribute
+            name="width"
+            required="false"
+            default="300" />
+        <composite:attribute
+            name="height"
+            required="false"
+            default="150" />
+        <composite:attribute
+            name="alt"
+            required="false"
+            default="" />
+        <composite:attribute
+            name="styleClass"
+            required="false"
+            default="" />
+    </composite:interface>
+
+    <composite:implementation>
+        <!-- FULLSCREEN LOGO -->
+        <ui:fragment rendered="#{cc.attrs.variant == 'fullscreen'}">
+            <img
+                class="theme-logo__image -light #{cc.attrs.styleClass}"
+                src="#{adminThemesBean.getFullscreenLogo(cc.attrs.defaultUrl, cc.attrs.width, cc.attrs.height)}"
+                alt="#{cc.attrs.alt}" />
+            <img
+                class="theme-logo__image -dark #{cc.attrs.styleClass}"
+                src="#{adminThemesBean.getDarkFullscreenLogo(empty cc.attrs.darkDefaultUrl ? cc.attrs.defaultUrl : cc.attrs.darkDefaultUrl, cc.attrs.width, cc.attrs.height)}"
+                alt="#{cc.attrs.alt}" />
+        </ui:fragment>
+
+        <!-- HEADER LOGO -->
+        <ui:fragment rendered="#{cc.attrs.variant != 'fullscreen'}">
+            <img
+                class="theme-logo__image -light #{cc.attrs.styleClass}"
+                src="#{adminThemesBean.getLogo(cc.attrs.defaultUrl, cc.attrs.width, cc.attrs.height)}"
+                alt="#{cc.attrs.alt}" />
+            <img
+                class="theme-logo__image -dark #{cc.attrs.styleClass}"
+                src="#{adminThemesBean.getDarkLogo(empty cc.attrs.darkDefaultUrl ? cc.attrs.defaultUrl : cc.attrs.darkDefaultUrl, cc.attrs.width, cc.attrs.height)}"
+                alt="#{cc.attrs.alt}" />
+        </ui:fragment>
+    </composite:implementation>
+</ui:composition>

@@ -64,8 +64,10 @@
             rendered="#{cc.attrs.itemCount > 1}"
             styleClass="#{cc.attrs.rtl ? 'numeric-paginator -rtl' : 'numeric-paginator -ltr'} #{cc.attrs.classSuffix}"
             layout="block"
-            id="#{cc.clientId}">
-            <nav role="navigation" aria-label="#{cc.attrs.positionBottom ? msg.aria_label__pagination_bottom : msg.aria_label__pagination_pages}">
+            id="paginator">
+            <nav
+                role="navigation"
+                aria-label="#{cc.attrs.positionBottom ? msg.aria_label__pagination_bottom : msg.aria_label__pagination_pages}">
                 <ul>
                     <!-- PREV / NEXT (RTL) -->
                     <h:panelGroup rendered="#{cc.attrs.itemActive gt cc.attrs.firstItem}">

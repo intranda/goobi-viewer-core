@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -94,6 +95,12 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     private List<ShapeMetadata> shapeMetadata;
     private ComplexMetadataContainer metadataDocuments = null;
     private StructElement topStruct = null;
+    /** Anchor document loaded in advance for {@link #getParent()}; only used if {@link #anchorDocPreloaded} is true. */
+    private transient SolrDocument preloadedAnchorDoc = null;
+    /** True if {@link #preloadedAnchorDoc} holds the result of the anchor lookup, even if no anchor was found. */
+    private transient boolean anchorDocPreloaded = false;
+    /** Field values of the first page already loaded by {@link #getFirstPageFieldValue(String)}, including missing values. */
+    private transient volatile Map<String, Optional<String>> firstPageFieldValues = null;
     /** True if this record has a right-to-left reading direction. */
     private boolean rtl = false;
     private MimeType mimeType = new MimeType();
@@ -169,6 +176,20 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement(String luceneId, SolrDocument doc, SolrDocument docToMerge) throws IndexUnreachableException {
+        this(luceneId, doc, docToMerge, null);
+    }
+
+    /**
+     * Creates a new StructElement instance with pre-loaded shape documents.
+     *
+     * @param luceneId Solr IDDOC of the document
+     * @param doc primary Solr document to initialize from
+     * @param docToMerge additional Solr document whose fields are merged into doc
+     * @param preloadedShapeDocs SHAPE child docs for this element (null falls back to Solr query)
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public StructElement(String luceneId, SolrDocument doc, SolrDocument docToMerge, List<SolrDocument> preloadedShapeDocs)
+            throws IndexUnreachableException {
         super(luceneId);
         if (docToMerge != null) {
             if (docToMerge.getFieldValue(SolrConstants.LABEL) != null) {
@@ -212,7 +233,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                 doc.addField(SolrConstants.BOOL_DIRECTION_RTL, docToMerge.getFieldValue(SolrConstants.BOOL_DIRECTION_RTL));
             }
         }
-        init(doc);
+        init(doc, preloadedShapeDocs);
     }
 
     /**
@@ -395,10 +416,22 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
+     * Sets the anchor document that {@link #getParent()} uses instead of querying Solr.
+     *
+     * @param anchorDoc Solr document of the anchor; null if the anchor does not exist
+     */
+    public void setPreloadedAnchorDoc(SolrDocument anchorDoc) {
+        this.preloadedAnchorDoc = anchorDoc;
+        this.anchorDocPreloaded = true;
+    }
+
+    /**
      * Loads and returns the immediate parent StructElement of this element.
      *
      * @return {@link io.goobi.viewer.model.viewer.StructElement}
      * @should return parent StructElement with matching Lucene ID for child element
+     * @should use preloaded anchor document without querying Solr
+     * @should return null if preloaded anchor document is null
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement getParent() throws IndexUnreachableException {
@@ -409,11 +442,13 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             // since this volume was indexed, so IDDOC_PARENT cannot be relied on for the cross-record link).
             String parentPi = getMetadataValue(SolrConstants.PI_PARENT);
             if (parentPi != null) {
-                SolrDocument anchorDoc = DataManager.getInstance()
-                        .getSearchIndex()
-                        .getFirstDoc(new StringBuilder(SolrConstants.PI).append(":\"").append(parentPi).append('"').toString(), null);
+                SolrDocument anchorDoc = anchorDocPreloaded ? preloadedAnchorDoc
+                        : DataManager.getInstance()
+                                .getSearchIndex()
+                                .getFirstDoc(new StringBuilder(SolrConstants.PI).append(":\"").append(parentPi).append('"').toString(), null);
                 if (anchorDoc != null) {
-                    parent = new StructElement(anchorDoc);
+                    // Shape regions are only displayed for sub-elements, never for anchors, so the SHAPE query is skipped
+                    parent = new StructElement(getIDDOC(anchorDoc), anchorDoc, Collections.emptyList());
                 }
                 return parent;
             }
@@ -1062,7 +1097,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             } else {
                 String iddoc = SolrTools.getSingleFieldStringValue(docVolume, SolrConstants.IDDOC);
                 if (StringUtils.isNotBlank(iddoc)) {
-                    return new StructElement(iddoc, docVolume);
+                    // Shape regions are only displayed for sub-elements, never for volumes, so the SHAPE query is skipped
+                    return new StructElement(iddoc, docVolume, Collections.emptyList());
                 }
             }
         } else if (isGroup()) {
@@ -1095,7 +1131,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             } else {
                 String iddoc = SolrTools.getSingleFieldStringValue(docVolume, SolrConstants.IDDOC);
                 if (StringUtils.isNotBlank(iddoc)) {
-                    return new StructElement(iddoc, docVolume);
+                    // Shape regions are only displayed for sub-elements, never for volumes, so the SHAPE query is skipped
+                    return new StructElement(iddoc, docVolume, Collections.emptyList());
                 }
             }
         }
@@ -1110,11 +1147,36 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @return the value of the given Solr field from the first physical page of this record
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should query each field only once
      */
     public String getFirstPageFieldValue(String field) throws PresentationException, IndexUnreachableException {
         if (field == null) {
             throw new IllegalArgumentException("field may not be null");
         }
+        // Only the requested values are kept, not the page document, which may carry the full text
+        Map<String, Optional<String>> values = firstPageFieldValues;
+        if (values == null) {
+            values = new ConcurrentHashMap<>();
+            firstPageFieldValues = values;
+        }
+        // Entries are never removed, so containsKey followed by get is safe
+        if (values.containsKey(field)) {
+            return values.get(field).orElse(null);
+        }
+        String value = loadFirstPageFieldValue(field);
+        values.put(field, Optional.ofNullable(value));
+        return value;
+    }
+
+    /**
+     * Loads the value of the given field from the first page of this record.
+     *
+     * @param field Solr field name to retrieve the value of
+     * @return the value of the given Solr field from the first physical page of this record; null if not found
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    private String loadFirstPageFieldValue(String field) throws PresentationException, IndexUnreachableException {
         if (work) {
             String query = new StringBuilder("DOCTYPE:PAGE AND ").append(SolrConstants.PI_TOPSTRUCT).append(':').append(pi).toString();
             List<StringPair> sortFields = Collections.singletonList(new StringPair("ORDER", ORDER.asc.name()));

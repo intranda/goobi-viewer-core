@@ -4,6 +4,7 @@
    ==============================================================*/
 
 .immersive {
+    /* TOC COLLAPSE */
     &__toc-collapse {
         .mx-immersive-icon-button();
         flex-shrink: 0;
@@ -32,9 +33,10 @@
         height: 20px;
     }
 
+    /* PANEL TOC */
     &__panel-toc {
         padding: 16px 8px 16px;
-        color: @immersive-chrome-fg;
+        color: var(--fg-default);
 
         .widget {
             margin: 0;
@@ -84,47 +86,47 @@
             &__element {
                 margin: 0;
                 padding: 0 6px;
-                border-radius: @immersive-radius;
+                border-radius: var(--radius-container-small);
                 transition: background-color @immersive-transition;
 
                 &:hover {
-                    background-color: @immersive-chrome-hover-bg;
+                    background-color: var(--bg-control);
                 }
             }
 
             &__toggle {
-                color: @immersive-chrome-fg;
+                color: var(--fg-default);
                 opacity: 0.6;
 
                 &:hover {
-                    color: @immersive-accent;
+                    color: var(--fg-brand);
                     opacity: 1;
                 }
             }
 
             &__element-link a {
                 padding: 4px 4px;
-                color: @immersive-chrome-fg;
-                font-size: @fontMedium;
+                color: var(--fg-default);
+                font-size: var(--font-size-body-small);
                 line-height: 1.4;
 
                 &:hover,
                 &:focus,
                 &:active {
-                    color: @immersive-chrome-fg;
+                    color: var(--fg-default);
                     text-decoration: none;
                 }
             }
 
             &__element-pagenumber {
-                color: @immersive-chrome-fg;
-                font-size: @fontSmall;
+                color: var(--fg-default);
+                font-size: var(--font-size-caption);
                 opacity: 0.75;
             }
 
             &__element.active {
-                background-color: @immersive-chrome-hover-bg;
-                border-left: 3px solid @immersive-accent;
+                background-color: var(--bg-control);
+                border-left: 3px solid var(--border-brand);
                 padding-left: 3px;
             }
 
@@ -133,12 +135,12 @@
             }
 
             &__element.active .widget-toc__element-link a {
-                color: @immersive-chrome-fg;
+                color: var(--fg-default);
                 font-weight: 700;
             }
 
             &__element.active .widget-toc__element-pagenumber {
-                color: @immersive-chrome-fg;
+                color: var(--fg-default);
                 opacity: 1;
             }
         }

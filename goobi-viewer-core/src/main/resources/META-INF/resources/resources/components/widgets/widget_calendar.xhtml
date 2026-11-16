@@ -21,28 +21,29 @@
                 </div>
             </div>
 
+            <!-- CALENDAR SCRIPT -->
             <script type="text/javascript">
-//<![CDATA[
-(function() {
-    var el = document.getElementById('calendarWidgetContainer');
-    if (!el) return;
+                //<![CDATA[
+                (function () {
+                    var el = document.getElementById('calendarWidgetContainer');
+                    if (!el) return;
 
-    var rawDate = el.dataset.currentDate;
-    var currentIssueDate = null;
-    if (rawDate && rawDate.length === 8) {
-        currentIssueDate = rawDate.substring(0, 4) + '-' + rawDate.substring(4, 6) + '-' + rawDate.substring(6, 8);
-    }
+                    var rawDate = el.dataset.currentDate;
+                    var currentIssueDate = null;
+                    if (rawDate && rawDate.length === 8) {
+                        currentIssueDate = rawDate.substring(0, 4) + '-' + rawDate.substring(4, 6) + '-' + rawDate.substring(6, 8);
+                    }
 
-    viewerJS.calendarWidget.init({
-        container: el,
-        anchorPi: el.dataset.anchorPi,
-        currentYear: el.dataset.currentYear,
-        locale: el.dataset.locale,
-        appUrl: el.dataset.appUrl,
-        currentIssueDate: currentIssueDate
-    });
-})();
-//]]>
+                    viewerJS.calendarWidget.init({
+                        container: el,
+                        anchorPi: el.dataset.anchorPi,
+                        currentYear: el.dataset.currentYear,
+                        locale: el.dataset.locale,
+                        appUrl: el.dataset.appUrl,
+                        currentIssueDate: currentIssueDate,
+                    });
+                })();
+                //]]>
             </script>
         </h:panelGroup>
     </composite:implementation>

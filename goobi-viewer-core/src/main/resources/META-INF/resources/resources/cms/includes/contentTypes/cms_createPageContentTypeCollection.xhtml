@@ -3,10 +3,7 @@
     xmlns:util="http://goobi.io/util"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
     <!-- CONTENT TYPE COLLECTION -->
     <!-- COLLECTION SELECT -->
     <div class="cms-module__option-group">
@@ -14,7 +11,6 @@
         <div class="cms-module__option-label">
             <label for="pageListCategory">#{msg[contentItem.itemLabel]}#{contentItem.mandatory?'*':''}:</label>
         </div>
-
         <div class="cms-module__option-control">
             <!-- AREA FOR AJAX REFRESH -->
             <h:panelGroup id="collectionSelectGroup">
@@ -25,7 +21,6 @@
                         infoClass="cms-module__option-message-status success"
                         warnClass="cms-module__option-message-status warning"
                         errorClass="cms-module__option-message-status danger" />
-
                     <div class="cms-module__option-message-mark">
                         <i
                             class="fa fa-check"
@@ -77,7 +72,6 @@
         <div class="cms-module__option-label">
             <label for="baseCollection">#{msg.cms_itemBaseCollection}:</label>
         </div>
-
         <div class="cms-module__option-control">
             <!-- AREA FOR AJAX REFRESH -->
             <h:panelGroup id="baseCollectionGroup">
@@ -88,7 +82,6 @@
                         infoClass="cms-module__option-message-status success"
                         warnClass="cms-module__option-message-status warning"
                         errorClass="cms-module__option-message-status danger" />
-
                     <div class="cms-module__option-message-mark">
                         <i
                             class="fa fa-check"
@@ -141,7 +134,6 @@
         <div class="cms-module__option-label">
             <label for="ignoreCollection">#{msg.cms_itemIgnoreCollections}:</label>
         </div>
-
         <div class="cms-module__option-control">
             <!-- AREA FOR AJAX REFRESH -->
             <h:panelGroup id="ignoreCollectionGroup">
@@ -152,7 +144,6 @@
                         infoClass="cms-module__option-message-status success"
                         warnClass="cms-module__option-message-status warning"
                         errorClass="cms-module__option-message-status danger" />
-
                     <div class="cms-module__option-message-mark">
                         <i
                             class="fa fa-check"
@@ -252,7 +243,6 @@
                         infoClass="cms-module__option-message-status success"
                         warnClass="cms-module__option-message-status warning"
                         errorClass="cms-module__option-message-status danger" />
-
                     <div class="cms-module__option-message-mark">
                         <i
                             class="fa fa-check"
@@ -303,7 +293,6 @@
             <div class="cms-module__option-label">
                 <label for="collectionBaseLevels">#{msg.cms_baseLevels}:</label>
             </div>
-
             <div class="cms-module__option-control">
                 <!-- AREA FOR AJAX REFRESH -->
                 <h:panelGroup id="collectionBaseLevelsGroup">
@@ -314,7 +303,6 @@
                             infoClass="cms-module__option-message-status success"
                             warnClass="cms-module__option-message-status warning"
                             errorClass="cms-module__option-message-status danger" />
-
                         <div class="cms-module__option-message-mark">
                             <i
                                 class="fa fa-check"
@@ -394,7 +382,6 @@
             <div class="cms-module__option-label">
                 <label for="collectionExpanded">#{msg.cms_collectionOpenExpanded}:</label>
             </div>
-
             <div class="cms-module__option-control align-self-center">
                 <!-- AREA FOR AJAX REFRESH -->
                 <h:panelGroup
@@ -408,7 +395,6 @@
                             infoClass="cms-module__option-message-status success"
                             warnClass="cms-module__option-message-status warning"
                             errorClass="cms-module__option-message-status danger" />
-
                         <div class="cms-module__option-message-mark">
                             <i
                                 class="fa fa-check"
@@ -454,7 +440,6 @@
             <div class="cms-module__option-label">
                 <label for="displayParents">#{msg.cms_collectionDisplayParents}:</label>
             </div>
-
             <div class="cms-module__option-control align-self-center">
                 <!-- AREA FOR AJAX REFRESH -->
                 <h:panelGroup id="displayParentsGroup">
@@ -465,7 +450,6 @@
                             infoClass="cms-module__option-message-status success"
                             warnClass="cms-module__option-message-status warning"
                             errorClass="cms-module__option-message-status danger" />
-
                         <div class="cms-module__option-message-mark">
                             <i
                                 class="fa fa-check"

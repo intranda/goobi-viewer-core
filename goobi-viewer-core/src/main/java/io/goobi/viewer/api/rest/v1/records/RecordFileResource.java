@@ -46,7 +46,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.solr.common.SolrDocument;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 
@@ -67,7 +66,6 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
-import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.AccessDeniedException;
@@ -75,6 +73,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -82,8 +81,6 @@ import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.record.views.FileType;
-import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -145,9 +142,9 @@ public class RecordFileResource {
     /**
      * Returns the ALTO document for a single page.
      *
-     * <p>The file is looked up first in the crowdsourced ALTO folder and, if not found there, in the record's regular ALTO folder, so
-     * corrections made through crowdsourcing take precedence over the originally indexed file. Access requires the fulltext view
-     * permission for the requested page.
+     * <p>
+     * The file is looked up first in the crowdsourced ALTO folder and, if not found there, in the record's regular ALTO folder, so corrections made
+     * through crowdsourcing take precedence over the originally indexed file. Access requires the fulltext view permission for the requested page.
      *
      * @param filename filename of the alto document
      * @return the ALTO document as an XML string
@@ -167,7 +164,7 @@ public class RecordFileResource {
     @ApiResponse(responseCode = "404", description = "ALTO file not found")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public String getAlto(@Parameter(description = "Filename of the alto document",
-                    schema = @Schema(pattern = "^[A-Za-z0-9_.-]+$")) @PathParam("filename") String filename)
+            schema = @Schema(pattern = "^[A-Za-z0-9_.-]+$")) @PathParam("filename") String filename)
             throws PresentationException, IndexUnreachableException, ContentNotFoundException, ServiceNotAllowedException {
         checkFulltextAccessConditions(pi, filename);
         if (servletResponse != null) {
@@ -180,9 +177,9 @@ public class RecordFileResource {
     /**
      * Returns the plain text content of a single page.
      *
-     * <p>The text is looked up first in the crowdsourced plaintext folder and then in the regular plaintext folder; if neither contains a
-     * matching file, the page's ALTO file is converted to plain text on the fly instead. Access requires the fulltext view permission for
-     * the requested page.
+     * <p>
+     * The text is looked up first in the crowdsourced plaintext folder and then in the regular plaintext folder; if neither contains a matching file,
+     * the page's ALTO file is converted to plain text on the fly instead. Access requires the fulltext view permission for the requested page.
      *
      * @param filename filename containing the text
      * @return the plain text content of the page
@@ -216,14 +213,15 @@ public class RecordFileResource {
     /**
      * Returns the fulltext of a single page converted to TEI format.
      *
-     * <p>The plain text of the page (falling back to a converted ALTO file, as for the plaintext endpoint) is wrapped in a generated TEI
-     * header built from the record's indexed metadata. Access requires the fulltext view permission for the requested page.
+     * <p>
+     * The plain text of the page (falling back to a converted ALTO file, as for the plaintext endpoint) is wrapped in a generated TEI header built
+     * from the record's indexed metadata. Access requires the fulltext view permission for the requested page.
      *
      * @param filename filename containing the text
      * @return the page fulltext as a TEI XML document
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if the fulltext view permission is not granted
-     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if no record is found for the given identifier,
-     *             or if no plaintext or ALTO file exists for the filename
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if no record is found for the given identifier, or if no
+     *             plaintext or ALTO file exists for the filename
      */
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_TEI)
@@ -251,8 +249,9 @@ public class RecordFileResource {
     /**
      * Returns the MEI (Music Encoding Initiative) document for the record.
      *
-     * <p>The file name is read from the record's indexed metadata; if the record has no MEI file associated, the response body is empty.
-     * Access requires the download-metadata privilege for the record.
+     * <p>
+     * The file name is read from the record's indexed metadata; if the record has no MEI file associated, the response body is empty. Access requires
+     * the download-metadata privilege for the record.
      *
      * @return the MEI document as a string, or null if the record has no associated MEI file
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if the download-metadata privilege is not granted
@@ -283,17 +282,17 @@ public class RecordFileResource {
     /**
      * Returns a source metadata file (e.g. METS/LIDO) of the record.
      *
-     * <p>The requested file is resolved beneath the record's configured source folder and rejected as invalid if the resolved path would
-     * escape that folder. The content type is probed from the file name, falling back to a generic binary stream. Access requires the
-     * download-original-content privilege for the record.
+     * <p>
+     * The requested file is resolved beneath the record's configured source folder and rejected as invalid if the resolved path would escape that
+     * folder. The content type is probed from the file name, falling back to a generic binary stream. Access requires the download-original-content
+     * privilege for the record.
      *
      * @param filename source file name
      * @return the source file content as a binary stream
-     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if the filename is invalid or would resolve outside
-     *             the record's source folder
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if the filename is invalid or would resolve outside the
+     *             record's source folder
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if no such file exists
-     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if the download-original-content privilege is
-     *             not granted
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if the download-original-content privilege is not granted
      */
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_SOURCE)
@@ -336,7 +335,7 @@ public class RecordFileResource {
 
         String mimeType = "application/octet-stream";
         try {
-            mimeType = new MediaResourceHelper(config).setContentHeaders(servletResponse, filename, path);
+            mimeType = new MediaResourceHelper(config).setContentHeaders(servletRequest, servletResponse, filename, path, false);
         } catch (IOException e) {
             logger.error("Failed to probe file content type");
         }
@@ -352,22 +351,22 @@ public class RecordFileResource {
     /**
      * Returns a media file (e.g. audio, video, 3D model or web archive) of the record.
      *
-     * <p>The requested file is resolved beneath the record's configured media folder and rejected as invalid if the resolved path would
-     * escape that folder. Whether access is granted depends on the file's mime type: image files require the download-images privilege,
-     * every other file requires the download-born-digital-files privilege.
+     * <p>
+     * The requested file is resolved beneath the record's configured media folder and rejected as invalid if the resolved path would escape that
+     * folder. Whether access is granted depends on the file's mime type: image files require the download-images privilege, every other file requires
+     * the download-born-digital-files privilege.
      *
-     * <p>A 3D model file whose sibling model folder exists is delivered together with the other files found in that folder, packed into a
-     * zip archive generated on the fly. A ".wacz", ".warc" or ".warc.gz" file is streamed through the web archive delivery service instead
-     * of being returned directly. The request is recorded for the file-download usage statistics.
+     * <p>
+     * A 3D model file whose sibling model folder exists is delivered together with the other files found in that folder, packed into a zip archive
+     * generated on the fly. A ".wacz", ".warc" or ".warc.gz" file is streamed through the web archive delivery service instead of being returned
+     * directly. The request is recorded for the file-download usage statistics.
      *
      * @param filename media file name
-     * @return the media file content as a binary stream, or no entity if the file is a web archive delivered through the web archive
-     *             delivery service
-     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if the filename is invalid or would resolve outside
-     *             the record's media folder
+     * @return the media file content as a binary stream, or no entity if the file is a web archive delivered through the web archive delivery service
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if the filename is invalid or would resolve outside the
+     *             record's media folder
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if no such file exists
-     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if the required download privilege is not
-     *             granted
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if the required download privilege is not granted
      */
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_MEDIA)
@@ -415,7 +414,7 @@ public class RecordFileResource {
 
         String mimeType = "application/octet-stream";
         try {
-            mimeType = new MediaResourceHelper(config).setContentHeaders(servletResponse, filename, path);
+            mimeType = new MediaResourceHelper(config).setContentHeaders(servletRequest, servletResponse, filename, path, false);
         } catch (IOException e) {
             logger.error("Failed to probe file content type");
         }
@@ -432,7 +431,8 @@ public class RecordFileResource {
                     List<File> fileList = new ArrayList<>();
                     fileList.add(path.toFile());
                     // Only zip files that are genuine descendants of the model folder (guards against symlink/traversal escapes)
-                    FileTools.listFiles(modelFolder, p -> true).stream()
+                    FileTools.listFiles(modelFolder, p -> true)
+                            .stream()
                             .filter(p -> FileTools.isWithin(p, modelFolder))
                             .forEach(p -> fileList.add(p.toFile()));
                     // Derive the zip name from the validated path, not the raw request parameter, to keep the output path untainted
@@ -478,22 +478,23 @@ public class RecordFileResource {
         try {
             MimeType mediaType = MimeType.of(Path.of(filename));
             if (mediaType.isImage()) {
-                return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest.getSession(), pi, filename,
+                return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest.getSession(false), pi, filename,
                         IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES, NetTools.getIpAddress(servletRequest)).isGranted();
             }
         } catch (IOException e) {
             logger.warn("Unable to read mimetype of file {}", filename);
         }
-        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest.getSession(), pi, filename,
+        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest.getSession(false), pi, filename,
                 IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES, NetTools.getIpAddress(servletRequest)).isGranted();
     }
 
     /**
      * Returns the CMDI metadata document for a record file.
      *
-     * <p>The requested language defaults to the current user's locale if not given. The record's CMDI folder is searched for a file whose
-     * name matches "{@code _<isoCode>.xml}" for that language's ISO-3 code, falling back to the ISO-2 code if no ISO-3 match exists. Access
-     * requires the fulltext view permission for the given filename.
+     * <p>
+     * The requested language defaults to the current user's locale if not given. The record's CMDI folder is searched for a file whose name matches
+     * "{@code _<isoCode>.xml}" for that language's ISO-3 code, falling back to the ISO-2 code if no ISO-3 match exists. Access requires the fulltext
+     * view permission for the given filename.
      *
      * @param filename image file name for cmdi
      * @param lang language for CMDI
@@ -542,17 +543,18 @@ public class RecordFileResource {
     /**
      * Downloads a file from a previously completed external resource download task.
      *
-     * <p>The path is resolved beneath the given task's own folder inside the record's configured download folder; a path that would
-     * escape that folder is rejected as invalid. Access requires the download-born-digital-files privilege for the record. The request
-     * is recorded for the file-download usage statistics.
+     * <p>
+     * The path is resolved beneath the given task's own folder inside the record's configured download folder; a path that would escape that folder
+     * is rejected as invalid. Access requires the download-born-digital-files privilege for the record. The request is recorded for the file-download
+     * usage statistics.
      *
      * @param taskId download resource task id
      * @param path file path relative to the download directory
      * @return the downloaded resource file content as a binary stream
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if the path would resolve outside the task's folder
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if no such file exists
-     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if the download-born-digital-files privilege is
-     *             not granted
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if the download-born-digital-files privilege is not
+     *             granted
      */
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD)
@@ -585,7 +587,8 @@ public class RecordFileResource {
         String mimeType = "application/octet-stream";
         if (Files.isRegularFile(resourceFile)) {
             try {
-                mimeType = new MediaResourceHelper(config).setContentHeaders(servletResponse, resourceFile.getFileName().toString(), resourceFile);
+                mimeType = new MediaResourceHelper(config).setContentHeaders(servletRequest, servletResponse, resourceFile.getFileName().toString(),
+                        resourceFile, true);
             } catch (IOException e) {
                 logger.error("Failed to probe file content type");
             }
@@ -610,7 +613,8 @@ public class RecordFileResource {
     private void checkFulltextAccessConditions(String pi, String filename) throws ServiceNotAllowedException {
         boolean access = false;
         try {
-            access = AccessConditionUtils.checkAccess(servletRequest.getSession(), "text", pi, filename, NetTools.getIpAddress(servletRequest), false)
+            access = AccessConditionUtils
+                    .checkAccess(servletRequest.getSession(false), "text", pi, filename, NetTools.getIpAddress(servletRequest), false)
                     .isGranted();
         } catch (IndexUnreachableException | DAOException e) {
             logger.error(String.format("Cannot check fulltext access for pi %s and file %s: %s", pi, filename, e.toString()));
@@ -621,8 +625,8 @@ public class RecordFileResource {
     }
 
     /**
-     * Throw an AccessDenied error if the request doesn't satisfy the access conditions for downloading externally sourced resource files.
-     * Mirrors {@link io.goobi.viewer.model.viewer.ViewManager#isAccessPermissionExternalResources()}.
+     * Throw an AccessDenied error if the request doesn't satisfy the access conditions for downloading externally sourced resource files. Mirrors
+     * {@link io.goobi.viewer.model.viewer.ViewManager#isAccessPermissionExternalResources()}.
      *
      * @throws ServiceNotAllowedException
      * @throws IndexUnreachableException

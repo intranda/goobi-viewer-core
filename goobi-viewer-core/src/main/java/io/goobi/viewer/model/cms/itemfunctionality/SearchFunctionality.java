@@ -67,7 +67,8 @@ public class SearchFunctionality implements Functionality, SearchInterface {
 
     private static final String ERROR_SEARCHBEAN_NULL = "Cannot search: SearchBean is null";
 
-    private SearchBean searchBean = BeanUtils.getSearchBean();
+    // Looked up lazily: outside of JSF without session the lookup returns null, which must not stick to this instance
+    private SearchBean searchBean = null;
 
     /**
      * The current page of the search result list
@@ -201,7 +202,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      */
     private String getCompleteFilterString(String subtheme) {
 
-        String filterString = new FilterQueryParser().getFilterQuery(searchBean.getHttpRequest()).map(queryFilter -> {
+        String filterString = new FilterQueryParser().getFilterQuery(getSearchBean().getHttpRequest()).map(queryFilter -> {
             String pageQuery = getPageFacetString();
             if (StringUtils.isNotBlank(pageQuery)) {
                 return "+(%s) +(%s)".formatted(queryFilter, pageQuery);
@@ -296,6 +297,9 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      * @return the SearchBean used by this search functionality
      */
     public SearchBean getSearchBean() {
+        if (searchBean == null) {
+            searchBean = BeanUtils.getSearchBean();
+        }
         return searchBean;
     }
 

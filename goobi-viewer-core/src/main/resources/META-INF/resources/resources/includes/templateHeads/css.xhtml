@@ -1,43 +1,14 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:jsf="http://xmlns.jcp.org/jsf">
-    <!--
-        The API documentation page renders nothing but the Scalar API reference, which
-        ships a complete stylesheet of its own. Scalar's reset is written with zero
-        specificity (`:where(.scalar-app) *`) so that host applications can override it,
-        which means every bare element rule of the viewer stylesheets - h2, label, input,
-        button - would bleed into the reference and into its API client. Serving none of
-        them lets the reference render as its own styles intend; the few components the
-        blank template still brings along are styled by misc/rest_api.css instead.
-
-        The condition keys on the view id and not on navigationHelper.currentPage: that
-        name is session scoped and only written by views that call setCurrentPage, so
-        every view that never sets one - login.xhtml among them - would keep seeing 'API'
-        after a visit to the reference and render without any stylesheet at all.
-    -->
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <!-- API PAGE WITHOUT VIEWER CSS, KEYED ON THE VIEW ID (CURRENTPAGE IS SESSION SCOPED) -->
     <c:set
         var="skipViewerCSS"
         value="#{view.viewId == '/restApi.xhtml'}" />
 
-    <!-- =======================
-        BASE LIBRARIES
-    ======================== -->
-    <!--
-        `cssPaths` contains an array for each css library and the core css,
-        each array contains
-        - an identifier that allows excluding libraries from viewer theme template files
-        - an array of templates to exclude (or empty),
-        - a path to the library file:
-        [
-          name,
-          [don't, render, library, here ],
-          path/to/lib
-        ]
-    -->
+    <!-- BASE LIBRARIES -->
+    <!-- CSSPATHS ENTRY: NAME, EXCLUDED TEMPLATES, PATH -->
     <c:set
         var="cssPaths"
         value="#{[
@@ -69,8 +40,6 @@
     <c:forEach
         var="path"
         items="#{cssPaths}">
-        <!-- include file, if it is not explicitly excluded -->
-        <!-- (either above, or in the excludeCSS variable, which can be set in template files) -->
         <c:if test="#{!skipViewerCSS and !path[1].contains(templateName) and !excludeCSS.contains(path[0])}">
             <link
                 type="text/css"
@@ -79,9 +48,7 @@
         </c:if>
     </c:forEach>
 
-    <!-- ===================
-      THEME CSS
-    ==================== -->
+    <!-- THEME CSS -->
     <c:if test="#{!skipViewerCSS and !excludeCSS.contains('themeCSS')}">
         <link
             type="text/css"
@@ -90,7 +57,6 @@
     </c:if>
 
     <!-- SHOW CSS NAMES IN CONSOLE -->
-    <!-- an easy way to log library names to the console, just pass `showCSS` to the excludeCSS variable in a template file -->
     <c:if test="#{excludeCSS.contains('showCSS')}">
         <c:forEach
             var="path"

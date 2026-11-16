@@ -1,6 +1,5 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
@@ -18,7 +17,7 @@
             <div
                 id="widgetBrowsing"
                 class="widget widget-browse">
-                <h:form id="widgetBrowsingForm">
+                <h:form styleClass="widget__form-wrapper" id="widgetBrowsingForm">
                     <h:panelGroup rendered="#{cc.attrs.collapse == false}">
                         <div class="widget__topbar widget-browsing__topbar">
                             <h2 class="widget__title widget-browsing__title">#{msg.browseTitle}</h2>
@@ -49,7 +48,6 @@
                             </ul>
                         </div>
                     </h:panelGroup>
-
                     <h:panelGroup rendered="#{cc.attrs.collapse == true}">
                         <div class="widget__topbar widget-browsing__topbar">
                             <div class="widget__title widget-browsing__title">
@@ -67,7 +65,6 @@
                                 </h2>
                             </div>
                         </div>
-
                         <div class="widget__body widget-browsing__body">
                             <div
                                 id="browseCollapse"

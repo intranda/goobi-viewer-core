@@ -11,8 +11,8 @@
 @immersive-anno-rule: 1px;
 @immersive-anno-rule-active: 2px;
 @immersive-anno-grip-width: 4px;
-@immersive-anno-font: 1.3rem;
-@immersive-anno-font-note: @fontSmall;
+@immersive-anno-font: var(--font-size-body-small);
+@immersive-anno-font-note: var(--font-size-caption);
 @immersive-anno-margin-gap: 12px;
 @immersive-anno-bar: 3px;
 @immersive-anno-note-lines: 4;
@@ -31,19 +31,18 @@
     }
 
     &__anno-checkbox {
-        accent-color: @immersive-accent;
+        accent-color: var(--fg-brand);
         width: 16px;
         height: 16px;
         margin: 0;
 
         &:focus-visible {
-            outline: 2px solid @immersive-accent;
-            outline-offset: 2px;
+            .mx-immersive-focus-ring();
         }
     }
 
     &__anno-label {
-        color: @immersive-chrome-fg;
+        color: var(--fg-default);
         font-size: @immersive-anno-font;
         margin: 0;
         cursor: pointer;
@@ -52,23 +51,23 @@
     &.-annotations-on &__anno-word-underline {
         text-decoration: underline;
         text-decoration-thickness: 2px;
-        text-decoration-color: var(--alto-tag-color, var(--alto-underline-color));
+        text-decoration-color: var(--_alto-tag-color, var(--alto-underline-color));
     }
 
     &.-annotations-on &__anno-word-strike {
         text-decoration: line-through;
         text-decoration-thickness: 2px;
-        text-decoration-color: var(--alto-tag-color, var(--alto-strikethrough-color));
+        text-decoration-color: var(--_alto-tag-color, var(--alto-strikethrough-color));
     }
 
     /* THE SPLIT, ANCHORED TO THE PRINTED TEXT, BOTH COLUMNS KEPT READABLE */
     &__panel-fulltext {
-        --immersive-anno-text-width: clamp(
+        --_immersive-anno-text-width: clamp(
             @immersive-anno-text-min,
-            var(--immersive-anno-split, calc(100% - @immersive-anno-column-default - @immersive-anno-margin-gap)),
+            var(--_immersive-anno-split, calc(100% - @immersive-anno-column-default - @immersive-anno-margin-gap)),
             calc(100% - @immersive-anno-column-min - @immersive-anno-margin-gap)
         );
-        --immersive-anno-column: calc(100% - var(--immersive-anno-text-width) - @immersive-anno-margin-gap);
+        --_immersive-anno-column: calc(100% - var(--_immersive-anno-text-width) - @immersive-anno-margin-gap);
     }
 
     &.-annotations-on &__panel-fulltext {
@@ -78,12 +77,12 @@
     &__anno-columns {
         display: none;
         padding: 6px 0 4px;
-        border-bottom: 1px solid @immersive-divider;
+        border-bottom: 1px solid var(--border-default);
         margin-bottom: 6px;
-        font-size: 1rem;
+        font-size: var(--font-size-caption);
         letter-spacing: 0.06em;
         text-transform: uppercase;
-        color: @immersive-chrome-fg-muted;
+        color: var(--fg-muted);
     }
 
     &.-annotations-on &__anno-columns:not([hidden]) {
@@ -92,10 +91,10 @@
 
     /* HEAD RULE ALIGNED WITH THE SPLITTER */
     &__anno-columns-main {
-        flex: 0 0 calc(var(--immersive-anno-text-width) + (@immersive-anno-margin-gap / 2));
+        flex: 0 0 calc(var(--_immersive-anno-text-width) + (@immersive-anno-margin-gap / 2));
         min-width: 0;
         padding-right: (@immersive-anno-margin-gap / 2);
-        border-right: @immersive-anno-rule solid @immersive-divider;
+        border-right: @immersive-anno-rule solid var(--border-default);
     }
 
     &__anno-columns-side {
@@ -108,8 +107,8 @@
     }
 
     &.-annotations-on &__fulltext:not(.-anno-collapsed) {
-        padding-right: calc(100% - var(--immersive-anno-text-width));
-        padding-top: var(--immersive-anno-shift, 0px);
+        padding-right: calc(100% - var(--_immersive-anno-text-width));
+        padding-top: var(--_immersive-anno-shift, 0px);
     }
 
     &:not(.-annotations-on) &__anno-src {
@@ -126,7 +125,7 @@
         top: 0;
         right: 0;
         bottom: 0;
-        width: var(--immersive-anno-column);
+        width: var(--_immersive-anno-column);
     }
 
     &.-annotations-on &__anno-margin {
@@ -139,7 +138,7 @@
         position: absolute;
         top: 0;
         bottom: 0;
-        left: calc(var(--immersive-anno-text-width) + ((@immersive-anno-margin-gap - @immersive-anno-handle-width) / 2));
+        left: calc(var(--_immersive-anno-text-width) + ((@immersive-anno-margin-gap - @immersive-anno-handle-width) / 2));
         width: @immersive-anno-handle-width;
         cursor: col-resize;
         touch-action: none;
@@ -153,7 +152,7 @@
             left: 50%;
             width: @immersive-anno-rule;
             transform: translateX(-50%);
-            background-color: @immersive-divider;
+            background-color: var(--border-default);
             transition: background-color @immersive-transition;
         }
 
@@ -168,7 +167,7 @@
             max-height: 100%;
             margin: 0 auto;
             border-radius: (@immersive-anno-grip-width / 2);
-            background-color: @immersive-chrome-border-color;
+            background-color: var(--border-default);
             transition: background-color @immersive-transition;
         }
 
@@ -176,11 +175,11 @@
         &:focus-visible {
             &::before {
                 width: @immersive-anno-rule-active;
-                background-color: @immersive-accent;
+                background-color: var(--fg-brand);
             }
 
             &::after {
-                background-color: @immersive-accent;
+                background-color: var(--fg-brand);
             }
         }
 
@@ -198,11 +197,11 @@
 
         .immersive__anno-resize-handle::before {
             width: @immersive-anno-rule-active;
-            background-color: @immersive-accent;
+            background-color: var(--fg-brand);
         }
 
         .immersive__anno-resize-handle::after {
-            background-color: @immersive-accent;
+            background-color: var(--fg-brand);
         }
     }
 
@@ -221,21 +220,21 @@
         border: 0;
         text-align: left;
         font-family: inherit;
-        background-color: var(--immersive-anno-note-bg);
-        border-left: 3px solid var(--alto-tag-color, @immersive-chrome-border-color);
+        background-color: var(--bg-hover);
+        border-left: 3px solid var(--_alto-tag-color, var(--border-default));
         border-radius: 0 4px 4px 0;
         padding: 2px 8px;
         font-size: @immersive-anno-font-note;
         line-height: 1.4;
         white-space: normal;
-        color: @immersive-chrome-fg;
+        color: var(--fg-default);
         cursor: pointer;
         transition: top @immersive-transition;
 
         &:hover,
         &:active {
-            color: @immersive-chrome-fg;
-            background-color: var(--immersive-anno-note-hover-bg);
+            color: var(--fg-default);
+            background-color: var(--bg-pressed);
         }
 
         &:focus-visible {
@@ -276,7 +275,7 @@
     }
 
     &__anno-note-text {
-        --alto-tag-color: initial;
+        --_alto-tag-color: initial;
         display: -webkit-box;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: @immersive-anno-note-lines;
@@ -287,24 +286,24 @@
             transition: background-color @immersive-transition;
 
             &.is-linked-active {
-                background-color: ~'rgba(var(--immersive-ocr-word-rgb), 0.9)';
-                color: var(--immersive-ocr-word-fg);
+                background-color: rgb(from var(--color-ocr-word) r g b / 90%);
+                color: var(--color-on-ocr-word);
             }
         }
     }
 
     &__anno-popover.popover {
         max-width: 260px;
-        color: @immersive-chrome-fg;
-        background-color: @immersive-chrome-bg;
-        border: 1px solid @immersive-chrome-border-color;
-        border-radius: @immersive-radius;
-        box-shadow: @immersive-chrome-shadow;
+        color: var(--fg-default);
+        background-color: var(--bg-surface);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-container-small);
+        box-shadow: var(--shadow-elevated);
 
         .popover-header {
             padding: 6px 10px 4px;
             background: none;
-            border-bottom: 1px solid @immersive-divider;
+            border-bottom: 1px solid var(--border-default);
             color: inherit;
             font-size: @immersive-anno-font;
         }
@@ -316,39 +315,39 @@
         }
 
         &.bs-popover-top .arrow::before {
-            border-top-color: @immersive-chrome-border-color;
+            border-top-color: var(--border-default);
         }
         &.bs-popover-top .arrow::after {
-            border-top-color: @immersive-chrome-bg;
+            border-top-color: var(--bg-surface);
         }
         &.bs-popover-right .arrow::before {
-            border-right-color: @immersive-chrome-border-color;
+            border-right-color: var(--border-default);
         }
         &.bs-popover-right .arrow::after {
-            border-right-color: @immersive-chrome-bg;
+            border-right-color: var(--bg-surface);
         }
         &.bs-popover-bottom .arrow::before {
-            border-bottom-color: @immersive-chrome-border-color;
+            border-bottom-color: var(--border-default);
         }
         &.bs-popover-bottom .arrow::after {
-            border-bottom-color: @immersive-chrome-bg;
+            border-bottom-color: var(--bg-surface);
         }
         &.bs-popover-left .arrow::before {
-            border-left-color: @immersive-chrome-border-color;
+            border-left-color: var(--border-default);
         }
         &.bs-popover-left .arrow::after {
-            border-left-color: @immersive-chrome-bg;
+            border-left-color: var(--bg-surface);
         }
     }
 
     &.-annotations-on .is-anno-anchor {
-        background-color: var(--immersive-anno-anchor-bg);
+        background-color: rgb(from var(--fg-brand) r g b / 12%);
         border-radius: 3px;
     }
 
     &.-annotations-on &__anno-note.is-anno-active {
-        background-color: var(--immersive-anno-note-hover-bg);
-        outline: 1px solid @immersive-accent;
+        background-color: var(--bg-pressed);
+        outline: 1px solid var(--fg-brand);
         outline-offset: -1px;
     }
 
@@ -370,8 +369,8 @@
     &__text-region&__anno-word-underline.is-linked-active {
         background-image: linear-gradient(
             to top,
-            var(--alto-tag-color, var(--alto-underline-color)) 0,
-            var(--alto-tag-color, var(--alto-underline-color)) @immersive-anno-bar,
+            var(--_alto-tag-color, var(--alto-underline-color)) 0,
+            var(--_alto-tag-color, var(--alto-underline-color)) @immersive-anno-bar,
             transparent @immersive-anno-bar
         );
     }
@@ -380,8 +379,8 @@
         background-image: linear-gradient(
             to bottom,
             transparent calc(50% - (@immersive-anno-bar / 2)),
-            var(--alto-tag-color, var(--alto-strikethrough-color)) calc(50% - (@immersive-anno-bar / 2)),
-            var(--alto-tag-color, var(--alto-strikethrough-color)) calc(50% + (@immersive-anno-bar / 2)),
+            var(--_alto-tag-color, var(--alto-strikethrough-color)) calc(50% - (@immersive-anno-bar / 2)),
+            var(--_alto-tag-color, var(--alto-strikethrough-color)) calc(50% + (@immersive-anno-bar / 2)),
             transparent calc(50% + (@immersive-anno-bar / 2))
         );
     }
@@ -395,8 +394,8 @@
 
     &.-annotations-on &__anno-region-note:hover,
     &.-annotations-on &__anno-region-note.is-anno-active {
-        background-color: ~'rgba(var(--immersive-accent-rgb), 0.15)';
-        outline: 2px solid @immersive-accent;
+        background-color: rgb(from var(--fg-brand) r g b / 15%);
+        outline: 2px solid var(--fg-brand);
     }
 }
 

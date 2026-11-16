@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +36,7 @@ import org.apache.logging.log4j.Logger;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.variables.VariableReplacer;
 
 /**
@@ -44,6 +46,8 @@ import io.goobi.viewer.model.variables.VariableReplacer;
 public class MediaResourceHelper {
 
     private static final Logger logger = LogManager.getLogger(MediaResourceHelper.class);
+
+    private static final String MIME_TYPE_PDF = "application/pdf";
 
     private final Configuration config;
 
@@ -68,6 +72,28 @@ public class MediaResourceHelper {
     }
 
     public String setContentHeaders(HttpServletResponse servletResponse, String filename, Path path) throws IOException {
+        return setContentHeaders(null, servletResponse, filename, path, false);
+    }
+
+    /**
+     * Sets content type and content disposition headers for the given file. Requests made by a client application get a plain inline
+     * disposition for PDF files, or for all files if inlineForAllTypes is true; all other requests get the disposition configured for the
+     * file's mime type.
+     *
+     * @param servletRequest request used to detect client applications; may be null
+     * @param servletResponse response to set the headers on
+     * @param filename file name announced in an attachment disposition
+     * @param path path of the delivered file; must be within the viewer home folder
+     * @param inlineForAllTypes if true, client applications get an inline disposition regardless of the mime type
+     * @return the probed mime type of the file
+     * @throws IOException
+     * @should set inline disposition for pdf if requested by client application
+     * @should set inline disposition for any type if requested by client application and inlineForAllTypes is true
+     * @should set configured disposition for non pdf if requested by client application and inlineForAllTypes is false
+     * @should set configured disposition for regular request
+     */
+    public String setContentHeaders(HttpServletRequest servletRequest, HttpServletResponse servletResponse, String filename, Path path,
+            boolean inlineForAllTypes) throws IOException {
         Path viewerBase = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome());
         if (path == null) {
             throw new IllegalArgumentException("path may not be null");
@@ -83,11 +109,15 @@ public class MediaResourceHelper {
             servletResponse.setContentType(mimeType);
             servletResponse.setHeader(NetTools.HTTP_HEADER_CONTENT_TYPE, mimeType);
         }
+        if (ClientApplicationManager.isClientApplicationRequest(servletRequest) && (inlineForAllTypes || MIME_TYPE_PDF.equals(mimeType))) {
+            servletResponse.setHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_INLINE);
+            return mimeType;
+        }
         String contentDisposition = config.getMediaTypeHandling(mimeType);
         switch (contentDisposition) {
             case "attachment":
                 servletResponse.setHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION,
-                        new StringBuilder("attachment;filename=").append(filename).toString());
+                        NetTools.buildAttachmentContentDisposition(filename));
                 servletResponse.setHeader(NetTools.HTTP_HEADER_CONTENT_LENGTH, String.valueOf(Files.size(normalizedPath)));
                 break;
             default:

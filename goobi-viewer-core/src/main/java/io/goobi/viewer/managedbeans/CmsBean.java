@@ -473,6 +473,17 @@ public class CmsBean implements Serializable {
      * @return the absolute URL to the given CMS page, in pretty or plain format
      */
     public String getUrl(CMSPage page, boolean pretty) {
+        return getPageUrl(page, pretty);
+    }
+
+    /**
+     * Session independent variant of {@link #getUrl(CMSPage, boolean)} which can be used outside of JSF without looking up this session scoped bean.
+     *
+     * @param page CMS page whose URL is resolved
+     * @param pretty true to generate pretty URL, false for plain servlet URL
+     * @return the absolute URL to the given CMS page, in pretty or plain format
+     */
+    public static String getPageUrl(CMSPage page, boolean pretty) {
         // page may be null; guard explicitly instead of relying on the NullPointerException catch below (java:S2259)
         if (page == null) {
             return "pretty:index";

@@ -4,9 +4,12 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import io.goobi.viewer.model.viewer.record.views.VisibilityConditionInfo;
 
+@Execution(ExecutionMode.CONCURRENT)
 class JsonStringConverterTest {
 
     String json = "{contentType:[IMAGE],"

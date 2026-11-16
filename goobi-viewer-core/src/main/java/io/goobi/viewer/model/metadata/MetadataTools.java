@@ -23,16 +23,21 @@ package io.goobi.viewer.model.metadata;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
@@ -43,6 +48,7 @@ import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.PhysicalResource;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -60,6 +66,9 @@ public final class MetadataTools {
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(MetadataTools.class);
+
+    /** Maximum number of owner IDDOCs per SHAPE metadata query. */
+    static final int SHAPE_OWNER_CHUNK_SIZE = 500;
 
     private static final String FIELD_MD_CREATOR = "MD_CREATOR";
     private static final String FIELD_MD_INFORMATION = "MD_INFORMATION";
@@ -316,26 +325,53 @@ public final class MetadataTools {
     }
 
     /**
-     * generateRIS.
+     * generateRIS. For anchors, the number of volumes (NV) is the live count of the anchor's volumes rather than the stored NUMVOLUMES field, so it
+     * is current even if the anchor has not been re-indexed since a volume was added or removed.
      *
      * @param se structural element to generate RIS output for.
      * @return the RIS-formatted bibliographic reference string for the given structure element, or null if se is null
+     * @should use live volume count for anchors
      */
     public static String generateRIS(StructElement se) {
         if (se == null) {
             return null;
         }
 
-        return generateRIS(se.getDocStructType(), se.getMetadataFields());
+        Long numVolumes = null;
+        if (se.isAnchor()) {
+            try {
+                numVolumes = SearchHelper.getVolumeCount(se.getPi());
+            } catch (PresentationException | IndexUnreachableException e) {
+                logger.warn("Could not count volumes for anchor '{}', omitting NV from RIS export: {}", se.getPi(), e.getMessage());
+            }
+        }
+
+        return generateRIS(se.getDocStructType(), se.getMetadataFields(), numVolumes);
     }
 
     /**
-     * 
+     * Generates RIS without a number of volumes (NV) entry.
+     *
      * @param docstructType logical document structure type (e.g. "monograph", "article")
      * @param metadataFields map of metadata field names to their values
      * @return Generated RIS string; null of no docstructType given
      */
     public static String generateRIS(String docstructType, Map<String, List<String>> metadataFields) {
+        return generateRIS(docstructType, metadataFields, null);
+    }
+
+    /**
+     * Generates RIS from the given metadata fields. The stored NUMVOLUMES field is ignored; the number of volumes (NV) is taken from
+     * <code>numVolumes</code> instead, which callers compute live for anchors.
+     *
+     * @param docstructType logical document structure type (e.g. "monograph", "article")
+     * @param metadataFields map of metadata field names to their values
+     * @param numVolumes number of volumes to export as NV; null to omit NV
+     * @return Generated RIS string; null of no docstructType given
+     * @should ignore stored NUMVOLUMES field
+     * @should add NV entry for given volume count
+     */
+    public static String generateRIS(String docstructType, Map<String, List<String>> metadataFields, Long numVolumes) {
         if (docstructType == null) {
             return null;
         }
@@ -398,9 +434,6 @@ public final class MetadataTools {
                 case "NUMPAGES":
                     risTag = "SP";
                     break;
-                case "NUMVOLUMES":
-                    risTag = "NV";
-                    break;
                 case "PI_TOPSTRUCT":
                     risTag = "CN";
                     break;
@@ -427,6 +460,9 @@ public final class MetadataTools {
 
         }
 
+        if (numVolumes != null) {
+            result.append("NV  - ").append(numVolumes).append("\r\n");
+        }
         result.append("ER  - \r\n");
 
         return result.toString();
@@ -667,6 +703,44 @@ public final class MetadataTools {
 
         // logger.trace("getGroupedMetadata query: {}", sbQuery.toString()); //NOSONAR Debug
         return DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, sortFields, null);
+    }
+
+    /**
+     * Loads the SHAPE metadata documents of several owner documents with a single Solr query.
+     *
+     * @param ownerIddocs IDDOC values of the owner documents
+     * @return map of owner IDDOC to its SHAPE documents; owners without shapes map to an empty list
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @should map shape docs to their owners
+     * @should map owners without shapes to empty list
+     * @should return empty map for empty input
+     * @should split large owner lists into several queries
+     */
+    public static Map<String, List<SolrDocument>> getShapeMetadataByOwner(Collection<String> ownerIddocs)
+            throws PresentationException, IndexUnreachableException {
+        Map<String, List<SolrDocument>> ret = new HashMap<>();
+        if (ownerIddocs == null || ownerIddocs.isEmpty()) {
+            return ret;
+        }
+        for (String iddoc : ownerIddocs) {
+            ret.put(iddoc, new ArrayList<>());
+        }
+        // Chunked to stay below Solr's maxBooleanClauses limit (default 1024)
+        List<String> owners = new ArrayList<>(ret.keySet());
+        for (int from = 0; from < owners.size(); from += SHAPE_OWNER_CHUNK_SIZE) {
+            List<String> chunk = owners.subList(from, Math.min(from + SHAPE_OWNER_CHUNK_SIZE, owners.size()));
+            String query = "+" + SolrConstants.DOCTYPE + ':' + DocType.METADATA.name() + " +" + SolrConstants.METADATATYPE + ':'
+                    + MetadataGroupType.SHAPE.name() + " +" + SolrConstants.IDDOC_OWNER + ":("
+                    + chunk.stream().map(iddoc -> '"' + iddoc + '"').collect(Collectors.joining(" OR ")) + ')';
+            for (SolrDocument doc : DataManager.getInstance().getSearchIndex().search(query, SolrSearchIndex.MAX_HITS, null, null)) {
+                List<SolrDocument> shapeDocs = ret.get(String.valueOf(doc.getFirstValue(SolrConstants.IDDOC_OWNER)));
+                if (shapeDocs != null) {
+                    shapeDocs.add(doc);
+                }
+            }
+        }
+        return ret;
     }
 
     /**

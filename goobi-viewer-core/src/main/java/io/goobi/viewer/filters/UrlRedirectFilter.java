@@ -42,7 +42,6 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 /**
  * Filters for redirecting prettified calls to cmsPages.
@@ -53,7 +52,8 @@ import jakarta.servlet.http.HttpSession;
  * by either their 'alternative url' or the url of the static page they replace. This filter needs to be placed in the filter chain before the
  * {@link org.ocpsoft.rewrite.servlet.RewriteFilter} because the RewriteFilter (former PrettyFilter) needs to handle the actual CMSPage mapping (the
  * PrettyFilter won't handle the request if it has been called already for this request, despite the forward) This filter also stores the called url
- * to the session map using {@link io.goobi.viewer.model.urlresolution.ViewHistory#setCurrentView(ViewerPath, HttpSession)}. This is essential to
+ * in the request and, if one exists, the session map using
+ * {@link io.goobi.viewer.model.urlresolution.ViewHistory#setCurrentView(ViewerPath, HttpServletRequest)}. This is essential to
  * leaving a view to return to a previous view (for example when leaving the reading mode)
  */
 public class UrlRedirectFilter implements Filter {
@@ -65,7 +65,8 @@ public class UrlRedirectFilter implements Filter {
      *
      * <p>
      * Redirects prettified calls to cmsPages (either using alternative url or static url of a cmsPage) to the actual page url (The cmsPage pretty-url
-     * that is) Also stores the actually requested path in the current http session using {@link ViewHistory#setCurrentView(ViewerPath, HttpSession)}
+     * that is) Also stores the actually requested path in the request and the current http session (if any) using
+     * {@link ViewHistory#setCurrentView(ViewerPath, HttpServletRequest)}
      */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -73,20 +74,33 @@ public class UrlRedirectFilter implements Filter {
         try {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-            // Important: If prefetching requests are not refused here, the status of the backend beans (ActiveDocumentBean in particular)
-            // will point to the prefetched page rather than the actual current page
-            if (isPrefetchingRequest(httpRequest)) {
+            // Permanently redirect explicit calls of index.(x)html to the root url, so that the configured CMS start page is shown
+            // and search engines only index a single start page url
+            if (isIndexFileRequest(httpRequest)) {
+                String target = httpRequest.getContextPath() + "/";
+                if (StringUtils.isNotEmpty(httpRequest.getQueryString())) {
+                    target += "?" + httpRequest.getQueryString();
+                }
+                logger.debug("Redirecting {} to {}", httpRequest.getRequestURI(), target);
                 HttpServletResponse httpResponse = (HttpServletResponse) response;
-                httpResponse.setHeader("Cache-Control", "no-store");
-                httpResponse.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                httpResponse.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+                httpResponse.setHeader("Location", target);
                 return;
             }
 
             Optional<ViewerPath> currentPath = ViewerPathBuilder.createPath(httpRequest);
             if (currentPath.isPresent()) {
                 // logger.trace("currentPath: {}", currentPath.get());
+                // Important: If prefetching requests are not refused here, the status of the backend beans (ActiveDocumentBean in particular)
+                // will point to the prefetched page rather than the actual current page
+                if (isPrefetchingRequest(httpRequest)) {
+                    HttpServletResponse httpResponse = (HttpServletResponse) response;
+                    httpResponse.setHeader("Cache-Control", "no-store");
+                    httpResponse.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                    return;
+                }
 
-                ViewHistory.setCurrentView(currentPath.get(), httpRequest.getSession());
+                ViewHistory.setCurrentView(currentPath.get(), httpRequest);
                 if (!ViewerPathBuilder.startsWith(currentPath.get().getPagePath(), "cms") && currentPath.get().getCmsPage() != null) {
                     if (currentPath.get().getCmsPage().isMayContainUrlParameters()
                             || StringUtils.isBlank(currentPath.get().getParameterPath().toString().replaceAll("/?\\d+/?", ""))) {
@@ -97,7 +111,8 @@ public class UrlRedirectFilter implements Filter {
                         d.forward(request, response);
                         return;
                     }
-                } else if (!ViewerPathBuilder.startsWith(currentPath.get().getPagePath(), "campaigns") && currentPath.get().getCampaign() != null) {
+                } else if (!ViewerPathBuilder.startsWith(currentPath.get().getPagePath(), "campaigns")
+                        && currentPath.get().getCampaign() != null) {
                     ViewerPath cmsPagePath = new ViewerPath(currentPath.get());
                     cmsPagePath.setPagePath(URI.create(currentPath.get().getCmsPage().getRelativeUrlPath(false)));
                     logger.debug("Forwarding {} to {}", currentPath.get(), cmsPagePath.getCombinedUrl());
@@ -111,6 +126,25 @@ public class UrlRedirectFilter implements Filter {
         }
 
         chain.doFilter(request, response);
+    }
+
+    /**
+     * Checks whether the originally requested url (not an internal forward or welcome-file resolution) points directly at the start page file.
+     *
+     * @param httpRequest HTTP servlet request to check
+     * @return true if the request is a GET/HEAD call whose request uri is {@code <contextPath>/index.html} or {@code <contextPath>/index.xhtml}
+     */
+    static boolean isIndexFileRequest(HttpServletRequest httpRequest) {
+        String method = httpRequest.getMethod();
+        if (!"GET".equalsIgnoreCase(method) && !"HEAD".equalsIgnoreCase(method)) {
+            return false;
+        }
+        String uri = httpRequest.getRequestURI();
+        String contextPath = httpRequest.getContextPath();
+        if (uri == null || contextPath == null) {
+            return false;
+        }
+        return uri.equals(contextPath + "/index.xhtml") || uri.equals(contextPath + "/index.html");
     }
 
     /**

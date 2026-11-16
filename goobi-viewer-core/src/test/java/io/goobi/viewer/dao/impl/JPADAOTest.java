@@ -3621,6 +3621,41 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @see JPADAO#deleteViewerMessagesBefore(LocalDateTime)
+     * @verifies delete more messages than fit into one batch
+     */
+    @Test
+    void deleteViewerMessagesBefore_shouldDeleteMoreMessagesThanFitIntoOneBatch() throws DAOException {
+        IDAO dao = DataManager.getInstance().getDao();
+        long before = dao.getViewerMessageCount(Collections.emptyMap());
+        int count = JPADAO.VIEWER_MESSAGE_DELETE_BATCH_SIZE + 5;
+        for (int i = 0; i < count; i++) {
+            ViewerMessage message = new ViewerMessage(TaskType.REFRESH_ARCHIVE_TREE.name());
+            message.setMessageId("ID:batch-test:" + i);
+            message.setMessageStatus(MessageStatus.FINISH);
+            message.getProperties().put("identifiers", "PPN" + i);
+            message.setLastUpdateTime(LocalDateTime.of(2020, 1, 1, 0, 0));
+            dao.addViewerMessage(message);
+        }
+        assertEquals(before + count, dao.getViewerMessageCount(Collections.emptyMap()));
+
+        assertEquals(count, dao.deleteViewerMessagesBefore(LocalDateTime.of(2020, 1, 2, 0, 0)));
+        assertEquals(before, dao.getViewerMessageCount(Collections.emptyMap()));
+        assertEquals(null, dao.getViewerMessageByMessageID("ID:batch-test:0"));
+    }
+
+    /**
+     * @see JPADAO#columnIndexExists(String,String)
+     * @verifies return true if indexed column exists
+     */
+    @Test
+    void columnIndexExists_shouldReturnTrueIfIndexedColumnExists() throws Exception {
+        IDAO dao = DataManager.getInstance().getDao();
+        Assertions.assertTrue(dao.columnIndexExists("MQ_MESSAGES", "LAST_UPDATE_TIME") || dao.columnIndexExists("mq_messages", "last_update_time"));
+        Assertions.assertFalse(dao.columnIndexExists("mq_messages", "message_type") || dao.columnIndexExists("MQ_MESSAGES", "MESSAGE_TYPE"));
+    }
+
+    /**
      * @see JPADAO#getTicketRequests()
      * @verifies return tickets that have never been activated
      */

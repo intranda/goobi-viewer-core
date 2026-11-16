@@ -23,17 +23,23 @@ package io.goobi.viewer.model.metadata;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
+import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
+import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
 
 class MetadataToolsTest extends AbstractSolrEnabledTest {
@@ -104,5 +110,128 @@ class MetadataToolsTest extends AbstractSolrEnabledTest {
             Assertions.assertEquals("METADATA", doc.getFieldValue(SolrConstants.DOCTYPE));
             Assertions.assertEquals(iddocKleiuniv, String.valueOf(doc.getFieldValue(SolrConstants.IDDOC_OWNER)));
         }
+    }
+
+    /**
+     * @see MetadataTools#getShapeMetadataByOwner(java.util.Collection)
+     * @verifies map shape docs to their owners
+     */
+    @Test
+    void getShapeMetadataByOwner_shouldMapShapeDocsToTheirOwners() throws Exception {
+        SolrDocumentList anyShape = DataManager.getInstance()
+                .getSearchIndex()
+                .search("+" + SolrConstants.DOCTYPE + ":METADATA +" + SolrConstants.METADATATYPE + ':' + MetadataGroupType.SHAPE.name(), 1, null,
+                        List.of(SolrConstants.IDDOC_OWNER));
+        Assertions.assertFalse(anyShape.isEmpty(), "test index must contain at least one SHAPE document");
+        String owner = String.valueOf(anyShape.get(0).getFirstValue(SolrConstants.IDDOC_OWNER));
+
+        Map<String, List<SolrDocument>> result = MetadataTools.getShapeMetadataByOwner(List.of(owner, iddocKleiuniv));
+
+        Assertions.assertFalse(result.get(owner).isEmpty());
+        Assertions.assertEquals(MetadataTools.getGroupedMetadata(owner, " +" + SolrConstants.METADATATYPE + ':' + MetadataGroupType.SHAPE.name(), null)
+                .size(), result.get(owner).size());
+        for (SolrDocument doc : result.get(owner)) {
+            Assertions.assertEquals(owner, String.valueOf(doc.getFirstValue(SolrConstants.IDDOC_OWNER)));
+        }
+    }
+
+    /**
+     * @see MetadataTools#getShapeMetadataByOwner(java.util.Collection)
+     * @verifies map owners without shapes to empty list
+     */
+    @Test
+    void getShapeMetadataByOwner_shouldMapOwnersWithoutShapesToEmptyList() throws Exception {
+        Map<String, List<SolrDocument>> result = MetadataTools.getShapeMetadataByOwner(List.of("0"));
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertTrue(result.get("0").isEmpty());
+    }
+
+    /**
+     * @see MetadataTools#getShapeMetadataByOwner(java.util.Collection)
+     * @verifies return empty map for empty input
+     */
+    @Test
+    void getShapeMetadataByOwner_shouldReturnEmptyMapForEmptyInput() throws Exception {
+        Assertions.assertTrue(MetadataTools.getShapeMetadataByOwner(List.of()).isEmpty());
+    }
+
+    /**
+     * @see MetadataTools#getShapeMetadataByOwner(java.util.Collection)
+     * @verifies split large owner lists into several queries
+     */
+    @Test
+    void getShapeMetadataByOwner_shouldSplitLargeOwnerListsIntoSeveralQueries() throws Exception {
+        SolrDocumentList anyShape = DataManager.getInstance()
+                .getSearchIndex()
+                .search("+" + SolrConstants.DOCTYPE + ":METADATA +" + SolrConstants.METADATATYPE + ':' + MetadataGroupType.SHAPE.name(), 1, null,
+                        List.of(SolrConstants.IDDOC_OWNER));
+        Assertions.assertFalse(anyShape.isEmpty(), "test index must contain at least one SHAPE document");
+        String owner = String.valueOf(anyShape.get(0).getFirstValue(SolrConstants.IDDOC_OWNER));
+        List<String> owners = new ArrayList<>();
+        for (int i = 0; i < 2 * MetadataTools.SHAPE_OWNER_CHUNK_SIZE; i++) {
+            owners.add("0" + i);
+        }
+        owners.add(owner);
+        SolrSearchIndex spy = Mockito.spy(DataManager.getInstance().getSearchIndex());
+        DataManager.getInstance().injectSearchIndex(spy);
+
+        Map<String, List<SolrDocument>> result = MetadataTools.getShapeMetadataByOwner(owners);
+
+        Mockito.verify(spy, Mockito.times(3))
+                .search(Mockito.contains(SolrConstants.IDDOC_OWNER + ":("), Mockito.anyInt(), Mockito.any(), Mockito.any());
+        Assertions.assertEquals(owners.size(), result.size());
+        Assertions.assertFalse(result.get(owner).isEmpty());
+    }
+
+    /**
+     * @see MetadataTools#generateRIS(String, Map, Long)
+     * @verifies ignore stored NUMVOLUMES field
+     */
+    @Test
+    void generateRIS_shouldIgnoreStoredNUMVOLUMESField() throws Exception {
+        Map<String, List<String>> fields = new HashMap<>();
+        fields.put(SolrConstants.TITLE, Collections.singletonList("Some title"));
+        fields.put(SolrConstants.NUMVOLUMES, Collections.singletonList("99"));
+
+        String ris = MetadataTools.generateRIS("periodical", fields, null);
+        Assertions.assertNotNull(ris);
+        Assertions.assertTrue(ris.contains("TI  - Some title\r\n"));
+        Assertions.assertFalse(ris.contains("NV  - "));
+    }
+
+    /**
+     * @see MetadataTools#generateRIS(String, Map, Long)
+     * @verifies add NV entry for given volume count
+     */
+    @Test
+    void generateRIS_shouldAddNVEntryForGivenVolumeCount() throws Exception {
+        Map<String, List<String>> fields = new HashMap<>();
+        fields.put(SolrConstants.NUMVOLUMES, Collections.singletonList("99"));
+
+        String ris = MetadataTools.generateRIS("periodical", fields, 5L);
+        Assertions.assertNotNull(ris);
+        Assertions.assertTrue(ris.endsWith("NV  - 5\r\nER  - \r\n"));
+        Assertions.assertFalse(ris.contains("NV  - 99"));
+    }
+
+    /**
+     * @see MetadataTools#generateRIS(StructElement)
+     * @verifies use live volume count for anchors
+     */
+    @Test
+    void generateRIS_shouldUseLiveVolumeCountForAnchors() throws Exception {
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":306653648", null);
+        Assertions.assertNotNull(doc);
+        StructElement anchor = new StructElement((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
+        Assertions.assertTrue(anchor.isAnchor());
+
+        long liveCount = DataManager.getInstance()
+                .getSearchIndex()
+                .getHitCount(SolrConstants.PI_PARENT + ":\"306653648\" AND " + SolrConstants.ISWORK + ":true");
+        Assertions.assertTrue(liveCount > 0, "test index anchor must have at least one volume");
+
+        String ris = MetadataTools.generateRIS(anchor);
+        Assertions.assertNotNull(ris);
+        Assertions.assertTrue(ris.contains("NV  - " + liveCount + "\r\n"));
     }
 }
