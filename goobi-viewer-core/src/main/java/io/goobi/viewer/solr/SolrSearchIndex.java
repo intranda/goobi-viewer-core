@@ -256,11 +256,35 @@ public class SolrSearchIndex {
      */
     public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, String facetSort,
             List<String> fieldList, List<String> filterQueries, Map<String, String> params) throws PresentationException, IndexUnreachableException {
-        return search(query, first, rows, sortFields, facetFields, facetSort, fieldList, filterQueries, params, DEFAULT_QUERY_METHOD);
+        return search(query, first, rows, sortFields, facetFields, null, facetSort, fieldList, filterQueries, params, DEFAULT_QUERY_METHOD);
     }
 
-    public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, String facetSort,
-            List<String> fieldList, List<String> filterQueries, Map<String, String> params, METHOD queryMethod)
+    /**
+     * Convenience overload of the core search method using the default query method. Additionally computes a Solr {@code facet.query} count
+     * for each of the given {@code facetQueries}; the per-query counts can be read from {@link QueryResponse#getFacetQuery()}.
+     *
+     * @param query Solr query string to execute
+     * @param first zero-based offset of the first result to return
+     * @param rows maximum number of documents to return
+     * @param sortFields Optional field/order pairs for sorting
+     * @param facetFields list of Solr facet field names to compute facets for
+     * @param facetQueries list of arbitrary Solr queries to compute facet.query counts for
+     * @param facetSort sort order for facet values ("count" or field name)
+     * @param fieldList If not null, only the fields in the list will be returned.
+     * @param filterQueries list of Solr filter query strings to apply
+     * @param params additional Solr query parameters
+     * @return {@link org.apache.solr.client.solrj.response.QueryResponse}
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, List<String> facetQueries,
+            String facetSort, List<String> fieldList, List<String> filterQueries, Map<String, String> params)
+            throws PresentationException, IndexUnreachableException {
+        return search(query, first, rows, sortFields, facetFields, facetQueries, facetSort, fieldList, filterQueries, params, DEFAULT_QUERY_METHOD);
+    }
+
+    public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, List<String> facetQueries,
+            String facetSort, List<String> fieldList, List<String> filterQueries, Map<String, String> params, METHOD queryMethod)
             throws PresentationException, IndexUnreachableException {
         SolrQuery solrQuery = new SolrQuery(SolrTools.cleanUpQuery(query)).setStart(first).setRows(rows);
         if (sortFields != null && !sortFields.isEmpty()) {
@@ -291,6 +315,14 @@ public class SolrSearchIndex {
                 }
             }
             solrQuery.setFacetMinCount(1).setFacetLimit(-1); // no limit
+        }
+        if (facetQueries != null && !facetQueries.isEmpty()) {
+            solrQuery.setFacet(true);
+            for (String facetQuery : facetQueries) {
+                if (StringUtils.isNotEmpty(facetQuery)) {
+                    solrQuery.addFacetQuery(SolrTools.cleanUpQuery(facetQuery));
+                }
+            }
         }
         if (fieldList != null && !fieldList.isEmpty()) {
             for (String field : fieldList) {
