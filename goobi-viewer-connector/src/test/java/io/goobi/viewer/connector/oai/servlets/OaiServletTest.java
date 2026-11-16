@@ -277,6 +277,35 @@ class OaiServletTest extends AbstractTest {
     }
 
     /**
+     * @see OaiServlet#isXmlOnlyPath(String)
+     * @verifies return true for the xml path with and without trailing slash
+     */
+    @Test
+    void isXmlOnlyPath_shouldReturnTrueForTheXmlPathWithAndWithoutTrailingSlash() {
+        Assertions.assertTrue(OaiServlet.isXmlOnlyPath("/oai/xml"));
+        Assertions.assertTrue(OaiServlet.isXmlOnlyPath("/oai/xml/"));
+    }
+
+    /**
+     * @see OaiServlet#isXmlOnlyPath(String)
+     * @verifies return false for the regular oai path
+     */
+    @Test
+    void isXmlOnlyPath_shouldReturnFalseForTheRegularOaiPath() {
+        Assertions.assertFalse(OaiServlet.isXmlOnlyPath("/oai"));
+        Assertions.assertFalse(OaiServlet.isXmlOnlyPath("/oai/"));
+    }
+
+    /**
+     * @see OaiServlet#isXmlOnlyPath(String)
+     * @verifies return false for null
+     */
+    @Test
+    void isXmlOnlyPath_shouldReturnFalseForNull() {
+        Assertions.assertFalse(OaiServlet.isXmlOnlyPath(null));
+    }
+
+    /**
      * @see OaiServlet#transformToHtml(Document, Templates)
      * @verifies return null if the stylesheet is unavailable
      */

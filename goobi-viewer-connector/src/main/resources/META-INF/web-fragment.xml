@@ -17,6 +17,9 @@
         <servlet-name>OAIServlet</servlet-name>
         <url-pattern>/oai</url-pattern>
         <url-pattern>/oai/</url-pattern>
+        <!-- Always plain XML, regardless of the Accept header; for debugging in a browser -->
+        <url-pattern>/oai/xml</url-pattern>
+        <url-pattern>/oai/xml/</url-pattern>
     </servlet-mapping>
     <servlet>
         <description></description>

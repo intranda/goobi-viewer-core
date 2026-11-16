@@ -99,10 +99,13 @@ public class OaiServlet extends HttpServlet {
         filterQuerySuffix = SolrSearchTools.getAllSuffixes(request);
         // logger.trace("filterQuerySuffix: {}",filterQuerySuffix);
 
-        Document doc = new Document();
-        ProcessingInstruction pi = new ProcessingInstruction("xml-stylesheet", "type='text/xsl' href='./oai2.xsl'");
+        // /oai/xml always returns plain XML, without stylesheet, regardless of the Accept header (e.g. for debugging in a browser)
+        boolean xmlOnly = isXmlOnlyPath(request.getServletPath());
 
-        doc.addContent(pi);
+        Document doc = new Document();
+        if (!xmlOnly) {
+            doc.addContent(new ProcessingInstruction("xml-stylesheet", "type='text/xsl' href='./oai2.xsl'"));
+        }
         // generate root element
         Element root = Format.getOaiPmhElement("OAI-PMH");
 
@@ -284,7 +287,7 @@ public class OaiServlet extends HttpServlet {
         format.setEncoding("utf-8");
         XMLOutputter xmlOut = new XMLOutputter(format);
         try {
-            if (prefersHtml(request.getHeader("Accept"))) {
+            if (!xmlOnly && prefersHtml(request.getHeader("Accept"))) {
                 String html = transformToHtml(doc);
                 if (html != null) {
                     response.setContentType("text/html;charset=UTF-8");
@@ -310,6 +313,19 @@ public class OaiServlet extends HttpServlet {
                 }
             }
         }
+    }
+
+    /**
+     * Checks whether a request was made to the XML-only endpoint /oai/xml.
+     *
+     * @param servletPath servlet path of the request; may be null
+     * @return true if the path is /oai/xml or /oai/xml/
+     * @should return true for the xml path with and without trailing slash
+     * @should return false for the regular oai path
+     * @should return false for null
+     */
+    static boolean isXmlOnlyPath(String servletPath) {
+        return "/oai/xml".equals(servletPath) || "/oai/xml/".equals(servletPath);
     }
 
     /**
