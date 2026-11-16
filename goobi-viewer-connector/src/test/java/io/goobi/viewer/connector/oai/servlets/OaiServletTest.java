@@ -17,6 +17,8 @@ package io.goobi.viewer.connector.oai.servlets;
 
 import java.io.IOException;
 
+import javax.xml.transform.Templates;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.junit.jupiter.api.Assertions;
@@ -251,7 +253,7 @@ class OaiServletTest extends AbstractTest {
     }
 
     /**
-     * @see OaiServlet#transformToHtml(Document)
+     * @see OaiServlet#transformToHtml(Document, Templates)
      * @verifies render the response as html
      */
     @Test
@@ -263,7 +265,7 @@ class OaiServletTest extends AbstractTest {
     }
 
     /**
-     * @see OaiServlet#transformToHtml(Document)
+     * @see OaiServlet#transformToHtml(Document, Templates)
      * @verifies list the metadata formats without fetching them over http
      */
     @Test
@@ -272,6 +274,43 @@ class OaiServletTest extends AbstractTest {
         Assertions.assertNotNull(html);
         // The quicklinks are built from the document() lookup; the request URL is unresolvable, so they only appear if it was answered locally
         Assertions.assertTrue(html.contains("ListRecords (oai_dc)"), html);
+    }
+
+    /**
+     * @see OaiServlet#transformToHtml(Document, Templates)
+     * @verifies return null if the stylesheet is unavailable
+     */
+    @Test
+    void transformToHtml_shouldReturnNullIfTheStylesheetIsUnavailable() {
+        Assertions.assertNull(OaiServlet.transformToHtml(createListMetadataFormatsResponse(), null));
+    }
+
+    /**
+     * @see OaiServlet#compileStylesheet(String)
+     * @verifies return compiled templates for the bundled stylesheet
+     */
+    @Test
+    void compileStylesheet_shouldReturnCompiledTemplatesForTheBundledStylesheet() {
+        Templates templates = OaiServlet.compileStylesheet("META-INF/resources/oai2.xsl");
+        Assertions.assertNotNull(templates);
+    }
+
+    /**
+     * @see OaiServlet#compileStylesheet(String)
+     * @verifies return null if the stylesheet is missing
+     */
+    @Test
+    void compileStylesheet_shouldReturnNullIfTheStylesheetIsMissing() {
+        Assertions.assertNull(OaiServlet.compileStylesheet("META-INF/resources/does-not-exist.xsl"));
+    }
+
+    /**
+     * @see OaiServlet#compileStylesheet(String)
+     * @verifies return null if the stylesheet is invalid
+     */
+    @Test
+    void compileStylesheet_shouldReturnNullIfTheStylesheetIsInvalid() {
+        Assertions.assertNull(OaiServlet.compileStylesheet("oai/invalid_stylesheet.xsl"));
     }
 
     private static Document createListMetadataFormatsResponse() {

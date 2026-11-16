@@ -18,7 +18,6 @@ package io.goobi.viewer.connector.oai.servlets;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.io.UncheckedIOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
@@ -372,19 +371,35 @@ public class OaiServlet extends HttpServlet {
     }
 
     /**
-     * Renders an OAI-PMH response document as HTML with oai2.xsl.
+     * Renders an OAI-PMH response document as HTML with the bundled oai2.xsl.
+     *
+     * @param doc complete OAI-PMH response document
+     * @return the HTML page, or null if the stylesheet is unavailable or the transformation failed
+     * @see #transformToHtml(Document, Templates)
+     */
+    static String transformToHtml(Document doc) {
+        return transformToHtml(doc, HtmlTemplatesHolder.TEMPLATES);
+    }
+
+    /**
+     * Renders an OAI-PMH response document as HTML with the given compiled stylesheet.
      *
      * <p>The stylesheet loads the metadata formats via document() from the base URL in the request element. A URI resolver answers that
      * call with the locally generated format list, so the transformation never issues HTTP requests to a URL derived from the Host header.
      *
      * @param doc complete OAI-PMH response document
-     * @return the HTML page, or null if the transformation failed
+     * @param templates compiled oai2.xsl; null if it could not be loaded
+     * @return the HTML page, or null if the stylesheet is unavailable or the transformation failed
      * @should render the response as html
      * @should list the metadata formats without fetching them over http
+     * @should return null if the stylesheet is unavailable
      */
-    static String transformToHtml(Document doc) {
+    static String transformToHtml(Document doc, Templates templates) {
+        if (templates == null) {
+            return null;
+        }
         try {
-            Transformer transformer = HtmlTemplatesHolder.TEMPLATES.newTransformer();
+            Transformer transformer = templates.newTransformer();
             transformer.setURIResolver((href, base) -> {
                 Element oaiPmh = Format.getOaiPmhElement("OAI-PMH");
                 if (href != null && href.contains("verb=ListMetadataFormats")) {
@@ -402,30 +417,43 @@ public class OaiServlet extends HttpServlet {
     }
 
     /**
-     * Holds the compiled oai2.xsl; compiled on first use because most requests come from harvesters that never need it.
+     * Compiles an XSLT stylesheet from the classpath.
+     *
+     * <p>Failures are logged and reported as null instead of thrown, so that a missing or broken stylesheet only disables the HTML
+     * rendering and browsers get the XML response.
+     *
+     * @param resource classpath location of the stylesheet
+     * @return the compiled stylesheet, or null if it is missing or cannot be compiled
+     * @should return compiled templates for the bundled stylesheet
+     * @should return null if the stylesheet is missing
+     * @should return null if the stylesheet is invalid
+     */
+    static Templates compileStylesheet(String resource) {
+        try (InputStream in = OaiServlet.class.getClassLoader().getResourceAsStream(resource)) {
+            if (in == null) {
+                logger.error("Stylesheet not found on classpath: {}; browsers will get XML", resource);
+                return null;
+            }
+            TransformerFactory factory = TransformerFactory.newInstance();
+            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            return factory.newTemplates(new StreamSource(in));
+        } catch (IOException | TransformerConfigurationException e) {
+            logger.error("Could not compile stylesheet {}; browsers will get XML: {}", resource, e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Holds the compiled oai2.xsl; compiled on first use because most requests come from harvesters that never need it. TEMPLATES is
+     * null if the stylesheet could not be loaded; the failure is then logged once and every browser request gets XML.
      */
     private static final class HtmlTemplatesHolder {
 
         private static final String STYLESHEET = "META-INF/resources/oai2.xsl";
 
-        private static final Templates TEMPLATES = compile();
+        private static final Templates TEMPLATES = compileStylesheet(STYLESHEET);
 
         private HtmlTemplatesHolder() {
-        }
-
-        private static Templates compile() {
-            try (InputStream in = OaiServlet.class.getClassLoader().getResourceAsStream(STYLESHEET)) {
-                if (in == null) {
-                    throw new IllegalStateException("Stylesheet not found on classpath: " + STYLESHEET);
-                }
-                TransformerFactory factory = TransformerFactory.newInstance();
-                factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-                return factory.newTemplates(new StreamSource(in));
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            } catch (TransformerConfigurationException e) {
-                throw new IllegalStateException("Could not compile " + STYLESHEET, e);
-            }
         }
     }
 
