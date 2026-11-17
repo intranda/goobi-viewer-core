@@ -445,9 +445,13 @@ public class RecordPageResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_PAGES_LAYOUT)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Get the ALTO layout-tag annotations of a single page", tags = { "records" })
+    @Operation(summary = "Get the ALTO layout-tag annotations of a single page", tags = { "records" },
+            description = "Returns the printed-text column, author-attributed blocks with their margin classification, and words or"
+                    + " drawn lines carrying layout tags. Rects use the same coordinate space as the page text annotations, so"
+                    + " clients can join both data sets by ALTO element id.")
     @ApiResponse(responseCode = "200",
-            description = "Layout annotations of the page (empty when none exist, access is denied or the record is unknown)")
+            description = "Layout annotations of the page (empty when none exist, access is denied or the record is unknown)",
+            useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
     public LayoutAnnotations getLayoutAnnotationsForPage(
             @Parameter(description = "Page number (1-based)",

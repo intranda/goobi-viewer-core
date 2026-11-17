@@ -573,9 +573,13 @@ public class RecordResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_LAYOUT_TAGS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records" }, summary = "Get ALTO layout tags for a record")
+    @Operation(tags = { "records" }, summary = "Get ALTO layout tags for a record",
+            description = "Layout tags (handwritten annotations, underlines, strikes, marks) are read from each page's ALTO file and"
+                    + " grouped into consecutive ranges of the given step size; pages the requester has no fulltext access to are"
+                    + " skipped but still count towards the page ranges.")
     @ApiResponse(responseCode = "200",
-            description = "Layout tags for the given record; an unknown identifier or an empty page range yields an empty document")
+            description = "Layout tags for the given record; an unknown identifier or an empty page range yields an empty document",
+            useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or start, end or step below 1")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public DocumentReference getLayoutTags(
@@ -613,8 +617,12 @@ public class RecordResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_LAYOUT_TAGS_INDEX)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records" }, summary = "Get the record-wide index of ALTO layout tags (which tag occurs on which pages)")
-    @ApiResponse(responseCode = "200", description = "Layout-tag index for the given record (empty tag list without VIEW_FULLTEXT access)")
+    @Operation(tags = { "records" }, summary = "Get the record-wide index of ALTO layout tags (which tag occurs on which pages)",
+            description = "Built from the layout-tag values indexed for each page, so it needs no ALTO parsing. Every tag carries its"
+                    + " display name, style class, group and the list of pages it occurs on; the total page count of the record is"
+                    + " included so clients can render a page-range overview.")
+    @ApiResponse(responseCode = "200", description = "Layout-tag index for the given record (empty tag list without VIEW_FULLTEXT access)",
+            useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
