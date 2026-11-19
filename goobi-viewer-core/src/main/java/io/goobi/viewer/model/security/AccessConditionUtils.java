@@ -87,6 +87,9 @@ public final class AccessConditionUtils {
     /** Pseudo LOGID returned by {@link #getLogIdsWithDeniedPages} if the page permissions could not be determined; denies every PDF. */
     static final String LOGID_ALL_PAGES_DENIED = "_ALL_PAGES_DENIED_";
 
+    /** Extensions of image files that a group document (e.g. a podcast) may reference as its THUMBNAIL in a member record's media folder. */
+    private static final Set<String> GROUP_THUMBNAIL_EXTENSIONS = Set.of("tif", "tiff", "jpg", "jpeg", "png", "gif", "jp2");
+
     /**
      * Private constructor to prevent instantiation.
      */
@@ -200,6 +203,8 @@ public final class AccessConditionUtils {
      * @should adapt basic alto file name
      * @should escape file name for wildcard search correctly
      * @should work correctly with urls
+     * @should use correct field names for json files
+     * @should use correct field names for vtt files
      */
     static String generateAccessCheckQuery(String identifier, String fileName) {
         if (StringUtils.isEmpty(fileName)) {
@@ -257,31 +262,33 @@ public final class AccessConditionUtils {
                         .append(simpleFileName)
                         .append("\")");
                 break;
-            case "tif", "tiff":
+            case "tif", "tiff", "jpg", "jpeg", "png", "gif", "jp2":
+                // Image files are usually listed in FILENAME, but records whose main file is not an image (e.g. podcast episodes with a cover
+                // image) list them in the format specific field only
                 sbQuery.append(" +(")
                         .append(useFileField)
                         .append(":\"")
                         .append(simpleFileName)
                         .append("\" ")
-                        .append(SolrConstants.FILENAME)
-                        .append("_TIFF:\"")
-                        .append(simpleFileName)
-                        .append("\")");
-                break;
-            case "jpg", "jpeg":
-                sbQuery.append(" +(")
-                        .append(useFileField)
+                        .append(getImageFileNameField(extension))
                         .append(":\"")
                         .append(simpleFileName)
-                        .append("\" ")
+                        .append("\")");
+                break;
+            case "json", "vtt":
+                // Transcripts (e.g. of podcast episodes) are listed in FILENAME_JSON or FILENAME_VTT; FILENAME keeps the default behaviour
+                sbQuery.append(" +(")
+                        .append(useFileField)
+                        .append(':')
+                        .append(ClientUtils.escapeQueryChars(simpleFileName))
+                        .append(".* ")
                         .append(SolrConstants.FILENAME)
-                        .append("_JPEG:\"")
+                        .append('_')
+                        .append(extension.toUpperCase())
+                        .append(":\"")
                         .append(simpleFileName)
                         .append("\")");
                 break;
-            case "png":
-            case "gif":
-            case "jp2":
             case "obj":
             case "gltf":
             case "glb":
@@ -302,6 +309,20 @@ public final class AccessConditionUtils {
     }
 
     /**
+     * Returns the Solr field that holds image files of the given format, e.g. FILENAME_PNG for png files.
+     *
+     * @param extension lower case file extension of an image file
+     * @return name of the format specific file name field
+     */
+    private static String getImageFileNameField(String extension) {
+        return switch (extension) {
+            case "tif" -> SolrConstants.FILENAME + "_TIFF";
+            case "jpg" -> SolrConstants.FILENAME + "_JPEG";
+            default -> SolrConstants.FILENAME + "_" + extension.toUpperCase();
+        };
+    }
+
+    /**
      * Builds the Solr query for the record-level {@link SolrConstants#THUMBNAIL THUMBNAIL} fallback used when a thumbnail access check finds no page
      * hit. The file name is wrapped in quotes so that thumbnail values which are absolute http(s) URLs (e.g. external AV player links) do not break
      * the Solr query parser on their colons.
@@ -313,6 +334,52 @@ public final class AccessConditionUtils {
      */
     static String generateThumbnailAccessCheckQuery(String identifier, String fileName) {
         return "+%s:%s +%s:\"%s\"".formatted(SolrConstants.PI, ClientUtils.escapeQueryChars(identifier), SolrConstants.THUMBNAIL, fileName);
+    }
+
+    /**
+     * Builds the Solr query for the access check of a content file. For image files, the query from
+     * {@link #generateAccessCheckQuery(String, String)} is extended by {@link #generateGroupThumbnailAccessCheckClause(String, String)}, so that
+     * the image of a group (e.g. a podcast) that is located in the media folder of a member record is found by the same single query.
+     *
+     * @param identifier Work identifier (PI).
+     * @param fileName Content file name.
+     * @return Generated Solr query
+     * @should add group thumbnail clause for image files
+     * @should not add group thumbnail clause for non image files
+     */
+    static String generateAccessCheckQueryWithGroupThumbnail(String identifier, String fileName) {
+        String query = generateAccessCheckQuery(identifier, fileName);
+        String groupThumbnailClause = generateGroupThumbnailAccessCheckClause(identifier, fileName);
+        if (query == null || groupThumbnailClause == null) {
+            return query;
+        }
+
+        return "(" + query + ") OR (" + groupThumbnailClause + ")";
+    }
+
+    /**
+     * Builds a Solr query clause matching a group document whose {@link SolrConstants#THUMBNAIL THUMBNAIL} is the given image file in the media
+     * folder of the given record (<code>&lt;identifier&gt;/&lt;file name&gt;</code>, as written by the indexer for images from the
+     * <code>&lt;GROUPSUFFIX&gt;-TEASER</code> file group).
+     *
+     * @param identifier Work identifier (PI) of the record whose media folder contains the file.
+     * @param fileName Image file name.
+     * @return Generated Solr query clause; null if fileName is not a local image file
+     * @should build clause for image file
+     * @should return null for non image file
+     * @should return null for url
+     */
+    static String generateGroupThumbnailAccessCheckClause(String identifier, String fileName) {
+        if (StringUtils.isEmpty(identifier) || StringUtils.isEmpty(fileName) || fileName.matches("https?:\\/\\/.*")) {
+            return null;
+        }
+        if (!GROUP_THUMBNAIL_EXTENSIONS.contains(FilenameUtils.getExtension(fileName).toLowerCase())) {
+            return null;
+        }
+
+        String simpleFileName = FileTools.getPathFromUrlString(fileName).getFileName().toString();
+        String value = (identifier + "/" + simpleFileName).replace("\\", "\\\\").replace("\"", "\\\"");
+        return "+%s:%s +%s:\"%s\"".formatted(SolrConstants.DOCTYPE, DocType.GROUP.name(), SolrConstants.THUMBNAIL, value);
     }
 
     /**
@@ -338,7 +405,7 @@ public final class AccessConditionUtils {
             return Collections.emptyMap();
         }
 
-        String query = generateAccessCheckQuery(identifier, fileName);
+        String query = generateAccessCheckQueryWithGroupThumbnail(identifier, fileName);
         // logger.trace("query: {}", query); //NOSONAR Sonar considers this log msg a security issue, so leave it commented out when not needed
         try {
             List<String> fields = Arrays.asList(SolrConstants.ACCESSCONDITION, SolrConstants.DOCTYPE);

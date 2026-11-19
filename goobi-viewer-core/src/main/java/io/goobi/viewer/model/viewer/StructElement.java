@@ -426,6 +426,15 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
+     * 
+     * @return true if the record has pages and a mimeType which can be displayed in ViewObject (images, audio, video, 3d-objects and embedded media)
+     */
+    @Override
+    public boolean isHasMedia() {
+        return getMimeType().isMediaType() && getNumPages() > 0;
+    }
+
+    /**
      * Loads and returns the immediate parent StructElement of this element.
      *
      * @return {@link io.goobi.viewer.model.viewer.StructElement}
@@ -591,8 +600,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Returns the docstruct type of the group record with the given identifier.
      *
-     * <p>Group members carry their group identifier in a {@code GROUPID_*} field but not the group's docstruct, so the group record has to be
-     * looked up in the index.
+     * <p>
+     * Group members carry their group identifier in a {@code GROUPID_*} field but not the group's docstruct, so the group record has to be looked up
+     * in the index.
      *
      * @param groupIdentifier Group record identifier
      * @return DOCSTRCT value of the group record; null if the record was not found or is unreachable

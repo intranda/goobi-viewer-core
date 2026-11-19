@@ -12,7 +12,8 @@
         <ui:repeat
             value="#{browseElement.metadataListForCurrentLocale}"
             var="browseElementMetadata">
-            <ui:fragment rendered="#{!browseElementMetadata.blank}">
+            <!-- Metadata with an icon are displayed in the icon line below this list -->
+            <ui:fragment rendered="#{!browseElementMetadata.blank and !browseElementMetadata.showInIconLine}">
                 <!-- METADATA LABEL -->
                 <dt
                     data-metadata-field="#{browseElementMetadata.label}"
@@ -216,6 +217,13 @@
             </ui:repeat>
         </ui:repeat>
     </dl>
+
+    <!-- METADATA WITH ICONS (SINGLE LINE BELOW THE STANDARD LIST) -->
+    <ui:include src="/resources/includes/metadata/metadataIconLine.xhtml">
+        <ui:param
+            name="iconMetadataList"
+            value="#{browseElement.iconMetadataListForCurrentLocale}" />
+    </ui:include>
 
     <!-- SECONDARY METADATA (ONLY FOR TILE VIEW) -->
     <ui:fragment rendered="#{not empty browseElement.secondaryMetadataListForCurrentLocale}">

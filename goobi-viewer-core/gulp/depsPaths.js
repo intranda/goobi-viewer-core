@@ -369,6 +369,27 @@ const depsPathsJS = [
         flatten: false,
         dest: `${jsLibsDir}`,
     },
+	
+    {
+        // PODLOVE PLAYER
+        // embed.js lazy-loads the variant templates and the player iframe assets (5.13.0/player/) relative to the
+        // configured "base" URL, so the folder structure must be kept. Source maps and the bundle report are omitted.
+        expand: true,
+        cwd: `${nodeModules}@podlove/web-player/`,
+        src: [
+            'embed.js*',
+            'variant-*.js*',
+            '*/player/**/*',
+            '!*/player/**/*.map',
+            '!*/player/report.html',
+            // Subscribe button, lazy-loaded by the player when "subscribe-button" is configured
+            '*/button/**/*',
+            '!*/button/**/*.map',
+            '!*/button/report.html',
+        ],
+        flatten: false,
+        dest: `${jsLibsDir}podlove-player/`,
+    },
 ];
 
 /////////////////////
@@ -513,7 +534,7 @@ const depsPathsCSS = [
         src: ['swiper/swiper-bundle.min.css'],
         flatten: true,
         dest: `${cssLibsDir}swiper/`,
-    },
+    }
 ];
 
 const tablerIconSources = [

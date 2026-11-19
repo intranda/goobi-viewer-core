@@ -17,13 +17,12 @@ class SocketBeanTest {
      * @verifies forward update message via push context
      */
     @Test
-    void send_shouldForwardUpdateMessageViaPushContext() throws InterruptedException {
+    void send_shouldForwardUpdateMessageViaPushContext() {
         PushContext push = Mockito.spy(PushContext.class);
         SocketBean bean = new SocketBean(0, push);
         bean.send(TEST_MESSAGE);
-        Thread.sleep(2);//sleep to avoid race condition, because message is sent asynchronously
-        Mockito.verify(push, Mockito.times(1)).send(UPDATE);
-
+        // The message is sent asynchronously by the shared scheduler thread, which may be delayed under load; wait for it instead of sleeping
+        Mockito.verify(push, Mockito.timeout(5000).times(1)).send(UPDATE);
     }
 
     /**

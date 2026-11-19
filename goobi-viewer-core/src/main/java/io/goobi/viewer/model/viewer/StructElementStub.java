@@ -187,12 +187,10 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         this.volume = volume;
     }
 
-    
     public boolean isCmsPage() {
         return cmsPage;
     }
 
-    
     public void setCmsPage(boolean cmsPage) {
         this.cmsPage = cmsPage;
     }
@@ -269,12 +267,10 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         this.docStructType = docStructType;
     }
 
-    
     public DocType getDocType() {
         return docType;
     }
 
-    
     public void setDocType(DocType docType) {
         this.docType = docType;
     }
@@ -339,7 +335,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      * @return the viewer URL for this struct element using the appropriate page type
      */
     public String getUrl() {
-        PageType pageType = PageType.determinePageType(docStructType, null, anchor || isGroup(), isHasImages(), false);
+        PageType pageType = PageType.determinePageType(docStructType, null, anchor || isGroup(), isHasMedia(), false);
         if (pageType != null) {
             return getUrl(pageType);
         }
@@ -411,6 +407,10 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     public boolean isHasImages() {
         String imageAvailable = getMetadataValue(SolrConstants.BOOL_IMAGEAVAILABLE);
         return imageAvailable != null && Boolean.valueOf(imageAvailable);
+    }
+
+    public boolean isHasMedia() {
+        return isHasImages();
     }
 
     /**

@@ -1,0 +1,53 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+    <!-- VIEW PODCAST EPISODE -->
+    <div
+        id="viewObjectContent"
+        class="view-object-content -podcast">
+        <div class="view-object-content__podlove">
+            <!-- ACCESS DENIED DESCRIPTION TEXT -->
+            <h:panelGroup
+                styleClass="view-object__access-denied-text"
+                rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionAudio and activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionTextForAudio(navigationHelper.locale) != null}">
+                <h:outputText
+                    escape="false"
+                    value="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionTextForAudio(navigationHelper.locale)}" />
+            </h:panelGroup>
+
+            <!-- PODLOVE PLAYER -->
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionAudio}">
+                <script src="#{request.contextPath}/resources/javascript/libs/podlove-player/embed.js?#{navigationHelper.buildVersion}" />
+                <!-- The player renders itself into an iframe. The layout template podcast-player-template.html is a copy of the bundled
+                     "xl" variant (@podlove/web-player 5.13.0) with "flex-shrink-0" on the poster column and "min-w-0" on the player column.
+                     Without them, hovering the progress bar over a chapter with a long title shrinks the poster, which moves the progress bar
+                     under the cursor to another chapter and makes the layout flicker. Compare the template with variant-xl when updating the player. -->
+                <div
+                    id="podcastPlayer"
+                    class="view-object-content__podlove-player"
+                    data-template="#{request.contextPath}/resources/includes/object/podcast-player-template.html?#{navigationHelper.buildVersion}"
+                    data-rest-api-url="#{configurationBean.restApiUrlV1}"
+                    data-context-path="#{request.contextPath}"
+                    data-pi="#{activeDocumentBean.viewManager.pi}"
+                    data-show-pi="#{activeDocumentBean.viewManager.topStructElement.getMetadataValue('GROUPID_PODCAST')}"
+                    data-title="#{msg.podcast_player__title}"
+                    data-language="#{navigationHelper.localeString}"
+                    data-active-tab="#{podcastActiveTab}" />
+                <!-- The player options are data attributes of the container (escaped as attribute values, unlike values in a script).
+                     Optional ui:param "podcastActiveTab" of the including page: tab that is open on load (default "chapters"),
+                     "none" starts the player collapsed. -->
+                <script>
+                    viewerJS.podlovePlayer.init({ selector: "#podcastPlayer" });
+                </script>
+            </ui:fragment>
+        </div>
+    </div>
+</ui:composition>

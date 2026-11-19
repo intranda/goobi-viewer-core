@@ -119,6 +119,9 @@ public final class SearchHelper {
 
     private static final Logger logger = LogManager.getLogger(SearchHelper.class);
 
+    /** Group identifier field name, e.g. GROUPID_PODCAST. */
+    private static final Pattern PATTERN_GROUPID_FIELD = Pattern.compile(SolrConstants.PREFIX_GROUPID + "[A-Za-z0-9_]+");
+
     /** Constant <code>PARAM_NAME_FILTER_QUERY_SUFFIX="filterQuerySuffix"</code>. */
     public static final String PARAM_NAME_FILTER_QUERY_SUFFIX = "filterQuerySuffix";
     /** Constant <code>SEARCH_TERM_SPLIT_REGEX</code>. */
@@ -1974,6 +1977,33 @@ public final class SearchHelper {
                 .getHitCount(new StringBuilder(SolrConstants.PI_PARENT).append(":\"")
                         .append(anchorPi)
                         .append("\" AND ")
+                        .append(SolrConstants.ISWORK)
+                        .append(":true")
+                        .toString());
+    }
+
+    /**
+     * Returns the live number of members of the given group (e.g. the episodes of a podcast), i.e. the current count of ISWORK records that reference
+     * it via the given GROUPID_* field. Computed at query time, so it reflects members added or removed since the group was last indexed.
+     *
+     * @param groupIdField Group identifier field of the group (value of its GROUPTYPE field), e.g. GROUPID_PODCAST
+     * @param groupPi PI of the group record
+     * @return the current number of group members; 0 if groupIdField is not a GROUPID_* field or groupPi is blank
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return correct count
+     * @should return zero if group id field invalid
+     */
+    public static long getGroupMemberCount(String groupIdField, String groupPi) throws PresentationException, IndexUnreachableException {
+        if (StringUtils.isBlank(groupPi) || groupIdField == null || !PATTERN_GROUPID_FIELD.matcher(groupIdField).matches()) {
+            return 0;
+        }
+        return DataManager.getInstance()
+                .getSearchIndex()
+                .getHitCount(new StringBuilder("+").append(groupIdField)
+                        .append(':')
+                        .append(ClientUtils.escapeQueryChars(groupPi))
+                        .append(" +")
                         .append(SolrConstants.ISWORK)
                         .append(":true")
                         .toString());

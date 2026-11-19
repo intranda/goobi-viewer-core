@@ -101,6 +101,9 @@
     <!-- cmdiFolder: contains CMDI metadata/fulltext files -->
     <cmdiFolder>cmdi</cmdiFolder>
 
+    <!-- transcriptFolder: contains JSON transcript files (e.g. of podcast episodes) -->
+    <transcriptFolder>transcript</transcriptFolder>
+
     <!-- annotationFolder: contains JSON files of annotations for indexing -->
     <annotationFolder>annotations</annotationFolder>
 
@@ -940,6 +943,20 @@
              Examples are:
              <metadataView index="1" label="label_metadata_codicological" url="_codicological" condition="MD_CODICOLOGICAL_UNIQUEIDENTIFIER">
              <metadataView index="2" label="label_metadata_special" url="_special" condition="MD_SPECIAL_FIELD:value">
+
+             Each <metadata> element (in metadataView and metadataList) may define an optional icon:
+             - icon: name of a Tabler icon (resources/icons/), either as file name (e.g. "info-circle") or as React
+               component name (e.g. "IconInfoCircle"). A React name ending in "Filled" (e.g. "IconInfoCircleFilled")
+               selects the filled variant.
+             - iconFilled: "true" selects the filled variant for file names (default: "false").
+             Metadata with an icon (and singleString="true", the default) are not displayed in the regular list, but together
+             on a single line below it (search hits, metadata view, sidebar metadata widget). Each entry shows the icon and the
+             value only; the label is used as tooltip. Use a value pattern (value="message key" with {0}) to add text to the
+             value, e.g. the message numEpisodesValue ("{0} Folgen") for the number of episodes.
+             Example:
+             <metadata label="numEpisodes" value="numEpisodesValue" icon="IconInfoCircleFilled">
+                 <param type="numvolumes" />
+             </metadata>
         -->
         <metadataView index="0" location="sidebar">
             <template name="_DEFAULT">
@@ -1400,6 +1417,28 @@
                 </metadata>
                 <!-- Number of years for periodicals (live count) -->
                 <metadata label="numYears">
+                    <param type="numvolumes" />
+                </metadata>
+            </template>
+            <!-- Podcast group documents (DOCSTRCT "podcast"); their members are episodes -->
+            <template name="podcast">
+                <metadata label="MD_CREATOR">
+                    <param type="field" key="MD_CREATOR" />
+                </metadata>
+                <metadata label="MD_YEARPUBLISH">
+                    <param type="field" key="MD_YEARPUBLISH" />
+                </metadata>
+                <metadata label="MD_PLACEPUBLISH">
+                    <param type="field" key="MD_PLACEPUBLISH" />
+                </metadata>
+                <metadata label="MD_SHELFMARK">
+                    <param type="field" key="MD_SHELFMARK" />
+                </metadata>
+                <metadata label="UGCTERMS">
+                    <param type="field" key="UGCTERMS" />
+                </metadata>
+                <!-- Number of episodes for podcasts (live count) -->
+                <metadata label="numEpisodes">
                     <param type="numvolumes" />
                 </metadata>
             </template>

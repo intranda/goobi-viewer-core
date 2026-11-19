@@ -277,4 +277,55 @@ class MetadataElementTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals(mdElement.getMetadataListBeforeFold().size(), foldPosition);
         assertEquals(md.size(), mdElement.getMetadataListBeforeFold().size() + mdElement.getMetadataListAfterFold().size());
     }
+
+    /**
+     * @see MetadataElement#getSidebarIconMetadataList()
+     * @verifies return only non blank icon line metadata
+     */
+    @Test
+    void getSidebarIconMetadataList_shouldReturnOnlyNonBlankIconLineMetadata() {
+        Metadata iconMd = createIconTestMetadata("info-circle", true, "920");
+        MetadataElement me = new MetadataElement();
+        me.setSidebarMetadataList(List.of(iconMd, createIconTestMetadata("info-circle", true, null), createIconTestMetadata(null, true, "foo")));
+
+        List<Metadata> result = me.getSidebarIconMetadataList();
+        assertEquals(1, result.size());
+        Assertions.assertSame(iconMd, result.get(0));
+    }
+
+    /**
+     * @see MetadataElement#getIconMetadataList(int)
+     * @verifies return only non blank icon line metadata of given type
+     */
+    @Test
+    void getIconMetadataList_shouldReturnOnlyNonBlankIconLineMetadataOfGivenType() {
+        Metadata iconMdType0 = createIconTestMetadata("info-circle", true, "920");
+        Metadata iconMdType1 = createIconTestMetadata("volume", true, "4 min").setType(1);
+        MetadataElement me = new MetadataElement();
+        me.getMetadataList().add(iconMdType0);
+        me.getMetadataList().add(iconMdType1);
+        me.getMetadataList().add(createIconTestMetadata(null, true, "foo"));
+
+        List<Metadata> result = me.getIconMetadataList(0);
+        assertEquals(1, result.size());
+        Assertions.assertSame(iconMdType0, result.get(0));
+        result = me.getIconMetadataList(1);
+        assertEquals(1, result.size());
+        Assertions.assertSame(iconMdType1, result.get(0));
+    }
+
+    /**
+     * @param icon icon name or null
+     * @param singleString single string flag
+     * @param value parameter value or null for a blank metadata
+     * @return {@link Metadata} with one FIELD parameter
+     */
+    private static Metadata createIconTestMetadata(String icon, boolean singleString, String value) {
+        Metadata md = new Metadata().setIcon(icon).setSingleString(singleString);
+        md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("MD_FOO"));
+        if (value != null) {
+            md.setParamValue(0, 0, Collections.singletonList(value), "MD_FOO", null, null, null, null);
+        }
+        return md;
+    }
 }

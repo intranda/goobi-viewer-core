@@ -188,6 +188,28 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @verifies resolve numvolumes param to the live member count for a group
+     * @see Metadata#populate(StructElement, String, java.util.List, Locale)
+     */
+    @Test
+    void populate_shouldResolveNumvolumesParamLiveForGroup() throws Exception {
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":287831965_F75a", null);
+        Assertions.assertNotNull(doc);
+        StructElement group = new StructElement((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
+        Assertions.assertTrue(group.isGroup());
+
+        long expected = SearchHelper.getGroupMemberCount(group.getGroupIdField(), "287831965_F75a");
+        Assertions.assertTrue(expected > 0, "test index group must have members");
+
+        Metadata metadata = new Metadata("MD_PODCASTFOLGEN", "",
+                Collections.singletonList(new MetadataParameter().setType(MetadataParameterType.NUMVOLUMES)));
+        metadata.populate(group, String.valueOf(group.getLuceneId()), null, Locale.ENGLISH);
+
+        Assertions.assertFalse(metadata.isBlank(null));
+        assertEquals(String.valueOf(expected), metadata.getValues().get(0).getComboValueShort(0));
+    }
+
+    /**
      * @verifies return true if all values have different ownerIddoc
      */
     @Test
@@ -574,5 +596,204 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
 
         assertEquals(one, other);
         assertEquals(one.hashCode(), other.hashCode());
+    }
+
+    /**
+     * @see Metadata#normalizeIconName(String)
+     * @verifies return file name unchanged
+     */
+    @Test
+    void normalizeIconName_shouldReturnFileNameUnchanged() {
+        Assertions.assertEquals("info-circle", Metadata.normalizeIconName("info-circle"));
+        Assertions.assertEquals("number-1-small", Metadata.normalizeIconName(" number-1-small "));
+    }
+
+    /**
+     * @see Metadata#normalizeIconName(String)
+     * @verifies convert react style name to kebab case
+     */
+    @Test
+    void normalizeIconName_shouldConvertReactStyleNameToKebabCase() {
+        Assertions.assertEquals("info-circle", Metadata.normalizeIconName("IconInfoCircle"));
+        Assertions.assertEquals("arrow-big-down-lines", Metadata.normalizeIconName("IconArrowBigDownLines"));
+        Assertions.assertEquals("a-b", Metadata.normalizeIconName("IconAB"));
+    }
+
+    /**
+     * @see Metadata#normalizeIconName(String)
+     * @verifies strip filled suffix from react style name
+     */
+    @Test
+    void normalizeIconName_shouldStripFilledSuffixFromReactStyleName() {
+        Assertions.assertEquals("info-circle", Metadata.normalizeIconName("IconInfoCircleFilled"));
+        Assertions.assertTrue(Metadata.isFilledIconName("IconInfoCircleFilled"));
+        Assertions.assertFalse(Metadata.isFilledIconName("IconInfoCircle"));
+        Assertions.assertFalse(Metadata.isFilledIconName("info-circle"));
+    }
+
+    /**
+     * @see Metadata#normalizeIconName(String)
+     * @verifies separate digits from letters
+     */
+    @Test
+    void normalizeIconName_shouldSeparateDigitsFromLetters() {
+        Assertions.assertEquals("number-1-small", Metadata.normalizeIconName("IconNumber1Small"));
+        Assertions.assertEquals("square-number-10", Metadata.normalizeIconName("IconSquareNumber10"));
+        Assertions.assertEquals("h-1", Metadata.normalizeIconName("IconH1"));
+        Assertions.assertEquals("a-b-2", Metadata.normalizeIconName("IconAB2"));
+    }
+
+    /**
+     * @see Metadata#normalizeIconName(String)
+     * @verifies return null if name blank
+     */
+    @Test
+    void normalizeIconName_shouldReturnNullIfNameBlank() {
+        Assertions.assertNull(Metadata.normalizeIconName(null));
+        Assertions.assertNull(Metadata.normalizeIconName(" "));
+    }
+
+    /**
+     * @see Metadata#normalizeIconName(String)
+     * @verifies return null if name contains illegal characters
+     */
+    @Test
+    void normalizeIconName_shouldReturnNullIfNameContainsIllegalCharacters() {
+        Assertions.assertNull(Metadata.normalizeIconName("../info-circle"));
+        Assertions.assertNull(Metadata.normalizeIconName("info circle"));
+        Assertions.assertNull(Metadata.normalizeIconName("Info-Circle"));
+    }
+
+    /**
+     * @see Metadata#setIcon(String)
+     * @verifies set file name style icon as is
+     */
+    @Test
+    void setIcon_shouldSetFileNameStyleIconAsIs() {
+        Metadata md = new Metadata().setIcon("info-circle");
+        Assertions.assertTrue(md.isHasIcon());
+        Assertions.assertEquals("info-circle", md.getIcon());
+        Assertions.assertFalse(md.isIconFilled());
+        Assertions.assertTrue(md.setIconFilled(true).isIconFilled());
+    }
+
+    /**
+     * @see Metadata#setIcon(String)
+     * @verifies convert react style icon name and select filled variant
+     */
+    @Test
+    void setIcon_shouldConvertReactStyleIconNameAndSelectFilledVariant() {
+        // Order of setters must not matter
+        Metadata md = new Metadata().setIcon("IconInfoCircleFilled").setIconFilled(false);
+        Assertions.assertEquals("info-circle", md.getIcon());
+        Assertions.assertTrue(md.isIconFilled());
+
+        // Copy constructor keeps icon and variant
+        Metadata copy = new Metadata(md);
+        Assertions.assertEquals("info-circle", copy.getIcon());
+        Assertions.assertTrue(copy.isIconFilled());
+    }
+
+    /**
+     * @see Metadata#setIcon(String)
+     * @verifies reset icon if name blank or invalid
+     */
+    @Test
+    void setIcon_shouldResetIconIfNameBlankOrInvalid() {
+        Metadata md = new Metadata().setIcon("IconInfoCircleFilled");
+        md.setIcon("");
+        Assertions.assertFalse(md.isHasIcon());
+        Assertions.assertFalse(md.isIconFilled());
+        md.setIcon("../evil");
+        Assertions.assertFalse(md.isHasIcon());
+    }
+
+    /**
+     * @see Metadata#isShowInIconLine()
+     * @verifies return true if icon configured and single string
+     */
+    @Test
+    void isShowInIconLine_shouldReturnTrueIfIconConfiguredAndSingleString() {
+        Assertions.assertTrue(new Metadata().setIcon("info-circle").setSingleString(true).isShowInIconLine());
+    }
+
+    /**
+     * @see Metadata#isShowInIconLine()
+     * @verifies return false if no icon configured
+     */
+    @Test
+    void isShowInIconLine_shouldReturnFalseIfNoIconConfigured() {
+        Assertions.assertFalse(new Metadata().setSingleString(true).isShowInIconLine());
+    }
+
+    /**
+     * @see Metadata#isShowInIconLine()
+     * @verifies return false if not single string
+     */
+    @Test
+    void isShowInIconLine_shouldReturnFalseIfNotSingleString() {
+        Assertions.assertFalse(new Metadata().setIcon("info-circle").setSingleString(false).isShowInIconLine());
+    }
+
+    /**
+     * @see Metadata#filterIconLineMetadata(List)
+     * @verifies return only non blank icon line metadata
+     */
+    @Test
+    void filterIconLineMetadata_shouldReturnOnlyNonBlankIconLineMetadata() {
+        Metadata iconMd = createIconTestMetadata("info-circle", true, "920");
+        Metadata blankIconMd = createIconTestMetadata("info-circle", true, null);
+        Metadata plainMd = createIconTestMetadata(null, true, "foo");
+        Metadata tableMd = createIconTestMetadata("info-circle", false, "bar");
+
+        List<Metadata> result = Metadata.filterIconLineMetadata(Arrays.asList(iconMd, blankIconMd, plainMd, tableMd));
+        assertEquals(1, result.size());
+        Assertions.assertSame(iconMd, result.get(0));
+    }
+
+    /**
+     * @see Metadata#filterIconLineMetadata(List)
+     * @verifies return empty list if metadata list null
+     */
+    @Test
+    void filterIconLineMetadata_shouldReturnEmptyListIfMetadataListNull() {
+        Assertions.assertTrue(Metadata.filterIconLineMetadata(null).isEmpty());
+    }
+
+    /**
+     * @param icon icon name or null
+     * @param singleString single string flag
+     * @param value parameter value or null for a blank metadata
+     * @return {@link Metadata} with one FIELD parameter
+     */
+    /**
+     * @see Metadata#hasParam(String)
+     * @verifies return true if param with given key exists
+     */
+    @Test
+    void hasParam_shouldReturnTrueIfParamWithGivenKeyExists() {
+        Metadata md = new Metadata();
+        md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("MD_FOO"));
+        Assertions.assertTrue(md.hasParam("MD_FOO"));
+    }
+
+    /**
+     * @see Metadata#hasParam(String)
+     * @verifies return false and not fail if params without key exist
+     */
+    @Test
+    void hasParam_shouldReturnFalseAndNotFailIfParamsWithoutKeyExist() {
+        Metadata md = new Metadata();
+        md.getParams().add(new MetadataParameter().setType(MetadataParameterType.NUMVOLUMES));
+        Assertions.assertFalse(md.hasParam(SolrConstants.URN));
+    }
+
+    private static Metadata createIconTestMetadata(String icon, boolean singleString, String value) {
+        Metadata md = new Metadata().setIcon(icon).setSingleString(singleString);
+        md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("MD_FOO"));
+        if (value != null) {
+            md.setParamValue(0, 0, Collections.singletonList(value), "MD_FOO", null, null, null, null);
+        }
+        return md;
     }
 }

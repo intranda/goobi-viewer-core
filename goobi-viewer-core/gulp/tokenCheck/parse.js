@@ -216,6 +216,35 @@ function readLessTree(root) {
     return out;
 }
 
+/**
+ * Token names the scripts under root read at runtime, e.g. getComputedStyle(el).getPropertyValue('--name'): every quoted --name.
+ *
+ * @param {string} root directory of the scripts
+ * @returns {Set<string>} token names
+ */
+function readScriptTokens(root) {
+    const names = new Set();
+    if (!fs.existsSync(root)) {
+        return names;
+    }
+    const walk = (dir) => {
+        for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+            const full = path.join(dir, entry.name);
+            if (entry.isDirectory()) {
+                if (entry.name !== '__tests__' && entry.name !== 'node_modules') {
+                    walk(full);
+                }
+            } else if (entry.name.endsWith('.js')) {
+                for (const m of fs.readFileSync(full, 'utf8').matchAll(/['"`](--[a-z][\w-]*)['"`]/g)) {
+                    names.add(m[1]);
+                }
+            }
+        }
+    };
+    walk(root);
+    return names;
+}
+
 module.exports = {
     stripComments,
     withoutStrings,
@@ -225,4 +254,5 @@ module.exports = {
     parseLess,
     parseAll,
     readLessTree,
+    readScriptTokens,
 };

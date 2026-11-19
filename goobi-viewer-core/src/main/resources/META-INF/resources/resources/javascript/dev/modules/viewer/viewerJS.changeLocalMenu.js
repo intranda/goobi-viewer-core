@@ -121,13 +121,7 @@ var viewerJS = (function (viewer) {
                 });
 
                 $(document).on('click', function (e) {
-                    if (
-                        isOpen() &&
-                        !$list.is(e.target) &&
-                        $list.has(e.target).length === 0 &&
-                        !$button.is(e.target) &&
-                        $button.has(e.target).length === 0
-                    ) {
+                    if (isOpen() && !$list.is(e.target) && $list.has(e.target).length === 0 && !$button.is(e.target) && $button.has(e.target).length === 0) {
                         closeMenu(false);
                     }
                 });

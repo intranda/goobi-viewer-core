@@ -29,10 +29,6 @@
                 &__hit-info-wrapper {
                     padding: 1rem;
                 }
-                &__hit-options-wrapper {
-                    top: 5px;
-                    right: 5px;
-                }
             }
             /* WITHOUT A PREVIEW THE TITLE CENTRES */
             .search-list__hit:not(:has(.search-list__hit-thumbnail)) .search-list__hit-inner-structure {
@@ -144,6 +140,15 @@
         }
     }
 }
+
+/* TOOLS IN THE TILE CORNER, ABOVE TABLET ONLY */
+@media (min-width: (@smallBreakpoint + 1)) {
+    .search-list__hits.grid .search-list__hit-options-wrapper {
+        top: 5px;
+        right: 5px;
+    }
+}
+
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
 }

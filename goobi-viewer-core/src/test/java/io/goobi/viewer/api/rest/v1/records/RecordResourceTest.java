@@ -26,6 +26,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_COMMENTS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LAYER;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LAYOUT_TAGS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LAYOUT_TAGS_INDEX;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PODCAST_FEED;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_METADATA_SOURCE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_NER_TAGS;
@@ -469,6 +470,21 @@ class RecordResourceTest extends AbstractRestApiTest {
             try (Response response = target(url).queryParam(param, 0).request().accept(MediaType.APPLICATION_JSON).get()) {
                 assertEquals(400, response.getStatus(), param + "=0 should return status 400: " + response.getStatusInfo().getReasonPhrase());
             }
+        }
+    }
+
+    /**
+     * @see RecordResource#getPodcastFeed()
+     * @verifies return 404 for unknown show
+     */
+    @Test
+    void getPodcastFeed_shouldReturn404ForUnknownShow() {
+        try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_PODCAST_FEED).params("NONEXISTENT_PODCAST_99999").build())
+                .request()
+                .get()) {
+            assertEquals(404, response.getStatus());
+            // Distinguishes the builder's 404 from Jersey's 404 for an unmapped path
+            assertTrue(response.readEntity(String.class).contains("No podcast found"));
         }
     }
 }

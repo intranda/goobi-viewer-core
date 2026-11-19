@@ -27,6 +27,8 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_MEDIA;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PLAINTEXT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_SOURCE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TEI;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TRANSCRIPT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TRANSCRIPT_VTT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -179,6 +181,80 @@ class RecordFileResourceTest extends AbstractRestApiTest {
         try (Response response = target(url)
                 .request()
                 .get()) {
+            assertEquals(404, response.getStatus(), "Should return status 404");
+        }
+    }
+
+    /**
+     * @verifies return 400 if file name is not a json file
+     * @see RecordFileResource#getTranscript
+     */
+    @Test
+    void getTranscript_shouldReturn400IfFileNameIsNotAJsonFile() {
+        String url = urls.path(RECORDS_FILES, RECORDS_FILES_TRANSCRIPT).params(PI, FILENAME + ".txt").build();
+        try (Response response = target(url).request().get()) {
+            assertEquals(400, response.getStatus(), response.getStatusInfo().getReasonPhrase());
+        }
+    }
+
+    /**
+     * @verifies return 403 if no page grants access to the file
+     * @see RecordFileResource#getTranscript
+     */
+    @Test
+    void getTranscript_shouldReturn403IfNoPageGrantsAccessToTheFile() {
+        // The test index has no page with FILENAME_JSON for this record, so the VIEW_FULLTEXT check cannot be granted
+        String url = urls.path(RECORDS_FILES, RECORDS_FILES_TRANSCRIPT).params(PI, FILENAME + ".json").build();
+        try (Response response = target(url).request().accept(MediaType.APPLICATION_JSON).get()) {
+            assertEquals(403, response.getStatus(), response.getStatusInfo().getReasonPhrase());
+        }
+    }
+
+    /**
+     * @verifies return 404 for path traversal attempt
+     * @see RecordFileResource#getTranscript
+     */
+    @Test
+    void getTranscript_shouldReturn404ForPathTraversalAttempt() {
+        String url = urls.path(RECORDS_FILES, RECORDS_FILES_TRANSCRIPT).params(PI, "/../../../../..//etc/passwd.json").build();
+        try (Response response = target(url).request().get()) {
+            assertEquals(404, response.getStatus(), "Should return status 404");
+        }
+    }
+
+    /**
+     * @verifies return 400 if file name is not a vtt file
+     * @see RecordFileResource#getVttTranscript
+     */
+    @Test
+    void getVttTranscript_shouldReturn400IfFileNameIsNotAVttFile() {
+        String url = urls.path(RECORDS_FILES, RECORDS_FILES_TRANSCRIPT_VTT).params(PI, FILENAME + ".json").build();
+        try (Response response = target(url).request().get()) {
+            assertEquals(400, response.getStatus(), response.getStatusInfo().getReasonPhrase());
+        }
+    }
+
+    /**
+     * @verifies return 403 if no page grants access to the file
+     * @see RecordFileResource#getVttTranscript
+     */
+    @Test
+    void getVttTranscript_shouldReturn403IfNoPageGrantsAccessToTheFile() {
+        // The test index has no page with FILENAME_VTT for this record, so the VIEW_FULLTEXT check cannot be granted
+        String url = urls.path(RECORDS_FILES, RECORDS_FILES_TRANSCRIPT_VTT).params(PI, FILENAME + ".vtt").build();
+        try (Response response = target(url).request().accept(MediaType.APPLICATION_JSON).get()) {
+            assertEquals(403, response.getStatus(), response.getStatusInfo().getReasonPhrase());
+        }
+    }
+
+    /**
+     * @verifies return 404 for path traversal attempt
+     * @see RecordFileResource#getVttTranscript
+     */
+    @Test
+    void getVttTranscript_shouldReturn404ForPathTraversalAttempt() {
+        String url = urls.path(RECORDS_FILES, RECORDS_FILES_TRANSCRIPT_VTT).params(PI, "/../../../../..//etc/passwd.vtt").build();
+        try (Response response = target(url).request().get()) {
             assertEquals(404, response.getStatus(), "Should return status 404");
         }
     }

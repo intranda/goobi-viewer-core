@@ -52,6 +52,8 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.security.LicenseTypeCache;
+import io.goobi.viewer.model.metadata.MetadataParameter;
+import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -707,5 +709,40 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         ThumbnailHandler thumbs =
                 new ThumbnailHandler(new IIIFUrlHandler(new ApiUrls(ApiUrls.API)), "http://localhost:8080/viewer/resources/images/");
         return new BrowseElement(se, new HashMap<>(), Locale.ENGLISH, null, null, thumbs, null);
+    }
+
+    /**
+     * @see BrowseElement#getIconMetadataListForLocale(Locale)
+     * @verifies return only non blank icon line metadata
+     */
+    @Test
+    void getIconMetadataListForLocale_shouldReturnOnlyNonBlankIconLineMetadata() throws Exception {
+        StructElement se = new StructElement();
+        se.setPi("PPN123");
+        BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
+        Metadata iconMd = createIconTestMetadata("info-circle", true, "920");
+        be.getMetadataList().add(iconMd);
+        be.getMetadataList().add(createIconTestMetadata("info-circle", true, null));
+        be.getMetadataList().add(createIconTestMetadata(null, true, "foo"));
+
+        List<Metadata> result = be.getIconMetadataListForLocale(Locale.ENGLISH);
+        assertEquals(1, result.size());
+        assertTrue(result.get(0) == iconMd);
+    }
+
+    /**
+     * @param icon icon name or null
+     * @param singleString single string flag
+     * @param value parameter value or null for a blank metadata
+     * @return {@link Metadata} with one FIELD parameter
+     */
+    private static Metadata createIconTestMetadata(String icon, boolean singleString, String value) {
+        Metadata md = new Metadata().setIcon(icon).setSingleString(singleString);
+        md.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("MD_FOO"));
+        if (value != null) {
+            md.setParamValue(0, 0, Collections.singletonList(value), "MD_FOO", null, null, null, null);
+        }
+        return md;
     }
 }

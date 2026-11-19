@@ -90,6 +90,9 @@ public class ThumbnailHandler {
     private static final String OBJECT_3D_THUMB = "thumbnail_3d.png";
     private static final String GROUP_THUMB = "thumbnail_group.jpg";
     private static final String MEI_THUMB = "thumbnail_mei.png";
+    private static final String PODCAST_THUMB = "thumbnail_podcast.png";
+    /** DOCSTRCT value of podcast group documents (lower-case GROUPID_PODCAST suffix). */
+    private static final String DOCSTRCT_PODCAST = "podcast";
 
     /** Constant <code>REQUIRED_SOLR_FIELDS</code>. */
     public static final Set<String> REQUIRED_SOLR_FIELDS =
@@ -616,6 +619,7 @@ public class ThumbnailHandler {
      * @param width maximum thumbnail width in pixels
      * @param height maximum thumbnail height in pixels
      * @return the thumbnail image URL for the given struct element scaled to fit within the given bounds
+     * @should return external url for group thumbnail containing nested url
      */
     public String getThumbnailUrl(StructElement se, int width, int height) {
         return getThumbnailUrl(se, se.getPi(), width, height);
@@ -814,6 +818,9 @@ public class ThumbnailHandler {
      *            {@link io.goobi.viewer.solr.SolrConstants#THUMBNAIL}
      * @return The representative thumbnail url for the given doc, or a replacement image url if no representative thumbnail url is applicable (born
      *         digital material and - depending on configuration - anchors)
+     * @should return own thumbnail url for group
+     * @should return first volume thumbnail for group without own thumbnail
+     * @should ignore relative own thumbnail for group
      */
     String getImagePath(StructElement doc) {
         if (doc == null) {
@@ -828,7 +835,9 @@ public class ThumbnailHandler {
             thumbnailUrl = getCMSPageImagePath(doc, thumbnailUrl);
 
         } else if (doc.isAnchor() || doc.isGroup()) {
-            thumbnailUrl = getAnchorImagePath(doc, thumbnailUrl, anchorThumbnailMode);
+            // Groups (e.g. podcasts) may carry their own thumbnail; otherwise treat them like anchors
+            String groupImagePath = doc.isGroup() ? getGroupImagePath(doc) : null;
+            thumbnailUrl = groupImagePath != null ? groupImagePath : getAnchorImagePath(doc, thumbnailUrl, anchorThumbnailMode);
         } else {
             thumbnailUrl = getDocumentImagePath(doc, thumbnailUrl);
         }
@@ -904,18 +913,69 @@ public class ThumbnailHandler {
     }
 
     /**
+     * Returns the group document's own {@link SolrConstants#THUMBNAIL} value (e.g. a podcast image), if it is an absolute URI or a file in the
+     * media folder of a member record, given as <code>&lt;record PI&gt;/&lt;file name&gt;</code> (the indexer uses the latter for images from the
+     * <code>&lt;GROUPSUFFIX&gt;-TEASER</code> file group). Plain file names are ignored because group documents have no media folder of their own.
+     *
+     * @param doc group struct element
+     * @return Absolute thumbnail URI or record-relative file path of the group document; null if none is set
+     * @should return record relative file path
+     * @should return absolute url
+     * @should return null for plain file name
+     */
+    static String getGroupImagePath(StructElement doc) {
+        String thumbnail = doc.getMetadataValue(SolrConstants.THUMBNAIL);
+        if (StringUtils.isBlank(thumbnail)) {
+            return null;
+        }
+        if (isRecordRelativeFilePath(thumbnail)) {
+            return thumbnail;
+        }
+        try {
+            if (PathConverter.toURI(thumbnail).isAbsolute()) {
+                return thumbnail;
+            }
+        } catch (URISyntaxException e) {
+            logger.warn("Invalid thumbnail URI for group {}: {}", doc.getPi(), thumbnail);
+        }
+
+        return null;
+    }
+
+    /**
+     * @param value thumbnail value to check
+     * @return true if value has the form <code>&lt;record PI&gt;/&lt;file name&gt;</code>; false otherwise
+     */
+    private static boolean isRecordRelativeFilePath(String value) {
+        String[] parts = value.split("/", -1);
+        return parts.length == 2 && StringUtils.isNotBlank(parts[0]) && StringUtils.isNotBlank(parts[1]) && !parts[0].endsWith(":");
+    }
+
+    /**
+     * @param doc struct element to check
+     * @return true if doc is a podcast group document; false otherwise
+     */
+    static boolean isPodcast(StructElement doc) {
+        return doc.isGroup() && DOCSTRCT_PODCAST.equals(doc.getDocStructType());
+    }
+
+    /**
      *
      * @param doc anchor or group struct element whose image path to resolve
      * @param thumbnailUrl fallback thumbnail URL if no specific path is determined
      * @param anchorThumbnailMode configured mode for selecting the anchor thumbnail
      * @return {@link String}
+     * @should return podcast thumbnail for podcast group in generic mode
+     * @should return podcast thumbnail for podcast group without episodes in first volume mode
+     * @should return anchor thumbnail for non podcast group in generic mode
      */
     public String getAnchorImagePath(StructElement doc, final String thumbnailUrl, String anchorThumbnailMode) {
         String ret = thumbnailUrl;
+        String genericThumb = isPodcast(doc) ? PODCAST_THUMB : ANCHOR_THUMB;
 
         // Anchor
         if (StringConstants.ANCHOR_THUMBNAIL_MODE_GENERIC.equals(anchorThumbnailMode)) {
-            ret = getThumbnailPath(ANCHOR_THUMB).toString();
+            ret = getThumbnailPath(genericThumb).toString();
         } else if (StringConstants.ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME.equals(anchorThumbnailMode)) {
             try {
                 //if possible, find volumes with thumbnail
@@ -932,10 +992,10 @@ public class ThumbnailHandler {
                             ret = volume.getPi() + "/" + volumeImagePath;
                         }
                     } else {
-                        ret = getThumbnailPath(ANCHOR_THUMB).toString();
+                        ret = getThumbnailPath(genericThumb).toString();
                     }
                 } else {
-                    ret = getThumbnailPath(ANCHOR_THUMB).toString();
+                    ret = getThumbnailPath(genericThumb).toString();
                 }
             } catch (PresentationException | IndexUnreachableException | URISyntaxException e) {
                 logger.error("Unable to retrieve first volume of {} from index", doc, e);

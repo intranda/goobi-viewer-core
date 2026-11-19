@@ -9,6 +9,8 @@ const MODULE_ROOT = path.resolve(__dirname, '../..');
 
 const LESS_ROOT = 'src/main/resources/META-INF/resources/resources/css/less';
 
+const SCRIPT_ROOT = 'src/main/resources/META-INF/resources/resources/javascript/dev/modules';
+
 const THEME_ROOT = '../goobi-viewer-theme-reference/WebContent/resources/themes/reference';
 
 const THEME_LESS_ROOT = `${THEME_ROOT}/css/less`;
@@ -110,6 +112,7 @@ const isTypographyProperty = (name) => name === 'font-size' || name === 'font';
 module.exports = {
     MODULE_ROOT,
     LESS_ROOT,
+    SCRIPT_ROOT,
     THEME_ROOT,
     THEME_LESS_ROOT,
     themePaths,

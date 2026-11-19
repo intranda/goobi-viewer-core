@@ -57,111 +57,121 @@
                             <c:forEach
                                 items="#{metadataElement.sidebarMetadataList}"
                                 var="metadata">
-                                <div class="widget-metadata__key-value-group">
-                                    <dt title="#{metadata.label}">
-                                        <h:outputText
-                                            value="#{msg[metadata.label]}:"
-                                            escape="false" />
-                                    </dt>
+                                <!-- Metadata with an icon are displayed in the icon line below this list -->
+                                <ui:fragment rendered="#{!metadata.showInIconLine}">
+                                    <div class="widget-metadata__key-value-group">
+                                        <dt title="#{metadata.label}">
+                                            <h:outputText
+                                                value="#{msg[metadata.label]}:"
+                                                escape="false" />
+                                        </dt>
 
-                                    <!-- GROUPED METADATA -->
-                                    <h:panelGroup rendered="#{metadata.group}">
-                                        <!-- SINGLE STRING -->
-                                        <h:panelGroup rendered="#{metadata.singleString}">
-                                            <c:forEach
-                                                items="#{metadata.values}"
-                                                var="val">
-                                                <dd>
-                                                    <!-- METADATA VALUE -->
-                                                    <h:panelGroup rendered="#{metadata.singleString}">
-                                                        <ui:fragment rendered="#{val.accessRestricted}">
-                                                            <span
-                                                                class="metadata__locked-value-icon"
-                                                                data-toggle="tooltip"
-                                                                title="#{msg.metadata__restricted_value_tooltip}">
-                                                                <util:icon
-                                                                    icon="lock-open-2"
-                                                                    svgClass="widget__body-icon-svg widget-metadata__body-icon-svg" />
-                                                            </span>
-                                                        </ui:fragment>
-                                                        <h:outputFormat
-                                                            value="#{val.getDisplayValue(navigationHelper.locale, true)}"
-                                                            escape="false" />
-                                                    </h:panelGroup>
-
-                                                    <!-- CHILD METADATA -->
-                                                    <c:forEach
-                                                        var="child"
-                                                        items="#{metadata.childMetadata}"
-                                                        varStatus="status">
-                                                        <ui:fragment rendered="#{!child.isBlank(val.iddoc)}">
-                                                            <ui:fragment rendered="#{child.singleString}">
-                                                                <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
-                                                                    <ui:param
-                                                                        name="metadata"
-                                                                        value="#{metadata.childMetadata[status.index]}" />
-                                                                </ui:include>
-                                                            </ui:fragment>
-                                                            <ui:fragment rendered="#{!child.singleString}">
-                                                                <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
-                                                                    <ui:param
-                                                                        name="metadata"
-                                                                        value="#{metadata.childMetadata[status.index]}" />
-                                                                </ui:include>
-                                                            </ui:fragment>
-                                                        </ui:fragment>
-                                                    </c:forEach>
-                                                </dd>
-                                            </c:forEach>
-                                        </h:panelGroup>
-
-                                        <!-- KEY VALUE PAIRS -->
-                                        <h:panelGroup rendered="#{!metadata.singleString}">
-                                            <c:forEach
-                                                begin="0"
-                                                end="#{metadata.paramCount - 0}"
-                                                var="ind0">
-                                                <ui:fragment rendered="#{!val.isParamValueBlank(ind0)}">
-                                                    <dt>
-                                                        <h:outputText
-                                                            value="#{val.getParamLabelWithColon(ind0)}"
-                                                            escape="false" />
-                                                    </dt>
+                                        <!-- GROUPED METADATA -->
+                                        <h:panelGroup rendered="#{metadata.group}">
+                                            <!-- SINGLE STRING -->
+                                            <h:panelGroup rendered="#{metadata.singleString}">
+                                                <c:forEach
+                                                    items="#{metadata.values}"
+                                                    var="val">
                                                     <dd>
-                                                        <ui:fragment rendered="#{val.accessRestricted}">
-                                                            <span
-                                                                class="metadata__locked-value-icon"
-                                                                data-toggle="tooltip"
-                                                                title="#{msg.metadata__restricted_value_tooltip}">
-                                                                <util:icon
-                                                                    icon="lock-open-2"
-                                                                    svgClass="widget__body-icon-svg widget-metadata__body-icon-svg" />
-                                                            </span>
-                                                        </ui:fragment>
-                                                        <h:outputText
-                                                            value="#{val.getDisplayParamValue(ind0)}"
-                                                            escape="false" />
-                                                    </dd>
-                                                </ui:fragment>
-                                            </c:forEach>
-                                        </h:panelGroup>
-                                    </h:panelGroup>
+                                                        <!-- METADATA VALUE -->
+                                                        <h:panelGroup rendered="#{metadata.singleString}">
+                                                            <ui:fragment rendered="#{val.accessRestricted}">
+                                                                <span
+                                                                    class="metadata__locked-value-icon"
+                                                                    data-toggle="tooltip"
+                                                                    title="#{msg.metadata__restricted_value_tooltip}">
+                                                                    <util:icon
+                                                                        icon="lock-open-2"
+                                                                        svgClass="widget__body-icon-svg widget-metadata__body-icon-svg" />
+                                                                </span>
+                                                            </ui:fragment>
+                                                            <h:outputFormat
+                                                                value="#{val.getDisplayValue(navigationHelper.locale, true)}"
+                                                                escape="false" />
+                                                        </h:panelGroup>
 
-                                    <!-- NON-GROUPED METADATA -->
-                                    <h:panelGroup rendered="#{!metadata.group}">
-                                        <ui:repeat
-                                            value="#{metadata.values}"
-                                            var="val">
-                                            <dd class="widget-metadata__non-grouped-metadata-dd">
-                                                <h:outputFormat
-                                                    value="#{val.getDisplayValue(navigationHelper.locale)}"
-                                                    escape="false" />
-                                            </dd>
-                                        </ui:repeat>
-                                    </h:panelGroup>
-                                </div>
+                                                        <!-- CHILD METADATA -->
+                                                        <c:forEach
+                                                            var="child"
+                                                            items="#{metadata.childMetadata}"
+                                                            varStatus="status">
+                                                            <ui:fragment rendered="#{!child.isBlank(val.iddoc)}">
+                                                                <ui:fragment rendered="#{child.singleString}">
+                                                                    <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
+                                                                        <ui:param
+                                                                            name="metadata"
+                                                                            value="#{metadata.childMetadata[status.index]}" />
+                                                                    </ui:include>
+                                                                </ui:fragment>
+                                                                <ui:fragment rendered="#{!child.singleString}">
+                                                                    <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
+                                                                        <ui:param
+                                                                            name="metadata"
+                                                                            value="#{metadata.childMetadata[status.index]}" />
+                                                                    </ui:include>
+                                                                </ui:fragment>
+                                                            </ui:fragment>
+                                                        </c:forEach>
+                                                    </dd>
+                                                </c:forEach>
+                                            </h:panelGroup>
+
+                                            <!-- KEY VALUE PAIRS -->
+                                            <h:panelGroup rendered="#{!metadata.singleString}">
+                                                <c:forEach
+                                                    begin="0"
+                                                    end="#{metadata.paramCount - 0}"
+                                                    var="ind0">
+                                                    <ui:fragment rendered="#{!val.isParamValueBlank(ind0)}">
+                                                        <dt>
+                                                            <h:outputText
+                                                                value="#{val.getParamLabelWithColon(ind0)}"
+                                                                escape="false" />
+                                                        </dt>
+                                                        <dd>
+                                                            <ui:fragment rendered="#{val.accessRestricted}">
+                                                                <span
+                                                                    class="metadata__locked-value-icon"
+                                                                    data-toggle="tooltip"
+                                                                    title="#{msg.metadata__restricted_value_tooltip}">
+                                                                    <util:icon
+                                                                        icon="lock-open-2"
+                                                                        svgClass="widget__body-icon-svg widget-metadata__body-icon-svg" />
+                                                                </span>
+                                                            </ui:fragment>
+                                                            <h:outputText
+                                                                value="#{val.getDisplayParamValue(ind0)}"
+                                                                escape="false" />
+                                                        </dd>
+                                                    </ui:fragment>
+                                                </c:forEach>
+                                            </h:panelGroup>
+                                        </h:panelGroup>
+
+                                        <!-- NON-GROUPED METADATA -->
+                                        <h:panelGroup rendered="#{!metadata.group}">
+                                            <ui:repeat
+                                                value="#{metadata.values}"
+                                                var="val">
+                                                <dd class="widget-metadata__non-grouped-metadata-dd">
+                                                    <h:outputFormat
+                                                        value="#{val.getDisplayValue(navigationHelper.locale)}"
+                                                        escape="false" />
+                                                </dd>
+                                            </ui:repeat>
+                                        </h:panelGroup>
+                                    </div>
+                                </ui:fragment>
                             </c:forEach>
                         </dl>
+
+                        <!-- METADATA WITH ICONS (SINGLE LINE BELOW THE LIST) -->
+                        <ui:include src="/resources/includes/metadata/metadataIconLine.xhtml">
+                            <ui:param
+                                name="iconMetadataList"
+                                value="#{metadataElement.sidebarIconMetadataList}" />
+                        </ui:include>
                     </ui:fragment>
                 </c:forEach>
 

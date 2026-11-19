@@ -33,7 +33,7 @@
                         <c:forEach
                             items="#{metadataElement.metadataListBeforeFold}"
                             var="metadata">
-                            <h:panelGroup rendered="#{metadata.type == type.type and !metadata.blank}">
+                            <h:panelGroup rendered="#{metadata.type == type.type and !metadata.blank and !metadata.showInIconLine}">
                                 <!-- GROUPED VALUES -->
                                 <h:panelGroup rendered="#{metadata.group}">
                                     <!-- SINGLE STRING -->
@@ -90,7 +90,7 @@
                         <c:forEach
                             items="#{metadataElement.metadataList}"
                             var="metadata">
-                            <h:panelGroup rendered="#{metadata.type == type.type and !metadata.blank}">
+                            <h:panelGroup rendered="#{metadata.type == type.type and !metadata.blank and !metadata.showInIconLine}">
                                 <!-- GROUPED VALUES -->
                                 <h:panelGroup rendered="#{metadata.group}">
                                     <!-- SINGLE STRING -->
@@ -139,6 +139,13 @@
                             </h:panelGroup>
                         </c:forEach>
                     </div>
+
+                    <!-- METADATA WITH ICONS (SINGLE LINE BELOW THE LIST, ALWAYS VISIBLE) -->
+                    <ui:include src="/resources/includes/metadata/metadataIconLine.xhtml">
+                        <ui:param
+                            name="iconMetadataList"
+                            value="#{metadataElement.getIconMetadataList(type.type)}" />
+                    </ui:include>
 
                     <!-- FOLD BUTTONS -->
                     <h:panelGroup

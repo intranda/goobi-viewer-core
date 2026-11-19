@@ -85,6 +85,13 @@ public class Metadata implements MetadataListElement, Serializable {
 
     private static final Logger logger = LogManager.getLogger(Metadata.class);
 
+    private static final String REACT_ICON_PREFIX = "Icon";
+    private static final String REACT_ICON_FILLED_SUFFIX = "Filled";
+    /** React-style Tabler component name, e.g. "IconInfoCircleFilled". */
+    private static final Pattern PATTERN_REACT_ICON_NAME = Pattern.compile("Icon[A-Z0-9][A-Za-z0-9]*");
+    /** Tabler icon file name, e.g. "info-circle" or "number-1-small". */
+    private static final Pattern PATTERN_ICON_FILE_NAME = Pattern.compile("[a-z0-9]+(-[a-z0-9]+)*");
+
     private static final String FIELD_NORM_TYPE = "NORM_TYPE";
 
     // Configuration
@@ -104,6 +111,12 @@ public class Metadata implements MetadataListElement, Serializable {
      */
     private String labelField;
     private String separator;
+    /** Optional Tabler icon file name (without extension), e.g. "info-circle". */
+    private String icon;
+    /** Filled icon variant requested explicitly via configuration. */
+    private boolean iconFilled = false;
+    /** Filled icon variant requested via a React-style icon name such as "IconInfoCircleFilled". */
+    private boolean iconNameFilled = false;
     private int type = 0;
     private int number = -1;
     private boolean group = false;
@@ -140,6 +153,9 @@ public class Metadata implements MetadataListElement, Serializable {
         this.separator = orig.separator;
         this.labelField = orig.labelField;
         this.separator = orig.separator;
+        this.icon = orig.icon;
+        this.iconFilled = orig.iconFilled;
+        this.iconNameFilled = orig.iconNameFilled;
         this.type = orig.type;
         this.number = orig.number;
         this.group = orig.group;
@@ -798,10 +814,15 @@ public class Metadata implements MetadataListElement, Serializable {
      *
      * @param paramName Solr field name of the parameter to find
      * @return true if this metadata has a parameter with the given field name, false otherwise
+     * @should return true if param with given key exists
+     * @should return false and not fail if params without key exist
      */
     public boolean hasParam(String paramName) {
+        if (paramName == null) {
+            return false;
+        }
         for (MetadataParameter param : params) {
-            if (param.getKey().equals(paramName)) {
+            if (paramName.equals(param.getKey())) {
                 return true;
             }
         }
@@ -881,6 +902,7 @@ public class Metadata implements MetadataListElement, Serializable {
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @should store pi and logid from struct element
+     * @should resolve numvolumes param to the live member count for a group
      */
     public boolean populate(StructElement se, String ownerIddoc, List<StringPair> sortFields, Locale locale)
             throws IndexUnreachableException, PresentationException {
@@ -955,13 +977,14 @@ public class Metadata implements MetadataListElement, Serializable {
             int indexOfParam = params.indexOf(param);
             // logger.trace("{} ({})", param.toString(), indexOfParam); //NOSONAR Debug
 
-            // Live volume count (e.g. the number of years for a newspaper): computed at render time from the
-            // anchor's PI rather than read from the stored NUMVOLUMES field, so it is current even if the anchor
-            // has not been re-indexed yet. Only meaningful for anchors; produces no value otherwise.
+            // Live volume count (e.g. the number of years for a newspaper, or the number of episodes of a podcast group):
+            // computed at render time from the anchor's or group's PI rather than read from the stored NUMVOLUMES field,
+            // so it is current even if the anchor/group has not been re-indexed yet. Produces no value for other records.
             if (MetadataParameterType.NUMVOLUMES.equals(param.getType())) {
-                if (se.isAnchor()) {
+                if (se.isAnchor() || se.isGroup()) {
                     try {
-                        long volumeCount = SearchHelper.getVolumeCount(se.getPi());
+                        long volumeCount = se.isAnchor() ? SearchHelper.getVolumeCount(se.getPi())
+                                : SearchHelper.getGroupMemberCount(se.getGroupIdField(), se.getPi());
                         if (volumeCount > 0) {
                             setParamValue(0, indexOfParam, Collections.singletonList(String.valueOf(volumeCount)), param.getKey(), null,
                                     null, null, locale);
@@ -1435,6 +1458,130 @@ public class Metadata implements MetadataListElement, Serializable {
     public Metadata setSeparator(String separator) {
         this.separator = separator;
         return this;
+    }
+
+    /**
+     * @return Tabler icon file name (without extension) to display with this metadata, e.g. "info-circle"; null if none is configured
+     */
+    public String getIcon() {
+        return icon;
+    }
+
+    /**
+     * Sets the icon to display with this metadata. Accepts Tabler icon file names ("info-circle") as well as React-style Tabler component
+     * names ("IconInfoCircle", "IconInfoCircleFilled"); the latter are converted to file names and the "Filled" suffix selects the filled
+     * variant.
+     *
+     * @param icon icon name in either format; blank or invalid names result in no icon
+     * @return this
+     * @should set file name style icon as is
+     * @should convert react style icon name and select filled variant
+     * @should reset icon if name blank or invalid
+     */
+    public Metadata setIcon(String icon) {
+        this.icon = normalizeIconName(icon);
+        this.iconNameFilled = this.icon != null && isFilledIconName(icon);
+        return this;
+    }
+
+    /**
+     * @return true if the filled icon variant is to be used, either via configuration or via a React-style icon name ending in "Filled"
+     */
+    public boolean isIconFilled() {
+        return iconFilled || iconNameFilled;
+    }
+
+    /**
+     * @param iconFilled true to use the filled icon variant
+     * @return this
+     */
+    public Metadata setIconFilled(boolean iconFilled) {
+        this.iconFilled = iconFilled;
+        return this;
+    }
+
+    /**
+     * @return true if an icon is configured for this metadata
+     */
+    public boolean isHasIcon() {
+        return icon != null;
+    }
+
+    /**
+     * Metadata with a configured icon are displayed in a single icon line below the regular metadata list (icon and value, label as tooltip).
+     * Only single string metadata qualify; key/value pair tables remain in the regular list.
+     *
+     * @return true if this metadata is to be displayed in the icon line; false otherwise
+     * @should return true if icon configured and single string
+     * @should return false if no icon configured
+     * @should return false if not single string
+     */
+    public boolean isShowInIconLine() {
+        return isHasIcon() && isSingleString();
+    }
+
+    /**
+     * Filters the given metadata list down to non-blank metadata that are displayed in the icon line.
+     *
+     * @param metadataList list of metadata to filter; may be null
+     * @return non-blank metadata from the given list for which {@link #isShowInIconLine()} is true; empty list if metadataList is null
+     * @should return only non blank icon line metadata
+     * @should return empty list if metadata list null
+     */
+    public static List<Metadata> filterIconLineMetadata(List<Metadata> metadataList) {
+        if (metadataList == null) {
+            return Collections.emptyList();
+        }
+
+        return metadataList.stream().filter(md -> md.isShowInIconLine() && !md.isBlank()).toList();
+    }
+
+    /**
+     * Converts the given icon name to a Tabler icon file name. React-style component names ("IconInfoCircleFilled", "IconNumber1Small") are
+     * converted to kebab case ("info-circle", "number-1-small"), dropping the "Icon" prefix and the "Filled" suffix. File names are returned
+     * unchanged.
+     *
+     * @param name icon name as configured
+     * @return Tabler icon file name; null if name is blank or does not result in a valid file name
+     * @should return file name unchanged
+     * @should convert react style name to kebab case
+     * @should strip filled suffix from react style name
+     * @should separate digits from letters
+     * @should return null if name blank
+     * @should return null if name contains illegal characters
+     */
+    static String normalizeIconName(String name) {
+        if (StringUtils.isBlank(name)) {
+            return null;
+        }
+        String ret = name.trim();
+        if (PATTERN_REACT_ICON_NAME.matcher(ret).matches()) {
+            ret = ret.substring(REACT_ICON_PREFIX.length());
+            if (ret.endsWith(REACT_ICON_FILLED_SUFFIX) && ret.length() > REACT_ICON_FILLED_SUFFIX.length()) {
+                ret = ret.substring(0, ret.length() - REACT_ICON_FILLED_SUFFIX.length());
+            }
+            // Hyphen before each upper case letter and each run of digits, except at the start
+            ret = ret.replaceAll("(?<=.)(?=[A-Z])|(?<=[^0-9])(?=[0-9])", "-").toLowerCase(Locale.ROOT);
+        }
+        if (!PATTERN_ICON_FILE_NAME.matcher(ret).matches()) {
+            logger.warn("Invalid metadata icon name, ignoring: {}", name);
+            return null;
+        }
+
+        return ret;
+    }
+
+    /**
+     * @param name icon name as configured
+     * @return true if name is a React-style component name for a filled icon, e.g. "IconInfoCircleFilled"
+     */
+    static boolean isFilledIconName(String name) {
+        if (StringUtils.isBlank(name)) {
+            return false;
+        }
+        String trimmed = name.trim();
+        return PATTERN_REACT_ICON_NAME.matcher(trimmed).matches() && trimmed.endsWith(REACT_ICON_FILLED_SUFFIX)
+                && trimmed.length() > REACT_ICON_PREFIX.length() + REACT_ICON_FILLED_SUFFIX.length();
     }
 
     

@@ -520,6 +520,28 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see AccessConditionUtils#generateAccessCheckQuery(String,String)
+     * @verifies use correct field names for json files
+     */
+    @Test
+    void generateAccessCheckQuery_shouldUseCorrectFieldNamesForJsonFiles() {
+        String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "8a9f3800-574f-4e03.json");
+        Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME + ":8a9f3800\\-574f\\-4e03.json.* "
+                + SolrConstants.FILENAME_JSON + ":\"8a9f3800-574f-4e03.json\")", result);
+    }
+
+    /**
+     * @see AccessConditionUtils#generateAccessCheckQuery(String,String)
+     * @verifies use correct field names for vtt files
+     */
+    @Test
+    void generateAccessCheckQuery_shouldUseCorrectFieldNamesForVttFiles() {
+        String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "8a9f3800-574f-4e03.vtt");
+        Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME + ":8a9f3800\\-574f\\-4e03.vtt.* "
+                + SolrConstants.FILENAME + "_VTT:\"8a9f3800-574f-4e03.vtt\")", result);
+    }
+
+    /**
+     * @see AccessConditionUtils#generateAccessCheckQuery(String,String)
      * @verifies adapt basic alto file name
      */
     @Test
@@ -560,11 +582,13 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         }
         {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.png");
-            Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.png\"", result);
+            Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME + ":\"00000001.png\" "
+                    + SolrConstants.FILENAME + "_PNG:\"00000001.png\")", result);
         }
         {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.jp2");
-            Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.jp2\"", result);
+            Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME + ":\"00000001.jp2\" "
+                    + SolrConstants.FILENAME + "_JP2:\"00000001.jp2\")", result);
         }
         {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.jpg");
@@ -573,7 +597,8 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         }
         {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.gif");
-            Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.gif\"", result);
+            Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME + ":\"00000001.gif\" "
+                    + SolrConstants.FILENAME + "_GIF:\"00000001.gif\")", result);
         }
     }
 
@@ -618,7 +643,8 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void generateAccessCheckQuery_shouldWorkCorrectlyWithUrls() throws Exception {
         String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "file:///opt/digiverso/viewer/cms_media/bild4.png");
-        Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"bild4.png\"", result);
+        Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME + ":\"bild4.png\" "
+                + SolrConstants.FILENAME + "_PNG:\"bild4.png\")", result);
     }
 
     /**
@@ -630,6 +656,57 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         String result = AccessConditionUtils.generateThumbnailAccessCheckQuery("9315", "https://av.tib.eu/player/9315");
         Assertions.assertEquals(
                 "+" + SolrConstants.PI + ":9315 +" + SolrConstants.THUMBNAIL + ":\"https://av.tib.eu/player/9315\"", result);
+    }
+
+    /**
+     * @see AccessConditionUtils#generateAccessCheckQueryWithGroupThumbnail(String,String)
+     * @verifies add group thumbnail clause for image files
+     */
+    @Test
+    void generateAccessCheckQueryWithGroupThumbnail_shouldAddGroupThumbnailClauseForImageFiles() throws Exception {
+        String result = AccessConditionUtils.generateAccessCheckQueryWithGroupThumbnail("EPISODE1", "PODCAST123.png");
+        Assertions.assertEquals("(" + AccessConditionUtils.generateAccessCheckQuery("EPISODE1", "PODCAST123.png") + ") OR (+"
+                + SolrConstants.DOCTYPE + ":GROUP +" + SolrConstants.THUMBNAIL + ":\"EPISODE1/PODCAST123.png\")", result);
+    }
+
+    /**
+     * @see AccessConditionUtils#generateAccessCheckQueryWithGroupThumbnail(String,String)
+     * @verifies not add group thumbnail clause for non image files
+     */
+    @Test
+    void generateAccessCheckQueryWithGroupThumbnail_shouldNotAddGroupThumbnailClauseForNonImageFiles() throws Exception {
+        Assertions.assertEquals(AccessConditionUtils.generateAccessCheckQuery("EPISODE1", "EPISODE1.mp3"),
+                AccessConditionUtils.generateAccessCheckQueryWithGroupThumbnail("EPISODE1", "EPISODE1.mp3"));
+        Assertions.assertEquals(AccessConditionUtils.generateAccessCheckQuery("EPISODE1", "EPISODE1.json"),
+                AccessConditionUtils.generateAccessCheckQueryWithGroupThumbnail("EPISODE1", "EPISODE1.json"));
+    }
+
+    /**
+     * @see AccessConditionUtils#generateGroupThumbnailAccessCheckClause(String,String)
+     * @verifies build clause for image file
+     */
+    @Test
+    void generateGroupThumbnailAccessCheckClause_shouldBuildClauseForImageFile() throws Exception {
+        Assertions.assertEquals("+" + SolrConstants.DOCTYPE + ":GROUP +" + SolrConstants.THUMBNAIL + ":\"EPISODE1/PODCAST123.jpg\"",
+                AccessConditionUtils.generateGroupThumbnailAccessCheckClause("EPISODE1", "PODCAST123.jpg"));
+    }
+
+    /**
+     * @see AccessConditionUtils#generateGroupThumbnailAccessCheckClause(String,String)
+     * @verifies return null for non image file
+     */
+    @Test
+    void generateGroupThumbnailAccessCheckClause_shouldReturnNullForNonImageFile() throws Exception {
+        Assertions.assertNull(AccessConditionUtils.generateGroupThumbnailAccessCheckClause("EPISODE1", "EPISODE1.vtt"));
+    }
+
+    /**
+     * @see AccessConditionUtils#generateGroupThumbnailAccessCheckClause(String,String)
+     * @verifies return null for url
+     */
+    @Test
+    void generateGroupThumbnailAccessCheckClause_shouldReturnNullForUrl() throws Exception {
+        Assertions.assertNull(AccessConditionUtils.generateGroupThumbnailAccessCheckClause("EPISODE1", "https://example.com/podcast.png"));
     }
 
     /**

@@ -184,6 +184,8 @@ public final class SolrConstants {
     public static final String FILENAME_OGG = "FILENAME_OGG";
     /** Constant <code>FILENAME_MEI="FILENAME_MEI"</code>. */
     public static final String FILENAME_MEI = "FILENAME_MEI";
+    /** Constant <code>FILENAME_JSON="FILENAME_JSON"</code>. File name of a JSON transcript (e.g. of a podcast episode). */
+    public static final String FILENAME_JSON = "FILENAME_JSON";
     /** Constant <code>FILENAME_TEI="FILENAME_TEI"</code>. */
     public static final String FILENAME_TEI = "FILENAME_TEI";
     /** Constant <code>FILENAME_WEBM="FILENAME_WEBM"</code>. */
