@@ -89,7 +89,6 @@ import io.goobi.viewer.controller.model.alto.AltoLayoutAnnotationBuilder.LayoutA
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
@@ -433,11 +432,12 @@ public class RecordPageResource {
      * @param pageNo page number (1-based)
      * @param language language of the returned author names; blank falls back to English (no request locale in REST calls)
      * @return the layout annotations of the page; empty lists when the page has no ALTO, no layout tags, or fulltext
-     *         access is denied
+     *         access to the page is denied
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
      * @should return empty layout annotations for alto without layout tags
+     * @should check fulltext access of the requested page
      */
     @GET
     @jakarta.ws.rs.Path(RECORDS_PAGES_LAYOUT)
@@ -457,13 +457,10 @@ public class RecordPageResource {
             throws PresentationException, IndexUnreachableException, DAOException {
         requireValidPageNo(pageNo);
         LayoutAnnotations empty = new LayoutAnnotations();
-        boolean access;
-        try {
-            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest)
-                    .isGranted();
-        } catch (RecordNotFoundException e) {
-            access = false;
-        }
+        // Check the requested page, not the record: pages can be more restricted than the top document
+        boolean access =
+                AccessConditionUtils.checkAccessPermissionByIdentifierAndPageOrder(pi, pageNo, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest)
+                        .isGranted();
         if (!access) {
             return empty;
         }

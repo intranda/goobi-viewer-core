@@ -35,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.Map;
 
 import jakarta.ws.rs.client.WebTarget;
@@ -48,6 +49,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -58,6 +60,9 @@ import de.intranda.api.iiif.presentation.v2.Canvas2;
 import de.intranda.api.iiif.presentation.v2.Sequence;
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
  * @author florian
@@ -261,6 +266,32 @@ class RecordPageResourceTest extends AbstractRestApiTest {
             assertEquals(0, json.getJSONArray("words").length());
             assertEquals(0, json.getJSONArray("lines").length());
         }
+    }
+
+    /**
+     * The access check must use the requested page's access conditions, not the record's.
+     *
+     * @verifies check fulltext access of the requested page
+     * @see RecordPageResource#getLayoutAnnotationsForPage
+     */
+    @Test
+    void getLayoutAnnotationsForPage_shouldCheckFulltextAccessOfTheRequestedPage() throws Exception {
+        // The search index is re-injected before each test, so the spy does not leak into other tests
+        SolrSearchIndex spiedIndex = Mockito.spy(DataManager.getInstance().getSearchIndex());
+        DataManager.getInstance().injectSearchIndex(spiedIndex);
+
+        String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_LAYOUT).params(PI_WITH_ALTO, PAGENO_WITH_ALTO).build();
+        try (Response response = target(url)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(200, response.getStatus(), "Should return status 200");
+        }
+
+        // Must match the query of AccessConditionUtils.checkAccessPermissionByIdentifierAndPageOrder(String, Integer, ...)
+        String pageQuery = "+" + SolrConstants.PI_TOPSTRUCT + ":" + PI_WITH_ALTO + " +" + SolrConstants.ORDER + ":" + PAGENO_WITH_ALTO + " +"
+                + SolrConstants.DOCTYPE + ":" + DocType.PAGE;
+        Mockito.verify(spiedIndex).search(pageQuery, 1, null, Collections.singletonList(SolrConstants.ACCESSCONDITION));
     }
 
     /**

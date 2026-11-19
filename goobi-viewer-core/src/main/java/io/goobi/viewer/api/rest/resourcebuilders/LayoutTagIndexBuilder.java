@@ -32,6 +32,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.function.IntPredicate;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
@@ -49,6 +50,7 @@ import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.security.PagePermissions;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
@@ -99,12 +101,15 @@ public class LayoutTagIndexBuilder {
     }
 
     /**
-     * Loads the index of the given record. Access is checked once on record level ({@code VIEW_FULLTEXT}, the layout
-     * tags stem from the ALTO fulltext); without access the index carries no tags.
+     * Loads the index of the given record. The layout tags stem from the ALTO fulltext, so {@code VIEW_FULLTEXT} is
+     * checked on record level first; without access the index carries no tags. Pages can be more restricted than the
+     * record, so pages without fulltext access are then left out of the index (all pages if their permissions cannot be
+     * determined).
      *
      * @param topStruct the record's top structure element
      * @param request HTTP servlet request (for the access check)
-     * @return the index, with an empty tag list when access is denied or the record has no layout tags
+     * @return the index, with an empty tag list when access is denied or the record has no layout tags on accessible
+     *         pages
      * @throws PresentationException if the Solr query fails
      * @throws IndexUnreachableException if the index cannot be reached
      * @throws DAOException if the access check fails
@@ -128,7 +133,12 @@ public class LayoutTagIndexBuilder {
                 + SolrConstants.MD_LAYOUTTAG + ":*";
         SolrDocumentList docs =
                 DataManager.getInstance().getSearchIndex().search(query, Arrays.asList(SolrConstants.ORDER, SolrConstants.MD_LAYOUTTAG));
-        return build(pi, pageCount, docs);
+        if (docs == null || docs.isEmpty()) {
+            return build(pi, pageCount, docs);
+        }
+        // Pages can be more restricted than the record (unknown pages and lookup errors are denied)
+        PagePermissions pagePermissions = AccessConditionUtils.fetchPagePermissions(pi, request);
+        return build(pi, pageCount, docs, pagePermissions::isFulltextGranted);
     }
 
     /**
@@ -151,12 +161,26 @@ public class LayoutTagIndexBuilder {
      * @should skip documents without order
      */
     public LayoutTagIndex build(String pi, int pageCount, SolrDocumentList pageDocs) {
+        return build(pi, pageCount, pageDocs, order -> true);
+    }
+
+    /**
+     * Same as {@link #build(String, int, SolrDocumentList)}, but only includes pages for which pageGranted returns true.
+     *
+     * @param pi record identifier
+     * @param pageCount total number of pages of the record
+     * @param pageDocs page documents carrying {@code ORDER} and {@code MD_LAYOUTTAG}
+     * @param pageGranted returns true if the page with the given order may be included
+     * @return the index
+     * @should skip pages without fulltext access
+     */
+    LayoutTagIndex build(String pi, int pageCount, SolrDocumentList pageDocs, IntPredicate pageGranted) {
         Map<String, SortedSet<Integer>> pagesByLabel = new HashMap<>();
         if (pageDocs != null) {
             for (SolrDocument doc : pageDocs) {
                 Integer order = SolrTools.getAsInt(doc.getFieldValue(SolrConstants.ORDER));
                 Collection<Object> labels = doc.getFieldValues(SolrConstants.MD_LAYOUTTAG);
-                if (order == null || labels == null) {
+                if (order == null || labels == null || !pageGranted.test(order)) {
                     continue;
                 }
                 for (Object value : labels) {

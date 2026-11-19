@@ -168,4 +168,18 @@ class LayoutTagIndexBuilderTest extends AbstractTest {
         Assertions.assertEquals(List.of(2), tag(index, "gr_jacob_grimm").getPages());
         Assertions.assertTrue(builder().build(PI, 10, null).getTags().isEmpty());
     }
+
+    /**
+     * @see LayoutTagIndexBuilder#build(String,int,SolrDocumentList,java.util.function.IntPredicate)
+     * @verifies skip pages without fulltext access
+     */
+    @Test
+    void build_shouldSkipPagesWithoutFulltextAccess() {
+        LayoutTagIndex index =
+                builder().build(PI, 10, docs(page(1, "gr_jacob_grimm"), page(2, "gr_jacob_grimm", "gr_unterstrichen")), order -> order == 1);
+        Assertions.assertEquals(1, index.getTags().size());
+        Assertions.assertEquals(List.of(1), tag(index, "gr_jacob_grimm").getPages());
+        // tag only occurring on the restricted page is left out entirely
+        Assertions.assertNull(tag(index, "gr_unterstrichen"));
+    }
 }
