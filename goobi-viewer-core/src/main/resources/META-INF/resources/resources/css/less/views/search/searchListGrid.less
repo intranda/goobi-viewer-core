@@ -160,13 +160,17 @@
                 }
             }
             /* CARD */
+            /* the card clips its children (overflow: hidden from .grid), so the radius belongs here */
             .search-list__hit {
                 align-self: start;
                 height: var(--search-list-grid-extended-height-small);
                 border: 0;
                 border-radius: var(--search-list-grid-extended-radius);
-                background-color: var(--search-list-grid-extended-box-bg);
                 box-shadow: var(--search-list-grid-extended-shadow);
+                /* a background behind the image would shine through at the rounded corners */
+                &:not(:has(.search-list__hit-thumbnail)) {
+                    background-color: var(--search-list-grid-extended-box-bg);
+                }
                 &:has(.search-list__hit-title-link:focus-visible) {
                     outline: 3px solid var(--outline-focus);
                     outline-offset: 2px;
@@ -197,7 +201,7 @@
             }
             /* TITLE BOX */
             .search-list__hit-info-wrapper {
-                padding: 0.75rem 1rem;
+                padding: var(--search-list-grid-extended-box-padding);
                 background-color: var(--search-list-grid-extended-box-bg);
             }
             .search-list__hit-options-wrapper {
@@ -242,10 +246,15 @@
             /* MAX LINES */
             .search-list__hit-metadata-second-inner {
                 --_row-height: calc(var(--font-size-body-small) * 1.4 + 0.25rem);
+                /* gap between title and list; inside the clipped area so it collapses with the list */
+                --_title-gap: 1rem;
                 margin: 0;
                 overflow: hidden;
                 min-height: 0;
-                max-height: calc(var(--search-list-grid-extended-details-lines) * var(--_row-height));
+                max-height: calc(var(--search-list-grid-extended-details-lines) * var(--_row-height) + var(--_title-gap));
+                dd:first-of-type {
+                    padding-top: calc(0.25rem + var(--_title-gap));
+                }
                 dd {
                     margin: 0;
                     padding-top: 0.25rem;
@@ -295,6 +304,46 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
+    /* EXTENDED GRID: STACKED CARDS (IMAGE ABOVE, TITLE BOX BELOW), NO MASONRY */
+    .search-list__hits.grid-extended {
+        /* read by the masonry JS, which then leaves the cards in the normal flow (unset = masonry) */
+        --_search-list-grid-extended-masonry: 0;
+        /* all cards equally high: 1fr rows take the height of the tallest card */
+        .search-list__hits-list-items,
+        .search-list__hits-list-items:not(.-laidOut) {
+            grid-auto-rows: 1fr;
+        }
+        .search-list__hit {
+            align-self: stretch;
+            height: auto;
+            background-color: var(--search-list-grid-extended-box-bg);
+        }
+        /* image at the top, the title box fills the remaining height */
+        .search-list__hit-inner-structure {
+            justify-content: flex-start;
+        }
+        .search-list__hit-info-wrapper {
+            flex: 1 1 auto;
+        }
+        .search-list__hit-header {
+            position: static;
+        }
+        .search-list__hit-thumb-wrapper {
+            position: relative;
+            inset: auto;
+            z-index: auto;
+        }
+        .search-list__hit-thumbnail {
+            position: relative;
+            inset: auto;
+            aspect-ratio: var(--search-list-grid-extended-stacked-thumbnail-ratio);
+        }
+        /* no hover on touch devices: the extra metadata is always shown */
+        .search-list__hit-info-wrapper.-extraMetadataForGrid .search-list__hit-metadata-second {
+            grid-template-rows: 1fr;
+            opacity: 1;
+        }
+    }
 }
 
 /* BREAKPOINT FOR SMARTPHONES */

@@ -321,15 +321,31 @@ var viewerJS = (function (viewer) {
                 return isNaN(value) ? fallback : value;
             }
 
+            /** Removes the masonry placement, the cards fall back to the normal grid flow. */
+            function resetExtendedGrid(grid) {
+                grid.classList.remove('-laidOut');
+                Array.prototype.forEach.call(grid.children, function (item) {
+                    item.style.height = '';
+                    item.style.gridColumn = '';
+                    item.style.gridRow = '';
+                });
+            }
+
             /** Places the cards in a small/big checkerboard with an offset between columns. */
             function layoutExtendedGrid(grid) {
                 var styles = getComputedStyle(grid);
+                // the stylesheet switches the masonry off on small viewports (stacked cards)
+                if (styles.getPropertyValue('--_search-list-grid-extended-masonry').trim() === '0') {
+                    resetExtendedGrid(grid);
+                    return;
+                }
                 var gap = parseFloat(styles.columnGap) || 0;
                 var cols = styles.gridTemplateColumns.split(' ').length;
                 var small = readPx(styles, '--search-list-grid-extended-height-small', 270);
                 var big = readPx(styles, '--search-list-grid-extended-height-big', 330);
                 var step = readPx(styles, '--search-list-grid-extended-height-step', 20);
                 var minOffset = readPx(styles, '--search-list-grid-extended-min-offset', 40);
+                var minThumbnail = readPx(styles, '--search-list-grid-extended-min-thumbnail-height', 80);
                 // bottom edge per column (px)
                 var bottom = new Array(cols).fill(0);
 
@@ -340,7 +356,12 @@ var viewerJS = (function (viewer) {
                     var col = i % cols;
                     var isBig = (row + col) % 2 === 1;
                     var base = isBig ? big : small;
-                    var candidates = [base, base + step, base + 2 * step];
+                    // never lower than the title box plus an image strip, so narrow columns don't clip the title
+                    var box = item.querySelector('.search-list__hit-info-wrapper');
+                    var minHeight = box ? Math.ceil(box.offsetHeight + minThumbnail) : 0;
+                    var candidates = [base, base + step, base + 2 * step].map(function (c) {
+                        return Math.max(c, minHeight);
+                    });
 
                     // distance to the neighbouring columns
                     var offset = function (height) {
@@ -400,13 +421,8 @@ var viewerJS = (function (viewer) {
                     if (entry.observer) {
                         entry.observer.disconnect();
                     }
-                    entry.grid.classList.remove('-laidOut');
                     $(entry.grid).find('[data-extended-grid-hidden]').removeAttr('tabindex aria-hidden data-extended-grid-hidden');
-                    Array.prototype.forEach.call(entry.grid.children, function (item) {
-                        item.style.height = '';
-                        item.style.gridColumn = '';
-                        item.style.gridRow = '';
-                    });
+                    resetExtendedGrid(entry.grid);
                 });
                 _extendedGrids = [];
             }
