@@ -116,7 +116,7 @@ public class RecordsFilesImageResource extends ImageResource {
             @Context ContentServerCacheManager cacheManager) {
         // Validate PI before passing to ImageResource which builds a file:// URI from the
         // pi (as folder) and filename; illegal URI characters cause ContentLibException (HTTP 500).
-        super(context, request, response, requireValidPi(pi), filename, cacheManager);
+        super(context, request, response, requireValidPi(pi), requireValidFilename(filename), cacheManager);
         this.pi = pi;
         this.filename = filename;
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
@@ -299,6 +299,18 @@ public class RecordsFilesImageResource extends ImageResource {
      * @param pi persistent identifier to validate
      * @return the unchanged pi if valid
      */
+    /**
+     * @param filename requested filename (path parameter)
+     * @return the unchanged filename if it is valid
+     * @throws BadRequestException if the filename could be used to leave the record's media folder
+     * @see io.goobi.viewer.api.rest.v1.records.media.RecordsFilesImageResource#requireValidFilename(String)
+     * @should reject path separators and dot segments
+     * @should accept regular filenames
+     */
+    public static String requireValidFilename(String filename) {
+        return io.goobi.viewer.api.rest.v1.records.media.RecordsFilesImageResource.requireValidFilename(filename);
+    }
+
     static String requireValidPi(String pi) {
         if (!PIValidator.validatePi(pi)) {
             throw new BadRequestException("Invalid record identifier: " + pi);

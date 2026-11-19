@@ -21,6 +21,9 @@
  */
 package io.goobi.viewer.controller.imaging;
 
+import java.nio.file.Paths;
+import java.util.Arrays;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +35,9 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 
 /**
  * @author Florian Alpers
@@ -70,13 +76,38 @@ class IIIFUrlHandlerTest extends AbstractTest {
 
     /**
      * @see IIIFUrlHandler#getIIIFImageUrl(String, String, String, String, String, String, String)
-     * @verifies url from local url
+     * @verifies return empty string for local url
      */
     @Test
-    void getIIIFImageUrl_shouldUrlFromLocalUrl() {
-        fileUrl = "http://localhost/image/filename.tif";
+    void getIIIFImageUrl_shouldReturnEmptyStringForLocalUrl() {
+        for (String url : Arrays.asList("http://localhost/image/filename.tif", "http://127.0.0.1/image/filename.jpg",
+                "http://10.0.0.5/image/filename.jpg", "http://169.254.169.254/latest/meta-data/x.jpg", "http://[::1]/image/filename.jpg",
+                "https://viewer.goobi.io/viewer/api/v1/records/PPN123/files/source/00000001.tif")) {
+            Assertions.assertEquals("", handler.getIIIFImageUrl(url, pi, region, size, rotation, quality, format), url);
+        }
+    }
+
+    /**
+     * @see IIIFUrlHandler#getIIIFImageUrl(String, String, String, String, String, String, String)
+     * @verifies url from public external image url
+     */
+    @Test
+    void getIIIFImageUrl_shouldUrlFromPublicExternalImageUrl() {
+        fileUrl = "http://93.184.216.34/image/filename.tif";
         String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
-        Assertions.assertEquals("/api/v1/images/external/http:U002FU002FlocalhostU002FimageU002Ffilename.tif/full/max/0/default.jpg",
+        Assertions.assertEquals("/api/v1/images/external/http:U002FU002F93.184.216.34U002FimageU002Ffilename.tif/full/max/0/default.jpg",
+                url);
+    }
+
+    /**
+     * @see IIIFUrlHandler#getIIIFImageUrl(String, String, String, String, String, String, String)
+     * @verifies url from configured restricted url
+     */
+    @Test
+    void getIIIFImageUrl_shouldUrlFromConfiguredRestrictedUrl() {
+        fileUrl = "http://exteral/restricted/filename.tif";
+        String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
+        Assertions.assertEquals("/api/v1/images/external/http:U002FU002FexteralU002FrestrictedU002Ffilename.tif/full/max/0/default.jpg",
                 url);
     }
 
@@ -109,9 +140,9 @@ class IIIFUrlHandlerTest extends AbstractTest {
      */
     @Test
     void getIIIFImageUrl_shouldUrlFromLocalFileUrl() {
-        fileUrl = "file:///image/filename.tif";
+        fileUrl = cmsMediaFileUrl("filename.tif");
         String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
-        Assertions.assertEquals("/api/v1/images/external/file:U002FU002FU002FimageU002Ffilename.tif/full/max/0/default.jpg",
+        Assertions.assertEquals("/api/v1/images/external/" + StringTools.escapeCriticalUrlChracters(fileUrl, false) + "/full/max/0/default.jpg",
                 url);
     }
 
@@ -121,23 +152,75 @@ class IIIFUrlHandlerTest extends AbstractTest {
      */
     @Test
     void getIIIFImageUrl_shouldUrlFromLocalFileUrlWithSpace() {
-        fileUrl = "file:///image/filename 01.tif";
+        fileUrl = cmsMediaFileUrl("filename 01.tif");
         String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
-        Assertions.assertEquals("/api/v1/images/external/file:U002FU002FU002FimageU002Ffilename%2001.tif/full/max/0/default.jpg", url);
+        Assertions.assertTrue(url.startsWith("/api/v1/images/external/file:U002FU002FU002F"), url);
+        Assertions.assertTrue(url.endsWith("U002Ffilename%2001.tif/full/max/0/default.jpg"), url);
     }
 
     /**
      * @see IIIFUrlHandler#getIIIFImageUrl(String, String, String, String, String, String, String)
-     * @verifies url from windows file url
+     * @verifies return empty string for file url outside public media folders
      */
     @Test
-    void getIIIFImageUrl_shouldUrlFromWindowsFileUrl() {
-        fileUrl = "file:///C:/opt/digiverso/viewer/cms_media/filename.tif";
-        String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
-        Assertions.assertEquals(
-                "/api/v1/images/external/file:U002FU002FU002FC:U002FoptU002FdigiversoU002FviewerU002Fcms_mediaU002Ffilename.tif/full/max/0/default.jpg",
-                url);
+    void getIIIFImageUrl_shouldReturnEmptyStringForFileUrlOutsidePublicMediaFolders() {
+        for (String url : Arrays.asList("file:///image/filename.tif", "file:///C:/opt/digiverso/viewer/data/1/media/PPN123/filename.tif",
+                "/opt/digiverso/viewer/data/1/media/PPN123/00000001.tif", cmsMediaFileUrl("../data/1/media/PPN123/00000001.tif"))) {
+            Assertions.assertEquals("", handler.getIIIFImageUrl(url, pi, region, size, rotation, quality, format), url);
+        }
+    }
 
+    /**
+     * @see IIIFUrlHandler#getIIIFImageUrl(String, String, String, String, String, String, String)
+     * @verifies return empty string for record file without valid pi
+     */
+    @Test
+    void getIIIFImageUrl_shouldReturnEmptyStringForRecordFileWithoutValidPi() {
+        for (String identifier : Arrays.asList(null, "", " ", "-", "../PPN123")) {
+            Assertions.assertEquals("", handler.getIIIFImageUrl(fileUrl, identifier, region, size, rotation, quality, format), identifier);
+        }
+    }
+
+    /**
+     * @see IIIFUrlHandler#getIIIFImageUrl(String, String, String, String, String, String, String)
+     * @verifies url from pi and file name in file url
+     */
+    @Test
+    void getIIIFImageUrl_shouldUrlFromPiAndFileNameInFileUrl() {
+        String url = handler.getIIIFImageUrl("PPN123/filename.tif", "-", region, size, rotation, quality, format);
+        Assertions.assertEquals("/api/v1/records/PPN123/files/images/filename.tif/full/max/0/default.jpg", url);
+    }
+
+    /**
+     * @see IIIFUrlHandler#getIIIFImageUrl(String, String, String, String, String, String, String)
+     * @verifies return empty string for invalid record file name
+     */
+    @Test
+    void getIIIFImageUrl_shouldReturnEmptyStringForInvalidRecordFileName() {
+        for (String file : Arrays.asList("..", "PPN123/../filename.tif", "a/b/filename.tif", "PPN123/..", "filenameU002F..U002Fx.tif")) {
+            Assertions.assertEquals("", handler.getIIIFImageUrl(file, pi, region, size, rotation, quality, format), file);
+        }
+    }
+
+    /**
+     * @see IIIFUrlHandler#getIIIFImageUrl(String, String, String, String, String, String, String, String)
+     * @verifies validate urls without url manager
+     */
+    @Test
+    void getIIIFImageUrl_shouldValidateUrlsWithoutUrlManager() {
+        IIIFUrlHandler plain = new IIIFUrlHandler();
+        String api = "https://viewer.goobi.io/viewer/rest/";
+        Assertions.assertEquals("https://viewer.goobi.io/viewer/rest/image/1234/filename.tif/full/max/0/default.jpg",
+                plain.getIIIFImageUrl(api, fileUrl, pi, region, size, rotation, quality, format));
+        Assertions.assertEquals("", plain.getIIIFImageUrl(api, fileUrl, "-", region, size, rotation, quality, format));
+        Assertions.assertEquals("", plain.getIIIFImageUrl(api, "http://127.0.0.1/filename.jpg", pi, region, size, rotation, quality, format));
+        Assertions.assertEquals("", plain.getIIIFImageUrl(api, "file:///etc/filename.tif", pi, region, size, rotation, quality, format));
+    }
+
+    private static String cmsMediaFileUrl(String fileName) {
+        Configuration config = DataManager.getInstance().getConfiguration();
+        return StringTools.appendTrailingSlash(Paths.get(config.getViewerHome(), config.getCmsMediaFolder()).toAbsolutePath().toUri().toString())
+                + fileName.replace(" ", "%20");
     }
 
     /**

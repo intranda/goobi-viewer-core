@@ -21,10 +21,17 @@
  */
 package io.goobi.viewer.controller.imaging;
 
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -234,6 +241,169 @@ public class MediaDeliveryHandlers {
      */
     public static boolean isUnrestrictedUrl(String url, String servletPath, Configuration config) {
         return isExternalUrl(url, servletPath) || isPublicUrl(url, config) || isStaticImageUrl(url, servletPath, config);
+    }
+
+    /**
+     * Tests whether the given url may be fetched and delivered by the external image endpoint without any record access check. Allowed are
+     * <ul>
+     * <li>http(s) urls matching one of the configured restricted urls ({@code viewer.externalContent.restrictedUrls}), regardless of the host,</li>
+     * <li>other http(s) urls of hosts which resolve exclusively to public addresses,</li>
+     * <li>static theme images of this viewer instance and</li>
+     * <li>file urls within the cms or temp media folders.</li>
+     * </ul>
+     * Everything else (loopback, private or link-local addresses, other urls of this viewer instance, other file urls, other schemes) is rejected, so
+     * the endpoint cannot be used to bypass access conditions or to reach internal services.
+     *
+     * @param url the image url as passed to the external image endpoint (possibly containing the escape sequences used in image urls)
+     * @param servletPath servlet path including scheme, host and context path
+     * @param config viewer configuration
+     * @return true if the url may be delivered via the external image endpoint
+     * @should allow http url of public host
+     * @should reject loopback and private addresses
+     * @should reject url of own host
+     * @should allow static theme image of own host
+     * @should allow configured restricted url even on internal host
+     * @should reject non http restricted url
+     * @should allow file url only in public media folders
+     * @should reject other schemes and malformed urls
+     */
+    public static boolean isAllowedExternalImageUrl(String url, String servletPath, Configuration config) {
+        if (StringUtils.isBlank(url)) {
+            return false;
+        }
+        // Interpret the url exactly like the content server does before fetching it
+        String unescapedUrl = unescapeLikeContentServer(url);
+        URI uri;
+        try {
+            uri = PathConverter.toURI(unescapedUrl);
+        } catch (URISyntaxException | IllegalArgumentException e) {
+            return false;
+        }
+        String scheme = uri.getScheme() == null ? "" : uri.getScheme().toLowerCase();
+        switch (scheme) {
+            case "file":
+                return isInPublicMediaFolder(uri, config);
+            case "http":
+            case "https":
+                break;
+            default:
+                return false;
+        }
+        String host = uri.getHost();
+        if (StringUtils.isBlank(host)) {
+            return false;
+        }
+        // Configured restricted urls are explicitly meant to be delivered through this endpoint, possibly from internal hosts.
+        // Require both the given and the parsed form to match, so the url actually fetched is the one the pattern was meant for
+        if (isRestrictedUrl(unescapedUrl, config) && isRestrictedUrl(uri.toString(), config)) {
+            return true;
+        }
+        if (isOwnHost(host, servletPath)) {
+            return !containsDotSegments(uri.getPath()) && isStaticImageUrl(uri.toString(), servletPath, config);
+        }
+        return resolvesToPublicAddressesOnly(host);
+    }
+
+    /**
+     * @param url the url to test
+     * @param config viewer configuration
+     * @return true if the url matches one of the configured restricted external image urls
+     */
+    static boolean isRestrictedUrl(String url, Configuration config) {
+        if (url == null || config.getRestrictedImageUrls() == null) {
+            return false;
+        }
+        return config.getRestrictedImageUrls().stream().anyMatch(regex -> Pattern.compile(regex).matcher(url).matches());
+    }
+
+    /**
+     * Replaces the escape sequences which the content server's ImageResource#unescape replaces before building the image uri.
+     */
+    private static String unescapeLikeContentServer(String url) {
+        return url.replace("U002F", "/").replace("U005C", "\\").replace("U003F", "?").replace("U0025", "%");
+    }
+
+    private static boolean isInPublicMediaFolder(URI uri, Configuration config) {
+        try {
+            Path path = PathConverter.getPath(uri);
+            if (path == null || !path.isAbsolute()) {
+                return false;
+            }
+            Path normalized = path.normalize();
+            return normalized.startsWith(Paths.get(config.getViewerHome() + config.getCmsMediaFolder()).toAbsolutePath().normalize())
+                    || normalized.startsWith(Paths.get(config.getViewerHome() + config.getTempMediaFolder()).toAbsolutePath().normalize());
+        } catch (RuntimeException e) {
+            return false;
+        }
+    }
+
+    private static boolean isOwnHost(String host, String servletPath) {
+        if (StringUtils.isBlank(servletPath)) {
+            return false;
+        }
+        try {
+            String ownHost = new URI(servletPath).getHost();
+            return ownHost != null && ownHost.equalsIgnoreCase(host);
+        } catch (URISyntaxException e) {
+            return false;
+        }
+    }
+
+    private static boolean containsDotSegments(String path) {
+        if (path == null) {
+            return false;
+        }
+        for (String segment : path.split("[/\\\\]")) {
+            if (".".equals(segment) || "..".equals(segment)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Resolves the host and checks that none of its addresses is a loopback, wildcard, link-local, site-local, unique-local, carrier-grade NAT or
+     * multicast address or an address of this machine. Unresolvable hosts are rejected.
+     */
+    private static boolean resolvesToPublicAddressesOnly(String host) {
+        InetAddress[] addresses;
+        try {
+            addresses = InetAddress.getAllByName(host);
+        } catch (UnknownHostException | SecurityException e) {
+            return false;
+        }
+        if (addresses.length == 0) {
+            return false;
+        }
+        for (InetAddress address : addresses) {
+            if (!isPublicAddress(address)) {
+                logger.warn("Rejecting external image url with non-public host {} ({})", host, address.getHostAddress());
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean isPublicAddress(InetAddress address) {
+        if (address.isAnyLocalAddress() || address.isLoopbackAddress() || address.isLinkLocalAddress() || address.isSiteLocalAddress()
+                || address.isMulticastAddress()) {
+            return false;
+        }
+        byte[] bytes = address.getAddress();
+        if (address instanceof Inet6Address && (bytes[0] & 0xfe) == 0xfc) {
+            // IPv6 unique local address fc00::/7
+            return false;
+        }
+        if (address instanceof Inet4Address && ((bytes[0] & 0xff) == 0 || ((bytes[0] & 0xff) == 100 && (bytes[1] & 0xc0) == 64))) {
+            // 0.0.0.0/8 and carrier-grade NAT 100.64.0.0/10
+            return false;
+        }
+        try {
+            // Addresses of this machine's network interfaces (e.g. its public ip)
+            return NetworkInterface.getByInetAddress(address) == null;
+        } catch (SocketException e) {
+            return false;
+        }
     }
 
     private static boolean isInFolder(final String url, String folder) {

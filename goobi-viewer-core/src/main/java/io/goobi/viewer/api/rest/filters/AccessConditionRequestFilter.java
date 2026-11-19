@@ -116,6 +116,10 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
         if (StringUtils.isNotBlank(contentFileName) && contentFileName.endsWith(FilenameUtils.EXTENSION_SEPARATOR_STR)) {
             contentFileName = contentFileName.substring(0, contentFileName.length() - FilenameUtils.EXTENSION_SEPARATOR_STR.length());
         }
+        // Without a record identifier no access condition can be checked: deny (also for thumbnails) instead of failing with a NPE
+        if (StringUtils.isBlank(pi)) {
+            throw new ServiceNotAllowedException("Serving this resource is currently impossible Because no persistent identifier is given");
+        }
         boolean access = false;
         try {
             if (FilterTools.isThumbnail(request)) {

@@ -22,6 +22,7 @@
 package io.goobi.viewer.api.rest.v1.records.media;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import jakarta.ws.rs.BadRequestException;
@@ -66,5 +67,30 @@ class RecordsFilesImageResourceTest {
     void getRequiredPrivileges_shouldRequireGivenPrivilegesForPages() {
         String[] viewAndZoom = { IPrivilegeHolder.PRIV_VIEW_IMAGES, IPrivilegeHolder.PRIV_ZOOM_IMAGES };
         assertArrayEquals(viewAndZoom, RecordsFilesImageResource.getRequiredPrivileges(viewAndZoom).getPrivileges(DocType.PAGE));
+    }
+
+    /**
+     * @verifies reject path separators and dot segments
+     * @see RecordsFilesImageResource#requireValidFilename
+     */
+    @Test
+    void requireValidFilename_shouldRejectPathSeparatorsAndDotSegments() {
+        for (String filename : new String[] { "..U002FPPN_CLOSEDU002F00000001.tif", "..U002F..U002FetcU002Fx.jpg", "U002FetcU002Fx.jpg",
+                "..U005Cx.jpg", "../x.jpg", "a/b.jpg", "a\\b.jpg", "..", ".", "http:U002FU002F127.0.0.1U002Fx.jpg",
+                "U0025U0032eU0025U0032eU002Fx.jpg", "%2e%2e%2fx.jpg", "", " ", null }) {
+            assertThrows(BadRequestException.class, () -> RecordsFilesImageResource.requireValidFilename(filename), String.valueOf(filename));
+        }
+    }
+
+    /**
+     * @verifies accept regular filenames
+     * @see RecordsFilesImageResource#requireValidFilename
+     */
+    @Test
+    void requireValidFilename_shouldAcceptRegularFilenames() {
+        for (String filename : new String[] { "00000001.tif", "IMG+20200322+144253.jpg", "file name with spaces.jpg", "a..b.jpg",
+                "00000001" }) {
+            assertEquals(filename, RecordsFilesImageResource.requireValidFilename(filename));
+        }
     }
 }

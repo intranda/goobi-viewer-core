@@ -117,7 +117,7 @@ public class RecordsFilesImageResource extends ImageResource {
             @Context ContentServerCacheManager cacheManager) {
         // Validate PI before passing to ImageResource which builds a file:// URI from the
         // pi (as folder) and filename; illegal URI characters cause ContentLibException (HTTP 500).
-        super(context, request, response, requireValidPi(pi), filename, cacheManager);
+        super(context, request, response, requireValidPi(pi), requireValidFilename(filename), cacheManager);
         this.pi = pi;
         this.filename = filename;
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
@@ -315,6 +315,31 @@ public class RecordsFilesImageResource extends ImageResource {
      * @param pi persistent identifier to validate
      * @return the unchanged pi if valid
      */
+    /**
+     * Rejects filenames which would let the content server leave the record's media folder. The content server builds the image path as
+     * {@code pi + "/" + filename} after replacing the escape sequences {@code U002F}, {@code U005C}, {@code U003F} and {@code U0025}, while the
+     * access check only looks at the last path segment. A filename like {@code ..U002FOTHER_PIU002F00000001.tif} would therefore be checked
+     * against the requested (open) record but deliver the file of another (restricted) record.
+     *
+     * @param filename requested filename (path parameter)
+     * @return the unchanged filename if it is valid
+     * @throws BadRequestException if the filename is blank, contains path separators or percent signs (after unescaping) or is a dot segment
+     * @should reject path separators and dot segments
+     * @should accept regular filenames
+     */
+    public static String requireValidFilename(String filename) {
+        if (StringUtils.isBlank(filename)) {
+            throw new BadRequestException("Invalid filename");
+        }
+        String unescaped = filename.replace("U002F", "/").replace("U005C", "\\").replace("U003F", "?").replace("U0025", "%");
+        String trimmed = unescaped.trim();
+        if (unescaped.contains("/") || unescaped.contains("\\") || unescaped.contains("%") || unescaped.indexOf('\0') >= 0
+                || ".".equals(trimmed) || "..".equals(trimmed)) {
+            throw new BadRequestException("Invalid filename");
+        }
+        return filename;
+    }
+
     static String requireValidPi(String pi) {
         if (!PIValidator.validatePi(pi)) {
             throw new BadRequestException("Invalid record identifier: " + pi);

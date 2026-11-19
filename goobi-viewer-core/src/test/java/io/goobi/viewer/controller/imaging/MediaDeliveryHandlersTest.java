@@ -28,6 +28,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -161,5 +164,107 @@ class MediaDeliveryHandlersTest extends AbstractTest {
     void isUnrestrictedUrl_shouldReturnFalseForRecordImageFileName() {
         assertFalse(MediaDeliveryHandlers.isUnrestrictedUrl("00000001.tif", SERVLET_PATH, config));
         assertFalse(MediaDeliveryHandlers.isUnrestrictedUrl("file:///opt/digiverso/viewer/other/foo.jpg", SERVLET_PATH, config));
+    }
+
+    /**
+     * @see MediaDeliveryHandlers#isAllowedExternalImageUrl(String, String, Configuration)
+     * @verifies allow http url of public host
+     */
+    @Test
+    void isAllowedExternalImageUrl_shouldAllowHttpUrlOfPublicHost() {
+        assertTrue(MediaDeliveryHandlers.isAllowedExternalImageUrl("https://93.184.216.34/images/foo.jpg", SERVLET_PATH, config));
+        assertTrue(MediaDeliveryHandlers.isAllowedExternalImageUrl("http://93.184.216.34:8080/images/foo.jpg", SERVLET_PATH, config));
+    }
+
+    /**
+     * @see MediaDeliveryHandlers#isAllowedExternalImageUrl(String, String, Configuration)
+     * @verifies reject loopback and private addresses
+     */
+    @Test
+    void isAllowedExternalImageUrl_shouldRejectLoopbackAndPrivateAddresses() {
+        for (String url : List.of("http://localhost:8080/viewer/api/v1/records/PPN123/files/images/00000001.tif",
+                "http://127.0.0.1/foo.jpg", "http://127.1.2.3/foo.jpg", "http://2130706433/foo.jpg", "http://0.0.0.0/foo.jpg",
+                "http://[::1]/foo.jpg", "http://[::ffff:127.0.0.1]/foo.jpg", "http://10.0.0.5/foo.jpg", "http://192.168.1.1/foo.jpg",
+                "http://172.16.0.1/foo.jpg", "http://169.254.169.254/latest/meta-data/foo.jpg", "http://[fe80::1]/foo.jpg",
+                "http://224.0.0.1/foo.jpg", "http:U002FU002F127.0.0.1U002Ffoo.jpg", "http://100.64.0.1/foo.jpg", "http://[fd00::1]/foo.jpg")) {
+            assertFalse(MediaDeliveryHandlers.isAllowedExternalImageUrl(url, SERVLET_PATH, config), url);
+        }
+    }
+
+    /**
+     * @see MediaDeliveryHandlers#isAllowedExternalImageUrl(String, String, Configuration)
+     * @verifies reject url of own host
+     */
+    @Test
+    void isAllowedExternalImageUrl_shouldRejectUrlOfOwnHost() {
+        assertFalse(MediaDeliveryHandlers.isAllowedExternalImageUrl(SERVLET_PATH + "/api/v1/records/PPN123/files/images/00000001.tif",
+                SERVLET_PATH, config));
+        assertFalse(MediaDeliveryHandlers.isAllowedExternalImageUrl("http://VIEWER.example.org:8080/foo.jpg", SERVLET_PATH, config));
+    }
+
+    /**
+     * @see MediaDeliveryHandlers#isAllowedExternalImageUrl(String, String, Configuration)
+     * @verifies allow static theme image of own host
+     */
+    @Test
+    void isAllowedExternalImageUrl_shouldAllowStaticThemeImageOfOwnHost() {
+        assertTrue(MediaDeliveryHandlers.isAllowedExternalImageUrl(SERVLET_PATH + "/resources/themes/mytheme/images/logo.png", SERVLET_PATH,
+                config));
+        assertFalse(MediaDeliveryHandlers.isAllowedExternalImageUrl(
+                SERVLET_PATH + "/resources/themes/mytheme/images/../../../../api/v1/records/PPN123/files/images/00000001.tif", SERVLET_PATH,
+                config));
+    }
+
+    /**
+     * @see MediaDeliveryHandlers#isAllowedExternalImageUrl(String, String, Configuration)
+     * @verifies allow configured restricted url even on internal host
+     */
+    @Test
+    void isAllowedExternalImageUrl_shouldAllowConfiguredRestrictedUrlEvenOnInternalHost() {
+        Mockito.when(config.getRestrictedImageUrls()).thenReturn(List.of("https?://10.0.0.5/restricted/.*", "https?://images.internal/.*\\.tif"));
+        assertTrue(MediaDeliveryHandlers.isAllowedExternalImageUrl("http://10.0.0.5/restricted/foo.jpg", SERVLET_PATH, config));
+        assertTrue(MediaDeliveryHandlers.isAllowedExternalImageUrl("http:U002FU002F10.0.0.5U002FrestrictedU002Ffoo.jpg", SERVLET_PATH, config));
+        assertTrue(MediaDeliveryHandlers.isAllowedExternalImageUrl("https://images.internal/a/b/00000001.tif", SERVLET_PATH, config));
+        // other urls of the same internal host are still rejected
+        assertFalse(MediaDeliveryHandlers.isAllowedExternalImageUrl("http://10.0.0.5/other/foo.jpg", SERVLET_PATH, config));
+    }
+
+    /**
+     * @see MediaDeliveryHandlers#isAllowedExternalImageUrl(String, String, Configuration)
+     * @verifies reject non http restricted url
+     */
+    @Test
+    void isAllowedExternalImageUrl_shouldRejectNonHttpRestrictedUrl() {
+        Mockito.when(config.getRestrictedImageUrls()).thenReturn(List.of(".*\\.tif"));
+        assertFalse(MediaDeliveryHandlers.isAllowedExternalImageUrl("file:///opt/digiverso/viewer/data/1/media/PPN123/00000001.tif", SERVLET_PATH,
+                config));
+        assertFalse(MediaDeliveryHandlers.isAllowedExternalImageUrl("s3://bucket/00000001.tif", SERVLET_PATH, config));
+    }
+
+    /**
+     * @see MediaDeliveryHandlers#isAllowedExternalImageUrl(String, String, Configuration)
+     * @verifies allow file url only in public media folders
+     */
+    @Test
+    void isAllowedExternalImageUrl_shouldAllowFileUrlOnlyInPublicMediaFolders() {
+        assertTrue(MediaDeliveryHandlers.isAllowedExternalImageUrl("file:///opt/digiverso/viewer/cms_media/foo.jpg", SERVLET_PATH, config));
+        assertTrue(MediaDeliveryHandlers.isAllowedExternalImageUrl("file:///opt/digiverso/viewer/temp_media/foo.jpg", SERVLET_PATH, config));
+        assertFalse(MediaDeliveryHandlers.isAllowedExternalImageUrl("file:///opt/digiverso/viewer/data/1/media/PPN123/00000001.tif",
+                SERVLET_PATH, config));
+        assertFalse(MediaDeliveryHandlers.isAllowedExternalImageUrl("file:///opt/digiverso/viewer/cms_media/../data/foo.jpg", SERVLET_PATH,
+                config));
+        assertFalse(MediaDeliveryHandlers.isAllowedExternalImageUrl("/opt/digiverso/viewer/data/foo.jpg", SERVLET_PATH, config));
+    }
+
+    /**
+     * @see MediaDeliveryHandlers#isAllowedExternalImageUrl(String, String, Configuration)
+     * @verifies reject other schemes and malformed urls
+     */
+    @Test
+    void isAllowedExternalImageUrl_shouldRejectOtherSchemesAndMalformedUrls() {
+        for (String url : Arrays.asList(null, "", "s3://bucket/foo.jpg", "jar:file:///opt/foo.jar!/foo.jpg", "ftp://93.184.216.34/foo.jpg",
+                "http:///foo.jpg", "http://unresolvable-host.invalid/foo.jpg", "00000001.tif")) {
+            assertFalse(MediaDeliveryHandlers.isAllowedExternalImageUrl(url, SERVLET_PATH, config), String.valueOf(url));
+        }
     }
 }

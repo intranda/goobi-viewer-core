@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -34,8 +35,10 @@ import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
+import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -43,7 +46,7 @@ import io.goobi.viewer.model.security.RequiredPrivileges;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import jakarta.servlet.http.HttpServletRequest;
 
-class AccessConditionRequestFilterTest {
+class AccessConditionRequestFilterTest extends AbstractTest {
 
     private static final String PI = "PPN123";
 
@@ -89,6 +92,8 @@ class AccessConditionRequestFilterTest {
     }
 
     /**
+     * <<<<<<< Upstream, based on branch 'develop' of git@gitea.intranda.com:goobi-viewer/goobi-viewer-core.git
+     * 
      * @see AccessConditionRequestFilter#filterForAccessConditions(HttpServletRequest,String,String,String)
      * @verifies grant access to page range if all files granted
      */
@@ -126,5 +131,20 @@ class AccessConditionRequestFilterTest {
             assertThrows(ServiceNotAllowedException.class,
                     () -> AccessConditionRequestFilter.filterForAccessConditions(request, PI, null, "00000002.tif"));
         }
+    }
+
+    /**
+     * @see AccessConditionRequestFilter#filterForAccessConditions(HttpServletRequest, String, String, String)
+     * @verifies deny thumbnail request without pi
+     */
+    @Test
+    void filterForAccessConditions_shouldDenyThumbnailRequestWithoutPi() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.getSession(true);
+        request.setAttribute("iiif-region", "full");
+        request.setAttribute("iiif-size", "1,");
+        assertTrue(FilterTools.isThumbnail(request));
+        assertThrows(ServiceNotAllowedException.class,
+                () -> AccessConditionRequestFilter.filterForAccessConditions(request, null, null, "file:///opt/digiverso/viewer/data/foo.tif"));
     }
 }

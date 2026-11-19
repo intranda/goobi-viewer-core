@@ -58,6 +58,8 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
+import io.goobi.viewer.controller.imaging.MediaDeliveryHandlers;
+import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -65,6 +67,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -87,6 +90,24 @@ import jakarta.ws.rs.core.StreamingOutput;
 public class ExternalImageResource extends ImageResource {
 
     private static final Logger logger = LogManager.getLogger(ExternalImageResource.class);
+
+    /**
+     * Rejects image urls which must not be fetched and delivered without a record access check, e.g. urls of this viewer instance, of internal
+     * hosts or file urls outside of the public media folders.
+     *
+     * @param imageUrl the decoded image url
+     * @param request current HTTP servlet request
+     * @return the unchanged imageUrl if it is allowed
+     * @throws ForbiddenException if the url is not allowed
+     */
+    static String checkImageUrlAllowed(String imageUrl, HttpServletRequest request) {
+        if (!MediaDeliveryHandlers.isAllowedExternalImageUrl(imageUrl, ServletUtils.getServletPathWithHostAsUrlFromRequest(request),
+                DataManager.getInstance().getConfiguration())) {
+            logger.debug("Rejected request for external image url {}", imageUrl);
+            throw new ForbiddenException("Delivering this image url is not allowed");
+        }
+        return imageUrl;
+    }
 
     /**
      * Validates the decoded image URL before passing it to the parent constructor.
@@ -130,7 +151,7 @@ public class ExternalImageResource extends ImageResource {
         // Validate imageUrl BEFORE passing it to the parent constructor, because the parent tries to
         // build a URI from it, which throws IllegalArgumentException (→ HTTP 500) on bare '%' signs
         // or non-ASCII characters. validateImageUrl() converts those cases to HTTP 400 instead.
-        super(context, request, response, "", validateImageUrl(imageUrl), cacheManager);
+        super(context, request, response, "", checkImageUrlAllowed(validateImageUrl(imageUrl), request), cacheManager);
         request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, imageUrl);
         request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_VIEW_IMAGES);
         // Use the URL-decoded request path for indexOf so that chars like '>' (received as '%3E')

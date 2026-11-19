@@ -565,7 +565,7 @@ class ThumbnailHandlerTest extends AbstractTest {
 
         SolrDocument solrDoc = new SolrDocument();
         solrDoc.setField(SolrConstants.MIMETYPE, "image/tiff");
-        solrDoc.setField(SolrConstants.THUMBNAIL, "http://external/iiif/image/00000001.tif");
+        solrDoc.setField(SolrConstants.THUMBNAIL, "http://93.184.216.34/iiif/image/00000001.tif");
         solrDoc.setField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
         solrDoc.setField(SolrConstants.METADATATYPE, MetadataGroupType.PERSON);
         solrDoc.setField(SolrConstants.PI, "1234");
@@ -574,7 +574,7 @@ class ThumbnailHandlerTest extends AbstractTest {
         StructElement doc = new StructElement("1", solrDoc);
 
         String url = handler.getThumbnailUrl(doc, 200, 300);
-        Assertions.assertEquals("/api/v1/images/external/http:U002FU002FexternalU002FiiifU002FimageU002F00000001.tif/full/!200,300/0/default.jpg",
+        Assertions.assertEquals("/api/v1/images/external/http:U002FU002F93.184.216.34U002FiiifU002FimageU002F00000001.tif/full/!200,300/0/default.jpg",
                 url);
     }
 

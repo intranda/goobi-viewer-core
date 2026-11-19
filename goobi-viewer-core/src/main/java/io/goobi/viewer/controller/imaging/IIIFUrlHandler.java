@@ -45,9 +45,13 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v1.records.media.RecordsFilesImageResource;
 import io.goobi.viewer.api.rest.v2.ApiUrls;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.faces.validators.PIValidator;
+import jakarta.ws.rs.BadRequestException;
 
 /**
  * Utility class for constructing and parsing IIIF Image API and Presentation API URLs.
@@ -55,7 +59,7 @@ import io.goobi.viewer.controller.StringTools;
  * @author Florian Alpers
  */
 public class IIIFUrlHandler {
-    
+
     private static final Logger logger = LogManager.getLogger(IIIFUrlHandler.class);
 
     private final AbstractApiUrlManager urls;
@@ -131,33 +135,26 @@ public class IIIFUrlHandler {
                 } catch (URISyntaxException e) {
                     logger.warn("file url {} is not a valid url: {}", fileUrl, e.getMessage());
                 }
+                if (!isDeliverableExternalImageUrl(fileUrl)) {
+                    return "";
+                }
                 if (urls != null) {
                     fileUrl = StringTools.escapeCriticalUrlChracters(fileUrl, false);
                     return urls.path(EXTERNAL_IMAGES, EXTERNAL_IMAGES_IIIF).params(fileUrl, region, size, rotation, quality, format).toString();
                 }
                 StringBuilder sb = new StringBuilder(apiUrl);
-                sb.append("image/-/").append(StringTools.escapeCriticalUrlChracters(fileUrl, false));
+                sb.append("images/external/").append(StringTools.escapeCriticalUrlChracters(fileUrl, false));
                 return IIIFUrlResolver.getIIIFImageUrl(sb.toString(), region, size, rotation, quality, format);
             } else if (ImageHandler.isExternalUrl(fileUrl)) {
                 fileUrl = fileUrl.replace(" ", "+"); // Hotfix for URIs that contain spaces in the image file name
                 if (IIIFUrlResolver.isIIIFImageUrl(fileUrl)) {
                     return IIIFUrlResolver.getModifiedIIIFFUrl(fileUrl, region, size, rotation, quality, format);
                 } else if (ImageHandler.isImageUrl(fileUrl, false)) {
-                    if (urls != null) {
-                        fileUrl = StringTools.escapeCriticalUrlChracters(fileUrl, false);
-                        return urls.path(EXTERNAL_IMAGES, EXTERNAL_IMAGES_IIIF).params(fileUrl, region, size, rotation, quality, format).toString();
+                    if (!isDeliverableExternalImageUrl(fileUrl)) {
+                        return "";
+                    } else {
+                        return fileUrl;
                     }
-                    StringBuilder sb = new StringBuilder(apiUrl);
-                    if (!apiUrl.endsWith("/")) {
-                        sb.append("/");
-                    }
-                    sb.append("image/-/").append(StringTools.escapeCriticalUrlChracters(fileUrl, false)).append("/");
-                    sb.append(region).append("/");
-                    sb.append(size).append("/");
-                    sb.append(rotation).append("/");
-                    sb.append("default.").append(format);
-                    //                  thumbCompression.ifPresent(compr -> sb.append("?compression=").append(thumbCompression));
-                    return sb.toString();
                 } else {
                     //assume its a iiif id
                     if (fileUrl.endsWith("info.json")) {
@@ -181,6 +178,9 @@ public class IIIFUrlHandler {
                         usedocStructIdentifier = filePath.getName(0).toString();
                         fileUrl = filePath.getName(1).toString();
                     }
+                    if (!isValidRecordFile(usedocStructIdentifier, fileUrl)) {
+                        return "";
+                    }
                     return urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF)
                             .params(URLEncoder.encode(usedocStructIdentifier, StringTools.DEFAULT_ENCODING),
                                     URLEncoder.encode(fileUrl, StringTools.DEFAULT_ENCODING), region, size, rotation,
@@ -192,6 +192,9 @@ public class IIIFUrlHandler {
                 if (separatorIndex > 0) {
                     usedocStructIdentifier = fileUrl.substring(0, separatorIndex);
                     fileUrl = fileUrl.substring(separatorIndex + 1);
+                }
+                if (!isValidRecordFile(usedocStructIdentifier, fileUrl)) {
+                    return "";
                 }
 
                 StringBuilder sb = new StringBuilder(apiUrl);
@@ -213,6 +216,42 @@ public class IIIFUrlHandler {
         } catch (UnsupportedEncodingException e) {
             logger.error(e.getMessage());
             return "";
+        }
+    }
+
+    /**
+     * Tests whether the given url would be delivered by the external images endpoint, so no urls are generated which are rejected there.
+     *
+     * @param url the image url to deliver
+     * @return true if {@link MediaDeliveryHandlers#isAllowedExternalImageUrl(String, String, Configuration)} allows the url
+     */
+    private static boolean isDeliverableExternalImageUrl(String url) {
+        Configuration config = DataManager.getInstance().getConfiguration();
+        if (MediaDeliveryHandlers.isAllowedExternalImageUrl(url, config.getViewerBaseUrl(), config)) {
+            return true;
+        }
+        logger.debug("Not creating IIIF url for image url {} which may not be delivered as external image", url);
+        return false;
+    }
+
+    /**
+     * Tests whether pi and filename identify a record file the records files endpoint can deliver.
+     *
+     * @param pi record identifier
+     * @param filename name of the image file within the record media folder
+     * @return true if the pi is valid and the filename contains no path separators or dot segments
+     */
+    private static boolean isValidRecordFile(String pi, String filename) {
+        if (!PIValidator.validatePi(pi)) {
+            logger.debug("Not creating IIIF url for file {} of invalid record identifier {}", filename, pi);
+            return false;
+        }
+        try {
+            RecordsFilesImageResource.requireValidFilename(filename);
+            return true;
+        } catch (BadRequestException e) {
+            logger.debug("Not creating IIIF url for invalid file name {} of record {}", filename, pi);
+            return false;
         }
     }
 
@@ -258,7 +297,6 @@ public class IIIFUrlHandler {
                 format == null ? null : format.getFileExtension());
     }
 
-    
     public AbstractApiUrlManager getUrlManager() {
         return urls;
     }
