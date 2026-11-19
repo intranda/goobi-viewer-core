@@ -228,57 +228,60 @@
     <!-- SECONDARY METADATA (ONLY FOR TILE VIEW) -->
     <ui:fragment rendered="#{not empty browseElement.secondaryMetadataListForCurrentLocale}">
         <div class="search-list__hit-metadata-second">
-            <ui:repeat
-                value="#{browseElement.secondaryMetadataListForCurrentLocale}"
-                var="browseElementMetadata">
-                <h:panelGroup rendered="#{!browseElementMetadata.blank}">
-                    <dt
-                        data-metadata-field="#{browseElementMetadata.label}"
-                        title="#{browseElementMetadata.label}"
-                        class="search-list__hit-text-label">
-                        <h:outputFormat
-                            value="#{msg[browseElementMetadata.label]}: "
-                            escape="false"
-                            styleClass="search-list__hit-text-label" />
-                    </dt>
+            <!-- INNER WRAPPER FOR HEIGHT ANIMATION -->
+            <dl class="search-list__hit-metadata-second-inner">
+                <ui:repeat
+                    value="#{browseElement.secondaryMetadataListForCurrentLocale}"
+                    var="browseElementMetadata">
+                    <h:panelGroup rendered="#{!browseElementMetadata.blank}">
+                        <dt
+                            data-metadata-field="#{browseElementMetadata.label}"
+                            title="#{browseElementMetadata.label}"
+                            class="search-list__hit-text-label">
+                            <h:outputFormat
+                                value="#{msg[browseElementMetadata.label]}: "
+                                escape="false"
+                                styleClass="search-list__hit-text-label" />
+                        </dt>
 
-                    <!-- DEFAULT SEPARATOR -->
-                    <ui:fragment rendered="#{browseElementMetadata.separator == null}">
-                        <ui:repeat
-                            var="val"
-                            value="#{browseElementMetadata.values}"
-                            varStatus="status">
-                            <dd class="search-list__hit-text-value">
-                                <h:outputFormat
-                                    value="#{val.getDisplayValue(navigationHelper.locale)}"
-                                    escape="false" />
-                            </dd>
-                        </ui:repeat>
-                    </ui:fragment>
-
-                    <!-- CUSTOM SEPARATOR -->
-                    <ui:fragment rendered="#{browseElementMetadata.separator != null}">
-                        <dd class="search-list__hit-text-value">
+                        <!-- DEFAULT SEPARATOR -->
+                        <ui:fragment rendered="#{browseElementMetadata.separator == null}">
                             <ui:repeat
                                 var="val"
                                 value="#{browseElementMetadata.values}"
                                 varStatus="status">
-                                <ui:fragment rendered="#{browseElementMetadata.separator != null}">
-                                    <!-- DO NOT BREAK THE NEXT LINE -->
-                                    <ui:fragment rendered="#{status.index gt 0}">
-                                        <span class="metadata__element-wrapper-single-custom-separator">#{browseElementMetadata.separator}</span>
-                                    </ui:fragment>
-                                    <span class="search-list__hit-text-value-single">
-                                        <h:outputFormat
-                                            value="#{val.getDisplayValue(navigationHelper.locale)}"
-                                            escape="false" />
-                                    </span>
-                                </ui:fragment>
+                                <dd class="search-list__hit-text-value">
+                                    <h:outputFormat
+                                        value="#{val.getDisplayValue(navigationHelper.locale)}"
+                                        escape="false" />
+                                </dd>
                             </ui:repeat>
-                        </dd>
-                    </ui:fragment>
-                </h:panelGroup>
-            </ui:repeat>
+                        </ui:fragment>
+
+                        <!-- CUSTOM SEPARATOR -->
+                        <ui:fragment rendered="#{browseElementMetadata.separator != null}">
+                            <dd class="search-list__hit-text-value">
+                                <ui:repeat
+                                    var="val"
+                                    value="#{browseElementMetadata.values}"
+                                    varStatus="status">
+                                    <ui:fragment rendered="#{browseElementMetadata.separator != null}">
+                                        <!-- DO NOT BREAK THE NEXT LINE -->
+                                        <ui:fragment rendered="#{status.index gt 0}">
+                                            <span class="metadata__element-wrapper-single-custom-separator">#{browseElementMetadata.separator}</span>
+                                        </ui:fragment>
+                                        <span class="search-list__hit-text-value-single">
+                                            <h:outputFormat
+                                                value="#{val.getDisplayValue(navigationHelper.locale)}"
+                                                escape="false" />
+                                        </span>
+                                    </ui:fragment>
+                                </ui:repeat>
+                            </dd>
+                        </ui:fragment>
+                    </h:panelGroup>
+                </ui:repeat>
+            </dl>
         </div>
     </ui:fragment>
 </ui:composition>

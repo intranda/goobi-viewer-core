@@ -23,13 +23,15 @@ package io.goobi.viewer.model.search;
 
 /**
  * Enumerates the available display modes for a search result list:
- * {@code DETAILS} shows full detail cards, {@code TILES} shows a tile/grid layout, and {@code LIST} shows a compact list.
+ * {@code DETAILS} shows full detail cards, {@code TILES} shows a tile/grid layout, {@code LIST} shows a compact list, and
+ * {@code GRID_EXTENDED} shows an extended tile/grid layout.
  */
 public enum HitListView {
 
     DETAILS("searchListDetailView", "details"),
     TILES("searchListTileView", "grid"),
-    LIST("searchListListView", "list-view");
+    LIST("searchListListView", "list-view"),
+    GRID_EXTENDED("searchListGridExtendedView", "grid-extended");
 
     private final String cssClass;
     private final String label;

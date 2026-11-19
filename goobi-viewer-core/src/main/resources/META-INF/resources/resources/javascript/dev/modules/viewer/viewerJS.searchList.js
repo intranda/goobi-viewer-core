@@ -256,7 +256,8 @@ var viewerJS = (function (viewer) {
                 $active.attr('aria-pressed', 'true');
                 $('[data-toggle="hit-content"]').show();
                 $('.search-list__hit-thumbnail').css({ height: 'auto' });
-                $('.search-list__hits').css('opacity', 0).removeClass('grid').removeClass('list-view');
+                stopExtendedGridLayout();
+                $('.search-list__hits').css('opacity', 0).removeClass('grid').removeClass('grid-extended').removeClass('list-view');
 
                 // set list style in local storage
                 // sessionStorage.setItem( 'searchListStyle', 'default' );
@@ -274,7 +275,8 @@ var viewerJS = (function (viewer) {
                 $active.attr('aria-pressed', 'true');
                 $('[data-toggle="hit-content"]').hide();
                 $('.search-list__hit-thumbnail').css({ height: 'auto' });
-                $('.search-list__hits').css('opacity', 0).removeClass('list-view').addClass('grid');
+                stopExtendedGridLayout();
+                $('.search-list__hits').css('opacity', 0).removeClass('list-view').removeClass('grid-extended').addClass('grid');
 
                 // set list style in local storage
                 // sessionStorage.setItem( 'searchListStyle', 'grid' );
@@ -303,6 +305,112 @@ var viewerJS = (function (viewer) {
                 $('.search-list__hits').fadeTo(300, 1);
             }
 
+            function setListViewGridExtended() {
+                // builds on the regular grid
+                setListViewGrid();
+                $('.search-list__hits').addClass('grid-extended');
+                startExtendedGridLayout();
+            }
+
+            //** EXTENDED GRID: MASONRY LAYOUT */
+
+            var _extendedGrids = [];
+
+            function readPx(styles, name, fallback) {
+                var value = parseFloat(styles.getPropertyValue(name));
+                return isNaN(value) ? fallback : value;
+            }
+
+            /** Places the cards in a small/big checkerboard with an offset between columns. */
+            function layoutExtendedGrid(grid) {
+                var styles = getComputedStyle(grid);
+                var gap = parseFloat(styles.columnGap) || 0;
+                var cols = styles.gridTemplateColumns.split(' ').length;
+                var small = readPx(styles, '--search-list-grid-extended-height-small', 270);
+                var big = readPx(styles, '--search-list-grid-extended-height-big', 330);
+                var step = readPx(styles, '--search-list-grid-extended-height-step', 20);
+                var minOffset = readPx(styles, '--search-list-grid-extended-min-offset', 40);
+                // bottom edge per column (px)
+                var bottom = new Array(cols).fill(0);
+
+                grid.classList.add('-laidOut');
+
+                Array.prototype.forEach.call(grid.children, function (item, i) {
+                    var row = Math.floor(i / cols);
+                    var col = i % cols;
+                    var isBig = (row + col) % 2 === 1;
+                    var base = isBig ? big : small;
+                    var candidates = [base, base + step, base + 2 * step];
+
+                    // distance to the neighbouring columns
+                    var offset = function (height) {
+                        var edge = bottom[col] + height + gap;
+                        var distances = [col - 1, col + 1]
+                            .filter(function (c) {
+                                return c >= 0 && c < cols;
+                            })
+                            .map(function (c) {
+                                return Math.abs(edge - bottom[c]);
+                            });
+                        return distances.length ? Math.min.apply(null, distances) : Infinity;
+                    };
+
+                    // first height with enough offset, else the largest
+                    var height = candidates.find(function (c) {
+                        return offset(c) >= minOffset;
+                    });
+                    if (height === undefined) {
+                        height = candidates.reduce(function (a, c) {
+                            return offset(c) > offset(a) ? c : a;
+                        });
+                    }
+
+                    item.style.height = height + 'px';
+                    item.style.gridColumn = String(col + 1);
+                    item.style.gridRow = bottom[col] + 1 + ' / span ' + Math.ceil(height + gap);
+                    bottom[col] += Math.ceil(height + gap);
+                });
+            }
+
+            function startExtendedGridLayout() {
+                stopExtendedGridLayout();
+                $('.search-list__hits.grid-extended .search-list__hits-list-items').each(function () {
+                    var grid = this;
+                    var entry = { grid: grid, frame: 0, observer: null };
+                    // avoid a duplicate tab stop
+                    $(grid).find('.search-list__hit-thumbnail a:not([tabindex])').attr({ tabindex: '-1', 'aria-hidden': 'true', 'data-extended-grid-hidden': '' });
+                    var schedule = function () {
+                        cancelAnimationFrame(entry.frame);
+                        entry.frame = requestAnimationFrame(function () {
+                            layoutExtendedGrid(grid);
+                        });
+                    };
+                    if (typeof ResizeObserver !== 'undefined') {
+                        entry.observer = new ResizeObserver(schedule);
+                        entry.observer.observe(grid);
+                    }
+                    _extendedGrids.push(entry);
+                    schedule();
+                });
+            }
+
+            function stopExtendedGridLayout() {
+                _extendedGrids.forEach(function (entry) {
+                    cancelAnimationFrame(entry.frame);
+                    if (entry.observer) {
+                        entry.observer.disconnect();
+                    }
+                    entry.grid.classList.remove('-laidOut');
+                    $(entry.grid).find('[data-extended-grid-hidden]').removeAttr('tabindex aria-hidden data-extended-grid-hidden');
+                    Array.prototype.forEach.call(entry.grid.children, function (item) {
+                        item.style.height = '';
+                        item.style.gridColumn = '';
+                        item.style.gridRow = '';
+                    });
+                });
+                _extendedGrids = [];
+            }
+
             function setListViewList() {
                 var $views = $('.search-list__views button');
                 $views.removeClass('active').attr('aria-pressed', 'false');
@@ -310,7 +418,8 @@ var viewerJS = (function (viewer) {
                 $active.attr('aria-pressed', 'true');
                 $('[data-toggle="hit-content"]').hide();
                 $('.search-list__hit-thumbnail').css({ height: '0' });
-                $('.search-list__hits').css('opacity', 0).removeClass('grid').addClass('list-view');
+                stopExtendedGridLayout();
+                $('.search-list__hits').css('opacity', 0).removeClass('grid').removeClass('grid-extended').addClass('list-view');
 
                 // set list style in local storage
                 // sessionStorage.setItem( 'searchListStyle', 'list-view' );
@@ -349,6 +458,9 @@ var viewerJS = (function (viewer) {
                     break;
                 case 'grid':
                     setListViewGrid();
+                    break;
+                case 'grid-extended':
+                    setListViewGridExtended();
                     break;
                 case 'list-view':
                     setListViewList();

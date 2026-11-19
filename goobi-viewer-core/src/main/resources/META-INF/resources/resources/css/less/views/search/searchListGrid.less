@@ -85,6 +85,14 @@
                     display: block;
                     height: var(--search-list-grid-thumbnail-link-height);
                 }
+                /* NO STACKED EFFECT IN GRID */
+                a.stackedThumbEffect {
+                    margin-left: 0;
+                }
+                .stacked-thumbnail-before,
+                .stacked-thumbnail-after {
+                    display: none;
+                }
             }
             .search-list__hit-title {
                 [data-bookmark-list-type='add'] {
@@ -135,6 +143,134 @@
                     .search-list__hit-text-label {
                         display: none;
                     }
+                }
+            }
+        }
+        /* EXTENDED GRID (USED WITH .grid) */
+        &.grid-extended {
+            /* MASONRY (LAYOUT BY JS) */
+            .search-list__hits-list-items {
+                grid-auto-rows: 1px;
+                column-gap: var(--search-list-grid-gap);
+                row-gap: 0;
+                /* FALLBACK WITHOUT JS */
+                &:not(.-laidOut) {
+                    grid-auto-rows: auto;
+                    row-gap: var(--search-list-grid-gap);
+                }
+            }
+            /* CARD */
+            .search-list__hit {
+                align-self: start;
+                height: var(--search-list-grid-extended-height-small);
+                border: 0;
+                border-radius: var(--search-list-grid-extended-radius);
+                background-color: var(--search-list-grid-extended-box-bg);
+                box-shadow: var(--search-list-grid-extended-shadow);
+                &:has(.search-list__hit-title-link:focus-visible) {
+                    outline: 3px solid var(--outline-focus);
+                    outline-offset: 2px;
+                }
+            }
+            /* HEADER FILLS THE CARD */
+            .search-list__hit-header {
+                position: absolute;
+                inset: 0;
+                z-index: 0;
+            }
+            .search-list__hit-inner-structure {
+                position: static;
+                justify-content: flex-end;
+            }
+            .search-list__hit-thumb-wrapper {
+                position: absolute;
+                inset: 0;
+                z-index: -1;
+                transition: transform calc(var(--search-list-grid-extended-speed) * 2) ease;
+            }
+            .search-list__hit-thumbnail {
+                position: absolute;
+                inset: 0;
+                aspect-ratio: auto;
+                min-height: 0;
+                background-position: center top;
+            }
+            /* TITLE BOX */
+            .search-list__hit-info-wrapper {
+                padding: 0.75rem 1rem;
+                background-color: var(--search-list-grid-extended-box-bg);
+            }
+            .search-list__hit-options-wrapper {
+                z-index: 2;
+            }
+            .search-list__hit-title {
+                position: static;
+                &.-extraMetadataForGrid {
+                    h3 a {
+                        min-height: 0;
+                    }
+                }
+            }
+            .search-list__hit-title-heading {
+                padding-bottom: 0;
+            }
+            .search-list__hit-title h3 a,
+            .search-list__hit-title-link {
+                text-align: left;
+            }
+            /* CLICKABLE CARD */
+            .search-list__hit-title-link {
+                &::after {
+                    content: '';
+                    position: absolute;
+                    inset: 0;
+                    z-index: 1;
+                }
+                &:focus-visible {
+                    outline: none;
+                }
+            }
+            /* EXTRA METADATA ON HOVER */
+            .search-list__hit-info-wrapper.-extraMetadataForGrid .search-list__hit-metadata-second {
+                display: grid !important;
+                grid-template-rows: 0fr;
+                opacity: 0;
+                transition:
+                    grid-template-rows var(--search-list-grid-extended-speed) ease,
+                    opacity var(--search-list-grid-extended-speed) ease;
+            }
+            /* MAX LINES */
+            .search-list__hit-metadata-second-inner {
+                --_row-height: calc(var(--font-size-body-small) * 1.4 + 0.25rem);
+                margin: 0;
+                overflow: hidden;
+                min-height: 0;
+                max-height: calc(var(--search-list-grid-extended-details-lines) * var(--_row-height));
+                dd {
+                    margin: 0;
+                    padding-top: 0.25rem;
+                    font-size: var(--font-size-body-small);
+                    line-height: 1.4;
+                    color: var(--fg-muted);
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+            }
+            .search-list__hit:hover,
+            .search-list__hit:focus-within {
+                .search-list__hit-metadata-second {
+                    grid-template-rows: 1fr;
+                    opacity: 1;
+                }
+                .search-list__hit-thumb-wrapper {
+                    transform: scale(1.04);
+                }
+            }
+            @media (prefers-reduced-motion: reduce) {
+                .search-list__hit-metadata-second,
+                .search-list__hit-thumb-wrapper {
+                    transition: none !important;
                 }
             }
         }
