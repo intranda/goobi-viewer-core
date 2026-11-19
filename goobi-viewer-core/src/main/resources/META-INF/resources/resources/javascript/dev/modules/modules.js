@@ -62,7 +62,11 @@
                 borderColor: styles['borderTopColor'],
                 fillColor: styles['background-color'],
             });
-            let activeStyles = viewerJS.helper.getCss('page-area focus', ['borderTopColor', 'borderTopWidth', 'background-color']);
+            let activeStyles = viewerJS.helper.getCss('page-area focus', [
+                'borderTopColor',
+                'borderTopWidth',
+                'background-color',
+            ]);
             ({
                 borderWidth: parseInt(activeStyles['borderTopWidth']),
                 borderColor: activeStyles['borderTopColor'],
@@ -118,7 +122,7 @@
             window.history.replaceState(null, '', url.toString());
         }
 
-        drawActiveAreas(activeAreas, imageView) {
+        drawActiveAreas(activeAreas, imageView) { 
             let areasOnCanvas = [];
             activeAreas.forEach((activeArea, index) => {
                 const area = this.drawArea(activeArea, index, imageView);
@@ -157,9 +161,9 @@
         }
 
         drawArea(area, shapeIndex, image, clickToLeave) {
-            let imageRect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
-            let areaSourceId = image.getTileSourceFromOrder(area.pageNo)?.id;
-            let rect = image.viewer.getViewportCoordinates(imageRect, areaSourceId);
+    		let imageRect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
+    		let areaSourceId = image.getTileSourceFromOrder(area.pageNo)?.id;
+    		let rect = image.viewer.getViewportCoordinates(imageRect, areaSourceId);
             let $area = $('#pageAreaFrame_' + area.logId + '_' + shapeIndex);
             let $label = $('#pageAreaLabel_' + area.logId + '_' + shapeIndex);
             let overlayId = area.logId + '_' + shapeIndex;
@@ -180,7 +184,7 @@
                 () => $(area.tooltip.element).addClass('hover'),
                 () => $(area.tooltip.element).removeClass('hover')
             );
-            return area;
+    		return area;
         }
     }
 
@@ -214,7 +218,7 @@
                 rotateRight: '.rotate-right',
                 reset: '.reset',
                 zoomSlider: '.zoom-slider',
-                downloadContent: '.download-canvas-content',
+    			downloadContent: '.download-canvas-content' 
             },
         },
         datasets: {
@@ -222,9 +226,9 @@
                 viewMode: 'imageViewMode',
                 showNavigator: 'imageShowNavigator',
                 allowZoom: 'allowZoom',
-                maxZoom: 'maxZoom',
-                allowDownloadContent: 'allowDownload',
-                downloadFilename: 'downloadFilename',
+    			maxZoom: 'maxZoom',
+    			allowDownloadContent: "allowDownload",
+    			downloadFilename: "downloadFilename"
             },
             data: {
                 footerHeight: 'height',
@@ -245,17 +249,17 @@
                 this.viewMode = imageElement.dataset[_config.datasets.image.viewMode];
 
                 this.topMarginElement = document.querySelector(_config.elementSelectors.data.topMarginElement)?.textContent;
-                this.leftMarginElement = document.querySelector(_config.elementSelectors.data.leftMarginElement)?.textContent;
-                this.rightMarginElement = document.querySelector(_config.elementSelectors.data.rightMarginElement)?.textContent;
-
-                //download canvas content
-                if (imageElement.dataset[_config.datasets.image.allowDownloadContent] === 'true') {
-                    this.downloadButton = _initCanvasDownload(
-                        imageElement,
-                        document.querySelector(_config.elementSelectors.controls.downloadContent),
-                        imageElement.dataset[_config.datasets.image.downloadFilename]
-                    );
-                }
+                this.leftMarginElement = document.querySelector(
+                    _config.elementSelectors.data.leftMarginElement
+                )?.textContent;
+                this.rightMarginElement = document.querySelector(
+                    _config.elementSelectors.data.rightMarginElement
+                )?.textContent;
+    			
+    			//download canvas content
+    			if(imageElement.dataset[_config.datasets.image.allowDownloadContent] === 'true') {				
+    				this.downloadButton = _initCanvasDownload(imageElement, document.querySelector(_config.elementSelectors.controls.downloadContent), imageElement.dataset[_config.datasets.image.downloadFilename]);
+    			}
 
                 const imageViewConfig = createZoomableImageConfig(imageElement);
                 this.viewer = new ImageView.Image(imageViewConfig);
@@ -268,7 +272,9 @@
 
                 this.tileSources = createTileSource();
 
-                this.tileSourceIdToOrder = Object.fromEntries(Object.entries(this.tileSources).map(([order, obj]) => [viewerJS.iiif.getId(obj), order]));
+                this.tileSourceIdToOrder = Object.fromEntries(
+                    Object.entries(this.tileSources).map(([order, obj]) => [viewerJS.iiif.getId(obj), order])
+                );
 
                 if (this.viewMode == 'sequence') {
                     this.sequence = new ImageView.Sequence(this.viewer, this.zoom);
@@ -286,7 +292,7 @@
                                 showTooltip: element.dataset[_config.datasets.data.showTooltip],
                                 highlightClassName: 'focus',
                                 highlightOnHover: true,
-                            });
+                            }); 
                             this.overlayGroups.push(overlays);
                         } catch (e) {
                             console.error('Error parsing coords string ', coordsString, e);
@@ -308,7 +314,9 @@
                 const viewerRight = this.viewer.element.offsetLeft + this.viewer.element.offsetWidth;
                 const sidebarRightLeft = document.querySelector(this.rightMarginElement)?.offsetLeft;
                 const margins = {
-                    left: (document.querySelector(this.leftMarginElement)?.offsetWidth ?? 0) + (document.querySelector(this.leftMarginElement)?.offsetLeft ?? 0),
+                    left:
+                        (document.querySelector(this.leftMarginElement)?.offsetWidth ?? 0) +
+                        (document.querySelector(this.leftMarginElement)?.offsetLeft ?? 0),
                     right: sidebarRightLeft ? viewerRight - sidebarRightLeft : 0,
                     top: document.querySelector(this.topMarginElement)?.offsetHeight ?? 0,
                 };
@@ -387,16 +395,17 @@
     }
 
     function _initCanvasDownload(imageContainer, button, filename) {
-        if (imageContainer && button) {
-            button.addEventListener('click', () => {
-                const canvas = imageContainer.querySelector('canvas');
-                const link = document.createElement('a');
-                link.download = filename;
-                link.href = canvas.toDataURL('image/jpeg');
-                link.click();
-                link.remove();
-            });
-        }
+    	if(imageContainer && button) {
+    		button.addEventListener("click", () => {
+    			const canvas = imageContainer.querySelector("canvas");
+    			const link = document.createElement('a');
+    		    link.download = filename;
+    		    link.href = canvas.toDataURL("image/jpeg");
+    		    link.click();
+    		    link.remove();
+    		});
+    				
+    	}
     }
 
     function _drawPageAreas(image) {
@@ -451,8 +460,12 @@
         if (document.querySelector(_config.elementSelectors.controls.zoomSlider)) {
             zoom.setSlider(_config.elementSelectors.controls.zoomSlider, 3);
         }
-        document.querySelectorAll(_config.elementSelectors.controls.rotateLeft).forEach((button) => button.addEventListener('click', (e) => rotation.rotateLeft()));
-        document.querySelectorAll(_config.elementSelectors.controls.rotateRight).forEach((button) => button.addEventListener('click', (e) => rotation.rotateRight()));
+        document
+            .querySelectorAll(_config.elementSelectors.controls.rotateLeft)
+            .forEach((button) => button.addEventListener('click', (e) => rotation.rotateLeft()));
+        document
+            .querySelectorAll(_config.elementSelectors.controls.rotateRight)
+            .forEach((button) => button.addEventListener('click', (e) => rotation.rotateRight()));
         document.querySelectorAll(_config.elementSelectors.controls.reset).forEach((button) =>
             button.addEventListener('click', (e) => {
                 rotation.rotateTo(0);
@@ -466,38 +479,42 @@
             element: imageElement,
             fittingMode: getFittingMode(document.querySelector(_config.elementSelectors.data.pageType)?.textContent),
             margins: {
-                bottom: Number(document.querySelector(_config.elementSelectors.data.footer)?.dataset[_config.datasets.data.footerHeight]),
+                bottom: Number(
+                    document.querySelector(_config.elementSelectors.data.footer)?.dataset[
+                        _config.datasets.data.footerHeight
+                    ]
+                ),
             },
             zoom: {
                 enabled: imageElement.dataset[_config.datasets.image.allowZoom] !== 'false',
-                max: parseInt(imageElement.dataset[_config.datasets.image.maxZoom]),
+    			max: parseInt(imageElement.dataset[_config.datasets.image.maxZoom]),
             },
             sequence: getSequenceSettings(imageElement.dataset[_config.datasets.image.viewMode]),
             navigator: {
                 enabled: imageElement.dataset[_config.datasets.image.showNavigator] === 'true',
-                position: 'BOTTOM_RIGHT',
+    			position: "BOTTOM_RIGHT"
             },
         };
     }
 
     function getSequenceSettings(viewMode) {
         let columns;
-        switch ((viewMode || '').toLowerCase()) {
+    	switch ((viewMode || '').toLowerCase()) {
             case 'double':
                 columns = 2;
-                break;
+    			break;
             case 'sequence':
             case 'single':
             default:
-                columns = 1;
+               columns = 1;
         }
-        return {
-            columns: columns,
-            useWindowing: true,
-            windowSize: _sequenceWindowSize,
-            windowExpandThreshold: _expandThreshold,
-            windowExpandSize: _expandBatchSize,
-        };
+    	return {
+    		columns: columns,
+    		useWindowing: true,
+    		windowSize: _sequenceWindowSize,
+    		windowExpandThreshold: _expandThreshold,
+    		windowExpandSize: _expandBatchSize
+    	}
     }
 
     function getFittingMode(pageType) {
@@ -534,6 +551,7 @@
      * @module viewerJS.shareImageFragment
      */
 
+
     class ShareImageFragment {
         constructor(image) {
             this.active = false;
@@ -563,7 +581,11 @@
 
             // init area select
             try {
-                let styles = viewerJS.helper.getCss('image-fragment', ['borderTopColor', 'borderTopWidth', 'background-color']);
+                let styles = viewerJS.helper.getCss('image-fragment', [
+                    'borderTopColor',
+                    'borderTopWidth',
+                    'background-color',
+                ]);
                 var fragmentSelectConfig = {
                     removeOldAreas: true,
                     drawCondition: (event) => this.active && this.fragmentSelect?.currentOverlay == undefined,
@@ -592,7 +614,8 @@
             if (this.fragmentSelect) {
                 this.fragmentSelect.finishedHook.subscribe((area) => {
                     var areaString = this.getAreaString(area);
-                    var pageUrl = window.location.origin + window.location.pathname + window.location.search + '#xywh=' + areaString;
+                    var pageUrl =
+                        window.location.origin + window.location.pathname + window.location.search + '#xywh=' + areaString;
                     var imageUrl = this.getRegionUrl(area);
                     $('[data-fragment-link="page"]').attr('data-copy-share-image', pageUrl);
                     $('[data-fragment-link="iiif"]').attr('data-copy-share-image', imageUrl);
@@ -605,7 +628,14 @@
 
         getAreaString(area) {
             if (area && area.x != undefined && area.y != undefined && area.width != undefined && area.height != undefined) {
-                var areaString = area.x.toFixed(0) + ',' + area.y.toFixed(0) + ',' + area.width.toFixed(0) + ',' + area.height.toFixed(0);
+                var areaString =
+                    area.x.toFixed(0) +
+                    ',' +
+                    area.y.toFixed(0) +
+                    ',' +
+                    area.width.toFixed(0) +
+                    ',' +
+                    area.height.toFixed(0);
                 return areaString;
             } else {
                 return 'full';
@@ -686,7 +716,10 @@
         }
 
         toggleImageShare($panel) {
-            if ($panel.closest('.fullscreen__view-sidebar-accordeon-panel').hasClass('share-image-area') && $panel.hasClass('in')) {
+            if (
+                $panel.closest('.fullscreen__view-sidebar-accordeon-panel').hasClass('share-image-area') &&
+                $panel.hasClass('in')
+            ) {
                 this.startFragmentSelect();
             }
         }
@@ -709,7 +742,8 @@
             this.container = document.querySelector(this.config.container);
             // console.log('init voyager3d', this);
             if (this.isVisible()) {
-                this.loaded = this.initView().then(() => {});
+                this.loaded = this.initView().then(() => {
+                });
             }
         }
 
@@ -2514,6 +2548,7 @@
 
     /** Central keydown dispatcher for the immersive view. */
 
+
     /** Dispatcher priorities of every immersive key handler, lowest runs first; the single place that defines who wins a key. */
     const KEY_PRIORITY = Object.freeze({
         shortcutsModal: 10,
@@ -2721,6 +2756,7 @@
     }
 
     /** Left rail panel wiring: open/close, keyboard toggles, resize, TOC + metadata folds. */
+
 
     /** Rail panel ids in toolbar order; the Alt+digit shortcuts 1-5 map onto this. */
     const PANEL_SHORTCUT_IDS = ['immersivePanelToc', 'immersivePanelFulltext', 'immersivePanelSearch', 'immersivePanelMetadata', 'immersivePanelLayoutTags'];
@@ -3176,6 +3212,7 @@
 
     /** Keyboard-shortcuts help modal with platform-specific modifier keycaps. */
 
+
     /**
      * Keyboard-shortcuts help modal: opened via the rail button or the `?` key,
      * closed via its X button, Escape or a click on the scrim. The rail button
@@ -3264,6 +3301,7 @@
     }
 
     /** OCR text ↔ image region hover linking for the immersive fulltext panel (block > line > word). */
+
 
     const ACTIVE_CLASS = 'is-linked-active';
 
@@ -3405,6 +3443,7 @@
     }
 
     /** Persisted viewer preferences (localStorage) with tolerant read/write. */
+
 
     const THUMB_SIZE_KEY = 'immersive-thumb-size';
 
@@ -3709,6 +3748,7 @@
 
     /** Annotations toggle: persisted checkbox, root state class and the `a` shortcut. */
 
+
     /** State class on the .immersive root while annotations are switched on (panel markup AND image overlays key off it). */
     const STATE_CLASS = '-annotations-on';
 
@@ -3789,6 +3829,7 @@
     }
 
     /** Joins ALTO annotations onto the rendered page text and its image overlays by element id. */
+
 
     /**
      * Indexes the panel's region elements by ALTO element id (blocks, lines and
@@ -3883,6 +3924,7 @@
     }
 
     /** Margin-note cards for a page's handwriting blocks: line anchoring, collision stacking, popovers and hover coupling to text and image. */
+
 
     /**
      * Below this panel content width (px) the margin column collapses and notes render inline
@@ -4543,6 +4585,7 @@
 
     /** Fulltext panel wiring: combined block/line/word text with image hover linking and layout annotations. */
 
+
     /**
      * Wires the fulltext panel: loads the nested OCR levels for the visible page,
      * renders them, and mounts the bidirectional text ↔ image hover linking. The
@@ -5107,6 +5150,7 @@
 
     /** Layout-tag panel state: selection, page range, cursor and per-page details, without any DOM. */
 
+
     /**
      * Creates the panel state. Queries derive everything from the index, the
      * selection, the range and the loaded details; transitions keep the cursor
@@ -5265,6 +5309,7 @@
 
     /** Layout-tag pick menu: multi-select rows (one per tag or configured group) with optional filter; the trigger shows the selection as text and colour dots. */
 
+
     const TRIGGER_DOTS = 4;
 
     /**
@@ -5408,6 +5453,7 @@
     }
 
     /** Layout-tag hit list: rows grouped by page, per-page counts and error markers, the active row and the progress line. */
+
 
     const REVEAL_MARGIN = 8;
 
@@ -5562,6 +5608,7 @@
     }
 
     /** Layout-tag panel wiring: index and detail loading, page range, cursor and image highlights; pick menu and hit list are sub-modules. */
+
 
     const OWNER = 'layout-tags';
     /** Modifier drawing an occurrence as a bar instead of a box. */
@@ -5972,6 +6019,7 @@
 
     /** Search panel wiring: in-work IIIF content search with hit list and highlights. */
 
+
     /**
      * Wires the in-place IIIF content search: result list in the left panel,
      * prev/next hit buttons, and hit highlights on the image.
@@ -6200,6 +6248,7 @@
 
     /** Title page picker: "go to page" input plus a labelled listbox per page. */
 
+
     /**
      * Builds the title page picker: a "go to page" input plus a listbox with one
      * option per page, labelled with the manifest page labels. Registers its
@@ -6368,6 +6417,7 @@
     }
 
     /** Thumbnail overview overlay: lazy riot grid with modal focus handling. */
+
 
     /**
      * Mounts the thumbnail grid overlay lazily (riot `thumbnails` tag) with modal
@@ -6546,6 +6596,7 @@
 
     /** Bottom bar and page-status wiring: indicator and actions. */
 
+
     /**
      * Wires the paging UI and the bottom-bar actions: page indicator (bottom bar +
      * title pill + canvas aria-label), the action buttons
@@ -6675,6 +6726,7 @@
     }
 
     /** Image-filter popover wiring plus a11y for the immersive Bootstrap popovers. */
+
 
     const FILTER_TRIGGER_SELECTOR = '[data-popover-element="#immersiveFilterPopover"]';
 
@@ -6885,6 +6937,7 @@
 
     /** Immersive view bootstrap: engine construction plus the UI wiring modules. */
 
+
     /** Hides the stage loading indicator at the latest after this, even without a painted tile. */
     const STAGE_LOADER_TIMEOUT_MS = 8000;
 
@@ -7033,4 +7086,5 @@
             initImmersiveViewer(immersiveRoot);
         }
     });
+
 })();
