@@ -676,8 +676,9 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertNotNull(be.getThumbnailUrl());
         Assertions.assertNull(be.getAccessPermissionThumbnail());
         Assertions.assertNull(be.getAccessDeniedThumbnailUrl(Locale.ENGLISH));
+        // contains, not startsWith: for image files the access check query is wrapped in "(...) OR (group thumbnail clause)"
         Mockito.verify(spy, Mockito.never())
-                .search(Mockito.startsWith("+" + SolrConstants.PI_TOPSTRUCT + ":" + PI_KLEIUNIV), Mockito.eq(2), Mockito.any(), Mockito.any());
+                .search(Mockito.contains("+" + SolrConstants.PI_TOPSTRUCT + ":" + PI_KLEIUNIV), Mockito.eq(2), Mockito.any(), Mockito.any());
     }
 
     /**
@@ -695,8 +696,9 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
             BrowseElement be = createBrowseElementForTopStruct(PI_KLEIUNIV);
 
             Assertions.assertNotNull(be.getAccessPermissionThumbnail());
+            // contains, not startsWith: for image files the access check query is wrapped in "(...) OR (group thumbnail clause)"
             Mockito.verify(spy, Mockito.atLeastOnce())
-                    .search(Mockito.startsWith("+" + SolrConstants.PI_TOPSTRUCT + ":" + PI_KLEIUNIV), Mockito.eq(2), Mockito.any(), Mockito.any());
+                    .search(Mockito.contains("+" + SolrConstants.PI_TOPSTRUCT + ":" + PI_KLEIUNIV), Mockito.eq(2), Mockito.any(), Mockito.any());
         } finally {
             // Reload the unmodified license types from the database
             licenseTypeCache.invalidate();
