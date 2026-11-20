@@ -124,7 +124,7 @@ export default class PageAreas {
 
     drawArea(area, shapeIndex, image, clickToLeave) {
 		let imageRect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
-		let areaSourceId = image.getTileSourceFromOrder(area.pageNo)?.id;
+		let areaSourceId = image.getTileSourceIdFromOrder(area.pageNo);
 		let rect = image.viewer.getViewportCoordinates(imageRect, areaSourceId);
         let $area = $('#pageAreaFrame_' + area.logId + '_' + shapeIndex);
         let $label = $('#pageAreaLabel_' + area.logId + '_' + shapeIndex);

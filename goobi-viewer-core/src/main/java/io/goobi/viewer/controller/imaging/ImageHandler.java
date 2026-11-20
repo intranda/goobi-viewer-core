@@ -213,7 +213,7 @@ public class ImageHandler {
 
         boolean access = page.isAccessPermissionImage();
         ImageInformation info =
-                (Version.v2 == RestApiManager.getVersionToUseForIIIF()) ? new ImageInformation(apiUri) : new ImageInformation3(apiUri);
+                (Version.v2 == RestApiManager.getVersionToUseForIIIF()) ? new ImageInformation3(apiUri) : new ImageInformation(apiUri);
         info.setWidth(width);
         info.setHeight(height);
 
