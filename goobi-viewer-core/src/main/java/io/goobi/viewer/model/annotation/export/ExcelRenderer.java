@@ -77,6 +77,11 @@ public class ExcelRenderer {
      *
      * @param annotationMap map of sheet names to their annotation lists
      * @return {@link XSSFWorkbook}
+     * @should throw IllegalArgumentException if annotation map is null
+     * @should throw IllegalArgumentException if annotation map is empty
+     * @should create one sheet per map entry named after the key
+     * @should write header row and one data row per annotation
+     * @should apply bold font to header cells and regular font to data cells
      */
     public XSSFWorkbook render(Map<String, List<CrowdsourcingAnnotation>> annotationMap) {
         if (annotationMap == null) {
