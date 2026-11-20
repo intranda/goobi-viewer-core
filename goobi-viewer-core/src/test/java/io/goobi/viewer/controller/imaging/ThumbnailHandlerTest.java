@@ -420,9 +420,7 @@ class ThumbnailHandlerTest extends AbstractTest {
         StructElement doc = new StructElement("1", createGroupDoc(thumbnail));
 
         String url = handler.getThumbnailUrl(doc, 200, 300);
-        Assertions.assertEquals("/api/v1/images/external/https:U002FU002Fimages.podigee-cdn.netU002F0x,sW-ya_n_tFVxG5KyqS_bSEVX9EUq5ZNFvCjrwiVwJqww="
-                + "U002Fhttps:U002FU002Fmain.podigee-cdn.netU002FuploadsU002Fu56152U002F24b68377-f751-4781-8aa6-50a9f15fc18a.jpg"
-                + "/full/!200,300/0/default.jpg", url);
+        Assertions.assertEquals(thumbnail, url);
     }
 
     /**
@@ -574,7 +572,8 @@ class ThumbnailHandlerTest extends AbstractTest {
         StructElement doc = new StructElement("1", solrDoc);
 
         String url = handler.getThumbnailUrl(doc, 200, 300);
-        Assertions.assertEquals("/api/v1/images/external/http:U002FU002F93.184.216.34U002FiiifU002FimageU002F00000001.tif/full/!200,300/0/default.jpg",
+        Assertions.assertEquals(
+                "http://93.184.216.34/iiif/image/00000001.tif",
                 url);
     }
 
@@ -829,7 +828,6 @@ class ThumbnailHandlerTest extends AbstractTest {
         se.getMetadataFields().put(SolrConstants.MIMETYPE, Collections.singletonList("image/tiff"));
         Assertions.assertEquals("image/tiff", ThumbnailHandler.getMimeType(se).get());
     }
-
 
     /**
      * @see ThumbnailHandler#getImageUrl(PhysicalElement,Scale,ImageFileFormat)
